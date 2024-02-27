@@ -1,0 +1,17 @@
+Notes/
+*.aux
+*.synctex.gz
+*.log
+*.run.xml
+*.bak*
+*.bcf
+*.bbl
+*.blg
+*.nav
+*.toc
+*.snm
+*.out
+*.fls
+*.fdb_latexmk
+
+
