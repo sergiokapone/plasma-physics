@@ -2,15 +2,47 @@
 \documentclass[]{beamer}
 \usetheme{PlasmaPhysics}
 \usepackage{PlasmaPhysics}
-\usepackage{showframe}
+
 \begin{document}
 
-\begin{frame}{Поляризаційний дрейф}{}
-	\begin{center}
-		\input{tikz/toroid.tikz}
-	\end{center}
-\end{frame}
+\begin{frame}{Електричний дрейф електронів}{}
 
+	\begin{center}
+		\begin{tikzpicture}[
+				declare function={
+						w = 0.5;
+						v = 0.3;
+						v0 = 1;
+						x0 = 0;
+						x(\t,\p)=v0/w*( sin(deg(\p)) - sin(deg(w*\t+\p)) ) + v*\t;
+						y(\t,\p)=v0/w*( cos(deg(w*\t+\p)) - cos(deg(\p)));
+					},
+			]
+
+%			\only<1->{
+				\def\k{1}
+				\node[circle, fill, inner sep=1pt] (start) at (0,0) {};
+
+				\node[above] at (start) {START};
+
+				\foreach[count=\n from 0] \c in {gray, green!50!black, red, blue} {
+						\draw[\c, variable=\t, domain=0:{2*pi/w}, samples=550,
+							decoration={
+									markings,
+									mark=at position 0.05 with {\arrow[xshift=5pt]{latex}},
+									%                        mark=at position 0.85 with {\arrow[xshift=5pt]{latex}},
+								},
+							postaction=decorate
+						] plot ( {x(\t,\k*\n*pi/2)}, {y(\t,\k*\n*pi/2)});
+					}
+
+				\draw[-latex, blue] (-2.5,0) -- ++(-135:1.5) node[below] {$\vec{B}$};
+				\draw[-latex, red] (-2.5,0) -- ++(0, 2) node[above] {$\vec{E}$};
+
+		\end{tikzpicture}
+	\end{center}
+
+\end{frame}
 
 
 \end{document}
