@@ -1,4 +1,4 @@
-\emph{}\begin{figure}[h!]
+\begin{figure}[h!]
 %---------------------------------------------------------
 \begin{subfigure}[t]{0.45\linewidth}\centering
 		\begin{tikzpicture}[>=latex']
