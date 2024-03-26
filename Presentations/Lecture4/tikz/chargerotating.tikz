@@ -17,7 +17,7 @@
             domain=0:2*pi,variable=\t, samples=55,
             decoration={
             markings,
-            mark=at position 0.5 with {\arrow[xshift=2pt, scale=0.75]{latex}},
+            mark=at position 1 with {\arrow[xshift=2pt, scale=0.75]{latex}},
             },
             postaction={decorate}
             ]
