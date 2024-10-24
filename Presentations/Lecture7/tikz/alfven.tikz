@@ -1,0 +1,7 @@
+\begin{tikzpicture}[>=latex]
+    \foreach \shift in {0,...,6} {
+    \draw[->, blue, domain=0:2*pi, samples=150] plot ({\x}, {0.25*\shift + 0.25*sin(3*\x r)});
+    }
+    \draw[red, ->] (1, -0.5) -- (2, -0.5) node[right] {$\wk$};
+    \draw[gray, ->] (0.5, -0.5) -- ++(0, 0.5) node[right] {$\tilde{\V}$};
+\end{tikzpicture}

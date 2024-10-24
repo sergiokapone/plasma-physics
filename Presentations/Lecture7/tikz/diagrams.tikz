@@ -1,0 +1,7 @@
+\begin{tikzpicture}[>=latex]
+    \draw[->] (0, -2.3) -- ++(0, 4.6) node[left] {$c_A$};
+    \draw[->] (-2.8, 0) -- ++(5.6, 0) node[right] {$(c^2_A + c^2_s)^{1/2}$};
+    \draw[red] (0, 0) ellipse[y radius= 2, x radius = 2.5];
+    \draw[domain=-180:180, samples=500, blue] plot ({abs(\x)}:{2*sin(\x)});
+    \draw[domain=-180:180, samples=500, green!40!black] plot ({\x}:{2*sin(\x)^2});
+\end{tikzpicture}

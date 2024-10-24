@@ -1,0 +1,16 @@
+\begin{tikzpicture}[>=latex]
+    \def\h{1.5}
+    \foreach[count=\c] \x in {0,2,...,4} {
+
+\begin{scope}[shift={(\x, 0)}]
+        \draw[blue, ->] (-0.5,0) -- ++(0, \h);
+        \draw[blue, ->] (-0.2,0) -- ++(0, \h);
+        \draw[blue, ->] (0,0) -- ++(0, \h);
+        \draw[blue, ->] (+0.2,0) -- ++(0, \h);
+        \draw[blue, ->] (+0.5,0) -- ++(0, \h);
+        \path[left color=white,right color=white,middle color=gray, opacity=0.6] (-1, -0.15) rectangle ++(2, {\h + 0.3});
+\end{scope}
+    }
+\draw[red, ->] (1, -0.5) -- (2, -0.5) node[right] {$\wk$};
+\draw[gray, ->] (3, -0.5) -- (4, -0.5) node[right] {$\tilde{\V}$};
+\end{tikzpicture}

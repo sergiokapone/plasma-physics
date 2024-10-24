@@ -1,0 +1,11 @@
+\begin{tikzpicture}[>=latex', scale=0.75]
+    \fill[red!10] (0, 0) -- ++(7, 0) -- ++(0, 1) to[out=190, in=25] ++(-7, 0) -- cycle;
+    \pgfmathsetseed{2436}
+    \foreach \x in {0.5,...,6.5} {
+        \foreach \y in {1,1.5} {
+            \coordinate (B) at  ({\x + 0.1*rand}, {\y + 0.1*rand});
+            \node[circle, draw=blue, inner sep=0.07cm] at (B) {};
+            \node[circle, fill=blue, inner sep=0.03cm] at (B) {};
+        }
+        }
+\end{tikzpicture}

@@ -1,0 +1,11 @@
+\begin{tikzpicture}[>=latex]
+  \node[cylinder,thick,aspect=0.7,minimum height=2cm,minimum width=1cm,shape border rotate=90,cylinder uses custom fill, cylinder body fill=red!30,cylinder end fill=red!10] (A) at (0, 0)  {};
+    \foreach \y in {-0.75, 0 ,0.75} {
+        \draw[thick, blue, -latex] (0,\y) [partial ellipse=120:420:1cm and 0.25cm];
+    }
+    \draw[->, red, thick] (0, -1) -- (0, 1) node[above] {$\vec{j}$};
+    \foreach \y in {-0.4, 0.4} {
+        \draw[->, orange] (-1, \y) -- ++(0.5, 0);
+        \draw[->, orange] (1, \y) -- ++(-0.5, 0);
+    }
+\end{tikzpicture}
