@@ -16,6 +16,7 @@
 			\draw[-latex, red] (0.75, \y) -- (4, \y) \ifnum\y=7 node[above, pos=0.5] {$\vec{E}$} \fi ;
 		}
 
-	\draw[decorate,decoration={brace,amplitude=5pt,mirror,raise=0ex}] (0.3,-0.1)  -- (4.3,-0.1) node[midway, yshift=-2ex] {$x$};
+	\draw[decorate,decoration={brace,amplitude=5pt,mirror,raise=0ex}] (0,-0.1)  -- (0.75,-0.1)
+	node[midway, yshift=-2ex] {$x$};
 
 \end{tikzpicture}

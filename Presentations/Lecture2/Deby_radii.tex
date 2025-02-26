@@ -256,11 +256,12 @@
 		\onslide<1>
 		\begin{block}{Кореляційна енергія}\justifying
 			\begin{equation*}
-				W_\text{кор} = \frac12\sum_s e_s \delta\phi,
+				W_\text{кор} = \frac12\sum_s e_s \delta\phi_s,
 			\end{equation*}
-			де $\delta\phi$ --- потенціал зарядів у точці знаходження розглядуваного за вирахуванням ого власного потенціалу:
+			де $\delta\phi_s$ --- потенціал зарядів у точці знаходження розглядуваного за вирахуванням ого власного потенціалу:
 			\begin{equation*}
-				\delta\phi_s = \left[\frac{e_s}{r}e^{-\frac{r}{r_D}} - \frac{e}{r}\right]_{r \to 0} = -\frac{e_s}{r_D} \Rightarrow \tcbhighmath{W_\text{кор} = -\frac{e^2}{2r_D}(N_i + N_e).}
+				\delta\phi_s = \left[\frac{e_s}{r}e^{-\frac{r}{r_D}} - \frac{e_s}{r}\right]_{r \to 0} = -\frac{e_s}{r_D} \Rightarrow
+				\tcbhighmath{W_\text{кор} = -\frac{e^2}{2r_D}(N_i + N_e).}
 			\end{equation*}
 		\end{block}
 		\onslide<2>
@@ -377,7 +378,8 @@
 			\vec{j}  = - ne\vec{v},
 		\end{equation}
 
-		де $\vec{v}$ ---- швидкість електронів, що переносять струм ("струмова швидкість"). Рівняння руху електрона
+		де $\vec{v}$ --- швидкість електронів, що переносять струм ("струмова швидкість"). Рівняння
+		руху електрона
 
 		\begin{equation}\label{eq:motion_law}
 			m\frac{d\vec{v}}{dt} = -e\vec{E}.
@@ -525,7 +527,8 @@
 		\end{exampleblock}
 		\begin{exampleblock}{\stepcounter{probcnt}\scriptsize Задача \theprobcnt}\justifying\scriptsize
 			У лазерному термоядерному синтезі серцевина крихітної таблетки з
-			суміші дейтерію з тритієм стискається до густини $10^{33}$ м\textsuperscript{3} за температури $50\ 000\ 000$~К. Оцініть для такої плазми число частинок у дебаївській сфері.
+			суміші дейтерію з тритієм стискається до густини $10^{33}$ м\textsuperscript{-3} за
+			температури $50\ 000\ 000$~К. Оцініть для такої плазми число частинок у дебаївській сфері.
 		\end{exampleblock}
 		\onslide<2>
 		\setcounter{probcnt}{5}
