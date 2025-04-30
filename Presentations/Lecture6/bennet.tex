@@ -1,0 +1,156 @@
+\documentclass{article}
+\usepackage[fontsize=14pt]{fontsize}
+\usepackage{fontspec}
+\setsansfont{CMU Sans Serif}%{Arial}
+\setmainfont{CMU Serif}%{Times New Roman}
+\setmonofont{CMU Typewriter Text}%{Consolas}
+\defaultfontfeatures{Ligatures={TeX}}
+\usepackage[math-style=TeX]{unicode-math}
+\usepackage[english, russian, ukrainian]{babel}
+
+\usepackage{physics}
+\usepackage{cleveref}
+
+\usepackage[%
+	a4paper,%
+	footskip=1cm,%
+	headsep=0.3cm,%
+	top=2cm, %поле сверху
+	bottom=2cm, %поле снизу
+	left=2cm, %поле ліворуч
+	right=2cm, %поле праворуч
+    ]{geometry}
+
+
+\usepackage{amsmath}
+\usepackage{mathtools}
+
+\title{Виведення впіввідношення Беннета}
+\date{}
+\begin{document}
+\maketitle
+
+\begin{equation}\label{eq:original}
+    r^2 \frac{dp}{dr} = -\frac{1}{\pi c^2} \frac{d}{dr} \left( \frac{1}{2} I_z^2 \right)
+\end{equation}
+
+
+Множимо обидві частини на $dr$ і переписуємо:
+\begin{equation}
+    r^2 dp = -\frac{1}{\pi c^2} d\left( \frac{1}{2} I_z^2 \right)
+\end{equation}
+
+Інтегруємо від $r = 0$ до $r = a$:
+\begin{equation}
+    \int_{0}^{a} r^2 dp = -\frac{1}{\pi c^2} \int_{0}^{a} d\left( \frac{1}{2} I_z^2 \right)
+\end{equation}
+
+Ліва частина інтегрується по частинах:
+\begin{align}
+    \int_{0}^{a} r^2 dp &= r^2 p \Big|_{0}^{a} - \int_{0}^{a} 2r p \, dr \nonumber \\
+    &= - \int_{0}^{a} 2r p \, dr \quad \text{(маємо на увазі $r^2 p \big|_{0}^{a}$ = 0)}
+\end{align}
+
+Права частина обчислюється безпосередньо:
+\begin{align}
+    -\frac{1}{\pi c^2} \left( \frac{1}{2} I_z^2 \Big|_{0}^{a} \right)
+    &= -\frac{1}{\pi c^2} \left( 0 - \frac{1}{2} I_0^2 \right) \nonumber \\
+    &= \frac{I_0^2}{2\pi c^2} \quad \text{(при } I_z(0) = I_0,\ I_z(a) = 0\text{)}
+\end{align}
+
+Прирівнюємо результати:
+\begin{equation}
+    - \int_{0}^{a} 2r p \, dr = \frac{I_0^2}{2\pi c^2}
+\end{equation}
+
+Множимо обидві частини на $-2\pi c^2$ і отримуємо підсумковий вираз:
+\begin{equation}
+    I_0^2 = 2c^2 \int_{0}^{a} 2\pi r p(r) \, dr
+\end{equation}
+
+Вважаючи, що електронна \( T_e \) та йонна \( T_i \) температури в плазмовому циліндрі постійні,
+отримуємо
+
+\begin{equation}\label{eq:Bennett}
+    I_0^2 = 2c^2 \left( T_e + T_i \right) N,
+\end{equation}
+де \( N \) --- число частинок на одиницю довжини (так зване погонне число частинок)
+плазмового циліндра:
+
+\begin{equation}
+    N = \int_{0}^{a} 2\pi r n(r) \, dr.
+\end{equation}
+
+Співвідношення \eqref{eq:Bennett} називається \emph{співвідношенням Беннета}.
+
+\begin{small}
+При отриманні співвідношення Беннета ми припускали, що
+температура плазми постійна. У реальній плазмі протікання струму
+супроводжується виділенням джоулевого тепла і нагріванням плазми. Якщо цей
+процес відбувається повільно, то умову рівноваги можна вважати
+наближено справедливою. Тому якщо за постійного погонного числа частинок
+температура зростатиме, то для забезпечення рівноваги необхідно
+постійно збільшувати струм.
+\end{small}
+
+
+
+Радіальний розподіл тиску \( p(r) \) можна виразити через \( B_0(r) \). Перепишемо (5.18) у вигляді
+\begin{equation}\label{eq:5.24}
+    \dv{p}{r} = -\frac{c}{8\pi r^2} \dv{r} \left[ r^2 B^2(r) \right]
+\end{equation}
+і проінтегруємо від \( r = 0 \) до довільного радіуса \( r \):
+\begin{equation}\label{eq:5.25}
+    p(r) = p(0) - \frac{1}{8\pi} \int_{0}^{r} \frac{1}{r^2} \dv{r} \left[ r^2 B^2(r) \right] \dd{r}.
+\end{equation}
+
+Як і вище, покладемо \( p(a) = 0 \), тоді
+\begin{equation}\label{eq:5.26}
+    p(0) = \frac{1}{8\pi} \int_{0}^{a} \frac{1}{r^2} \dv{r} \left[ r^2 B^2(r) \right] \dd{r}.
+\end{equation}
+
+Підставляючи \eqref{eq:5.26} в \eqref{eq:5.25}, отримуємо шукану залежність:
+\begin{equation}\label{eq:5.27}
+    p(r) = \frac{1}{8\pi} \int_{r}^{a} \frac{1}{r^2} \dv{r} \left[ r^2 B^2(r) \right] \dd{r}.
+\end{equation}
+
+Середній тиск \( \bar{p} \) у $z$-пінчі визначається рівнянням
+\begin{equation}\label{eq:5.28}
+    \bar{p} = \frac{1}{\pi a^2} \int_{0}^{a} 2\pi r p(r) \dd{r} = -\frac{1}{a^2} \int_{0}^{a} r^2
+    \dv{p}{r} \dd{r}.
+\end{equation}
+
+
+
+
+Підставляючи в \eqref{eq:5.28} \( \dv{p}{r} \) з \eqref{eq:5.24}, отримуємо шукану залежність:
+\begin{equation}\label{eq:5.29}
+    \bar{p} = \frac{B^2(a)}{8\pi} = \frac{4I_0^2}{8\pi c^2 a^2} = \frac{I_0^2}{2\pi c^2 a^2}.
+\end{equation}
+
+Рівняння \eqref{eq:Bennett} і \eqref{eq:5.29} є інтегральними умовами рівноваги z-пінча. Вони не
+залежать
+від радіального розподілу струму. В експериментальних умовах розподіл струму визначається способом
+утворення плазми та її провідністю.
+
+В імпульсних розрядах з великою провідністю тривалість імпульсу набагато менша за скін-час (див.
+~§~4.6), тож струм тече поверхнею плазми --- реалізується скінований пінч. При цьому тиск усередині
+такого пінча має бути постійним, тому що \( j_z = 0 \), \( B = 0 \), а умова рівноваги
+\eqref{eq:5.29} зводиться до рівності тиску плазми і магнітного тиску на межі.
+
+У протилежному випадку, коли густина струму постійна по перерізу плазмового шнура \( j_z = I_0 / \pi
+a^2 \), рівняння (5.18) визначає збільшення магнітного поля всередині плазми з радіусом
+\begin{equation}\label{eq:5.30}
+    B(r) = \frac{2I_0}{ca^2} r.
+\end{equation}
+
+
+
+З \eqref{eq:5.27} і \eqref{eq:5.30} знаходимо розподіл тиску по перерізу шнура:
+\begin{equation}\label{eq:5.31}
+    p(r) = \frac{I_0^2}{\pi c^2 a^2} \left( 1 - \frac{r^2}{a^2} \right),
+\end{equation}
+яке виявляється параболічним.
+
+
+\end{document}

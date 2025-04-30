@@ -1,0 +1,21 @@
+\begin{tikzpicture}[>=latex]
+    \foreach[count=\c] \y in {0,0.25,...,1} {
+%        \draw[red, thick, ->] (0.5, \y) -- ++(0.5, 0);
+%        \draw[red, thick, ->] (2, \y) -- ++(-0.5, 0);
+%        \draw[red, thick, ->] (2.5, \y) -- ++(0.5, 0);
+%        \draw[red, thick, ->] (4, \y) -- ++(-0.5, 0);
+    }
+    \foreach \x in {0, 1*pi/3, 2*pi/3, pi}{
+     \begin{scope}[shift={(\x, 0)}]
+\path[left color=white,right color=white,middle color=gray, opacity=0.6] (\x-pi/6, 0) rectangle ++({2*pi/3}, 1.95);
+\end{scope}
+    }
+
+\draw[thick, red, domain=-pi/6:{4*2*pi/3-pi/6}, samples=200, smooth] plot ({\x}, {1 + 0.5*sin(3*\x r)});
+\draw[->] (-pi/6,0) -- (-pi/6,2) node[left] {$\tilde{p}$};
+\draw[->] (-pi/6,1) node[left] {$p_0$} -- ({4*2*pi/3-pi/6},1) node[right] {$x$};
+
+    \draw[red, ->] (1, -0.5) -- (2, -0.5) node[right] {$\wk$};
+    \draw[gray, ->] (3, -0.5) -- (4, -0.5) node[right] {$\tilde{\V}$};
+
+\end{tikzpicture}
