@@ -1,7 +1,78 @@
-\begin{tikzpicture}[>=latex]
-    \draw[->] (0, -2.3) -- ++(0, 4.6) node[left] {$c_A$};
-    \draw[->] (-2.8, 0) -- ++(5.6, 0) node[right] {$(c^2_A + c^2_s)^{1/2}$};
-    \draw[red] (0, 0) ellipse[y radius= 2, x radius = 2.5];
-    \draw[domain=-180:180, samples=500, blue] plot ({abs(\x)}:{2*sin(\x)});
-    \draw[domain=-180:180, samples=500, green!40!black] plot ({\x}:{2*sin(\x)^2});
+
+\tikzset{
+    legend/.style= {right, font=\scriptsize, inner sep=0},
+    declare function = {
+    xmax=4;
+    ymax=4;
+    fast(\x)  = 1/sqrt(2) * sqrt( (cs^2 + cA^2) + sqrt(  (cs^2 + cA^2)^2 - 4 * cs^2*cA^2*(cos(\x))^2 ) );
+    slow(\x)  = 1/sqrt(2) * sqrt( (cs^2 + cA^2) - sqrt(  (cs^2 + cA^2)^2 - 4 * cs^2*cA^2*(cos(\x))^2 ) );
+    alven(\x) = cA*cos(\x);
+    }
+}
+
+\colorlet{alven}{green!60!black}
+\colorlet{slow}{red}
+\colorlet{fast}{blue}
+
+\begin{tikzpicture}[>=latex,
+declare function={
+    cs=3;
+    cA=2.25;
+},
+]
+    %Легенда
+    \draw[fast] (1, {ymax-0.25}) -- ++(0.25,0) node[legend] {Швидка хвиля};
+    \draw[slow] (1, {ymax-0.5}) -- ++(0.25,0) node[legend] {Повільна хвиля};
+    \draw[alven] (1, {ymax-0.75}) -- ++(0.25,0) node[legend] {Альвенівська хвиля};
+
+    \draw[->] (0, 0) -- ++(0, ymax);
+    \draw[->, blue] (-0.5, 0.5) -- ++(0, 1) node[left] {$\vec{B}_0$};
+    \draw[->] (0, 0) -- ++(xmax, 0);
+    \draw [thick,color=alven,domain=0:90,samples=200,smooth]  plot ({\x}:{alven(90-\x)});
+    \draw [thick,color=slow,domain=0:90,samples=200,smooth]  plot ({\x}:{slow(90-\x)});
+    \draw [thick,color=fast,domain=0:90,samples=300,smooth]  plot ({\x}:{fast(90-\x)});
+
+   \pgfmathsetmacro\a{55}
+
+    \draw[alven, ->] (0,0) -- (\a:{alven(90-\a)});
+    \draw[slow, ->] (0,0) -- (\a:{slow(90-\a)});
+    \draw[fast, ->] (0,0) -- (\a:{fast(90-\a)});
+
+
+    \draw (0,0.5) arc(90:\a:0.5) node[pos=0.5, anchor=south] {$\theta$};
+
+    \node[left] at (0, {slow(0)}) {$c_A$};
+    \node[left] at (0, {fast(0)}) {$c_s$};
+    \node[below left, font=\scriptsize] at ({fast(90)}, 0) {$\sqrt{c_A^2 + c_s^2}$};
+\end{tikzpicture}
+%
+\begin{tikzpicture}[>=latex,
+declare function={
+    cs=2.25;
+    cA=3;
+},
+]
+
+    %Легенда
+    \draw[fast] (1, {ymax-0.25}) -- ++(0.25,0) node[legend] {Швидка хвиля};
+    \draw[slow] (1, {ymax-0.5}) -- ++(0.25,0) node[legend] {Повільна хвиля};
+    \draw[alven] (1, {ymax-0.75}) -- ++(0.25,0) node[legend] {Альвенівська хвиля};
+
+    \draw[->] (0, 0) -- ++(0, ymax);
+    \draw[->, blue] (-0.5, 0.5) -- ++(0, 1) node[left] {$\vec{B}_0$};
+    \draw[->] (0, 0) -- ++(xmax, 0);
+    \draw [thick,color=alven,domain=0:90,samples=200,smooth]  plot ({\x}:{alven(90-\x)});
+    \draw [thick,color=slow,domain=0:90,samples=200,smooth]  plot ({\x}:{slow(90-\x)});
+    \draw [thick,color=fast,domain=0:90,samples=300,smooth]  plot ({\x}:{fast(90-\x)});
+
+    \pgfmathsetmacro\a{45}
+
+    \draw[fast, ->] (0,0) -- (\a:{fast(90-\a)});
+    \draw[alven, ->] (0,0) -- (\a:{alven(90-\a)});
+    \draw[slow, ->] (0,0) -- (\a:{slow(90-\a)});
+
+    \draw (0,0.5) arc(90:\a:0.5) node[pos=0.5, anchor=south] {$\theta$};
+    \node[left] at (0, {slow(0)}) {$c_s$};
+    \node[left] at (0, {fast(0)}) {$c_A$};
+    \node[below left, font=\scriptsize] at ({fast(90)}, 0) {$\sqrt{c_A^2 + c_s^2}$};
 \end{tikzpicture}

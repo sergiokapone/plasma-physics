@@ -1,0 +1,33 @@
+   \tdplotsetmaincoords{70}{120}  % view angle
+\begin{tikzpicture}[tdplot_main_coords, scale=3, >=stealth]
+
+  % Coordinates
+  \coordinate (O) at (0,0,0);
+  \coordinate (X) at (1,0,0);
+  \coordinate (Y) at (0,0.7,0);
+  \coordinate (Z) at (0,0,1.2);
+  \coordinate (Kperp) at (0.7,0,0);
+  \coordinate (Kpar) at (0,0,1);
+  \coordinate (K) at (0.7,0,1);
+
+  % Axes
+  \draw[->] (O) -- (X) node[anchor=north east]{$x$};
+  \draw[->] (O) -- (Y) node[anchor=west]{$y$};
+  \draw[->] (O) -- (Z) node[anchor=south]{$z$};
+
+  % Vectors
+  \draw[->, thick] (O) -- (Kperp) node[anchor=north]{$\vec{k}_\perp$};
+  \draw[->, thick] (O) -- (Kpar) node[anchor=west]{$\vec{k}_\parallel$};
+  \draw[->, thick] (O) -- (K) node[anchor=south]{$\vec{k}$};
+
+  % Magnetic field and Alfven velocity
+  \draw[->, very thick, blue] ($(O)+(-0.2,0,0.25)$) -- ++(0,0,0.5) node[anchor=north west]{$\vec{B}_0,\, \vec{c}_A$};
+
+  % Shaded triangle
+  \fill[gray,opacity=0.3] (O) -- (Kperp) -- (K) -- (Kpar) -- cycle;
+
+    \tdplotgetpolarcoords{0.7}{0}{1}
+    \tdplotsetthetaplanecoords{\tdplotresphi}
+    \tdplotdrawarc[tdplot_rotated_coords, blue,thick]{(O)}{0.25}{0}{\tdplotrestheta}{anchor=south}{$\theta$}
+
+\end{tikzpicture}
