@@ -1,0 +1,148 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !TeX spellcheck = uk_UA
+
+\documentclass{article}
+\usepackage[fontsize=12pt]{fontsize}
+
+\usepackage{fontsetup}
+\usepackage[english, russian, ukrainian]{babel}
+\usepackage{microtype}
+\usepackage{tabularray}
+\usepackage{xcolor}
+
+
+\usepackage[%
+	a4paper,%
+	footskip=1cm,%
+	headsep=0.3cm,%
+	top=2cm, %поле сверху
+	bottom=2cm, %поле снизу
+	left=2cm, %поле ліворуч
+	right=2cm, %поле праворуч
+    ]{geometry}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{floatflt}
+
+\usepackage[%colorlinks=true,
+	%urlcolor = blue, %Colour for external hyperlinks
+	%linkcolor  = malina, %Colour of internal links
+	%citecolor  = green, %Colour of citations
+	bookmarks = true,
+	bookmarksnumbered=true,
+	unicode,
+	linktoc = all,
+	hypertexnames=false,
+	pdftoolbar=false,
+	pdfpagelayout=TwoPageRight,
+	pdfauthor={Ponomarenko S.M. aka sergiokapone},
+	pdfdisplaydoctitle=true,
+	pdfencoding=auto
+	]%
+	{hyperref}
+
+
+
+\title{Рейтингова система оцінювання (РСО) \\(витримки з \href{https://osvita.kpi.ua/sites/default/files/downloads/Pologennia_RSO_2025.pdf}{документу})}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Типи рейтингових систем}
+
+Згідно з «Положенням про систему оцінювання результатів навчання в КПІ ім. Ігоря Сікорського» (ред. 2025):
+
+\begin{itemize}
+    \item \textbf{РСО-1} --- застосовується для дисциплін, семестровий контроль з яких проводиться у формі \textbf{заліку}.
+    Вона містить лише поточний контроль і не має окремої екзаменаційної складової.
+    \item \textbf{РСО-2} --- застосовується для дисциплін, семестровий контроль з яких проводиться у формі \textbf{екзамену},
+    а також для курсових проєктів, практик тощо. Складається з \textbf{двох складових}:
+    стартової (поточний контроль) і екзаменаційної.
+    \item Стартова складова --- це «накопичувальна частина»: наскільки студент працював протягом семестру.
+\end{itemize}
+
+
+
+\subsection*{РСО-1 (залік)}
+
+\noindent\textbf{Тип системи:} РСО-1 \\
+\textbf{Форма семестрового контролю:} залік
+
+\begin{table}[h!]
+\centering
+\caption{Розподіл балів за видами контролю (РСО-1, залік)}
+\begin{tblr}{
+colspec = {Q[l,m, 7cm]|X|Q[c]|},
+row{1}={c,m, font=\bfseries, bg=cyan!20},
+hlines, vlines
+}
+{Вид контролю / діяльності} & {Форма проведення} & {Макс. бали} \\
+Модульна контрольна робота & Синхронна & 40 \\
+Домашня контрольна робота / індивідуальне семестрове завдання & Асинхронна & 40 \\
+Поточна активність, короткі тести, відвідування, участь у дискусіях & Синхронна / асинхронна & 10 \\
+Залік (для підвищення рейтингу або у разі $<60$ балів) & Семестровий контроль & 10 \\
+\SetCell[r=1,c=2]{r}\textbf{Загальна кількість балів} & & \textbf{100} \\ \end{tblr}
+\end{table}
+
+\noindent\textit{Пояснення:} студент, який виконав усі умови поточного контролю та набрав $\geq 60$ балів, отримує залік автоматично.
+При бажанні може пройти залік для підвищення рейтингу.
+Тип оцінювання --- \textbf{РСО-1 (лише поточна складова)}.
+
+
+\section{РСО-2 (екзамен)}
+
+\noindent\textbf{Тип системи:} РСО-2 \\
+\textbf{Форма семестрового контролю:} екзамен
+
+\begin{table}[h!]
+\centering
+\caption{Розподіл балів за видами контролю (РСО-2, екзамен)}
+\begin{tblr}{
+colspec = {Q[l,m, 7cm]|X|Q[c]|},
+row{1}={c,m, font=\bfseries, bg=cyan!20},
+hlines, vlines
+}
+{Вид контролю / діяльності} & {Форма проведення} & {Макс. бали} \\
+Модульна контрольна робота & Синхронна & 20 \\
+Розрахункова робота / лабораторні / практичні & Асинхронна / синхронна & 20 \\
+Поточна активність, короткі тести & Синхронна / асинхронна & 10 \\
+\SetCell[r=1,c=2]{r}\textbf{Разом за поточний контроль (стартова складова)} &  & \textbf{50} \\
+Екзамен (письмова або усна форма згідно з силабусом) & Семестровий контроль & 50 \\
+\SetCell[r=1,c=2]{r}\textbf{Загальна кількість балів} &  & \textbf{100} \\
+\end{tblr}
+\end{table}
+
+\noindent\textit{Мінімальна кількість балів для допуску до екзамену:} 25–30 (50–60\% від стартової складової).
+\textit{Фінальна рейтингова оцінка:}
+\[
+R_{\text{підсумк.}} = R_{\text{старт.}} + R_{\text{екз.}}, \quad 0 \le R_{\text{підсумк.}} \le 100.
+\]
+Тип оцінювання — \textbf{РСО-2 (стартова + екзаменаційна складові)}.
+
+
+\subsection*{Шкала оцінювання КПІ (Додаток А)}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Бали} & \textbf{Оцінка} & \textbf{Рівень} \\ \hline
+95--100 & Відмінно & A \\ \hline
+85--94 & Дуже добре & B \\ \hline
+75--84 & Добре & C \\ \hline
+65--74 & Задовільно & D \\ \hline
+60--64 & Достатньо & E \\ \hline
+<60 & Незадовільно & F \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+
+\end{document}
+
+

@@ -1,0 +1,184 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !TeX spellcheck = uk_UA
+
+\documentclass[]{beamer}
+\usetheme{PlasmaPhysics}
+\usepackage{PlasmaPhysics}
+\usetikzlibrary{shadings}
+\graphicspath{{pictures}}
+
+%\NewDocumentCommand{\E}{}{\vec{E}}
+%\NewDocumentCommand{\B}{}{\vec{B}}
+%\NewDocumentCommand{\J}{}{\vec{j}}
+%\NewDocumentCommand{\V}{}{\vec{v}}
+%\NewDocumentCommand{\wk}{}{\vec{k}}
+%
+%\NewDocumentCommand{\divg}{m}{\vec{\nabla}\cdot{#1}}
+%\NewDocumentCommand{\rot}{m}{\vec{\nabla}\times{#1}}
+%\NewDocumentCommand{\grad}{m}{\vec{\nabla}#1}
+%\NewDocumentCommand{\vecdot}{mm}{\left[#1\times#2\right]}
+%\NewDocumentCommand{\scdot}{mm}{\left(#1\cdot#2\right)}
+%\NewDocumentCommand{\dt}{m}{\frac{\partial #1}{\partial t}}
+%\NewDocumentCommand{\ddt}{m}{\frac{\partial^2 #1}{\partial t^2}}
+
+\usepackage{subcaption}
+\usepackage{mathtools}
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+\usetikzlibrary{decorations.pathreplacing}
+\newtcolorbox{mysidebyside}[1][]{
+    notitle, sidebyside, blanker,
+    sidebyside align=center seam,
+    halign=center,
+    lefthand width=.5\textwidth,
+    #1
+}
+
+
+
+\graphicspath{{pictures/}}
+\title[Лекції з фізики плазми]{\bfseries\huge Стійкість магнітогідродинамічних конфігурацій}
+\subtitle{\bfseries Лекції з фізики плазми}
+\author{Пономаренко С. М.}
+\date{}
+% https://www.youtube.com/watch?v=zv9Y7YmHyBk
+\def\stext#1{\text{
+        \makebox[0pt]{
+            \tikz[baseline] {\node[text width=50pt, align=center, execute at begin node=\setlength{\baselineskip}{-0.5ex}, blue] {#1};}
+        }
+}}
+
+\begin{document}
+
+% --- Слайд 1 ---
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{МГД-нестійкості: фізичний зміст}{}
+	\begin{block}{}\justifying
+		Магнітогідродинаміка (МГД) описує плазму як провідну рідину в електромагнітному полі.
+		Стаціонарні конфігурації такої системи можуть втрачати стійкість.
+	\end{block}
+
+	\begin{block}{Ідея нестійкості}
+		Мала збурююча дія може:
+		\begin{itemize}
+			\item або затухати $\rightarrow$ система \textbf{стійка}
+			\item або зростати $\rightarrow$ система \textbf{нестійка}
+		\end{itemize}
+	\end{block}
+
+	\begin{block}{Фізичне джерело}
+		\begin{itemize}
+			\item градієнти тиску
+			\item струми в плазмі
+			\item конфігурація магнітного поля
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Лінійний аналіз стійкості}{}
+	\begin{block}{Основна ідея}
+		Розглядаємо мале збурення відносно рівноваги:
+		\[
+			\mathbf{X} = \mathbf{X}_0 + \tilde{\mathbf{X}},
+		\]
+		$\mathbf{X}_0$ --- стаціонарний стан, $\tilde{\mathbf{X}} \ll \mathbf{X}_0$ --- мале збурення.
+	\end{block}
+
+	\begin{block}{Лінеаризація}
+		Підставляємо у рівняння МГД та залишаємо тільки перший порядок малості:
+		\[
+			\frac{\partial \tilde{\mathbf{X}}}{\partial t} = \hat{L} \tilde{\mathbf{X}}
+		\]
+	\end{block}
+
+	\begin{block}{}
+		Розв'язок шукаємо у вигляді:
+		\(
+		\tilde{\mathbf{X}} \sim e^{i(\mathbf{k}\cdot \mathbf{r} - \omega t)}
+		\)
+	\end{block}
+
+	\begin{block}{Критерій стійкості}
+		\begin{itemize}
+			\item $\operatorname{Im}(\omega) > 0$ --- нестійкість (експоненційний ріст)
+			\item $\operatorname{Im}(\omega) < 0$ --- затухання
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Нестійкість Релея--Тейлора: аналогія}{}
+	\begin{block}{Класична гідродинаміка}
+		\begin{itemize}
+			\item Дві рідини з різною густиною:
+			      \(
+			      \rho_1 > \rho_2
+			      \)
+			\item Важка рідина (\(\rho_1\)) знаходиться \textbf{над} легкою (\(\rho_2\))
+			\item Гравітація напрямлена вниз
+		\end{itemize}
+	\end{block}
+
+	\begin{block}{Що відбувається?}
+		\begin{itemize}
+			\item Система "перевернута"
+			\item Будь-яке збурення межі:
+			      \begin{itemize}
+				      \item важка рідина опускається
+				      \item легка піднімається
+			      \end{itemize}
+			\item Збурення зростає $\rightarrow$ \textbf{нестійкість}
+		\end{itemize}
+	\end{block}
+
+	\begin{block}{Аналогія в плазмі}
+		\begin{itemize}
+			\item Замість гравітації:
+			      \[
+				      \mathbf{g}_{\text{eff}} \sim -\frac{\nabla p}{\rho}
+			      \]
+			\item "Важке" = область з більшим тиском / густиною
+			\item Якщо плазма "підперта неправильно" $\rightarrow$ виникає нестійкість
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Нестійкість Релея--Тейлора: ріст збурень}{}
+	\begin{block}{Модель}
+		\begin{itemize}
+			\item Дві незмішувані рідини з густинами $\rho_1$, $\rho_2$
+			\item Межа між ними збурюється:
+			      \[
+				      \eta \sim e^{i(kx - \omega t)}
+			      \]
+		\end{itemize}
+	\end{block}
+
+	\begin{block}{Результат}
+		Швидкість росту збурення:
+	\end{block}
+
+	\begin{center}
+		:contentReference[oaicite:0]{index=0}
+	\end{center}
+
+	\begin{block}{Позначення}
+		\begin{itemize}
+			\item $\gamma = \operatorname{Im}(\omega)$ --- інкремент росту
+			\item $k$ --- хвильове число
+			\item $A = \dfrac{\rho_1 - \rho_2}{\rho_1 + \rho_2}$ --- число Атвуда
+		\end{itemize}
+	\end{block}
+
+	\begin{block}{Фізичний зміст}
+		\begin{itemize}
+			\item Якщо $A > 0$ (важке над легким) $\rightarrow$ нестійкість
+			\item Чим більше $k$ $\rightarrow$ тим швидше росте збурення
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\end{document}
