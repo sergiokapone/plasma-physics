@@ -1,0 +1,7 @@
+\begin{tikzpicture}[]
+    \draw[-latex] (0, 0) -- ++(0, 1) node[right] {$y$};
+    \draw[->, gray] (0, 0) -- ++(65: 1)  node[right, text=gray] {$\vec{F}$};
+    \draw[-latex] (0, 0) -- ++(1, 0) node[below] {$x$};
+    \draw[-latex] (0, 0) -- ++(-135:0.75) node[below right] {$z$};
+    \draw[->, blue] (0, 0) -- ++(-135:0.5) node[above left, text=blue] {$\vec{B}$};
+\end{tikzpicture}
