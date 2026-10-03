@@ -1,0 +1,39 @@
+\tdplotsetmaincoords{65}{125}
+    \begin{tikzpicture}[
+    >=latex,
+    declare function = {
+        R = 1;
+        w=1;
+        v=0.2;
+        x(\t)=R*sin(w*\t r);
+        y(\t)=R*cos(w*\t r);
+        z(\t)=v*\t;
+    },
+    tdplot_main_coords]
+        \coordinate (O) at (0,0,0);
+        \coordinate (z) at (0,0,3);
+     		\coordinate (x) at (2,00);
+      		\coordinate (y) at (0,2,0);
+
+       \draw[->] (O) -- (z) node[anchor=south] {$z$};
+       \draw[->] (O) -- (x) node[anchor=south] {$x$};
+       \draw[->] (O) -- (y) node[anchor=south] {$y$};
+
+       \draw[blue, thick, variable=\t, domain=0:6.1*pi, samples=150, ->] plot ({x(\t)}, {y(\t)}, {z(\t)});
+
+       \def\k{2.55*pi}
+       \draw[canvas is xy plane at z={z(\k)}, dashed, fill=orange!50, opacity=0.5] (0,0) circle (R);
+
+       \node[circle, ball color=blue, inner sep=0pt, font=\tiny, text=white] (T) at ({x(\k)}, {y(\k)}, {z(\k)}) {$+$};
+
+       \draw[->, red] (T) -- ++({y(\k)}, {-x(\k)}, {0}) coordinate (A) node[below, text=black, font=\tiny] {$\vec{v}_\perp$};
+
+       \draw[->, red] (T) -- ++({y(\k)}, {-x(\k)}, {0.3}) coordinate (B) node[above, text=black, font=\tiny] {$\vec{v}$};
+
+       \draw[->, red] (T) -- ++(0, 0, 0.3) coordinate (C) node[above right=-5pt, text=black, font=\tiny] {$\vec{v}_\parallel$};
+
+       \draw[densely dashed] (A) -- (B) -- (C);
+
+       \draw[canvas is xy plane at z={z(\k)}, ->, blue] (0,0) -- (T) node[above=-2pt, font=\tiny, pos=0.3] {$\vec\rho$};
+
+    \end{tikzpicture}

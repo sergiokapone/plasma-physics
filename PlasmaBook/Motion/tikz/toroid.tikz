@@ -1,0 +1,59 @@
+\begin{tikzpicture}
+    \draw (-2.5, 0) circle (1);
+    \draw (2.5, 0) circle (1);
+
+    \draw (3.5, 0) arc[start angle=0, end angle=180, x radius = 3.5, y radius = 2.25];
+    \draw (1.5, 0) arc[start angle=0, end angle=180, x radius = 1.5, y radius = 0.75];
+    \foreach \i/\mf in {1/$\times$, -1/$\bullet$} {
+    \begin{scope}[xscale=\i]
+     \foreach \y in {-0.25,0,...,0.25} {
+                \node[font=\tiny] at (-1.6, \y) {\mf};
+        }
+        \foreach \y in {-0.5,-0.25,...,0.5} {
+            \node[font=\tiny] at (-1.8, \y) {\mf};
+        }
+        \foreach \y in {-0.75,-0.5,...,0.75} {
+                \node[font=\tiny] at (-2.1, \y) {\mf};
+        }
+        \foreach \y in {-0.75,-0.25,...,0.75} {
+                \node[font=\tiny] at (-2.5, \y) {\mf};
+        }
+        \foreach \y in {-0.5,0,...,0.5} {
+                \node[font=\tiny] at (-3, \y) {\mf};
+        }
+        \node[font=\tiny] at (-3.4, 0) {\mf};
+    \end{scope}
+    }
+
+    \foreach \i in {1, -1} {
+    \begin{scope}[xscale=\i]
+        \draw[-stealth, red, decoration={
+        coil,
+        amplitude=0.5mm,
+        segment length=0.5mm,
+        post length=3pt
+        },
+        decorate] (-3.2, -0.5) -- ++(0, 1);
+        \draw[-stealth, blue, decoration={
+        coil,
+        amplitude=1mm,
+        segment length=1mm,
+        post length=2pt
+        }, decorate] (-2.75, 0.5) -- ++(0, -1);
+
+       \begin{scope}[yshift=1cm]
+        \draw[->, blue, yscale=\i] (-4.6, 0) -- ++(45:1) node[anchor={-\i*90}] {$\vec{B}$};
+
+        \draw[->, red] (-4.6, 0) -- ++(0, -1) node[anchor=north] {$\vec{E}$};
+
+        \draw[->, gray, yscale=\i] (-4.6, 0) -- ++(1, 0) node[anchor=south] {$\nabla{B}$};
+       \end{scope}
+    \end{scope}
+
+
+    \foreach \a in {10,25,...,180} {
+            \node[xshift={\i*2.5cm}, font=\tiny, anchor={180+\a}, inner sep=1pt, text=red] at (\a:1) {$-$};
+            \node[xshift={\i*2.5cm}, font=\tiny, anchor={180-\a}, inner sep=1pt, text=blue] at (-\a:1) {$+$};
+            }
+        }
+\end{tikzpicture}

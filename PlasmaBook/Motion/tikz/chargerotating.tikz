@@ -1,0 +1,36 @@
+    \begin{tikzpicture}
+        \draw [blue, domain=0:2*pi,variable=\t, samples=55,
+        thick,
+        decoration={
+            markings,
+            mark=at position 0.5 with {\arrow[xshift=0pt]{latex}},
+            },
+            postaction={decorate}
+            ]
+            plot[] ({sin(\t r)}, {cos(\t r)});
+            \coordinate (start) at ({sin(0.5*pi r)}, {cos(0.5*pi r)});
+            \node[circle, ball color=blue, inner sep=0, text=white] at (start) {$+$};
+
+            \begin{scope}[shift={(2,0)}]
+            \draw [red,
+            thick,
+            domain=0:2*pi,variable=\t, samples=55,
+            decoration={
+            markings,
+            mark=at position 1 with {\arrow[xshift=2pt, scale=0.75]{latex}},
+            },
+            postaction={decorate}
+            ]
+            plot[] ({-0.5*sin(\t r)}, {0.5*cos(\t r)});
+            \coordinate (start) at ({-0.5*sin(0.5*pi r)}, {0.5*cos(0.5*pi r)});
+            \node[circle, ball color=red, inner sep=0.5pt, text=white, font=\tiny] at (start) {\tikz\draw (0,0) -- ++(0.1, 0);};
+            \end{scope}
+
+            \coordinate(A) at (1,1);
+            \draw[<->, gray] (0,0) -- (A) node[right, font=\scriptsize, text=gray] {Ведучий центр} -- (2,0) ;
+
+            \begin{scope}[blue, shift={(1,1.5)}]
+            \fill (0,0) circle (0.05);
+            \draw (0,0) circle (0.1) node[right] {$\vec{B}$};
+            \end{scope}
+    \end{tikzpicture}

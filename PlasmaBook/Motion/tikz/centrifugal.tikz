@@ -1,0 +1,7 @@
+\begin{tikzpicture}[]
+    \draw[->] (0,0) -- node[right] {$\vec{r}$} (80:1);
+    \foreach \radius in {1,1.5,1.8,2} {
+    \draw[-latex, blue] (45:\radius) arc[start angle=45, delta angle = 90, radius=\radius];
+    }
+    \draw[red, decoration={coil,amplitude=1mm,segment length=1.5mm}, decorate] (55:1.5) arc[start angle=55, delta angle = {2*(90-55)}, radius=1.5];
+\end{tikzpicture}
