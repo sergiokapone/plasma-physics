@@ -1,0 +1,27 @@
+\begin{tikzpicture}[>=latex', font=\footnotesize]
+	% (а) до перез'єднання
+	\begin{scope}
+		\fill[red!15] (-2.2,-0.12) rectangle (2.2,0.12);
+		\foreach \y in {0.5,1.1} {\draw[blue!70!black, thick, ->] (-2.2,\y) -- (2.2,\y);}
+		\foreach \y in {-0.5,-1.1} {\draw[blue!70!black, thick, ->] (2.2,\y) -- (-2.2,\y);}
+		\draw[very thick, ->] (0,1.9) -- (0,1.45);
+		\draw[very thick, ->] (0,-1.9) -- (0,-1.45);
+		\node at (1.35,0) {струм};
+		\node at (0,-2.3) {(а)};
+	\end{scope}
+	% (б) після перез'єднання
+	\begin{scope}[xshift=6cm]
+		\draw[blue!70!black, thick, postaction={decorate}, decoration={markings, mark=at position 0.25 with {\arrow{latex}}, mark=at position 0.75 with {\arrow{latex}}}]
+			(-2.2,0.9) .. controls (-0.2,0.9) and (-0.2,-0.9) .. (-2.2,-0.9);
+		\draw[blue!70!black, thick, postaction={decorate}, decoration={markings, mark=at position 0.25 with {\arrow{latex}}, mark=at position 0.75 with {\arrow{latex}}}]
+			(2.2,-0.9) .. controls (0.2,-0.9) and (0.2,0.9) .. (2.2,0.9);
+		\draw[blue!70!black, thick] (-2.2,1.5) -- (2.2,1.5);
+		\draw[blue!70!black, thick] (-2.2,-1.5) -- (2.2,-1.5);
+		\draw[very thick, ->] (0,1.9) -- (0,1.0);
+		\draw[very thick, ->] (0,-1.9) -- (0,-1.0);
+		\draw[very thick, red!70!black, ->] (0.35,0) -- (1.5,0);
+		\draw[very thick, red!70!black, ->] (-0.35,0) -- (-1.5,0);
+		\node at (0,0.25) {X};
+		\node at (0,-2.3) {(б)};
+	\end{scope}
+\end{tikzpicture}
