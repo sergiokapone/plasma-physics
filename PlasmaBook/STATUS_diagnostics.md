@@ -8,7 +8,7 @@
 - [x] **Розд. 7 Kinetics — томсонівське розсіяння готово** (не закомічено; 167 с., +2 с.). Мітки: `sec:thomson`, `eq:scattering-parameter`, `eq:thomson-width`, `pic:thomson`, `prb:ThomsonTe`, `prb:ThomsonCollective`. TikZ: `Kinetics/tikz/thomson_incoherent.tikz`, `thomson_collective.tikz`. Секція стоїть після «Коли потрібен кінетичний опис?», перед Summary.
 - [x] **Розд. 5 Fluid — магнітні виміри готово** (не закомічено; 169 с. загалом). Мітки: `sec:magnetic-diagnostics`, `eq:rogowski`, `eq:diamagnetic-loop`, `pic:magnetic-diagnostics`, `prb:DiamagneticLoop`, `prb:Rogowski`. TikZ: `Fluid/tikz/magnetic-loops.tikz`, `diamagnetic-profile.tikz`. Секція стоїть наприкінці теорії, перед Summary.
 - [x] **Розд. 1 Basics — подвійний зонд готово** (не закомічено; 171 с.). Мітки: `eq:double-probe`, `prb:DoubleProbe`. Вставка `\subsection*{Подвійний зонд і межі застосовності}` у розділі про зонд Ленгмюра. Не перевірено, чи нові Overfull у `main.log` належать саме Basics, а не іншим розділам.
-- [ ] Розд. 2 Motion — аналізатор енергій, ЕЦЕ (коротка вставка)
+- [x] **Розд. 2 Motion — аналізатор енергій і ЕЦЕ готово** (не закомічено; 172 с.). Мітки: `sec:motion-diagnostics`, `eq:ece-frequency`, `prb:ECERadius`, `prb:RetardingAnalyzer`.
 - [ ] Розд. 3 Collisions — допплерівське/штарківське розширення, T_e зі спітцерівського опору (коротка вставка)
 - [x] **Розд. 6 LinearWaves — обертання Фарадея готово** (не закомічено; 170 с.). Мітки: `sec:faraday-diagnostics`, `eq:faraday-rotation`; задача `prb:FaradayRotation` уже була.
 - [ ] Розд. 8 Instability — котушки Мірнова, м'який рентген (коротка вставка)
