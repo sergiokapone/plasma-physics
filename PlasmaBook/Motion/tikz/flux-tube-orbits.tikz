@@ -1,0 +1,18 @@
+% Збереження магнітного потоку крізь орбіту: у сильнішому полі ларморівське кільце менше.
+\begin{tikzpicture}[>=latex', scale=1.4]
+	\draw[red, ->, domain=1:4] plot({\x}, {1.5/\x});
+	\draw[red, ->] (0.8,0) -- (4,0) node[anchor=west, text=black] {$\vect B$};
+	\draw[red, ->, domain=1:4] plot({\x}, {-1.5/\x});
+	\foreach \xc in {1.5, 3} {
+		\draw[blue!55, ultra thick] (\xc,0) [partial ellipse=-90:90:{0.5/\xc} and {1/\xc}];
+		\draw[->, green!60!black, thick] (\xc,0) -- ++(0.6,0);
+		\draw[blue!60, ultra thick,
+			decoration={markings,
+				mark=at position 0.7 with {\arrow[xshift=2pt, scale=0.7]{>}},
+				mark=at position 0.3 with {\node[circle, ball color=blue!60, text=white, inner sep=0, font=\tiny] {$+$};}},
+			postaction={decorate}] (\xc,0) [partial ellipse=-45:-315:{0.5/\xc} and {1/\xc}];
+	}
+	\node[inner sep=1pt, anchor=south, font=\footnotesize] at (2.1,0) {$\vect v_\parallel$};
+	\node[font=\footnotesize, anchor=north] at (1.1,-1.5) {$B$ слабше};
+	\node[font=\footnotesize, anchor=north] at (3.7,-1.5) {$B$ сильніше};
+\end{tikzpicture}

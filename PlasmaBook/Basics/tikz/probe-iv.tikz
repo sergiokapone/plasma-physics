@@ -5,14 +5,17 @@
 		xlabel={$V$}, ylabel={$I$},
 		every axis x label/.style={at={(current axis.right of origin)},anchor=west},
 		every axis y label/.style={at={(current axis.north west)},above=2mm},
-		xtick={2.2,4}, xticklabels={$V_f$,$V_p$}, ytick={-1,5}, yticklabels={$-I_{is}$,$I_{es}$},
+		xtick={2.2,4}, xticklabels={$V_f$,$V_p$}, ytick={5}, yticklabels={$I_{es}$},
+		xticklabel style={anchor=north west, inner sep=2pt},
+		label style={font=\small}, ticklabel style={font=\small},
 		clip=false]
 		\addplot[very thick, blue!70!black, domain=-3:4, samples=80] {-1+6*exp(x-4)};
 		\addplot[very thick, blue!70!black, domain=4:7.3] {5+0.15*(x-4)};
 		\draw[dashed] (axis cs:-3,-1) -- (axis cs:7.3,-1);
 		\draw[dashed] (axis cs:4,0) -- (axis cs:4,5);
-		\node[font=\scriptsize, align=center] at (axis cs:-1.4,-1.55) {іонне насичення};
-		\node[font=\scriptsize, align=center] at (axis cs:0.6,3.4) {гальмівна\\область};
-		\node[font=\scriptsize, align=center] at (axis cs:6,3.2) {електронне\\насичення};
+		\node[font=\small, anchor=east] at (axis cs:-3,-1) {$-I_{is}$};
+		\node[font=\footnotesize, align=center] at (axis cs:-1.5,-0.5) {іонне насичення};
+		\node[font=\footnotesize, align=center] at (axis cs:0.6,3.4) {гальмівна\\область};
+		\node[font=\footnotesize, align=center] at (axis cs:6,3.2) {електронне\\насичення};
 	\end{axis}
 \end{tikzpicture}

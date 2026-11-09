@@ -4,7 +4,7 @@
 	\draw[->] (0,-3.6) -- (0,0.6) node[above] {$\varphi$};
 	% стінка
 	\fill[pattern=north east lines, pattern color=gray] (5.9,-3.6) rectangle (6.5,0.6);
-	\draw[thick] (5.9,-3.6) -- (5.9,0.6) node[above] {стінка};
+	\draw[thick] (5.9,-3.6) -- (5.9,0.6) node[above, font=\footnotesize] {стінка};
 	% потенціал
 	\draw[very thick, blue!70!black] plot[smooth] coordinates
 		{(0,0) (1,-0.04) (2,-0.16) (3,-0.5) (3.7,-0.62) (4.4,-1.1) (5.2,-2.2) (5.9,-3.3)};
@@ -12,7 +12,7 @@
 	\draw[dashed] (3.7,-3.6) -- (3.7,0.4);
 	\node[font=\footnotesize] at (1.4,0.35) {плазма};
 	\node[font=\footnotesize, align=center] at (1.9,-1.9) {передшар\\(квазінейтральний)};
-	\node[font=\footnotesize, align=center] at (4.7,0.45) {шар: $n_i>n_e$};
+	\node[font=\footnotesize, align=center] at (4.75,-0.45) {шар:\\ $n_i>n_e$};
 	\node[font=\footnotesize] at (3.7,-3.85) {межа шару};
 	% рівень kT/2e
 	\draw[dotted] (0,-0.5) -- (3,-0.5);

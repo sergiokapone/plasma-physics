@@ -1,18 +1,16 @@
-\begin{tikzpicture}[>=latex']
+\begin{tikzpicture}[>=latex', scale=1.25]
 	% прямі лінії та викривлена лінія в центрі
 	\foreach \x in {0,0.7,1.4,3.5,4.2,4.9} {
 		\draw[blue!45, thick] (\x,0) -- (\x,3);
 	}
 	\draw[blue!80!black, very thick, domain=0:3, samples=60, variable=\t] plot ({2.45+0.55*sin(\t*120)},{\t});
-	\draw[blue!45, thick] (2.1,0) -- (2.1,0);
-	% магнітний тиск (згущення з боків)
-	\draw[->, thick, red!70!black] (1.45,1.5) -- (1.95,1.5);
-	\draw[->, thick, red!70!black] (3.45,1.5) -- (2.95,1.5);
-	\node[font=\scriptsize, red!70!black] at (1.0,1.8) {тиск};
-	\node[font=\scriptsize, red!70!black] at (3.85,1.8) {тиск};
-	% натяг
-	\draw[->, thick, green!50!black] (3.0,0.75) -- (2.65,0.75);
-	\draw[->, thick, green!50!black] (3.0,2.25) -- (2.65,2.25);
-	\node[font=\scriptsize, green!50!black, anchor=west] at (3.05,2.5) {натяг};
-	\node[font=\scriptsize] at (2.45,-0.35) {$B^2/8\pi$ --- тиск,\ \ $B^2/4\pi R_c$ --- натяг};
+	% магнітний тиск: згущені лінії з боку опуклості штовхають її назад
+	\draw[->, thick, red!70!black] (3.45,0.75) -- (3.08,0.75);
+	\draw[->, thick, red!70!black] (1.45,2.25) -- (1.82,2.25);
+	% натяг: викривлена лінія прагне випрямитися
+	\draw[->, thick, green!50!black] (3.0,0.75) -- (2.55,0.75);
+	\draw[->, thick, green!50!black] (1.9,2.25) -- (2.35,2.25);
+	% легенда
+	\draw[->, thick, red!70!black] (0.2,-0.4) -- (0.6,-0.4) node[right, font=\footnotesize, black] {тиск $B^2/8\pi$};
+	\draw[->, thick, green!50!black] (2.7,-0.4) -- (3.1,-0.4) node[right, font=\footnotesize, black] {натяг $B^2/4\pi R_c$};
 \end{tikzpicture}

@@ -1,16 +1,16 @@
 \begin{tikzpicture}[>=latex']
 	% важка рідина зверху, легка знизу; g напрямлена вниз
-	\fill[blue!25] (0,1.1) -- plot[domain=0:6, samples=100, variable=\t] ({\t},{0.45*cos(\t*120)}) -- (6,1.1) -- cycle;
-	\fill[orange!20] (0,-1.1) -- plot[domain=0:6, samples=100, variable=\t] ({\t},{0.45*cos(\t*120)}) -- (6,-1.1) -- cycle;
+	\fill[blue!25] (0,1.4) -- plot[domain=0:6, samples=100, variable=\t] ({\t},{0.45*cos(\t*120)}) -- (6,1.4) -- cycle;
+	\fill[orange!20] (0,-1.4) -- plot[domain=0:6, samples=100, variable=\t] ({\t},{0.45*cos(\t*120)}) -- (6,-1.4) -- cycle;
 	\draw[very thick] plot[domain=0:6, samples=100, variable=\t] ({\t},{0.45*cos(\t*120)});
-	\draw (0,-1.1) rectangle (6,1.1);
+	\draw (0,-1.4) rectangle (6,1.4);
 	\node[font=\footnotesize] at (1.5,0.85) {важча ($\rho_2$)};
-	\node[font=\footnotesize] at (4.5,-0.85) {легша ($\rho_1$)};
+	\node[font=\footnotesize] at (4.5,-0.95) {легша ($\rho_1$)};
 	% струмені
-	\draw[->, thick, blue!70!black] (1.5,-0.35) -- (1.5,-0.9);
-	\node[font=\scriptsize, blue!70!black, anchor=west] at (1.55,-0.62) {«язик»};
-	\draw[->, thick, orange!80!black] (3.0,0.35) -- (3.0,0.9);
-	\node[font=\scriptsize, orange!80!black, anchor=west] at (3.05,0.62) {«бульбашка»};
+	\draw[->, thick, blue!70!black] (1.5,-0.35) -- (1.5,-1.0);
+	\node[font=\footnotesize, blue!70!black, anchor=west] at (1.55,-0.72) {«язик»};
+	\draw[->, thick, orange!80!black] (3.0,0.35) -- (3.0,1.0);
+	\node[font=\footnotesize, orange!80!black, anchor=west] at (3.05,0.72) {«бульбашка»};
 	% g
-	\draw[->, ultra thick] (6.5,0.8) -- (6.5,-0.3) node[midway, right, font=\scriptsize] {$\vect g$};
+	\draw[->, ultra thick] (6.5,0.8) -- (6.5,-0.3) node[midway, right, font=\footnotesize] {$\vect g$};
 \end{tikzpicture}

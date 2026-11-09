@@ -20,9 +20,9 @@
 		% light line
 		\addplot[dashed, gray, domain=0:3.2] ({x},{x});
 		\draw[dotted] (axis cs:0,1) -- (axis cs:4.5,1);
-		\node[font=\scriptsize, red!70!black, anchor=west] at (axis cs:1.5,0.55) {R: вістлер};
-		\node[font=\scriptsize, red!70!black, anchor=west] at (axis cs:1.0,2.5) {R};
-		\node[font=\scriptsize, blue!70!black, anchor=west] at (axis cs:1.5,1.2) {L};
-		\node[font=\scriptsize, gray, anchor=west] at (axis cs:3.3,3.0) {$\omega=kc$};
+		\node[font=\footnotesize, red!70!black, anchor=west] at (axis cs:1.5,0.55) {R: вістлер};
+		\node[font=\footnotesize, red!70!black, anchor=east] at (axis cs:1.85,2.45) {R};
+		\node[font=\footnotesize, blue!70!black, anchor=west] at (axis cs:1.35,1.1) {L};
+		\node[font=\footnotesize, gray, anchor=west] at (axis cs:3.05,2.8) {$\omega=kc$};
 	\end{axis}
 \end{tikzpicture}

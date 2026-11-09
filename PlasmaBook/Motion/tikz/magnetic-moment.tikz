@@ -1,0 +1,34 @@
+% Магнітний момент ларморівського кільця: іон (ліворуч) і електрон (праворуч).
+% Обидва моменти \vect\mu напрямлені проти \vect B; \vect\Omega=-q\vect B/(mc).
+\tdplotsetmaincoords{60}{0}
+\begin{tikzpicture}[>=latex, tdplot_main_coords, scale=1.4]
+	\tdplotsetrotatedcoords{0}{20}{0}
+	\begin{scope}[tdplot_rotated_coords]
+		% -------------- іон -----------------
+		\draw[->, gray, thick] (0,0,0) -- (0,0,1.5) node[anchor=south] {$\vect B$};
+		\draw[->, orange, thick] (0,0,0) -- (0,0,-2) node[anchor=east] {$\vect\mu$};
+		\draw[->, blue, thick] (0,0,0) -- (0,0,-1.3) node[anchor=west] {$\vect\Omega$};
+		\draw[canvas is xy plane at z=0, draw=blue, thick,
+			decoration={markings, mark=at position 0.75 with {\arrow[rotate=180, xshift=2pt]{latex}}},
+			postaction=decorate] (0,0) ++(90:1) arc [start angle=90, delta angle=335, radius=1];
+		\begin{scope}[canvas is xy plane at z=0]
+			\node[circle, fill=blue, inner sep=1pt] at (0,0) {};
+			\node[transform shape=false, ball color=blue, circle, inner sep=0, text=white, font=\footnotesize] at (45:1) {$+$};
+		\end{scope}
+		\node[transform shape=false] at (0,0,-2.6) {іон};
+		% -------------- електрон -----------------
+		\begin{scope}[xshift=3cm]
+			\draw[->, gray, thick] (0,0,0) -- (0,0,1.5) node[anchor=south] {$\vect B$};
+			\draw[->, red, thick] (0,0,0) -- (0,0,1.2) node[anchor=north west] {$\vect\Omega$};
+			\draw[->, orange, thick] (0,0,0) -- (0,0,-2) node[anchor=east] {$\vect\mu$};
+			\draw[canvas is xy plane at z=0, draw=red, thick,
+				decoration={markings, mark=at position 0.2 with {\arrow[xshift=2pt]{latex}}},
+				postaction=decorate] (0,0) ++(90:1) arc [start angle=90, delta angle=335, radius=1];
+			\begin{scope}[canvas is xy plane at z=0]
+				\node[circle, fill=red, inner sep=1pt] at (0,0) {};
+				\node[transform shape=false, ball color=red, circle, inner sep=0, text=white, font=\footnotesize] at (105:1) {$-$};
+			\end{scope}
+			\node[transform shape=false] at (0,0,-2.6) {електрон};
+		\end{scope}
+	\end{scope}
+\end{tikzpicture}

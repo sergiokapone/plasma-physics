@@ -6,17 +6,15 @@
 		every axis x label/.style={at={(current axis.right of origin)},anchor=west},
 		every axis y label/.style={at={(current axis.north west)},above=2mm},
 		xtick=\empty, ytick=\empty, clip=true]
+		% смуга нестійкості (gamma > 0 при k1<k<k2), решта -- затухання
+		\addplot[draw=none, fill=red!12, domain=0.734:2.466, samples=60] {1.0*(1-((x-1.6)/1.0)^2)-0.25} \closedcycle;
 		% дійсна частина
 		\addplot[very thick, blue!70!black, domain=0:3.2, samples=80] {0.8*x};
-		% нестійкість: gamma > 0 у смузі k1<k<k2 ; решта -- затухання
 		\addplot[very thick, red!70!black, domain=0:3.2, samples=100] {1.0*(1-((x-1.6)/1.0)^2)-0.25};
 		\addplot[dashed, gray, domain=0:3.2] {0};
-		\node[font=\scriptsize, blue!70!black, anchor=west] at (axis cs:2.2,2.1) {$\omega_r(k)$ (хвиля)};
-		\node[font=\scriptsize, red!70!black, anchor=west] at (axis cs:1.0,1.0) {нестійка мода};
-		\node[font=\scriptsize, red!70!black, anchor=west] at (axis cs:0.05,-0.85) {$\gamma<0$: затухаюча};
-		\node[font=\scriptsize, red!70!black, anchor=west] at (axis cs:2.25,0.25) {$\gamma(k)>0$};
-		% смуга нестійкості
-		\draw[dotted] (axis cs:0.734,0) -- (axis cs:0.734,0.9);
-		\draw[dotted] (axis cs:2.466,0) -- (axis cs:2.466,0.9);
+		\node[font=\footnotesize, blue!70!black, anchor=north west] at (axis cs:2.15,1.6) {$\omega_r(k)$ (хвиля)};
+		\node[font=\footnotesize, red!70!black] at (axis cs:1.6,0.33) {$\gamma>0$: нестійка};
+		\node[font=\footnotesize, red!70!black, anchor=west] at (axis cs:0.9,-0.85) {$\gamma<0$: затухаюча};
+		\node[font=\footnotesize, red!70!black, anchor=west] at (axis cs:2.62,0.55) {$\gamma(k)$};
 	\end{axis}
 \end{tikzpicture}

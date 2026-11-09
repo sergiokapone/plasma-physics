@@ -12,9 +12,9 @@
     \draw[red!70!black, very thick, domain=-3:-1.4, samples=60, smooth]
         plot (\x, {0.3*exp(-(\x+2.2)*(\x+2.2)/0.15)});
     % підписи
-    \node[blue!70!black] at (0,2.0) {іонна компонента};
-    \node[red!70!black, align=center, font=\scriptsize] at (2.2,0.75) {електронний\\сателіт};
-    \node[red!70!black, align=center, font=\scriptsize] at (-2.2,0.75) {електронний\\сателіт};
+    \node[blue!70!black, anchor=west] at (0.55,1.3) {іонна компонента};
+    \node[red!70!black, align=center, font=\footnotesize] at (2.2,0.75) {електронний\\сателіт};
+    \node[red!70!black, align=center, font=\footnotesize] at (-2.2,0.75) {електронний\\сателіт};
     % позначки на осі
     \draw (2.2,0.05) -- (2.2,-0.05) node[below] {$\omega_{\mathrm{БГ}}$};
     \draw (-2.2,0.05) -- (-2.2,-0.05) node[below] {$-\omega_{\mathrm{БГ}}$};

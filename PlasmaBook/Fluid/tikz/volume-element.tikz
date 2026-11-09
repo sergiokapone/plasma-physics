@@ -60,8 +60,7 @@
     \begin{scope}[on background layer]
         % Вектори сил тиску (червоні стрілки на грані)
         % Грань x = 0 (напрямок +x)
-        \draw[red!75!black, ultra thick, ->] (-1.1, \dy/2, \dz/2) -- (Cx1)
-        node[pos=0, above right, font=\small, inner sep=1pt] {$p\,dy\,dz$};
+        \draw[red!75!black, ultra thick, ->] (-1.1, \dy/2, \dz/2) -- (Cx1);
 
         % Грань y = 0 (напрямок +y)
         \draw[red!75!black, ultra thick, ->] (\dx/2, -1.1, \dz/2) -- (Cy1)
@@ -71,6 +70,7 @@
         \draw[red!75!black, ultra thick, ->] (\dx/2, \dy/2, -0.9) -- (Cz1)
         node[pos=0, below, font=\small, inner sep=2pt] {$p\,dx\,dy$};
     \end{scope}
+    \node[above right, font=\small, text=red!75!black, inner sep=1pt] at (-1.1, \dy/2, \dz/2) {$p\,dy\,dz$};
 
     % Грань x = dx (напрямок -x)
     \draw[red!75!black, ultra thick, ->] (\dx+1.1, \dy/2, \dz/2) -- (Cx2)
