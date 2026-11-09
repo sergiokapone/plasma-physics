@@ -4,29 +4,29 @@
 		xlabel={$n$, $\mathrm{см}^{-3}$}, ylabel={$T$, еВ},
 		xmin=1e-1, xmax=1e29, ymin=1e-2, ymax=1e7,
 		width=0.95\linewidth, height=0.72\linewidth,
-		label style={font=\scriptsize}, ticklabel style={font=\scriptsize},
+		label style={font=\small}, ticklabel style={font=\footnotesize},
 		grid=major, grid style={gray!20}]
 		% T = E_F (виродження)
 		\addplot[red!70!black, very thick, domain=1e-1:1e29, samples=2] {3.65e-15*x^(2/3)};
-		\node[red!70!black, font=\scriptsize, sloped, fill=white, inner sep=1pt] at (axis cs:1e25,3e3) {$T=E_F$};
+		\node[red!70!black, font=\footnotesize, fill=white, inner sep=1pt] at (axis cs:2e26,1.2e4) {$T=E_F$};
 		% N_D = 1
 		\addplot[blue!70!black, very thick, domain=1e-1:1e29, samples=2] {6.95e-7*x^(1/3)};
-		\node[blue!70!black, font=\scriptsize, sloped, fill=white, inner sep=1pt] at (axis cs:1e12,2e-1) {$N_D=1$ (слабо/сильнозв'язана)};
+		\node[blue!70!black, font=\footnotesize, fill=white, inner sep=1pt] at (axis cs:1e12,2e-1) {$N_D=1$ (слабо/сильнозв'язана)};
 		% T = m c^2 (релятивізм)
 		\draw[green!50!black, very thick] (axis cs:1e-1,5.11e5) -- (axis cs:1e29,5.11e5);
-		\node[green!50!black, font=\scriptsize, fill=white, inner sep=1pt] at (axis cs:1e6,1.6e6) {$T=m_ec^2$};
-		\node[gray, font=\scriptsize\itshape, align=center] at (axis cs:1e6,1.5e3) {класична\\ ідеальна плазма};
-		\node[gray, font=\scriptsize\itshape, align=center] at (axis cs:1e22,1e-1) {сильнозв'язана\\ плазма};
-		\node[gray, font=\scriptsize\itshape, align=center] at (axis cs:1e23,1e5) {релятивістська};
+		\node[green!50!black, font=\footnotesize, fill=white, inner sep=1pt] at (axis cs:1e6,1.6e6) {$T=m_ec^2$};
+		\node[gray, font=\footnotesize\itshape, align=center] at (axis cs:1e6,1.5e3) {класична\\ ідеальна плазма};
+		\node[gray, font=\footnotesize\itshape, align=center] at (axis cs:3e25,6e-2) {сильнозв'язана\\ плазма};
+		\node[gray, font=\footnotesize\itshape, align=center] at (axis cs:1e23,1e5) {релятивістська};
 		\addplot[only marks, mark=*, mark size=1.6pt, black] coordinates {
 			(1e5,0.1) (10,1) (1e8,100) (1e26,1e3) (1e14,1e4) (10,10) (1e12,3) (1e23,5)};
-		\node[font=\tiny, anchor=north west] at (axis cs:1e5,0.1) {іоносфера};
-		\node[font=\tiny, anchor=north west] at (axis cs:10,1) {міжзоряний газ};
-		\node[font=\tiny, anchor=south west] at (axis cs:10,10) {сонячний вітер};
-		\node[font=\tiny, anchor=north west] at (axis cs:1e8,100) {корона};
-		\node[font=\tiny, anchor=south east] at (axis cs:1e12,3) {розряд};
-		\node[font=\tiny, anchor=south] at (axis cs:1e14,1.5e4) {токамак};
-		\node[font=\tiny, anchor=north east] at (axis cs:1e26,1e3) {ядро Сонця};
-		\node[font=\tiny, anchor=north east] at (axis cs:1e23,5) {метал};
+		\node[font=\scriptsize, anchor=north west] at (axis cs:1e5,0.1) {іоносфера};
+		\node[font=\scriptsize, anchor=north west] at (axis cs:10,1) {міжзоряний газ};
+		\node[font=\scriptsize, anchor=south west] at (axis cs:10,10) {сонячний вітер};
+		\node[font=\scriptsize, anchor=north west] at (axis cs:1e8,100) {корона};
+		\node[font=\scriptsize, anchor=south east] at (axis cs:1e12,3) {розряд};
+		\node[font=\scriptsize, anchor=south] at (axis cs:1e14,1.5e4) {токамак};
+		\node[font=\scriptsize, anchor=south east] at (axis cs:1e26,1e3) {ядро Сонця};
+		\node[font=\scriptsize, anchor=west] at (axis cs:1e23,5) {метал};
 	\end{axis}
 \end{tikzpicture}

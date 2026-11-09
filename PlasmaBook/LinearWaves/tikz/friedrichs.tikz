@@ -1,7 +1,7 @@
 \begin{tikzpicture}[>=latex', scale=1.5]
 	% c_s = 1, v_A = 1.5  =>  v_A^2 + c_s^2 = 3.25, 4 v_A^2 c_s^2 = 9
-	\draw[->] (-2.1,0) -- (2.1,0) node[right, font=\scriptsize] {$\perp\vect B_0$};
-	\draw[->] (0,-2.1) -- (0,2.2) node[above, font=\scriptsize] {$\vect B_0$};
+	\draw[->] (-2.1,0) -- (2.1,0) node[right, font=\footnotesize] {$\perp\vect B_0$};
+	\draw[->] (0,-2.1) -- (0,2.2) node[above, font=\footnotesize] {$\vect B_0$};
 	% швидка мода
 	\draw[very thick, red!70!black, domain=0:360, samples=180, variable=\t]
 		plot ({sqrt(0.5*(3.25+sqrt(10.5625-9*cos(\t)^2)))*sin(\t)},
@@ -13,11 +13,11 @@
 	% альвенівська мода  v = v_A |cos(theta)|
 	\draw[very thick, blue!70!black, domain=0:360, samples=180, variable=\t]
 		plot ({1.5*abs(cos(\t))*sin(\t)},{1.5*abs(cos(\t))*cos(\t)});
-	% позначення
-	\node[red!70!black, font=\scriptsize, anchor=west] at (1.55,1.25) {швидка};
-	\node[green!50!black, font=\scriptsize, anchor=west] at (0.55,0.62) {повільна};
-	\node[blue!70!black, font=\scriptsize, anchor=east] at (-0.55,1.15) {альвенівська};
+	% позначення (винесені назовні з виносками)
+	\draw[thin, red!70!black] (1.31,1.10) -- (1.65,1.65) node[anchor=south west, inner sep=1pt, font=\footnotesize] {швидка};
+	\draw[thin, blue!70!black] (-0.74,0.88) -- (-1.45,1.85) node[anchor=south east, inner sep=1pt, font=\footnotesize] {альвенівська};
+	\draw[thin, green!50!black] (0.40,-0.70) -- (1.35,-1.85) node[anchor=north west, inner sep=1pt, font=\footnotesize] {повільна};
 	% кут
 	\draw[dashed] (0,0) -- (35:2.0) ;
-	\draw (0,0.6) arc[start angle=90, end angle=55, radius=0.6] node[midway, above, font=\scriptsize] {$\theta$};
+	\draw (0,0.6) arc[start angle=90, end angle=55, radius=0.6] node[midway, above, font=\footnotesize] {$\theta$};
 \end{tikzpicture}

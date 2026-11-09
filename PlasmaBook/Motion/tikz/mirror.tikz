@@ -1,5 +1,5 @@
 \begin{tikzpicture}[>=latex',
-	scale=1.25,
+	scale=1.6,
     declare function={
     w=3;
     v=0.5;
@@ -30,11 +30,11 @@
 
 
     \begin{scope}[shift={(-1.6,0)}]
-    \draw[->] (0,0) -- ++(0, 0.5) node[left, font=\scriptsize, fill=white, inner sep=1pt] {$\vec{v}_\perp$};
-    \draw[->] (0,0) -- ++(1, 0) node[right, font=\scriptsize, fill=white, inner sep=1pt] {$\vec{v}_\parallel$};;
-    \draw[->] (0,0) -- ++(1, 0.5) node[above, font=\scriptsize, fill=white, inner sep=1pt] {$\vec{v}$};;
+    \draw[->] (0,0) -- ++(0, 0.5) node[left, font=\footnotesize, fill=white, inner sep=1pt] {$\vec{v}_\perp$};
+    \draw[->] (0,0) -- ++(1, 0) node[right, font=\footnotesize, fill=white, inner sep=1pt] {$\vec{v}_\parallel$};
+    \draw[->] (0,0) -- ++(1, 0.5) node[above, font=\footnotesize, fill=white, inner sep=1pt] {$\vec{v}$};
     \draw[densely dashed] (0,0.5) -- ++(1,0) -- ++(0,-0.5);
-    \draw[] (0,0) ++(0.5, 0) arc[start angle=0, delta angle=atan(0.5), radius=0.5] node[pos=0, inner sep=1pt, anchor=north west, font=\scriptsize] {$\theta_{\min}$};
+    \draw[] (0,0) ++(0.5, 0) arc[start angle=0, delta angle=atan(0.5), radius=0.5] node[pos=0, inner sep=1pt, anchor=north west, font=\footnotesize] {$\theta_{\min}$};
 
     \end{scope}
 

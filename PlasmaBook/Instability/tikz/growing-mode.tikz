@@ -1,12 +1,15 @@
 \begin{tikzpicture}[>=latex']
-	\draw[->] (-0.2,0) -- (6.9,0) node[right, font=\scriptsize] {$x$};
+	\draw[->] (-0.2,0) -- (7.5,0) node[right, font=\footnotesize] {$x$};
 	% три послідовні моменти: амплітуда зростає, довжина хвилі та сама
-	\draw[thick, blue!30, domain=0:6.5, samples=100, smooth] plot (\x,{0.35*sin(deg(2.0*\x))});
-	\draw[thick, blue!55, domain=0:6.5, samples=100, smooth] plot (\x,{0.8*sin(deg(2.0*\x))});
-	\draw[very thick, blue!85!black, domain=0:6.5, samples=100, smooth] plot (\x,{1.5*sin(deg(2.0*\x))});
-	\node[font=\scriptsize, blue!50, anchor=west] at (6.6,0.35) {$t_1$};
-	\node[font=\scriptsize, blue!70, anchor=west] at (6.6,0.8) {$t_2$};
-	\node[font=\scriptsize, blue!85!black, anchor=west] at (6.6,1.5) {$t_3>t_2>t_1$};
-	\draw[<->] (0.78,-1.75) -- (2.35,-1.75) node[midway, below, font=\scriptsize] {$\lambda=2\pi/k$};
-	\draw[<-> , dashed] (7.9,0) -- (7.9,1.5) node[midway, right, font=\scriptsize] {$\propto e^{\gamma t}$};
+	\draw[thick, blue!30, domain=0:7.07, samples=120, smooth] plot (\x,{0.35*sin(deg(2.0*\x))});
+	\draw[thick, blue!55, domain=0:7.07, samples=120, smooth] plot (\x,{0.8*sin(deg(2.0*\x))});
+	\draw[very thick, blue!85!black, domain=0:7.07, samples=120, smooth] plot (\x,{1.5*sin(deg(2.0*\x))});
+	\node[font=\footnotesize, blue!50, anchor=west] at (7.15,0.35) {$t_1$};
+	\node[font=\footnotesize, blue!70, anchor=west] at (7.15,0.8) {$t_2$};
+	\node[font=\footnotesize, blue!85!black, anchor=west] at (7.15,1.5) {$t_3$};
+	\node[font=\footnotesize, anchor=west] at (7.15,-0.6) {$t_1<t_2<t_3$};
+	\draw[dotted] (0.785,1.5) -- (0.785,-1.85);
+	\draw[dotted] (3.927,1.5) -- (3.927,-1.85);
+	\draw[<->] (0.785,-1.75) -- (3.927,-1.75) node[midway, below, font=\footnotesize] {$\lambda=2\pi/k$};
+	\draw[<->, dashed] (8.3,0) -- (8.3,1.5) node[midway, right, font=\footnotesize] {$\propto e^{\gamma t}$};
 \end{tikzpicture}

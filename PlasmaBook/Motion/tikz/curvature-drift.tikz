@@ -16,8 +16,8 @@
 	% B
 	\draw[->, blue!70!black, thick] (0,2.4) -- (1.1,2.4) node[right] {$\vect B$};
 	% дрейф: з площини / у площину
-	\node[draw, circle, inner sep=1pt, font=\scriptsize] (ion) at (-1.7,2.4) {$\times$};
-	\node[left=2pt of ion, font=\scriptsize] {$\vect v_R$ (іони)};
-	\node[draw, circle, inner sep=0.8pt, font=\scriptsize] (el) at (-1.7,1.5) {$\cdot$};
-	\node[left=2pt of el, font=\scriptsize] {$\vect v_R$ (електрони)};
+	\node[draw, circle, inner sep=1pt, font=\footnotesize] (ion) at (-3.0,3.0) {$\times$};
+	\node[left=2pt of ion, font=\footnotesize] {$\vect v_R$ (іони)};
+	\node[draw, circle, inner sep=0.8pt, font=\footnotesize] (el) at (-3.0,2.4) {$\cdot$};
+	\node[left=2pt of el, font=\footnotesize] {$\vect v_R$ (електрони)};
 \end{tikzpicture}

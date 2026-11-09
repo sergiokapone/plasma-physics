@@ -8,13 +8,13 @@
 	\node[bxg, minimum width=1.8cm] (el) at (12.1,0) {електрика};
 	\node[bx, minimum width=3.6cm] (aux) at (6.1,-2.3) {нагрів плазми, магніти,\\кріогеніка, насоси};
 	% нейтрон -> бланкет
-	\draw[->, thick, orange!80!black] (pl) -- (bl) node[midway, above, font=\scriptsize] {$n$, 80\,\%};
+	\draw[->, thick, orange!80!black] (pl) -- (bl) node[midway, above, font=\footnotesize] {$n$, 80\,\%};
 	\draw[->, thick] (bl) -- (th);
 	\draw[->, thick] (th) -- (el);
 	% частина електрики -> aux -> плазма
-	\draw[->, thick, green!50!black] (el.south) |- (aux.east) node[pos=0.75, above, font=\scriptsize] {частина електрики};
-	\draw[->, thick, blue!70!black] (aux.west) -| (pl.south) node[pos=0.25, above, font=\scriptsize] {$P_{\rm aux}$};
+	\draw[->, thick, green!50!black] (el.south) |- (aux.east) node[pos=0.75, above, font=\footnotesize] {частина електрики};
+	\draw[->, thick, blue!70!black] (aux.west) -| (pl.south) node[pos=0.25, above, font=\footnotesize] {$P_{\rm aux}$};
 	% альфа-частинки залишаються в плазмі
 	\draw[->, thick, blue!70!black] (pl.north west) to[out=110, in=70, looseness=2.2] (pl.north east);
-	\node[font=\scriptsize, blue!70!black] at (0,1.05) {$\alpha$, 20\,\%};
+	\node[font=\footnotesize, blue!70!black] at (0,1.05) {$\alpha$, 20\,\%};
 \end{tikzpicture}

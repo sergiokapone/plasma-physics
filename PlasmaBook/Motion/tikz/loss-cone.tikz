@@ -10,10 +10,10 @@
 	\draw[thick] (30:\R) -- (-150:\R);
 	\draw[thick] (-30:\R) -- (150:\R);
 	\draw[dashed] (0,0) circle (\R);
-	\node[font=\scriptsize, red!60!black] at (2.1,0.0) {конус втрат};
-	\node[font=\scriptsize, red!60!black] at (-2.1,0.0) {конус втрат};
-	\node[font=\scriptsize, blue!60!black] at (0,1.8) {захоплені};
-	\node[font=\scriptsize, blue!60!black] at (0,-1.8) {захоплені};
+	\node[font=\footnotesize, red!60!black, align=center] at (2.3,-0.45) {конус\\втрат};
+	\node[font=\footnotesize, red!60!black, align=center] at (-2.3,-0.45) {конус\\втрат};
+	\node[font=\footnotesize, blue!60!black] at (1.0,2.1) {захоплені};
+	\node[font=\footnotesize, blue!60!black] at (-1.0,-2.1) {захоплені};
 	\draw[->] (1.0,0) arc (0:30:1.0);
-	\node[font=\scriptsize] at (1.35,0.35) {$\theta_c$};
+	\node[font=\footnotesize] at (1.35,0.32) {$\theta_c$};
 \end{tikzpicture}

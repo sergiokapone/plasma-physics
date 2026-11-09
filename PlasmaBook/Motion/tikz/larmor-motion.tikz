@@ -1,6 +1,6 @@
 \tdplotsetmaincoords{65}{125}
     \begin{tikzpicture}[
-    >=latex,
+    >=latex, scale=1.6,
     declare function = {
         R = 1;
         w=1;
@@ -26,14 +26,14 @@
 
        \node[circle, ball color=blue, inner sep=0pt, font=\tiny, text=white] (T) at ({lmx(\k)}, {lmy(\k)}, {z(\k)}) {$+$};
 
-       \draw[->, red] (T) -- ++({lmy(\k)}, {-lmx(\k)}, {0}) coordinate (A) node[below, text=black, font=\tiny] {$\vec{v}_\perp$};
+       \draw[->, red] (T) -- ++({lmy(\k)}, {-lmx(\k)}, {0}) coordinate (A) node[below, text=black, font=\footnotesize] {$\vec{v}_\perp$};
 
-       \draw[->, red] (T) -- ++({lmy(\k)}, {-lmx(\k)}, {0.3}) coordinate (B) node[above, text=black, font=\tiny] {$\vec{v}$};
+       \draw[->, red] (T) -- ++({lmy(\k)}, {-lmx(\k)}, {0.3}) coordinate (B) node[above, text=black, font=\footnotesize] {$\vec{v}$};
 
-       \draw[->, red] (T) -- ++(0, 0, 0.3) coordinate (C) node[above right=-5pt, text=black, font=\tiny] {$\vec{v}_\parallel$};
+       \draw[->, red] (T) -- ++(0, 0, 0.3) coordinate (C) node[above right=-3pt, text=black, font=\footnotesize] {$\vec{v}_\parallel$};
 
        \draw[densely dashed] (A) -- (B) -- (C);
 
-       \draw[canvas is xy plane at z={z(\k)}, ->, blue] (0,0) -- (T) node[above=-2pt, font=\tiny, pos=0.3] {$\vec\rho$};
+       \draw[canvas is xy plane at z={z(\k)}, ->, blue] (0,0) -- (T) node[above=-2pt, font=\footnotesize, pos=0.4] {$\vec\rho$};
 
     \end{tikzpicture}

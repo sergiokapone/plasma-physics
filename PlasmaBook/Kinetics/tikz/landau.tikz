@@ -12,8 +12,9 @@
 		\addplot[draw=none, fill=green!30, domain=2.2:3.0, samples=40] {0.3989*exp(-x^2/2)} \closedcycle;
 		\draw[dashed] (axis cs:2,0) -- (axis cs:2,0.46);
 		\node[font=\footnotesize, anchor=south] at (axis cs:2,0.46) {$v_\varphi=\omega/k$};
-		\node[font=\scriptsize, align=center] at (axis cs:1.15,0.2) {частинок\\більше:\\\textcolor{orange!70!black}{набирають}\\енергію};
-		\node[font=\scriptsize, align=center] at (axis cs:3.2,0.13) {частинок\\менше:\\\textcolor{green!40!black}{віддають}};
-		\node[font=\scriptsize] at (axis cs:-1.5,0.4) {$F_0'(v_\varphi)<0$ $\Rightarrow$ $\gamma<0$};
+		\node[font=\footnotesize, align=center, anchor=south] (sl) at (axis cs:1.42,0.24) {частинок\\більше:\\\textcolor{orange!70!black}{набирають}\\енергію};
+		\node[font=\footnotesize, align=center, anchor=south west] (fs) at (axis cs:2.75,0.12) {частинок менше:\\\textcolor{green!40!black}{віддають}};
+		\draw[thin, green!40!black] (fs.south west) -- (axis cs:2.6,0.01);
+		\node[font=\footnotesize] at (axis cs:-2.2,0.42) {$F_0'(v_\varphi)<0$ $\Rightarrow$ $\gamma<0$};
 	\end{axis}
 \end{tikzpicture}

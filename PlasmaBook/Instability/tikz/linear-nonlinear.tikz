@@ -8,11 +8,11 @@
 		% шум -> експоненційний ріст -> насичення
 		\addplot[very thick, blue!70!black, domain=0:1.5, samples=20] {-5.2+0.1*sin(deg(8*x))};
 		\addplot[very thick, blue!70!black, domain=1.5:6.0, samples=80] {-5.2 + 0.9*(x-1.5)};
-		\addplot[very thick, blue!70!black, domain=6.0:10, samples=80] {-1.15 + 1.4*(1-exp(-(x-6.0)*0.9)) - 0.0*x};
+		\addplot[very thick, blue!70!black, domain=6.0:10, samples=80] {-1.15 + 1.4*(1-exp(-(x-6.0)*0.9))};
 		\draw[dashed] (axis cs:5.5,-6) -- (axis cs:5.5,1.2);
-		\node[font=\scriptsize, anchor=south west] at (axis cs:5.65,-5.8) {межа лінеаризації};
-		\node[font=\scriptsize, anchor=south] at (axis cs:0.8,-4.9) {шум};
-		\node[font=\scriptsize, anchor=south] at (axis cs:3.0,-2.6) {лінійний ріст $e^{\gamma t}$};
-		\node[font=\scriptsize, anchor=south] at (axis cs:8.3,0.35) {насичення};
+		\node[font=\footnotesize, anchor=south west] at (axis cs:5.65,-5.8) {межа лінеаризації};
+		\node[font=\footnotesize, anchor=south] at (axis cs:0.8,-4.9) {шум};
+		\node[font=\footnotesize, anchor=east] at (axis cs:3.4,-2.6) {лінійний ріст $e^{\gamma t}$};
+		\node[font=\footnotesize, anchor=south] at (axis cs:8.3,0.35) {насичення};
 	\end{axis}
 \end{tikzpicture}

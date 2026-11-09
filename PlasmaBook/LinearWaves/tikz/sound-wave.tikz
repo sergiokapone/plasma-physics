@@ -1,17 +1,17 @@
 \begin{tikzpicture}[>=latex']
-	% частинки: щільність модульована як cos(kx)
+	% частинки: щільність модульована як cos(kx) (згущення при x = 0, 3, 6)
 	\foreach \i in {0,1,...,59} {
-		\pgfmathsetmacro{\xs}{0.1*\i - 0.17*sin(\i*12)}
+		\pgfmathsetmacro{\xs}{0.1*\i - 0.3*sin(\i*12)}
 		\foreach \j in {0,1,2,3,4} {
-			\fill[blue!60!black] ({\xs},{0.17*\j}) circle (0.8pt);
+			\fill[blue!60!black] ({\xs},{0.17*\j}) circle (0.9pt);
 		}
 	}
-	% профіль густини
-	\draw[->] (-0.2,-0.8) -- (6.4,-0.8) node[right] {$x$};
-	\draw[->] (0,-1.5) -- (0,-0.1) node[above, font=\scriptsize] {$\delta\rho$};
-	\draw[very thick, red!70!black, domain=0:6.0, samples=80, variable=\x]
-		plot ({\x},{-0.8 + 0.5*cos(\x*120)});
 	% напрямок поширення
-	\draw[->, very thick] (0.3,1.1) -- (1.6,1.1) node[midway, above, font=\scriptsize] {$\vect k$};
-	\node[font=\scriptsize] at (3.5,1.0) {стискання $\leftrightarrow$ розрідження, $\delta\vect v\parallel\vect k$};
+	\draw[->, very thick] (0.2,1.55) -- (1.5,1.55) node[midway, above, font=\footnotesize] {$\vect k$};
+	\node[font=\footnotesize] at (3.6,1.1) {стискання $\leftrightarrow$ розрідження, \ $\delta\vect v\parallel\vect k$};
+	% профіль густини
+	\draw[->] (-0.2,-1.0) -- (6.4,-1.0) node[right, font=\footnotesize] {$x$};
+	\draw[->] (0,-1.7) -- (0,-0.3) node[left, font=\footnotesize] {$\delta\rho$};
+	\draw[very thick, red!70!black, domain=0:6.0, samples=80, variable=\x]
+		plot ({\x},{-1.0 + 0.5*cos(\x*120)});
 \end{tikzpicture}
