@@ -1,14 +1,72 @@
-\begin{tikzpicture}[>=latex]
-	\draw[dashed, gray] (-3.2,-2) -- (-3.2,2);
-	\node[font=\scriptsize, gray, rotate=90] at (-3.45,0) {вісь тора};
-	\draw[thick, fill=orange!20] (0,0) circle (1.5);
-	\node[font=\scriptsize] at (0,0) {$\otimes\ \vect B$};
-	\foreach \a in {70,90,110} {\node[font=\scriptsize, red!70!black] at (\a:1.1) {$+$};}
-	\foreach \a in {250,270,290} {\node[font=\scriptsize, blue!70!black] at (\a:1.1) {$-$};}
-	\node[font=\scriptsize, red!70!black, anchor=south] at (0,1.55) {іони};
-	\node[font=\scriptsize, blue!70!black, anchor=north] at (0,-1.55) {електрони};
-	\draw[->, very thick, green!50!black] (0.3,0.9) -- (0.3,-0.9) node[midway, right, font=\scriptsize] {$\vect E$};
-	\draw[->, very thick, red!70!black] (1.2,0) -- (2.6,0) node[right, font=\scriptsize] {$\vect v_E$ (назовні)};
-	\draw[->, thick, gray!60!black] (-1.8,0.8) -- (-2.8,0.8) node[midway, above, font=\scriptsize] {$\nabla B$};
-	\draw[->, thick] (-2.8,-0.9) -- (-1.8,-0.9) node[midway, below, font=\scriptsize] {$R$};
+% Дрейф у чисто тороїдальному полі: задня половина тора, розрізана площиною,
+% що проходить через вісь. Ортографічна проєкція з кутом підйому 24°:
+% (X,Y,Z) -> (X, Z cos24° + Y sin24°).
+% Гвинтові траєкторії: іон (червоний) дрейфує вгору, електрон (синій) униз;
+% на перерізах -- розділення зарядів, поле E і дрейф E×B назовні.
+% B напрямлене за \varphi (проти год. стрілки, якщо дивитися згори):
+% на правому перерізі -- від нас (\otimes), на лівому -- до нас (\odot).
+\begin{tikzpicture}[>=latex', scale=1.15,
+	declare function={th(\p)=atan2(sin(\p)*0.9135,0.4067);}]
+	\def\R{3}\def\a{1}\def\ce{0.9135}\def\se{0.4067}
+	% ---- вісь тора (задня частина) ----
+	\draw[dashed, gray] (0,0.3) -- (0,2.75) node[above, font=\scriptsize] {вісь тора};
+	% ---- поверхня: видима частина між двома лініями силуету ----
+	\fill[orange!18]
+		plot[variable=\p, domain=0:180, samples=91]
+			({(\R+\a*cos(th(\p)))*cos(\p)}, {\a*sin(th(\p))*\ce+(\R+\a*cos(th(\p)))*sin(\p)*\se})
+		-- plot[variable=\p, domain=180:0, samples=91]
+			({(\R-\a*cos(th(\p)))*cos(\p)}, {-\a*sin(th(\p))*\ce+(\R-\a*cos(th(\p)))*sin(\p)*\se})
+		-- cycle;
+	% меридіанні кільця (видима частина)
+	\foreach \ph in {30,60,90,120,150} {
+		\pgfmathsetmacro\tA{th(\ph)}
+		\draw[orange!55!black, very thin, opacity=0.6]
+			plot[variable=\t, domain=\tA:\tA+180, samples=37]
+				({(\R+\a*cos(\t))*cos(\ph)}, {\a*sin(\t)*\ce+(\R+\a*cos(\t))*sin(\ph)*\se});
+	}
+	% контур
+	\draw[orange!50!black]
+		plot[variable=\p, domain=0:180, samples=91]
+			({(\R+\a*cos(th(\p)))*cos(\p)}, {\a*sin(th(\p))*\ce+(\R+\a*cos(th(\p)))*sin(\p)*\se});
+	\draw[orange!50!black]
+		plot[variable=\p, domain=0:180, samples=91]
+			({(\R-\a*cos(th(\p)))*cos(\p)}, {-\a*sin(th(\p))*\ce+(\R-\a*cos(th(\p)))*sin(\p)*\se});
+	% ---- гвинтові траєкторії ----
+	% іон: більший ларморівський радіус, дрейф угору
+	\draw[red!75!black, thin]
+		plot[variable=\t, domain=0:1, samples=700]
+			({(\R+0.18*cos(5040*\t))*cos(15+150*\t)},
+			 {(0.05+0.6*\t+0.18*sin(5040*\t))*\ce+(\R+0.18*cos(5040*\t))*sin(15+150*\t)*\se});
+	% електрон: менший ларморівський радіус, обертання в інший бік, дрейф униз
+	\draw[blue!70!black, thin]
+		plot[variable=\t, domain=0:1, samples=1100]
+			({(\R-0.07*cos(10800*\t))*cos(15+150*\t)},
+			 {(-0.05-0.6*\t+0.07*sin(10800*\t))*\ce+(\R-0.07*cos(10800*\t))*sin(15+150*\t)*\se});
+	% ---- напрям B уздовж тора ----
+	\draw[->, thick, black!75]
+		plot[variable=\p, domain=62:108, samples=20]
+			({(\R+\a*cos(th(\p)))*cos(\p)}, {0.18+\a*sin(th(\p))*\ce+(\R+\a*cos(th(\p)))*sin(\p)*\se});
+	\node[font=\scriptsize, anchor=south] at (0,2.45) {$\vect B$};
+	% ---- перерізи (площина Y=0) ----
+	\foreach \s in {1,-1} {
+		\filldraw[fill=orange!30, draw=black, thick] (\s*\R,0) ellipse ({\a} and {\a*\ce});
+		\node[font=\scriptsize, red!70!black] at (\s*\R,0.6) {$+\,+\,+$};
+		\node[font=\scriptsize, blue!70!black] at (\s*\R,-0.62) {$-\,-\,-$};
+		\draw[->, thick, green!50!black] (\s*\R+0.2*\s,0.42) -- (\s*\R+0.2*\s,-0.42);
+		\draw[->, very thick, red!70!black] (\s*\R+\s*\a+0.04*\s,0) -- (\s*\R+\s*\a+0.85*\s,0);
+	}
+	\node[font=\scriptsize] at (\R-0.45,0) {$\otimes$};
+	\node[font=\scriptsize] at (-\R+0.45,0) {$\odot$};
+	\node[font=\scriptsize, green!50!black, anchor=west] at (\R+0.22,-0.05) {$\vect E$};
+	\node[font=\scriptsize, green!50!black, anchor=east] at (-\R-0.22,-0.05) {$\vect E$};
+	\node[font=\scriptsize, red!70!black, anchor=south] at (\R+\a+0.5,0.02) {$\vect v_E$};
+	\node[font=\scriptsize, red!70!black, anchor=south] at (-\R-\a-0.5,0.02) {$\vect v_E$};
+	% ---- \nabla B і R ----
+	\draw[dashed, gray] (0,-1.75) -- (0,0.3);
+	\draw[->, thick, gray!60!black] (2.2,-1.2) -- (1.0,-1.2)
+		node[midway, below, font=\scriptsize] {$\nabla B$};
+	\draw[->, thick] (0,-1.75) -- (\R,-1.75) node[midway, below, font=\scriptsize] {$R$};
+	% ---- підписи частинок ----
+	\node[font=\scriptsize, red!70!black, anchor=south] at (-1.55,1.75) {іон};
+	\node[font=\scriptsize, blue!70!black, fill=orange!18, inner sep=1pt] at (-0.75,0.5) {електрон};
 \end{tikzpicture}
