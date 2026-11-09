@@ -1,0 +1,28 @@
+\begin{tikzpicture}
+	\begin{axis}[
+		width=0.95\linewidth, height=0.7\linewidth,
+		axis lines=middle, xmin=0, xmax=4.5, ymin=0, ymax=3.2,
+		xlabel={$kc/\omega_{pe}$}, ylabel={$\omega/\omega_{pe}$},
+		every axis x label/.style={at={(current axis.right of origin)},anchor=west},
+		every axis y label/.style={at={(current axis.north west)},above=2mm},
+		ytick={0.618,1,1.618}, yticklabels={$\omega_L$,$\omega_{ce}$,$\omega_R$}, xtick=\empty,
+		clip=true]
+		% cold electron plasma: omega_pe = omega_ce = 1
+		% R-mode, whistler branch  (omega < omega_ce)
+		\addplot[very thick, red!70!black, domain=0.03:0.93, samples=100, variable=\w]
+			({\w*sqrt(1+1/(\w*(1-\w)))},{\w});
+		% R-mode, upper branch (omega > omega_R)
+		\addplot[very thick, red!70!black, domain=1.63:3.2, samples=100, variable=\w]
+			({\w*sqrt(1-1/(\w*(\w-1)))},{\w});
+		% L-mode
+		\addplot[very thick, blue!70!black, domain=0.625:3.2, samples=100, variable=\w]
+			({\w*sqrt(1-1/(\w*(\w+1)))},{\w});
+		% light line
+		\addplot[dashed, gray, domain=0:3.2] ({x},{x});
+		\draw[dotted] (axis cs:0,1) -- (axis cs:4.5,1);
+		\node[font=\scriptsize, red!70!black, anchor=west] at (axis cs:1.5,0.55) {R: вістлер};
+		\node[font=\scriptsize, red!70!black, anchor=west] at (axis cs:1.0,2.5) {R};
+		\node[font=\scriptsize, blue!70!black, anchor=west] at (axis cs:1.5,1.2) {L};
+		\node[font=\scriptsize, gray, anchor=west] at (axis cs:3.3,3.0) {$\omega=kc$};
+	\end{axis}
+\end{tikzpicture}

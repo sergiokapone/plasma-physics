@@ -1,0 +1,28 @@
+\begin{tikzpicture}[>=latex', scale=0.9]
+	% Земля
+	\shade[ball color=blue!25] (0,0) circle (1);
+	\draw (0,0) circle (1);
+	% силові лінії диполя r = L cos^2(lambda)
+	\foreach \L in {1.8, 2.6, 3.6} {
+		\pgfmathsetmacro{\lm}{acos(sqrt(1/\L))}
+		\draw[blue!50, thick] plot[domain=-\lm:\lm, samples=60, variable=\t]
+			({\L*cos(\t)^3},{\L*cos(\t)^2*sin(\t)});
+		\draw[blue!50, thick] plot[domain=-\lm:\lm, samples=60, variable=\t]
+			({-\L*cos(\t)^3},{\L*cos(\t)^2*sin(\t)});
+	}
+	% траєкторія частинки на L=3.6: вигляд "нитки", що відбивається між дзеркальними точками
+	\pgfmathsetmacro{\Lp}{3.6}
+	\draw[red!70!black, very thick, decoration={markings, mark=at position 0.5 with {\arrow{latex}}}, postaction={decorate}]
+		plot[domain=-38:38, samples=80, variable=\t]
+		({\Lp*cos(\t)^3},{\Lp*cos(\t)^2*sin(\t)});
+	\fill[red!70!black] ({\Lp*cos(38)^3},{\Lp*cos(38)^2*sin(38)}) circle (2pt);
+	\fill[red!70!black] ({\Lp*cos(38)^3},{-\Lp*cos(38)^2*sin(38)}) circle (2pt);
+	\node[font=\scriptsize, anchor=west] at ({\Lp*cos(38)^3+0.1},{\Lp*cos(38)^2*sin(38)}) {точка відбиття};
+	% екваторіальна площина і дрейф
+	\draw[dashed] (-4.3,0) -- (4.3,0);
+	\draw[->, orange!80!black, thick] (3.6,0) arc[start angle=0, end angle=-30, x radius=3.6, y radius=0.8]
+		node[pos=0.55, below right, font=\scriptsize] {дрейф};
+	% вісь диполя
+	\draw[dotted] (0,-3.6) -- (0,3.6) node[above, font=\scriptsize] {вісь диполя};
+	\node[font=\scriptsize] at (0,0) {Земля};
+\end{tikzpicture}

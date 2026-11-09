@@ -1,0 +1,13 @@
+\begin{tikzpicture}[>=latex']
+	\foreach \xs/\ttl/\ampl/\rate in {0/{стійкість}/1/-0.55,
+	                                  4.4/{нейтральність}/1/0,
+	                                  8.8/{нестійкість}/0.12/0.55} {
+		\begin{scope}[xshift=\xs cm]
+			\draw[->] (0,0) -- (3.6,0) node[right, font=\scriptsize] {$t$};
+			\draw[->] (0,-1.1) -- (0,1.25) node[above, font=\scriptsize] {$\delta X$};
+			\draw[very thick, blue!70!black, domain=0:3.5, samples=200, smooth, variable=\tt]
+				plot (\tt,{\ampl*exp(\rate*\tt)*cos(deg(7*\tt))});
+			\node[font=\footnotesize] at (1.8,-1.45) {\ttl};
+		\end{scope}
+	}
+\end{tikzpicture}

@@ -1,0 +1,22 @@
+\begin{tikzpicture}[>=latex']
+	% (а) циліндр зі струмом, (б) малий перетяг, (в) перетяг посилюється
+	\foreach \xs/\amp/\ttl in {0/0.0/{(а) рівновага}, 3.9/0.12/{(б) мале збурення}, 7.8/0.32/{(в) посилення}} {
+		\begin{scope}[xshift=\xs cm]
+			% контури шнура
+			\draw[very thick, blue!70!black, domain=0:3.2, samples=60, variable=\t]
+				plot ({\t},{0.65-\amp*cos(\t*112.5)});
+			\draw[very thick, blue!70!black, domain=0:3.2, samples=60, variable=\t]
+				plot ({\t},{-0.65+\amp*cos(\t*112.5)});
+			\draw[blue!70!black, very thick] (0,0.65-\amp) -- (0,-0.65+\amp);
+			% струм
+			\draw[->, red!70!black, thick] (-0.1,0) -- (3.3,0) node[right, font=\scriptsize] {$J$};
+			% азимутальне поле: більше біля перетяжки
+			\node[font=\scriptsize] at (1.6,1.15) {$B_\theta$};
+			\node[font=\footnotesize] at (1.6,-1.2) {\ttl};
+		\end{scope}
+	}
+	% сила: у перетяжці B_theta^2/8pi більше -> стискує
+	\draw[->, thick, orange!80!black] (9.45,0.55) -- (9.45,0.2);
+	\draw[->, thick, orange!80!black] (9.45,-0.55) -- (9.45,-0.2);
+	\node[font=\scriptsize, orange!80!black, right] at (9.5,0.4) {$\vect F_{B}$};
+\end{tikzpicture}

@@ -3,8 +3,8 @@
     w = 1;
     v = 0.5;
     v0 = 1;
-    x(\t,\k)=v*\t-v0/(\k*w)*sin((\k*w)*\t r);
-    y(\t,\k)=v0/(\k*w)*(1-cos((\k*w)*\t r));
+    ebx(\t,\k)=v*\t-v0/(\k*w)*sin((\k*w)*\t r);
+    eby(\t,\k)=v0/(\k*w)*(1-cos((\k*w)*\t r));
     },
     ]
     \draw[-latex] (0, 0) -- ++(0, 4) node[right] {$y$};
@@ -23,7 +23,7 @@
                 mark=at position 0.85 with {\arrow{latex}},
                 },
                 postaction={decorate}
-    ] plot ({x(\t, 1)}, {y(\t, 1)} );
+    ] plot ({ebx(\t, 1)}, {eby(\t, 1)} );
 
     \draw[red, thick, domain=0:5*pi, variable=\t, samples=550,
     decoration={
@@ -32,5 +32,5 @@
                 mark=at position 0.85 with {\arrow[xshift=5pt]{latex}},
                 },
                 postaction={decorate}
-    ] plot ({x(\t, -3)}, {y(\t, -3)} );
+    ] plot ({ebx(\t, -3)}, {eby(\t, -3)} );
 \end{tikzpicture}

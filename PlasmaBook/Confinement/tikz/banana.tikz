@@ -1,0 +1,20 @@
+\begin{tikzpicture}[>=latex', scale=1.1]
+	% полоїдальний переріз: магнітні поверхні (зсунуті кола) та вісь
+	\foreach \rr in {0.7,1.4,2.1,2.8} {
+		\draw[blue!35, thick] (0.04*\rr*\rr,0) circle (\rr);
+	}
+	\fill (0,0) circle (1.5pt);
+	\draw[dashed, gray] (-3.2,0) -- (3.4,0);
+	\node[font=\scriptsize, gray, anchor=west] at (3.4,0) {екваторіальна площина};
+	% напрямок зовнішньої області B_min / внутрішньої B_max
+	\node[font=\scriptsize, anchor=north] at (2.9,-2.9) {зовнішня сторона\ $B_{\min}$};
+	\node[font=\scriptsize, anchor=north] at (-2.3,-2.9) {внутрішня сторона\ $B_{\max}$};
+	% банановий (захоплений) орбіт
+	\draw[very thick, red!70!black, domain=0:360, samples=120, smooth, variable=\s]
+		plot ({(2.1+0.28*cos(\s))*cos(52*sin(\s))+0.04*2.1*2.1}, {(2.1+0.28*cos(\s))*sin(52*sin(\s))});
+	\node[font=\scriptsize, red!70!black, anchor=west] at (2.55,1.0) {банан};
+	% пролітна частинка
+	\draw[very thick, green!45!black, ->] (0.12,0) ++(-2.2,0) arc[start angle=180, end angle=500, radius=2.2];
+	\node[font=\scriptsize, green!45!black] at (-0.95,1.55) {пролітна};
+	\draw[<->, thick] (2.15,-0.45) -- (2.55,-0.45) node[below, font=\scriptsize] {$\Delta_b$};
+\end{tikzpicture}

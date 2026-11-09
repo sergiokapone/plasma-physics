@@ -5,8 +5,8 @@
         R = 1;
         w=1;
         v=0.2;
-        x(\t)=R*sin(w*\t r);
-        y(\t)=R*cos(w*\t r);
+        lmx(\t)=R*sin(w*\t r);
+        lmy(\t)=R*cos(w*\t r);
         z(\t)=v*\t;
     },
     tdplot_main_coords]
@@ -19,16 +19,16 @@
        \draw[->] (O) -- (x) node[anchor=south] {$x$};
        \draw[->] (O) -- (y) node[anchor=south] {$y$};
 
-       \draw[blue, thick, variable=\t, domain=0:6.1*pi, samples=150, ->] plot ({x(\t)}, {y(\t)}, {z(\t)});
+       \draw[blue, thick, variable=\t, domain=0:6.1*pi, samples=150, ->] plot ({lmx(\t)}, {lmy(\t)}, {z(\t)});
 
        \def\k{2.55*pi}
        \draw[canvas is xy plane at z={z(\k)}, dashed, fill=orange!50, opacity=0.5] (0,0) circle (R);
 
-       \node[circle, ball color=blue, inner sep=0pt, font=\tiny, text=white] (T) at ({x(\k)}, {y(\k)}, {z(\k)}) {$+$};
+       \node[circle, ball color=blue, inner sep=0pt, font=\tiny, text=white] (T) at ({lmx(\k)}, {lmy(\k)}, {z(\k)}) {$+$};
 
-       \draw[->, red] (T) -- ++({y(\k)}, {-x(\k)}, {0}) coordinate (A) node[below, text=black, font=\tiny] {$\vec{v}_\perp$};
+       \draw[->, red] (T) -- ++({lmy(\k)}, {-lmx(\k)}, {0}) coordinate (A) node[below, text=black, font=\tiny] {$\vec{v}_\perp$};
 
-       \draw[->, red] (T) -- ++({y(\k)}, {-x(\k)}, {0.3}) coordinate (B) node[above, text=black, font=\tiny] {$\vec{v}$};
+       \draw[->, red] (T) -- ++({lmy(\k)}, {-lmx(\k)}, {0.3}) coordinate (B) node[above, text=black, font=\tiny] {$\vec{v}$};
 
        \draw[->, red] (T) -- ++(0, 0, 0.3) coordinate (C) node[above right=-5pt, text=black, font=\tiny] {$\vec{v}_\parallel$};
 
