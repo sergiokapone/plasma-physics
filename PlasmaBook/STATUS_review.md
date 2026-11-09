@@ -107,4 +107,14 @@ Kinetics (MaxwellSpeeds, BGKModel, BohmGrossDerivation, TwoStreamKinetic, Trappi
   відповіді до prb:DipoleBelts (r_L≈5 км, τ_b≈0,4 с, τ_d≈15 хв) і prb:IonThruster (E≈33 СГС≈10⁴ В/см).
 - Збірка чиста; лишились overfull 24pt у Fusion (рядки 377–379) і 14pt у бібліографії (Kulsrud) — розібрати у своїх розділах.
 
-### Наступний: Collisions (чанками)
+### Collisions — ГОТОВО
+- **Фізична помилка:** відповідь prb:PlasmaThermal — $\kappa_e/\sigma\propto T_e$ (×10), а $\kappa_e/(\sigma T_e)$ стале (аналог Відемана–Франца).
+- Прибрано $k_{\mathrm B}$ (оцінка $\kappa_\perp$, prb:PlasmaConductivity); $\mathrm c^{-1}\to\mathrm{с}^{-1}$ (кирилиця).
+- Дубль речення про $\ln\Lambda=10$–20 прибрано; Summary: $\sigma$ залежить від $n$ лише через $\ln\Lambda$.
+- $H_\alpha,H_\beta\to\mathrm{H}_\alpha,\mathrm{H}_\beta$ (3 місця).
+- Додано відповіді: prb:Dreicer ($E_D\approx3{,}9$ В/м, $v_c/v_{Te}\approx6{,}2$, частка $\sim3\cdot10^{-9}$),
+  prb:LnLambdaPractice (lnΛ, ν_ei, ν/ω_pe для трьох плазм), prb:ClassicalVsBohm ($D_\perp\approx0{,}1$ vs $D_B\approx1{,}3\cdot10^6$ см²/с).
+- Косметика: зайві порожні рядки/роздільники.
+- Збірка: без помилок і невизначених посилань; overfull >10pt лише відомі (Fusion 377–379, бібліографія Kulsrud).
+
+### Наступний: Waves (чанками)
