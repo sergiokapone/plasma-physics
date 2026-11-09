@@ -1,0 +1,19 @@
+\begin{tikzpicture}[>=latex]
+	\def\R{3}
+	\fill[red!20] (0,0) -- (30:\R) arc (30:-30:\R) -- cycle;
+	\fill[red!20] (0,0) -- (150:\R) arc (150:210:\R) -- cycle;
+	\fill[blue!10] (0,0) -- (30:\R) arc (30:150:\R) -- cycle;
+	\fill[blue!10] (0,0) -- (-30:\R) arc (-30:-150:\R) -- cycle;
+	\draw[->] (-3.4,0) -- (3.6,0) node[right] {$v_\parallel$};
+	\draw[->] (0,-3.4) -- (0,3.6) node[above] {$v_\perp$};
+	\draw[thick] (-30:\R) -- (30:0) -- (150:\R);
+	\draw[thick] (30:\R) -- (-150:\R);
+	\draw[thick] (-30:\R) -- (150:\R);
+	\draw[dashed] (0,0) circle (\R);
+	\node[font=\scriptsize, red!60!black] at (2.1,0.0) {конус втрат};
+	\node[font=\scriptsize, red!60!black] at (-2.1,0.0) {конус втрат};
+	\node[font=\scriptsize, blue!60!black] at (0,1.8) {захоплені};
+	\node[font=\scriptsize, blue!60!black] at (0,-1.8) {захоплені};
+	\draw[->] (1.0,0) arc (0:30:1.0);
+	\node[font=\scriptsize] at (1.35,0.35) {$\alpha_c$};
+\end{tikzpicture}
