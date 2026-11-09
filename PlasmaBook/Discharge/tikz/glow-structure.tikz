@@ -1,0 +1,28 @@
+\begin{tikzpicture}[>=latex', font=\scriptsize]
+	% tube
+	\draw[thick, rounded corners=6pt] (0,0) rectangle (11,1.4);
+	% electrodes
+	\fill[gray!60] (0.1,0.15) rectangle (0.35,1.25);
+	\fill[gray!60] (10.65,0.15) rectangle (10.9,1.25);
+	\node[above] at (0.22,1.4) {катод};
+	\node[above] at (10.78,1.4) {анод};
+	% regions
+	\fill[violet!35] (0.55,0.15) rectangle (0.75,1.25);   % cathode glow
+	\fill[violet!45] (1.6,0.15) rectangle (2.9,1.25);     % negative glow
+	\fill[red!25]    (4.2,0.15) rectangle (10.1,1.25);    % positive column
+	\fill[red!45]    (10.1,0.15) rectangle (10.4,1.25);   % anode glow
+	% labels
+	\foreach \x/\n in {0.45/1, 0.65/2, 1.17/3, 2.25/4, 3.55/5, 7.15/6, 10.25/7}
+	\node[below] at (\x,0.0) {\n};
+	% potential
+	\begin{scope}[yshift=-3.3cm]
+		\draw[->] (0,0) -- (11.3,0) node[below] {$x$};
+		\draw[->] (0,-0.2) -- (0,2.6) node[left] {$\varphi$};
+		\draw[very thick, blue!70!black]
+		(0.22,0) .. controls (0.8,1.2) and (1.2,1.85) .. (1.6,2.0)
+		-- (2.9,2.05) .. controls (3.5,2.05) and (3.9,2.0) .. (4.2,2.02)
+		-- (10.1,2.35) -- (10.4,2.45) -- (10.78,2.45);
+		\draw[dashed, gray] (1.6,0) -- (1.6,2.0);
+		\draw[<->] (1.75,0) -- (1.75,2.0) node[midway, right] {$V_c$};
+	\end{scope}
+\end{tikzpicture}
