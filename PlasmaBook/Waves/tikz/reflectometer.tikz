@@ -1,0 +1,23 @@
+\begin{tikzpicture}[
+    scale=1,
+    font=\footnotesize,
+]
+    % осі
+    \draw[-latex] (0,0) -- (4.3,0) node[below] {$x$};
+    \draw[-latex] (0,0) -- (0,2.5) node[left] {$n_e$};
+    % профіль концентрації
+    \draw[blue, thick, domain=0:4, samples=60] plot (\x, {2.2*(1-exp(-\x/1.5))});
+    \node[blue, right] at (3.3,2.25) {$n_e(x)$};
+    % шари відсікання для f1 < f2 < f3
+    \foreach \y/\k in {0.6/1, 1.2/2, 1.7/3}{
+        \pgfmathsetmacro{\xc}{-1.5*ln(1-\y/2.2)}
+        \draw[dashed, gray] (0,\y) node[left, black] {$n_{\mathrm{кр}}(f_\k)$} -- (\xc,\y);
+        \draw[dotted, gray] (\xc,\y) -- (\xc,0) node[below, black] {$x_\k$};
+        \fill[red!70!black] (\xc,\y) circle (1.3pt);
+    }
+    % хвиля, що падає й~відбивається від шару f2
+    \pgfmathsetmacro{\xb}{-1.5*ln(1-1.2/2.2)}
+    \draw[-latex, red!70!black, thick] (-0.1,-0.75) -- (\xb,-0.75);
+    \draw[-latex, red!70!black, thick, dashed] (\xb,-0.95) -- (-0.1,-0.95);
+    \node[right, red!70!black] at (\xb,-0.85) {$\tau(f_2)$};
+\end{tikzpicture}
