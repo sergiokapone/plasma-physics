@@ -104,6 +104,7 @@
 % Клас підтримує і LuaLaTeX (основний варіант, з fontspec/unicode-math),
 % і pdfLaTeX (запасний варіант, з класичним fontenc/inputenc).
 \RequirePackage[fontsize=14pt]{fontsize}  % базовий кегль тексту книги
+\RequirePackage{needspace}  % \Needspace перед «Задачі»: заголовок не лишається сам унизу сторінки
 \RequirePackage{iftex}                    % дає \ifluatex/\ifxetex для розгалуження нижче
 % ---------------------------- Пакети LaTeX3 -----------------------------------
 
@@ -294,6 +295,31 @@
 % ------------------------------------ Таблиці ---------------------------------
 \RequirePackage{tabularray}       % сучасні таблиці (\begin{tblr})
 \UseTblrLibrary{booktabs}
+% Єдине середовище таблиць книги: platbl (стиль першої таблиці розд. 1).
+% Заголовок таблиці — зверху (\caption перед \begin{platbl}); перший рядок — шапка
+% на синьому тлі, непарні рядки — світло-сірі, суцільна сітка. Колонки задає colspec:
+%   \begin{table}[ht]\centering\small
+%     \caption{...}\label{tab:...}
+%     \begin{platbl}{colspec={X[l,m]X[c,m]X[l,m]}}
+%       Шапка1 & Шапка2 & Шапка3 \\
+%       ...
+%     \end{platbl}
+%   \end{table}
+\NewTblrEnviron{platbl}
+\SetTblrInner[platbl]{
+	row{odd}={gray!10},
+	row{1}={c,m,fg=white,bg=themecolorlight,font=\bfseries},
+	hlines, vlines,
+}
+% Довгі таблиці (що не вміщуються на сторінці): longtblr із тим самим стилем, шапка повторюється.
+\DefTblrTemplate{contfoot-text}{default}{Продовження на наступній сторінці}
+\DefTblrTemplate{conthead-text}{default}{(Продовження)}
+\DefTblrTemplate{caption-sep}{default}{.\enskip}% «Таблиця 5.2. …», як у звичайних таблицях
+\SetTblrInner[longtblr]{
+	row{odd}={gray!10},
+	row{1}={c,m,fg=white,bg=themecolorlight,font=\bfseries},
+	hlines, vlines, rowhead=1,
+}
 \setlength\arrayrulewidth{1pt}
 \RequirePackage{booktabs}         % \toprule/\midrule/\bottomrule для класичних tabular
 \setlength{\aboverulesep}{0pt}
@@ -328,7 +354,7 @@
 % --------------------- Підписи до рисунку (розмір тексту) ---------------------
 
 \captionsetup[figure]{font=small,labelfont=small}
-\captionsetup[table]{font=small,labelfont=small}
+\captionsetup[table]{font=small,labelfont=small,position=top,skip=0.6em,belowskip=0.6em}
 
 %===============================================================================
 %
@@ -1028,6 +1054,21 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 	\tikz[baseline=(qb.base)]\node[circle,fill=quizmain,text=white,inner sep=0pt,minimum size=1.5em,font=\sffamily\bfseries\small,#1](qb){#2};}
 \newlist{quizlist}{enumerate}{1}
 \setlist[quizlist]{label=\quizbadge{\arabic*},leftmargin=2.4em,labelsep=0.6em,itemsep=0.9ex,topsep=0.3ex,parsep=0pt,partopsep=0pt}
+% Summary — блок «Головне в розділі»: стислий підсумок наприкінці розділу (перед «Задачі»).
+% Синя смуга зліва й дуже світлий фон відрізняють його від бірюзового блоку питань.
+\newtcolorbox{Summary}[1][Головне в розділі]{%
+	enhanced,breakable,
+	before skip=4mm,after skip=3mm,
+	sharp corners,frame hidden,
+	borderline west={3pt}{0pt}{themecolorlight},
+	colback=themecolorlight!6!white,
+	coltitle=themecolorlight,colbacktitle=themecolorlight!6!white,
+	fonttitle=\sffamily\bfseries\large,
+	title={#1},
+	left=3mm,right=3mm,top=1.5mm,bottom=1mm,
+	fontupper=\small,before upper={\parindent0pt\setlist[itemize]{topsep=0.3ex,itemsep=0.5ex,parsep=0pt,partopsep=0pt,leftmargin=1.4em}},
+}
+
 \newtcolorbox{Questions}[1][Контрольні питання]{%
     sharp corners,
 	enhanced,breakable,
