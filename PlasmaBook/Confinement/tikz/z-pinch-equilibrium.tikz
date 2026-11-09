@@ -1,0 +1,26 @@
+\begin{tikzpicture}[>=latex']
+	% плазма радіуса R
+	\shade[inner color=blue!35, outer color=blue!8] (0,0) circle (2.3);
+	\draw[thick] (0,0) circle (2.3);
+	\node[font=\footnotesize] at (1.75,-1.95) {$R$};
+	% контур Gamma
+	\draw[dashed, thick] (0,0) circle (1.3);
+	\node[font=\footnotesize] at (-0.95,0.85) {$\Gamma$};
+	\draw[<->] (0,0) -- (30:1.3) node[midway, above, font=\scriptsize] {$r$};
+	% струм з площини (крапки)
+	\foreach \a in {0,60,...,300} {
+		\node[draw, circle, inner sep=0.6pt, red!70!black, font=\tiny] at (\a:0.6) {$\cdot$};
+	}
+	\node[draw, circle, inner sep=0.6pt, red!70!black, font=\tiny] at (0,0) {$\cdot$};
+	\node[font=\footnotesize, red!70!black] at (0.35,0.28) {$\vect j$};
+	% B_theta по колу Gamma
+	\foreach \a in {100,220,340} {
+		\draw[->, very thick, green!45!black] (\a:1.3) arc[start angle=\a, end angle=\a+28, radius=1.3];
+	}
+	\node[font=\footnotesize, green!45!black] at (-1.55,-1.1) {$\vect B_\theta$};
+	% сила j x B / c до осі
+	\foreach \a in {45,165,285} {
+		\draw[->, thick, orange!85!black] (\a:2.0) -- (\a:1.55);
+	}
+	\node[font=\footnotesize, orange!85!black] at (2.55,0.45) {$\vect j\times\vect B/c$};
+\end{tikzpicture}

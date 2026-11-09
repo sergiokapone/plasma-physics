@@ -5,8 +5,8 @@
     v=0.5;
     a=0.025;
     R(\t)=1/sqrt(4+5*\t);
-    x(\t)=v*\t - a*\t^2;
-    y(\t)=R(\t)*cos(w*\t r);
+    mrx(\t)=v*\t - a*\t^2;
+    mry(\t)=R(\t)*cos(w*\t r);
     },
 ]
 
@@ -35,6 +35,6 @@
     \draw[densely dashed] (0,0.5) -- ++(1,0) -- ++(0,-0.5);
     \draw[] (0,0) ++(0.5, 0) arc[start angle=0, delta angle=atan(0.5), radius=0.5] node[pos=0, inner sep=1pt, anchor=north west, font=\scriptsize] {$\theta_{\min}$};
 
-        \draw[red!80, domain=0:4.9*pi, variable=\t, samples=300, ->] plot ({x(\t)}, {y(\t)} );
+        \draw[red!80, domain=0:4.9*pi, variable=\t, samples=300, ->] plot ({mrx(\t)}, {mry(\t)} );
 
 \end{tikzpicture}

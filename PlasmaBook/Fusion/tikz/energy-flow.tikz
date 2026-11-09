@@ -1,0 +1,20 @@
+\begin{tikzpicture}[>=latex',
+	bx/.style={draw, rounded corners, align=center, font=\footnotesize, minimum height=1.0cm, fill=blue!8},
+	bxo/.style={draw, rounded corners, align=center, font=\footnotesize, minimum height=1.0cm, fill=orange!15},
+	bxg/.style={draw, rounded corners, align=center, font=\footnotesize, minimum height=1.0cm, fill=green!15}]
+	\node[bx, minimum width=2.6cm] (pl) at (0,0) {плазма\\D+T$\to{}^4$He+$n$};
+	\node[bxo, minimum width=2.8cm] (bl) at (4.9,0) {бланкет (Li)\\тепло та~відтворення T};
+	\node[bx, minimum width=2.2cm] (th) at (9.1,0) {теплоносій,\\турбіна};
+	\node[bxg, minimum width=1.8cm] (el) at (12.1,0) {електрика};
+	\node[bx, minimum width=3.6cm] (aux) at (6.1,-2.3) {нагрів плазми, магніти,\\кріогеніка, насоси};
+	% нейтрон -> бланкет
+	\draw[->, thick, orange!80!black] (pl) -- (bl) node[midway, above, font=\scriptsize] {$n$, 80\,\%};
+	\draw[->, thick] (bl) -- (th);
+	\draw[->, thick] (th) -- (el);
+	% частина електрики -> aux -> плазма
+	\draw[->, thick, green!50!black] (el.south) |- (aux.east) node[pos=0.75, above, font=\scriptsize] {частина електрики};
+	\draw[->, thick, blue!70!black] (aux.west) -| (pl.south) node[pos=0.25, above, font=\scriptsize] {$P_{\rm aux}$};
+	% альфа-частинки залишаються в плазмі
+	\draw[->, thick, blue!70!black] (pl.north west) to[out=110, in=70, looseness=2.2] (pl.north east);
+	\node[font=\scriptsize, blue!70!black] at (0,1.05) {$\alpha$, 20\,\%};
+\end{tikzpicture}

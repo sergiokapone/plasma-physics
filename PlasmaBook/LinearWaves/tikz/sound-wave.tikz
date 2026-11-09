@@ -1,0 +1,17 @@
+\begin{tikzpicture}[>=latex']
+	% частинки: щільність модульована як cos(kx)
+	\foreach \i in {0,1,...,59} {
+		\pgfmathsetmacro{\xs}{0.1*\i - 0.17*sin(\i*12)}
+		\foreach \j in {0,1,2,3,4} {
+			\fill[blue!60!black] ({\xs},{0.17*\j}) circle (0.8pt);
+		}
+	}
+	% профіль густини
+	\draw[->] (-0.2,-0.8) -- (6.4,-0.8) node[right] {$x$};
+	\draw[->] (0,-1.5) -- (0,-0.1) node[above, font=\scriptsize] {$\delta\rho$};
+	\draw[very thick, red!70!black, domain=0:6.0, samples=80, variable=\x]
+		plot ({\x},{-0.8 + 0.5*cos(\x*120)});
+	% напрямок поширення
+	\draw[->, very thick] (0.3,1.1) -- (1.6,1.1) node[midway, above, font=\scriptsize] {$\vect k$};
+	\node[font=\scriptsize] at (3.5,1.0) {стискання $\leftrightarrow$ розрідження, $\delta\vect v\parallel\vect k$};
+\end{tikzpicture}

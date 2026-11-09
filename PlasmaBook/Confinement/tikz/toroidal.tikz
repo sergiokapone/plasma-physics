@@ -1,0 +1,20 @@
+\tdplotsetmaincoords{65}{20}
+\begin{tikzpicture}[tdplot_main_coords, scale=0.9, >=latex']
+	% тор: меридіанні кола
+	\foreach \ph in {0,20,...,340} {
+		\draw[gray!55, thin, domain=0:360, samples=40, variable=\t]
+			plot ({(3+1.0*cos(\t))*cos(\ph)}, {(3+1.0*cos(\t))*sin(\ph)}, {1.0*sin(\t)});
+	}
+	% вкладена магнітна поверхня
+	\foreach \ph in {0,30,...,330} {
+		\draw[blue!30, thin, domain=0:360, samples=40, variable=\t]
+			plot ({(3+0.5*cos(\t))*cos(\ph)}, {(3+0.5*cos(\t))*sin(\ph)}, {0.5*sin(\t)});
+	}
+	% гвинтова силова лінія (q = 3)
+	\draw[very thick, red!70!black, domain=0:1080, samples=500, variable=\f]
+		plot ({(3+0.75*cos(\f/3*1))*cos(\f)}, {(3+0.75*cos(\f/3*1))*sin(\f)}, {0.75*sin(\f/3*1)});
+	% позначення
+	\draw[->, very thick, blue!70!black] (3,-3.2,0.5) -- ++(1.2,0,0) node[right, font=\footnotesize] {$B_\varphi$};
+	\node[font=\footnotesize, red!70!black] at (-3.6,0,1.3) {гвинтова лінія};
+	\draw[->, very thick, green!45!black] (0,3,1.6) -- ++(0,0.1,0.9) node[above, font=\footnotesize] {$B_\theta$};
+\end{tikzpicture}

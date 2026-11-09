@@ -2,8 +2,8 @@
     declare function = {
     R = 0.5;
     dR = 0.05;
-    x(\t)=(1-(R+dR*\t)*cos(\t r));
-    y(\t)=(R+dR*\t)*sin(\t r);
+    gdx(\t)=(1-(R+dR*\t)*cos(\t r));
+    gdy(\t)=(R+dR*\t)*sin(\t r);
     },
 ]
     \draw[-latex] (0, 0) -- ++(0, 2) node[right] {$y$};
@@ -25,9 +25,9 @@
         mark=at position 0.85 with {\arrow{latex}},
         },
         postaction={decorate}
-    ] plot ( {x(\t)}, {y(\t)});
+    ] plot ( {gdx(\t)}, {gdy(\t)});
 
-    \node[circle, ball color=blue, inner sep=0, text=white] at ({x(pi/2)}, {y(pi/2)}) {$+$};
+    \node[circle, ball color=blue, inner sep=0, text=white] at ({gdx(pi/2)}, {gdy(pi/2)}) {$+$};
 
     \draw[thick, -latex] (1,0) -- node[below, font=\scriptsize] {$\vec{v}_{\nabla B}$} ++(-0.5,0);
 
@@ -38,9 +38,9 @@
             mark=at position 0.6 with {\arrow[xshift=2pt]{latex}},
             },
             postaction={decorate}
-        ] plot ( {3-0.5*x(\t)}, {0.5*y(\t)});
+        ] plot ( {3-0.5*gdx(\t)}, {0.5*gdy(\t)});
 
-        \node[circle, ball color=red, inner sep=0.5pt, text=white] at ({3-0.5*x(pi/2)}, {0.5*y(pi/2)}) {\tikz\draw[] (0,0) -- (0.1,0);};
+        \node[circle, ball color=red, inner sep=0.5pt, text=white] at ({3-0.5*gdx(pi/2)}, {0.5*gdy(pi/2)}) {\tikz\draw[] (0,0) -- (0.1,0);};
 
         \draw[thick, -latex] (2.5,0) --  node[anchor=north west, font=\scriptsize] {$\vec{v}_{\nabla B}$} ++(0.5,0);
 \end{tikzpicture}

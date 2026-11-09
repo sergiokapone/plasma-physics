@@ -1,0 +1,21 @@
+\begin{tikzpicture}[>=latex']
+	% (а) m = 0: перетяжки
+	\begin{scope}
+		\draw[very thick, blue!70!black, domain=0:4, samples=80, variable=\t] plot ({\t},{0.8-0.28*cos(\t*180)});
+		\draw[very thick, blue!70!black, domain=0:4, samples=80, variable=\t] plot ({\t},{-0.8+0.28*cos(\t*180)});
+		\draw[->, thick, red!70!black] (-0.3,0) -- (4.3,0) node[right, font=\scriptsize] {$J$};
+		\foreach \xx in {0,2,4} {
+			\draw[->, thick, orange!85!black] (\xx,0.56) -- (\xx,0.25);
+			\draw[->, thick, orange!85!black] (\xx,-0.56) -- (\xx,-0.25);
+		}
+		\node[font=\footnotesize] at (2,-1.55) {(а) перетяжки, $m=0$};
+	\end{scope}
+	% (б) m = 1: викривлення
+	\begin{scope}[xshift=6.3cm]
+		\draw[very thick, blue!70!black, domain=0:4, samples=80, variable=\t] plot ({\t},{0.8+0.45*sin(\t*180)});
+		\draw[very thick, blue!70!black, domain=0:4, samples=80, variable=\t] plot ({\t},{-0.8+0.45*sin(\t*180)});
+		\draw[->, thick, red!70!black, domain=0:4, samples=80, variable=\t] plot ({\t},{0.45*sin(\t*180)});
+		\node[font=\scriptsize, red!70!black] at (4.35,0.3) {$J$};
+		\node[font=\footnotesize] at (2,-1.55) {(б) викривлення, $m=1$};
+	\end{scope}
+\end{tikzpicture}
