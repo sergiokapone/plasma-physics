@@ -1,0 +1,13 @@
+\begin{tikzpicture}[x=0.9cm, y=1.2cm, font=\footnotesize]
+    % осі
+    \draw[-latex] (-3.2,0) -- (3.3,0);
+    \node[anchor=north east] at (3.3,-0.1) {$\omega-\omega_i$};
+    \draw[-latex] (0,0) -- (0,2.6) node[above] {$S(\omega)$};
+    % гауссові спектри для двох температур (однакова площа)
+    \draw[blue!70!black, very thick, domain=-3:3, samples=100, smooth]
+        plot (\x, {1.8*exp(-\x*\x/0.5)});
+    \draw[red!70!black, thick, dashed, domain=-3:3, samples=100, smooth]
+        plot (\x, {0.9*exp(-\x*\x/2)});
+    \node[blue!70!black, anchor=west] at (0.5,1.65) {$T_1$};
+    \node[red!70!black, anchor=west] at (1.7,0.6) {$T_2>T_1$};
+\end{tikzpicture}

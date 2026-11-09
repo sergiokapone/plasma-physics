@@ -1,0 +1,22 @@
+\begin{tikzpicture}[x=0.9cm, y=1.2cm, font=\footnotesize]
+    % осі
+    \draw[-latex] (-3.2,0) -- (3.3,0);
+    \node[anchor=north east] at (3.3,-0.4) {$\omega-\omega_i$};
+    \draw[-latex] (0,0) -- (0,2.6) node[above] {$S(\omega)$};
+    % іонна компонента: два вузькі іонно-звукові піки
+    \draw[blue!70!black, very thick, domain=-1:1, samples=120, smooth]
+        plot (\x, {1.0*exp(-(\x-0.3)*(\x-0.3)/0.03)+1.0*exp(-(\x+0.3)*(\x+0.3)/0.03)});
+    % електронні сателіти на частотах Бома--Гросса
+    \draw[red!70!black, very thick, domain=1.4:3, samples=60, smooth]
+        plot (\x, {0.3*exp(-(\x-2.2)*(\x-2.2)/0.15)});
+    \draw[red!70!black, very thick, domain=-3:-1.4, samples=60, smooth]
+        plot (\x, {0.3*exp(-(\x+2.2)*(\x+2.2)/0.15)});
+    % підписи
+    \node[blue!70!black] at (0,2.0) {іонна компонента};
+    \node[red!70!black, align=center, font=\scriptsize] at (2.2,0.75) {електронний\\сателіт};
+    \node[red!70!black, align=center, font=\scriptsize] at (-2.2,0.75) {електронний\\сателіт};
+    % позначки на осі
+    \draw (2.2,0.05) -- (2.2,-0.05) node[below] {$\omega_{\mathrm{БГ}}$};
+    \draw (-2.2,0.05) -- (-2.2,-0.05) node[below] {$-\omega_{\mathrm{БГ}}$};
+    \draw (0.3,0.05) -- (0.3,-0.05) node[below] {$kc_s$};
+\end{tikzpicture}

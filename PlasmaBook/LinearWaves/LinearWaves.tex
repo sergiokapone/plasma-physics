@@ -461,6 +461,22 @@ $\omega_{pe}<\omega$, а~$X$-мода другої гармоніки ($2\omega_
 діаграму Клеммова--Малея--Ендрюса (CMA), яка показує, куди хвиля може дійти за заданих $n$ і~$B$, ми
 опускаємо; її можна знайти в~монографії Стікса та в~курсі Чена (§4.18).
 
+\subsection*{Як це вимірюють: обертання Фарадея}\label{sec:faraday-diagnostics}
+Лінійно поляризована хвиля, що йде вздовж $\vect B_0$, є сумою $R$- і~$L$-хвиль, які мають різні
+показники заломлення $N_R\neq N_L$. Через набіг різниці фаз вони повертають площину поляризації.
+Для $\omega\gg\omega_{pe},\omega_{ce}$ з~\eqref{eq:stix-RLP}
+$N_{R,L}\simeq1-\dfrac{\omega_{pe}^2}{2\omega^2}\bigl(1\mp\dfrac{\omega_{ce}}\omega\bigr)$, тож кут повороту
+\begin{equation}\label{eq:faraday-rotation}
+	\tcbhighmath{\psi=\frac\omega{2c}\int(N_R-N_L)\,dl=\frac{e^3\lambda^2}{2\pi m_e^2c^4}\int n_eB_\parallel\,dl
+	\approx2{,}6\times10^{-17}\lambda^2\!\int n_eB_\parallel\,dl}
+\end{equation}
+(СГС: $\lambda$ і~$l$ у~см, $n_e$ у~см$^{-3}$, $B_\parallel$ у~Гс; $\psi$ у~радіанах). Оскільки $\psi\propto\int nB_\parallel\,dl$,
+поєднання з~інтерферометром (фаза $\propto\int n\,dl$, розд.~\ref{sec:wave-diagnostics}) дає
+$\int B_\parallel\,dl$, тобто інформацію про поле \emph{всередині} плазми, зокрема про полоїдальне поле й~розподіл
+струму в~токамаку. У~астрофізиці той самий ефект ($\psi\propto\lambda^2$) дає магнітне поле міжзоряного
+середовища за пульсарами. Числову оцінку для токамака див. у~задачі~\ref{prb:FaradayRotation}.
+Метод вимагає $\omega\gg\omega_{ce}$, інакше переважає ефект Коттона--Мутона (двопроменезаломлення при $\vect k\perp\vect B_0$).
+
 
 
 %% ========================================================

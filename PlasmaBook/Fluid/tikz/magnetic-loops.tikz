@@ -1,0 +1,21 @@
+\begin{tikzpicture}[scale=0.8, font=\footnotesize]
+    % стінка камери
+    \draw[gray, very thick] (0,0) circle (1.9);
+    % плазма
+    \shade[inner color=orange!70, outer color=orange!15] (0,0) circle (1.0);
+    \node at (0,0) {$I_p$};
+    \node[font=\scriptsize] at (0,-0.55) {$\odot\,\vect B_t$};
+    % діамагнітна петля
+    \draw[red!70!black, thick] (0,0) circle (1.6);
+    % пояс Роговського: витки
+    \draw[blue!70!black] (0,0) circle (1.35);
+    \foreach \a in {0,15,...,345}{
+        \draw[blue!70!black, thick] (\a:1.27) -- (\a:1.43);
+    }
+    % магнітний зонд на стінці
+    \node[draw, fill=gray!40, minimum size=0.2cm, inner sep=0pt, rotate=45] at (45:1.9) {};
+    % підписи
+    \draw[blue!70!black] (20:1.35) -- (2.3,0.9) node[right] {пояс Роговського};
+    \draw[red!70!black] (-25:1.6) -- (2.3,-0.9) node[right] {діамагнітна петля};
+    \draw (45:1.9) -- (2.3,1.9) node[right] {магнітний зонд};
+\end{tikzpicture}

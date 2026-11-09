@@ -1,0 +1,37 @@
+\begin{tikzpicture}[
+    scale=1,
+    beam/.style={red!70!black, thick},
+    arr/.style={-latex, red!70!black, thick},
+    bs/.style={draw=black, fill=cyan!20, thick},
+    mir/.style={draw=black, line width=2pt},
+    font=\footnotesize,
+]
+    % джерело
+    \node[draw, thick, fill=gray!15, minimum width=0.9cm, minimum height=0.55cm, align=center] (src) at (-0.9,0) {НВЧ};
+    % промені
+    \draw[beam] (src.east) -- (0,0);
+    \draw[arr] (0,0) -- (1.0,0);
+    \draw[beam] (1.0,0) -- (3.2,0);
+    \draw[arr] (3.2,0) -- (3.2,0.8);
+    \draw[beam] (3.2,0.8) -- (3.2,1.6);
+    \draw[arr] (0,0) -- (0,0.8);
+    \draw[beam] (0,0.8) -- (0,1.6);
+    \draw[arr] (0,1.6) -- (1.8,1.6);
+    \draw[beam] (1.8,1.6) -- (3.2,1.6);
+    \draw[arr] (3.2,1.6) -- (3.9,1.6);
+    % плазма в~зондувальному плечі
+    \shade[inner color=orange!60, outer color=orange!10, draw=orange!80!black] (1.6,0) ellipse (0.55 and 0.4);
+    \draw[beam] (1.05,0) -- (2.15,0);
+    \node[below=0.4cm] at (1.6,0) {плазма, $\int n_e\,dl$};
+    % світлоподільники
+    \draw[bs] (-0.18,-0.18) -- (0.18,0.18);
+    \draw[bs] (3.02,1.42) -- (3.38,1.78);
+    % дзеркала
+    \draw[mir] (-0.2,1.8) -- (0.2,1.4);
+    \draw[mir] (3.0,-0.2) -- (3.4,0.2);
+    % детектор
+    \draw[thick, fill=gray!30] (3.9,1.35) rectangle (4.3,1.85);
+    \node[right] at (4.3,1.6) {детектор};
+    % підписи
+    \node[above] at (1.6,1.6) {опорне плече};
+\end{tikzpicture}
