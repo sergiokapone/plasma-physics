@@ -1,0 +1,22 @@
+\begin{tikzpicture}[>=latex, x=1cm, y=1cm]
+	% Позитивний іон, що стартує зі спокою в момент вмикання E (B -- у площину рисунка)
+	\def\a{0.5}
+	\draw[->] (-1.0,0) -- (3.6,0) node[right] {$x\ (\parallel\vect E)$};
+	\draw[->] (0,-0.8) -- (0,6.6) node[above] {$y\ (\parallel\vect E\times\vect B)$};
+	% траєкторія: x = a(1-cos t), y = a(t - sin t)
+	\draw[thick, blue!70!black, domain=0:12.2, samples=120, smooth, variable=\t]
+		plot ({\a*(1-cos(\t r))}, {\a*(\t - sin(\t r))});
+	% початкова лінія гвинтового центру та зміщений центр
+	\draw[dashed, gray] (\a,-0.4) -- (\a,6.0);
+	\draw[<->, red!70!black, thick] (0,-0.5) -- (\a,-0.5);
+	\node[font=\scriptsize, red!70!black, below] at (\a/2,-0.5) {$\Delta x_{\rm pol}$};
+	% поле E
+	\draw[->, very thick, orange!80!black] (-0.9,3.6) -- (-0.1,3.6);
+	\node[font=\small, orange!80!black, above] at (-0.5,3.6) {$\vect E$};
+	% швидкість дрейфу
+	\draw[->, thick] (2.6,4.4) -- (2.6,5.4);
+	\node[font=\small, right] at (2.6,5.4) {$\vect v_E$};
+	\node[font=\small] at (2.4,1.2) {$\otimes\ \vect B$};
+	\fill (0,0) circle (1.8pt);
+	\node[font=\scriptsize, below left] at (0,0) {старт};
+\end{tikzpicture}

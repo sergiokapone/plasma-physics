@@ -7,7 +7,7 @@
 		legend style={at={(0.97,0.97)}, anchor=north east, font=\scriptsize, draw=none, fill=none}]
 		% max boltzmann tail: exp(-E/kT), kT = 10 keV
 		\addplot[thick, blue!70!black, domain=0.5:110, samples=200] {exp(-x/10)};
-		\addlegendentry{$e^{-E/k_{\mathrm B}T}$ ($k_{\mathrm B}T=10$~кеВ)}
+		\addlegendentry{$e^{-E/T}$ ($T=10$~кеВ)}
 		% Gamow penetration: exp(-sqrt(E_G/E)) , E_G = 1175 keV ; normalized to 1 at 110 keV
 		\addplot[thick, green!50!black, domain=0.5:110, samples=200] {exp(-sqrt(1175/x))/0.0323*1.0};
 		\addlegendentry{$e^{-\sqrt{E_G/E}}$ (відн.)}

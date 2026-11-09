@@ -1,0 +1,14 @@
+\begin{tikzpicture}[>=latex]
+	\draw[dashed, gray] (-3.2,-2) -- (-3.2,2);
+	\node[font=\scriptsize, gray, rotate=90] at (-3.45,0) {вісь тора};
+	\draw[thick, fill=orange!20] (0,0) circle (1.5);
+	\node[font=\scriptsize] at (0,0) {$\otimes\ \vect B$};
+	\foreach \a in {70,90,110} {\node[font=\scriptsize, red!70!black] at (\a:1.1) {$+$};}
+	\foreach \a in {250,270,290} {\node[font=\scriptsize, blue!70!black] at (\a:1.1) {$-$};}
+	\node[font=\scriptsize, red!70!black, anchor=south] at (0,1.55) {іони};
+	\node[font=\scriptsize, blue!70!black, anchor=north] at (0,-1.55) {електрони};
+	\draw[->, very thick, green!50!black] (0.3,0.9) -- (0.3,-0.9) node[midway, right, font=\scriptsize] {$\vect E$};
+	\draw[->, very thick, red!70!black] (1.2,0) -- (2.6,0) node[right, font=\scriptsize] {$\vect v_E$ (назовні)};
+	\draw[->, thick, gray!60!black] (-1.8,0.8) -- (-2.8,0.8) node[midway, above, font=\scriptsize] {$\nabla B$};
+	\draw[->, thick] (-2.8,-0.9) -- (-1.8,-0.9) node[midway, below, font=\scriptsize] {$R$};
+\end{tikzpicture}

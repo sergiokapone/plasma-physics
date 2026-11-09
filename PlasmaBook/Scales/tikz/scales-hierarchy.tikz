@@ -1,0 +1,73 @@
+\begin{tikzpicture}[>=latex]
+\node[anchor=west, font=\small\bfseries] at (-0.3,1.7) {Довжини};
+
+\begin{scope}[x=1.036cm]
+\draw[->, thick] (-0.3,0) -- (11.5,0);
+\draw (0,2pt) -- (0,-2pt) node[below, font=\tiny] {$10^{-5}$};
+\draw (1,2pt) -- (1,-2pt) node[below, font=\tiny] {$10^{-4}$};
+\draw (2,2pt) -- (2,-2pt) node[below, font=\tiny] {$10^{-3}$};
+\draw (3,2pt) -- (3,-2pt) node[below, font=\tiny] {$10^{-2}$};
+\draw (4,2pt) -- (4,-2pt) node[below, font=\tiny] {$10^{-1}$};
+\draw (5,2pt) -- (5,-2pt) node[below, font=\tiny] {$10^{0}$};
+\draw (6,2pt) -- (6,-2pt) node[below, font=\tiny] {$10^{1}$};
+\draw (7,2pt) -- (7,-2pt) node[below, font=\tiny] {$10^{2}$};
+\draw (8,2pt) -- (8,-2pt) node[below, font=\tiny] {$10^{3}$};
+\draw (9,2pt) -- (9,-2pt) node[below, font=\tiny] {$10^{4}$};
+\draw (10,2pt) -- (10,-2pt) node[below, font=\tiny] {$10^{5}$};
+\draw (11,2pt) -- (11,-2pt) node[below, font=\tiny] {$10^{6}$};
+\node[anchor=west, font=\scriptsize] at (-0.3,-0.65) {$\ell$, см};
+\fill[black] (0.30103,0) circle (1.6pt);
+\draw[black, thin] (0.30103,0) -- (0.30103,0.35);
+\node[black, font=\scriptsize, anchor=south] at (0.30103,0.35) {$n^{-1/3}$};
+\fill[blue!70!black] (2.68124,0) circle (1.6pt);
+\draw[blue!70!black, thin] (2.68124,0) -- (2.68124,1.05);
+\node[blue!70!black, font=\scriptsize, anchor=south] at (2.68124,1.05) {$r_{Le}$};
+\fill[black] (2.86923,0) circle (1.6pt);
+\draw[black, thin] (2.86923,0) -- (2.86923,0.35);
+\node[black, font=\scriptsize, anchor=south] at (2.86923,0.35) {$\lambda_{De}$};
+\fill[black] (3.72428,0) circle (1.6pt);
+\draw[black, thin] (3.72428,0) -- (3.72428,0.70);
+\node[black, font=\scriptsize, anchor=south] at (3.72428,0.70) {$c/\omega_{pe}$};
+\fill[blue!70!black] (4.4624,0) circle (1.6pt);
+\draw[blue!70!black, thin] (4.4624,0) -- (4.4624,0.35);
+\node[blue!70!black, font=\scriptsize, anchor=south] at (4.4624,0.35) {$r_{Li}$};
+\fill[red!70!black] (7,0) circle (1.6pt);
+\draw[red!70!black, thin] (7,0) -- (7,0.35);
+\node[red!70!black, font=\scriptsize, anchor=south] at (7,0.35) {$L$};
+\fill[red!70!black] (11,0) circle (1.6pt);
+\draw[red!70!black, thin] (11,0) -- (11,0.35);
+\node[red!70!black, font=\scriptsize, anchor=south] at (11,0.35) {$\lambda_{\rm пр}$};
+\end{scope}
+\begin{scope}[yshift=-3.6cm]
+\node[anchor=west, font=\small\bfseries] at (-0.3,1.7) {Частоти};
+\begin{scope}[x=1.036cm]
+\draw[->, thick] (-0.3,0) -- (9.5,0);
+\draw (0,2pt) -- (0,-2pt) node[below, font=\tiny] {$10^{3}$};
+\draw (1,2pt) -- (1,-2pt) node[below, font=\tiny] {$10^{4}$};
+\draw (2,2pt) -- (2,-2pt) node[below, font=\tiny] {$10^{5}$};
+\draw (3,2pt) -- (3,-2pt) node[below, font=\tiny] {$10^{6}$};
+\draw (4,2pt) -- (4,-2pt) node[below, font=\tiny] {$10^{7}$};
+\draw (5,2pt) -- (5,-2pt) node[below, font=\tiny] {$10^{8}$};
+\draw (6,2pt) -- (6,-2pt) node[below, font=\tiny] {$10^{9}$};
+\draw (7,2pt) -- (7,-2pt) node[below, font=\tiny] {$10^{10}$};
+\draw (8,2pt) -- (8,-2pt) node[below, font=\tiny] {$10^{11}$};
+\draw (9,2pt) -- (9,-2pt) node[below, font=\tiny] {$10^{12}$};
+\node[anchor=west, font=\scriptsize] at (-0.3,-0.65) {$\omega$, $\mathrm{с}^{-1}$};
+\fill[red!70!black] (0.69897,0) circle (1.6pt);
+\draw[red!70!black, thin] (0.69897,0) -- (0.69897,0.35);
+\node[red!70!black, font=\scriptsize, anchor=south] at (0.69897,0.35) {$\nu_{ei}$};
+\fill[blue!70!black] (5.38021,0) circle (1.6pt);
+\draw[blue!70!black, thin] (5.38021,0) -- (5.38021,0.35);
+\node[blue!70!black, font=\scriptsize, anchor=south] at (5.38021,0.35) {$\omega_{ci}$};
+\fill[blue!70!black] (6.90309,0) circle (1.6pt);
+\draw[blue!70!black, thin] (6.90309,0) -- (6.90309,0.35);
+\node[blue!70!black, font=\scriptsize, anchor=south] at (6.90309,0.35) {$\omega_{LH}$};
+\fill[black] (8.74819,0) circle (1.6pt);
+\draw[black, thin] (8.74819,0) -- (8.74819,0.35);
+\node[black, font=\scriptsize, anchor=south] at (8.74819,0.35) {$\omega_{pe}$};
+\fill[blue!70!black] (8.94448,0) circle (1.6pt);
+\draw[blue!70!black, thin] (8.94448,0) -- (8.94448,1.05);
+\node[blue!70!black, font=\scriptsize, anchor=south] at (8.94448,1.05) {$\omega_{ce}$};
+\end{scope}
+\end{scope}
+\end{tikzpicture}

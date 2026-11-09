@@ -16,7 +16,7 @@
 	\node[font=\footnotesize] at (3.7,-3.85) {межа шару};
 	% рівень kT/2e
 	\draw[dotted] (0,-0.5) -- (3,-0.5);
-	\node[left, font=\footnotesize] at (0,-0.5) {$-\dfrac{k_{\rm B}T_e}{2e}$};
+	\node[left, font=\footnotesize] at (0,-0.5) {$-\dfrac{T_e}{2e}$};
 	\draw[dotted] (0,-3.3) -- (5.9,-3.3);
 	\node[left, font=\footnotesize] at (0,-3.3) {$\varphi_f$};
 \end{tikzpicture}
