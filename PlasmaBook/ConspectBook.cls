@@ -765,9 +765,12 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 [0pt]{\sffamily\bfseries\large\protect\addvspace{25pt}\addvspace{1.5ex}}
 {}{}
 {\hfill\contentspage}%
-[\addvspace{0.7ex}\titlerule\addvspace{10pt}]%
+[\addvspace{0.7ex}\addvspace{10pt}]%
 
-\titleclass{\part}{top}          % частина завжди починається "з верху" нової сторінки
+% ширший слот під номер секції у змісті (10.10, 11.9 --- без накладання на назву)
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3.3em}}
+
+\titleclass{\part}{top}         % частина завжди починається "з верху" нової сторінки
 \newcommand\partbreak{\clearpage} % ручний розрив перед частиною (за потреби у тексті)
 \RequirePackage{etoolbox}
 \pretocmd{\part}{\clearpage}{}{}
@@ -776,7 +779,8 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % та горизонтальна лінія праворуч від нього
 \titleformat{\chapter}[block]
 {\normalfont\sffamily}{}{0pt}
-{\parbox[b]{\chapnumb}{%
+{\gdef\hdrnum{\thechapter.\ }\gdef\hdrtitle{#1}%
+	\parbox[b]{\chapnumb}{%
 		\color{themecolordark}\fontsize{100}{90}\selectfont\thechapter}%
 	\parbox[b]{\dimexpr\textwidth-\chapnumb\relax}{%
 		\raggedleft%
@@ -786,7 +790,8 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % Той самий вигляд, але без номера — для непронумерованих глав (\chapter*)
 \titleformat{name=\chapter,numberless}[block]
 {\normalfont\sffamily}{}{0pt}
-{\parbox[b]{\chapnumb}{%
+{\gdef\hdrnum{}\gdef\hdrtitle{#1}%
+	\parbox[b]{\chapnumb}{%
 		\mbox{}}%
 	\parbox[b]{\dimexpr\textwidth-\chapnumb\relax}{%
 		\raggedleft%
@@ -809,9 +814,9 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % Колонтитули: на парних сторінках — назва глави, на непарних — теж (крім
 % спеціальних стилів для Відповідей/Додатків/Бібліографії, де замість назви
 % глави друкується фіксований текст). Номер сторінки — завжди знизу по центру.
+\gdef\hdrnum{}\gdef\hdrtitle{}
 \newpagestyle{main}{\headrule%
-	\sethead{\ifodd\thepage\relax\else\itshape\small\thechapter.\ \chaptertitle\fi}{}{\ifodd\thepage\itshape\small\thechapter.\
-			\chaptertitle\else\relax\fi}
+	\sethead{\ifodd\thepage\relax\else\itshape\small\hdrnum\hdrtitle\fi}{}{\ifodd\thepage\itshape\small\hdrnum\hdrtitle\else\relax\fi}
 	\setfoot{}{\small\thepage}{}}
 
 \newpagestyle{answers}{\headrule%
