@@ -538,32 +538,33 @@ $k_\perp r_L\to0$, $\omega\ll\omega_{ci}$.
 
 \begin{figure}[ht]
 \centering
-\resizebox{\linewidth}{!}{%
 \begin{forest}
 for tree={
 draw,
 rounded corners,
 align=center,
-edge={->},
-l sep=12mm,
-s sep=7mm,
+l sep=8mm,
+s sep=2mm,
+inner xsep=3pt,
 font=\small,
+thick,
+edge={->, thick, draw=black!60},
 }
-[Кінетичний опис
-[Рідинний опис
-[Магнітогідродинаміка
-[Альвенівська хвиля]
-[Швидка магнітозвукова хвиля]
-[Повільна магнітозвукова хвиля]
+[Кінетичний опис, draw=themecolordark, fill=themecolordark!18, font=\small\bfseries
+[Рідинний опис, for tree={draw=themecolorlight, fill=themecolorlight!12}
+[Магнітогідро-\\динаміка, fill=themecolorlight!22
+[Альвенівська\\хвиля, for tree={fill=teal!15, draw=teal!80!black}]
+[Швидка\\магніто-\\звукова\\хвиля, for tree={fill=teal!15, draw=teal!80!black}]
+[Повільна\\магніто-\\звукова\\хвиля, for tree={fill=teal!15, draw=teal!80!black}]
 ]
 ]
-[Кінетичні поправки
-[скінченний ларморівський радіус]
-[резонансна взаємодія]
-[залежність від розподілу за швидкостями]
+[Кінетичні поправки, for tree={draw=malina!80, fill=orange!15}
+[скінченний\\ларморівський\\радіус]
+[резонансна\\взаємодія]
+[залежність\\від розподілу\\за швидкостями]
 ]
 ]
-\end{forest}}
+\end{forest}
 \caption{Схематичний зв'язок між кінетичним і~МГД-описами хвиль. МГД-хвилі є
 великомасштабною межею загальної кінетичної картини.}
 \label{fig:kinetic-mhd-wave-bridge}
