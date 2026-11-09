@@ -1,0 +1,17 @@
+\begin{tikzpicture}
+	\begin{axis}[
+		width=0.90\linewidth, height=0.58\linewidth,
+		xmode=log, xmin=0.1, xmax=100, ymin=0, ymax=1500,
+		grid=major, grid style={gray!25},
+		xlabel={$pd$, Торр$\,\cdot\,$см}, ylabel={$V_b$, В},
+		legend style={at={(0.03,0.97)}, anchor=north west, font=\scriptsize, draw=none, fill=white, fill opacity=0.8, text opacity=1},
+		]
+		\addplot[very thick, red!70!black, domain=0.07:4, samples=200, variable=\t]
+		({0.308*exp(\t)}, {112.4*exp(\t)/\t});
+		\addlegendentry{повітря}
+		\addplot[very thick, blue!70!black, domain=0.07:4, samples=200, variable=\t]
+		({0.385*exp(\t)}, {69.3*exp(\t)/\t});
+		\addlegendentry{аргон}
+		\addplot[only marks, mark=*, mark size=2pt, black] coordinates {(0.837,305) (1.05,189)};
+	\end{axis}
+\end{tikzpicture}
