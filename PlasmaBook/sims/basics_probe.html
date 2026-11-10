@@ -1,0 +1,378 @@
+<!DOCTYPE html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Зонд Ленгмюра</title><script src="shared/theme.js"></script><link rel="stylesheet" href="shared/sim.css">
+<script src="shared/sim.js"></script><script src="shared/physics.js"></script></head>
+<body>
+<header class="top"><h1>Зонд Ленгмюра: ВАХ → T<sub>e</sub>, V<sub>f</sub>, V<sub>p</sub>, n</h1><span class="ref">Розд. 1.7, рис. 1.6, ф-ли (1.12)–(1.13)</span><span id="theme-slot"></span></header>
+<div id="app"><div id="panel">
+  <section id="s-loop"></section>
+  <section><h2>Режими</h2><div id="s-pre"></div></section>
+  <section><h2>Параметри</h2><div id="s-ctl"></div></section>
+  <section><h2>Величини</h2><div id="s-out"></div></section>
+  <section class="observe"><h2>Що спостерігати</h2><ol>
+    <li>Між <i class="m">V<sub>f</sub></i> і <i class="m">V<sub>p</sub></i> струм електронів зростає як <i class="m">e<sup>eV/T<sub>e</sub></sup></i>: нахил прямої ln(<i class="m">I + I<sub>is</sub></i>) дає <i class="m">T<sub>e</sub></i>, а злам — потенціал плазми (розд. 1.7, рис. 1.6).</li>
+    <li>Плаваючий потенціал <i class="m">V<sub>f</sub></i> ≈ −3,3 <i class="m">T<sub>e</sub>/e</i> для водню і глибший для аргону — порівняйте з (1.12).</li>
+    <li>Гарячий хвіст (<i class="m">f</i> &gt; 0) викривлює ln-графік: «виміряна» <i class="m">T<sub>e</sub></i> залежить від вікна фіту й завищена; <i class="m">n</i> з <i class="m">I<sub>es</sub></i> і з <i class="m">I<sub>is</sub></i> розходяться.</li>
+    <li>Подвійний зонд плаває як ціле: струм обмежений <i class="m">±I<sub>is</sub></i>, а <i class="m">T<sub>e</sub></i> визначає лише найшвидші електрони біля <i class="m">V<sub>f</sub></i> — формула (1.13), задачі 1.3–1.4.</li>
+  </ol></section>
+  <section class="note"><p>Модель: плоский зонд, тонкий шар, зонд ≪ довжини вільного пробігу, <i class="m">B</i> = 0. Іонний струм — потік Бома з множником <i class="m">e<sup>−1/2</sup></i> передшару, <i class="m">T<sub>i</sub></i> = 0,1 <i class="m">T<sub>e</sub></i>; електрони — максвеллівські (+ гарячий хвіст частки <i class="m">f</i>). В анімації потенціал у шарі схематично лінійний, частинки сповільнені, один хрестик = <i class="m">K</i> електронів; статистика влучань відтворює <i class="m">I/I<sub>is</sub></i>.</p>
+  <p>Книга: розд. 1.7, рис. 1.6, ф-ли (1.12)–(1.13), задачі 1.3–1.4.</p></section>
+</div><div id="stage" class="grid3"><div class="view" id="v-anim"></div><div class="view" id="v-iv"></div><div class="view" id="v-log"></div></div></div>
+
+<script>
+(function () {
+  var P = { mode: 'single', Te: 3, n0: 1e10, gas: '1836', S: 4, f: 0, Th: 3, noise: 0.01, lo: 0.2, hi: 0.8, V: -5, sweep: true, zoom: false, spf: 4 };
+  var ph = PSim.phys, C = PSim.C, fmt = PSim.fmt;
+
+  // ---------- фізика
+  var E = 1.602e-19, ME = 9.109e-31;
+  function mu() { return +P.gas; }
+  function vbar(T) { return Math.sqrt(8 * T * E / (Math.PI * ME)); }
+  function cur() {
+    var n = P.n0 * 1e6, S = P.S * 1e-6, Te = P.Te, mi = mu() * ME, Th = Te * P.Th;
+    return { Iis: Math.exp(-0.5) * E * n * Math.sqrt(Te * E / mi) * S,
+      Iec: 0.25 * E * n * (1 - P.f) * vbar(Te) * S, Ieh: 0.25 * E * n * P.f * vbar(Th) * S, Th: Th };
+  }
+  // струм на зонд при потенціалі V відносно плазми (електронний — додатний)
+  function Iof(V, c) {
+    var v = Math.min(V, 0), e = c.Iec * Math.exp(v / P.Te) + c.Ieh * Math.exp(v / c.Th), Ti = 0.1 * P.Te;
+    return e - (V < 0 ? c.Iis : c.Iis * Math.exp(-V / Ti));
+  }
+  function vfTrue(c) { return ph.bisect(function (V) { return Iof(V, c); }, -50 * P.Te, 0, 1e-10); }
+  function vfBook() { return -0.5 * P.Te * (Math.log(mu() / (2 * Math.PI)) + 1); }
+  // подвійний зонд: I(φ1) + I(φ1 − V) = 0
+  function dbl(V, c) {
+    var A = Math.abs(V);
+    var p1 = ph.bisect(function (p) { return Iof(p, c) + Iof(p - V, c); }, -60 * P.Te - A, A + 20 * P.Te, 1e-10);
+    return { I: Iof(p1, c), p1: p1, p2: p1 - V };
+  }
+  function gauss(r) { var u = Math.max(1e-12, r()), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+  // ---------- стан ----------
+  var G = {}, F = null, S = { parts: [], dir: 1 };
+  function gen() {
+    var c = cur(); G.c = c; G.vf = vfTrue(c);
+    if (P.mode === 'single') { G.a = G.vf - 6 * P.Te; G.b = 3 * P.Te; } else { G.a = -8 * P.Te; G.b = 8 * P.Te; }
+    var r = ph.rng(20261110); G.V = []; G.I = []; G.It = [];
+    for (var i = 0; i <= 200; i++) {
+      var V = G.a + (G.b - G.a) * i / 200, It = P.mode === 'single' ? Iof(V, c) : dbl(V, c).I;
+      G.V.push(V); G.It.push(It); G.I.push(It + P.noise * c.Iis * gauss(r));
+    }
+    fit();
+  }
+  function linreg(xs, ys) {
+    var n = xs.length, sx = 0, sy = 0, sxx = 0, sxy = 0;
+    for (var i = 0; i < n; i++) { sx += xs[i]; sy += ys[i]; sxx += xs[i] * xs[i]; sxy += xs[i] * ys[i]; }
+    var d = n * sxx - sx * sx; if (n < 3 || d === 0) return null;
+    var s = (n * sxy - sx * sy) / d; return { s: s, c: (sy - s * sx) / n };
+  }
+  function fitSingle() {
+    var V = G.V, I = G.I, n = V.length, R = {}, s = 0, i;
+    for (i = 0; i < 30; i++) s += I[i]; R.Iis = -s / 30;
+    R.vf = NaN;
+    for (i = 1; i < n; i++) if (I[i - 1] < 0 && I[i] >= 0) { R.vf = V[i - 1] + (V[i] - V[i - 1]) * (-I[i - 1]) / (I[i] - I[i - 1]); break; }
+    s = 0; for (i = n - 10; i < n; i++) s += I[i]; R.Ies = s / 10;
+    var vp = NaN; for (i = 0; i < n; i++) if (I[i] > 0.6 * R.Ies) { vp = V[i]; break; }
+    if (!isFinite(R.vf) || !isFinite(vp) || R.Ies <= 0 || R.Iis <= 0 || P.hi <= P.lo + 0.04) return null;
+    for (var it = 0; it < 3; it++) {
+      var w0 = R.vf + P.lo * (vp - R.vf), w1 = R.vf + P.hi * (vp - R.vf), xs = [], ys = [];
+      for (i = 0; i < n; i++) if (V[i] >= w0 && V[i] <= w1 && I[i] + R.Iis > 0) { xs.push(V[i]); ys.push(Math.log(I[i] + R.Iis)); }
+      var L = linreg(xs, ys); if (!L || L.s <= 0) return null;
+      R.Te = 1 / L.s; R.c = L.c; R.s = L.s; R.w0 = w0; R.w1 = w1;
+      vp = (Math.log(R.Ies) - L.c) / L.s;
+    }
+    R.vp = vp;
+    R.nis = R.Iis / (Math.exp(-0.5) * E * Math.sqrt(R.Te * E / (mu() * ME)) * P.S * 1e-6) / 1e6;
+    R.nes = 4 * R.Ies / (E * vbar(R.Te) * P.S * 1e-6) / 1e6;
+    return R;
+  }
+  function fitDouble() {
+    var V = G.V, I = G.I, n = V.length, R = {}, s1 = 0, s2 = 0, i;
+    for (i = 0; i < 15; i++) { s1 += I[i]; s2 += I[n - 1 - i]; }
+    R.Iis = 0.5 * (s2 - s1) / 15; if (R.Iis <= 0) return null;
+    var xs = [], ys = [], xl = [], yl = [];
+    for (i = 0; i < n; i++) {
+      if (Math.abs(I[i]) < 0.8 * R.Iis) { xs.push(V[i]); ys.push(Math.log((R.Iis + I[i]) / (R.Iis - I[i]))); }
+      if (Math.abs(I[i]) < 0.25 * R.Iis) { xl.push(V[i]); yl.push(I[i]); }
+    }
+    var L = linreg(xs, ys), K = linreg(xl, yl); if (!L || L.s <= 0 || !K || K.s <= 0) return null;
+    R.Te = 1 / L.s; R.c = L.c; R.s = L.s; R.Te0 = R.Iis / (2 * K.s); R.k = K.s; R.kc = K.c;
+    R.nis = R.Iis / (Math.exp(-0.5) * E * Math.sqrt(R.Te * E / (mu() * ME)) * P.S * 1e-6) / 1e6;
+    return R;
+  }
+  function fit() { F = P.mode === 'single' ? fitSingle() : fitDouble(); }
+
+  // анімація: частинки біля зонда (схематично)
+  function us() { return P.mode === 'single' ? 0.88 : 0.76; }
+  function phis() {
+    if (P.mode === 'single') { S.p1 = P.V; S.p2 = 0; S.Iop = Iof(P.V, G.c); }
+    else { var d = dbl(P.V, G.c); S.p1 = d.p1; S.p2 = d.p2; S.Iop = d.I; }
+  }
+  function resetCounters() {
+    var c = G.c, Ie = c.Iec + c.Ieh, re0;
+    S.ri = 0.25; re0 = S.ri * Ie / c.Iis;
+    var Ks = [1, 2, 5, 10, 20, 50, 100, 200]; S.K = Ks[Ks.length - 1];
+    for (var i = 0; i < Ks.length; i++) if (re0 / Ks[i] <= 1.2) { S.K = Ks[i]; break; }
+    S.re = re0 / S.K; S.ph = Ie > 0 ? c.Ieh / Ie : 0;
+    S.inj = 0; S.hi = 0; S.he = 0; phis();
+  }
+  function reset() {
+    gen(); S.parts = []; S.acc = [{ i: 0, e: 0 }, { i: 0, e: 0 }];
+    if (P.V < G.a || P.V > G.b) P.V = Math.max(G.a, Math.min(G.b, P.V));
+    resetCounters();
+  }
+  function spawn(sp, side) {
+    var T = sp === 0 ? 0.1 * P.Te : sp === 1 ? P.Te : P.Te * P.Th;
+    S.parts.push({ u: 0, d: 1, E: -Math.log(1 - Math.random()) * T, sp: sp, side: side, y: 0.1 + 0.8 * Math.random() });
+  }
+  function Uof(p, u) {
+    var a = us(), s = u > a ? (u - a) / (1 - a) : 0, f = (p.side === 0 ? S.p1 : S.p2) * s;
+    return p.sp === 0 ? f : -f;
+  }
+  function step() {
+    if (P.sweep) {
+      P.V += S.dir * (G.b - G.a) / 600;
+      if (P.V > G.b) { P.V = G.b; S.dir = -1; } if (P.V < G.a) { P.V = G.a; S.dir = 1; }
+      phis();
+    }
+    var sides = P.mode === 'single' ? 1 : 2;
+    for (var sd = 0; sd < sides; sd++) {
+      var ac = S.acc[sd]; ac.i += S.ri; ac.e += S.re;
+      while (ac.i >= 1) { ac.i -= 1; spawn(0, sd); if (sd === 0) S.inj++; }
+      while (ac.e >= 1) { ac.e -= 1; spawn(Math.random() < S.ph ? 2 : 1, sd); }
+    }
+    var keep = [];
+    for (var k = 0; k < S.parts.length; k++) {
+      var p = S.parts[k], K0 = p.E - Uof(p, p.u);
+      if (K0 < 0) { p.E = Uof(p, p.u); K0 = 0; }
+      var v = Math.min(0.05, (p.sp === 0 ? 0.004 : 0.012) * (0.3 + Math.sqrt(K0 / P.Te)));
+      var un = p.u + p.d * v;
+      if (p.E - Uof(p, Math.min(un, 1)) < 0) { p.d = -p.d; keep.push(p); continue; }
+      p.u = un;
+      if (p.u < 0) continue;
+      if (p.u >= 1) { if (p.side === 0) { if (p.sp === 0) S.hi++; else S.he++; } continue; }
+      keep.push(p);
+    }
+    S.parts = keep.length > 4000 ? keep.slice(keep.length - 4000) : keep;
+  }
+
+  // ---------- малювання ----------
+  function fs(w) { return w > 700 ? 15 : 13; }
+  function vline(ctx, m, x, y0, y1, col, dash) { PSim.curve(ctx, m, [x, x], [y0, y1], { color: col, width: 1.2, dash: dash }); }
+  function legend(ctx, m, f, items) {
+    items.forEach(function (it, i) {
+      var y = m.t + 8 + i * (f + 6), x = m.r - 8;
+      ctx.save(); ctx.strokeStyle = it.color; ctx.lineWidth = 2; ctx.setLineDash(it.dash || []);
+      ctx.beginPath(); ctx.moveTo(x - 26, y + f / 2); ctx.lineTo(x, y + f / 2); ctx.stroke(); ctx.restore();
+      PSim.label(ctx, it.text, x - 32, y + f / 2, { size: f - 1, color: C.fg, align: 'right', base: 'middle' });
+    });
+  }
+  function shade(ctx, m, x0, x1, col) {
+    var a = Math.max(m.l, Math.min(m.r, m.X(x0))), b = Math.max(m.l, Math.min(m.r, m.X(x1)));
+    ctx.fillStyle = col; ctx.fillRect(Math.min(a, b), m.t, Math.abs(b - a), m.b - m.t);
+  }
+  function xOf(p) { return P.mode === 'single' ? p.u : (p.side === 0 ? 0.5 + 0.5 * p.u : 0.5 - 0.5 * p.u); }
+  function phiAt(x) {
+    var a = us(), u, s;
+    if (P.mode === 'single') { s = x > a ? (x - a) / (1 - a) : 0; return S.p1 * s; }
+    u = x >= 0.5 ? 2 * x - 1 : 1 - 2 * x; s = u > a ? (u - a) / (1 - a) : 0;
+    return (x >= 0.5 ? S.p1 : S.p2) * s;
+  }
+
+  function drawA(ctx, w, h) {
+    var f = fs(w), lo = Math.min(0, S.p1, P.mode === 'single' ? 0 : S.p2), hi = Math.max(0, S.p1, P.mode === 'single' ? 0 : S.p2);
+    var pad = Math.max(0.5 * P.Te, 0.25 * (hi - lo));
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: 0, x1: 1, y0: lo - pad, y1: hi + pad, font: f,
+      xlabel: P.mode === 'single' ? 'x (схематично): плазма → шар → зонд' : 'x (схематично): зонд 2 ← плазма → зонд 1',
+      ylabel: 'φ, В', title: P.mode === 'single' ? 'Частинки біля зонда і потенціал φ(x)' : 'Подвійний зонд: частинки і φ(x)',
+      xfmt: function () { return ''; } });
+    var a = us(), sc = PSim.alpha(C.accent, 0.08);
+    if (P.mode === 'single') shade(ctx, m, a, 1, sc);
+    else { shade(ctx, m, 0.5 + 0.5 * a, 1, sc); shade(ctx, m, 0, 0.5 - 0.5 * a, sc); }
+    var xs = ph.linspace(0, 1, 300), ys = xs.map(phiAt);
+    PSim.curve(ctx, m, [0, 1], [0, 0], { color: C.muted, width: 1, dash: [3, 4] });
+    PSim.curve(ctx, m, xs, ys, { color: C.c1, width: 2.2 });
+    // частинки
+    PSim.clip(ctx, m);
+    S.parts.forEach(function (p) {
+      var x = m.X(xOf(p)), y = m.t + p.y * (m.b - m.t);
+      if (p.sp === 0) { ctx.fillStyle = PSim.alpha(C.ion, 0.85); ctx.beginPath(); ctx.arc(x, y, 3.2, 0, 2 * Math.PI); ctx.fill(); }
+      else {
+        var col = p.sp === 2 ? C.warn : PSim.alpha(C.ele, 0.85);
+        ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.beginPath();
+        ctx.moveTo(x - 3, y - 3); ctx.lineTo(x + 3, y + 3); ctx.moveTo(x - 3, y + 3); ctx.lineTo(x + 3, y - 3); ctx.stroke();
+        if (p.sp === 2) { ctx.beginPath(); ctx.arc(x, y, 5, 0, 2 * Math.PI); ctx.stroke(); }
+      }
+    });
+    ctx.restore();
+    // зонди
+    ctx.fillStyle = C.fg;
+    ctx.fillRect(m.X(1) - 4, m.t, 4, m.b - m.t);
+    if (P.mode === 'double') ctx.fillRect(m.X(0), m.t, 4, m.b - m.t);
+    var ty = m.t + f;
+    if (P.mode === 'single') {
+      PSim.label(ctx, 'зонд', m.X(1) - 8, ty, { size: f, color: C.fg, align: 'right', bold: true });
+      PSim.label(ctx, 'шар', m.X(0.5 * (a + 1)) - 8, ty + f + 6, { size: f - 1, color: C.muted, align: 'right' });
+      PSim.label(ctx, 'плазма, φ = 0', m.X(0.3), ty, { size: f - 1, color: C.muted, align: 'center' });
+      PSim.label(ctx, 'φ = V = ' + fmt(S.p1, 3) + ' В', m.X(a) - 6, m.Y(S.p1) + (S.p1 < 0 ? -10 : 14), { size: f, color: C.c1, align: 'right' });
+    } else {
+      PSim.label(ctx, 'зонд 1: φ₁ = ' + fmt(S.p1, 3) + ' В', m.X(1) - 8, ty, { size: f - 1, color: C.fg, align: 'right', bold: true });
+      PSim.label(ctx, 'зонд 2: φ₂ = ' + fmt(S.p2, 3) + ' В', m.X(0) + 10, ty, { size: f - 1, color: C.fg, align: 'left', bold: true });
+      PSim.label(ctx, 'V = φ₁ − φ₂ = ' + fmt(P.V, 3) + ' В', m.X(0.5), ty + f + 8, { size: f - 1, color: C.muted, align: 'center' });
+    }
+    var by = m.b - 10;
+    PSim.label(ctx, '● іон    × електрон (один × = ' + S.K + ' e⁻)' + (P.f > 0 ? '    ⊗ гарячий' : ''), m.l + 10, by, { size: f - 1, color: C.fg, align: 'left' });
+  }
+
+  function drawB(ctx, w, h) {
+    var f = fs(w), c = G.c, mA = 1e3, Iis = c.Iis * mA, y0, y1, i;
+    if (P.mode === 'single') {
+      if (P.zoom) { y0 = -1.5 * Iis; y1 = 5 * Iis; }
+      else { var mx = -Infinity, mn = Infinity; for (i = 0; i < G.I.length; i++) { mx = Math.max(mx, G.I[i]); mn = Math.min(mn, G.I[i]); } y0 = mn * mA - 0.06 * (mx - mn) * mA; y1 = mx * mA * 1.08; }
+    } else { y0 = -1.3 * Iis; y1 = 1.3 * Iis; }
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: G.a, x1: G.b, y0: y0, y1: y1, font: f,
+      xlabel: 'V, В', ylabel: 'I, мА', title: P.mode === 'single' ? 'ВАХ одиночного зонда' : 'ВАХ подвійного зонда' });
+    PSim.clip(ctx, m);
+    if (P.mode === 'single' && F) shade(ctx, m, F.w0, F.w1, PSim.alpha(C.accent, 0.12));
+    PSim.curve(ctx, m, [G.a, G.b], [0, 0], { color: C.muted, width: 1 });
+    ctx.fillStyle = PSim.alpha(C.fg, 0.5);
+    for (i = 0; i < G.V.length; i++) ctx.fillRect(m.X(G.V[i]) - 1.5, m.Y(G.I[i] * mA) - 1.5, 3, 3);
+    PSim.curve(ctx, m, G.V, G.It.map(function (v) { return v * mA; }), { color: C.c1, width: 2 });
+    if (P.mode === 'single') {
+      vline(ctx, m, G.vf, y0, y1, C.c2, [6, 4]); vline(ctx, m, 0, y0, y1, C.c3, [2, 3]);
+    } else {
+      PSim.curve(ctx, m, [G.a, G.b], [Iis, Iis], { color: C.c2, width: 1.2, dash: [6, 4] });
+      PSim.curve(ctx, m, [G.a, G.b], [-Iis, -Iis], { color: C.c2, width: 1.2, dash: [6, 4] });
+    }
+    ctx.fillStyle = C.accent; ctx.strokeStyle = C.fg; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.arc(m.X(P.V), m.Y(S.Iop * mA), 5.5, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+    ctx.restore();
+    var ty = m.t + f;
+    if (P.mode === 'single') {
+      PSim.label(ctx, 'іонне нас.', m.X(0.5 * (G.a + G.vf)), ty, { size: f - 2, color: C.muted, align: 'center' });
+      PSim.label(ctx, 'перехідна', m.X(0.5 * G.vf), ty + f + 4, { size: f - 2, color: C.muted, align: 'center' });
+      PSim.label(ctx, 'електр. нас.', m.X(0.5 * G.b), ty, { size: f - 2, color: C.muted, align: 'center' });
+      PSim.label(ctx, 'V_f', m.X(G.vf) + 4, m.b - 8, { size: f - 1, color: C.c2, align: 'left' });
+      PSim.label(ctx, 'V_p', m.X(0) + 4, m.b - 8, { size: f - 1, color: C.c3, align: 'left' });
+      legend(ctx, { t: m.t + 2 * f + 10, r: m.r }, f, [{ text: 'теорія', color: C.c1 }, { text: 'вікно фіту', color: PSim.alpha(C.accent, 0.5) }]);
+    } else {
+      PSim.label(ctx, '+I_is', m.X(G.a) + 6, m.Y(Iis) - 6, { size: f - 1, color: C.c2, align: 'left' });
+      PSim.label(ctx, '−I_is', m.X(G.b) - 6, m.Y(-Iis) + 14, { size: f - 1, color: C.c2, align: 'right' });
+      legend(ctx, { t: m.b - 2 * f - 24, r: m.r }, f, [{ text: 'I_is·tanh(eV/2T_e)', color: C.c1 }]);
+    }
+  }
+
+  function drawC(ctx, w, h) {
+    var f = fs(w), mA = 1e3, i;
+    if (P.mode === 'single') {
+      var Iis = (F ? F.Iis : G.c.Iis) * mA, ymax = 0;
+      for (i = 0; i < G.I.length; i++) ymax = Math.max(ymax, G.I[i] * mA + Iis);
+      var y0 = 0.1 * Iis, y1 = 2 * ymax;
+      var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: G.a, x1: G.b, y0: y0, y1: y1, logy: true, font: f,
+        xlabel: 'V, В', ylabel: 'I + I_is, мА', title: 'Напівлог: нахил ln(I + I_is) = 1/T_e' });
+      PSim.clip(ctx, m);
+      if (F) shade(ctx, m, F.w0, F.w1, PSim.alpha(C.accent, 0.12));
+      ctx.fillStyle = PSim.alpha(C.fg, 0.5);
+      for (i = 0; i < G.V.length; i++) { var y = G.I[i] * mA + Iis; if (y >= y0) ctx.fillRect(m.X(G.V[i]) - 1.5, m.Y(y) - 1.5, 3, 3); }
+      var xs = ph.linspace(G.a, G.b, 300), c = G.c;
+      PSim.curve(ctx, m, xs, xs.map(function (v) { var u = Math.min(v, 0); return (c.Iec * Math.exp(u / P.Te) + c.Ieh * Math.exp(u / c.Th)) * mA; }), { color: C.c1, width: 2 });
+      if (F) {
+        var xf = ph.linspace(G.a, Math.min(G.b, F.vp + P.Te), 200);
+        PSim.curve(ctx, m, xf, xf.map(function (v) { return Math.exp(F.c + F.s * v) * mA; }), { color: C.accent, width: 2, dash: [7, 4] });
+        PSim.curve(ctx, m, [G.a, G.b], [F.Ies * mA, F.Ies * mA], { color: C.muted, width: 1.2, dash: [4, 4] });
+        vline(ctx, m, F.vp, y0, y1, C.c3, [2, 3]);
+      }
+      ctx.restore();
+      legend(ctx, { t: m.b - 3 * f - 40, r: m.r }, f, [{ text: 'дані', color: PSim.alpha(C.fg, 0.5) }, { text: 'істинний I_e', color: C.c1 },
+        { text: 'фіт → T_e, злам → V_p', color: C.accent, dash: [7, 4] }]);
+      if (F) PSim.label(ctx, 'I_es', m.l + 6, m.Y(F.Ies * mA) - 6, { size: f - 1, color: C.muted, align: 'left' });
+    } else {
+      var Y = 1.1 * G.b / P.Te;
+      var m2 = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: G.a, x1: G.b, y0: -Y, y1: Y, font: f,
+        xlabel: 'V, В', ylabel: 'ln[(I_is+I)/(I_is−I)]', title: 'Лінеаризація tanh: нахил = 1/T_e' });
+      PSim.clip(ctx, m2);
+      PSim.curve(ctx, m2, [G.a, G.b], [0, 0], { color: C.muted, width: 1 });
+      if (F) {
+        ctx.fillStyle = PSim.alpha(C.fg, 0.5);
+        for (i = 0; i < G.V.length; i++) { var q = G.I[i] / F.Iis; if (Math.abs(q) < 1) ctx.fillRect(m2.X(G.V[i]) - 1.5, m2.Y(Math.log((1 + q) / (1 - q))) - 1.5, 3, 3); }
+        PSim.curve(ctx, m2, [G.a, G.b], [F.c + F.s * G.a, F.c + F.s * G.b], { color: C.accent, width: 2, dash: [7, 4] });
+      }
+      PSim.curve(ctx, m2, [G.a, G.b], [G.a / P.Te, G.b / P.Te], { color: C.c1, width: 1.6 });
+      ctx.restore();
+      legend(ctx, { t: m2.b - 2 * f - 26, r: m2.r }, f, [{ text: 'V/T_e (істина)', color: C.c1 }, { text: 'фіт', color: C.accent, dash: [7, 4] }]);
+    }
+  }
+
+  // ---------- величини ----------
+  function rel(a, b, tol) { return Math.abs(a / b - 1) < tol ? 'good' : 'bad'; }
+  function updateOut() {
+    var c = G.c, d = '—';
+    if (!F) { ['te', 'te0', 'vf', 'vp', 'nis', 'nes'].forEach(function (k) { set(k, 'фіт не вдався (змініть вікно)', 'bad'); }); }
+    else {
+      set('te', fmt(F.Te, 3) + ' / ' + fmt(P.Te, 3) + ' еВ', rel(F.Te, P.Te, 0.05));
+      set('nis', fmt(F.nis, 3) + ' / ' + fmt(P.n0, 3) + ' см⁻³', rel(F.nis, P.n0, 0.05));
+      if (P.mode === 'single') {
+        set('te0', d, '');
+        set('vf', fmt(F.vf, 3) + ' / ' + fmt(vfBook(), 3) + ' В', P.f > 0 ? '' : rel(F.vf, vfBook(), 0.03));
+        set('vp', fmt(F.vp, 3) + ' / 0 В', Math.abs(F.vp) < 0.1 * P.Te ? 'good' : 'bad');
+        set('nes', fmt(F.nes, 3) + ' / ' + fmt(P.n0, 3) + ' см⁻³', rel(F.nes, P.n0, 0.05));
+      } else {
+        set('te0', fmt(F.Te0, 3) + ' / ' + fmt(P.Te, 3) + ' еВ', rel(F.Te0, P.Te, 0.05));
+        set('vf', d, ''); set('vp', d, ''); set('nes', d, '');
+      }
+    }
+    var j = 0.1 / (P.S * 1e-6);
+    set('j', fmt(c.Iis * j, 3) + ' ; ' + fmt((c.Iec + c.Ieh) * j, 3) + ' мА/см²', '');
+    if (P.sweep || S.inj < 20) set('cnt', '— (вимкніть розгортку)', '');
+    else { var cn = (S.K * S.he - S.hi) / S.inj, th = S.Iop / c.Iis;
+      set('cnt', fmt(cn, 3) + ' / ' + fmt(th, 3) + ' (N<sub>i</sub> = ' + S.inj + ')', ''); }
+  }
+
+  // ---------- збирання ----------
+  var set = PSim.readout('#s-out', [
+    ['te', 'T<sub>e</sub> з нахилу / задана'],
+    ['te0', 'T<sub>e</sub> з (dI/dV)<sub>0</sub>, ф-ла (1.13)'],
+    ['vf', 'V<sub>f</sub> виміряний / ф-ла (1.12)'],
+    ['vp', 'V<sub>p</sub> зі злому / істинний'],
+    ['nis', 'n з I<sub>is</sub> / задана'],
+    ['nes', 'n з I<sub>es</sub> / задана'],
+    ['j', 'I<sub>is</sub>/S ; I<sub>es</sub>/S'],
+    ['cnt', 'Лічильник частинок / I(V)/I<sub>is</sub>']
+  ]);
+  var views = [PSim.canvas('#v-anim', drawA), PSim.canvas('#v-iv', drawB), PSim.canvas('#v-log', drawC)];
+  function draw() { if (P.sweep) ctl.sync(); views.forEach(function (v) { v.redraw(); }); updateOut(); }
+  var loop = PSim.loop('#s-loop', { step: step, draw: draw, reset: reset, steps: function () { return P.spf; } });
+  var base = { mode: 'single', Te: 3, n0: 1e10, gas: '1836', S: 4, f: 0, Th: 3, noise: 0.01, lo: 0.2, hi: 0.8, V: -5, sweep: true, zoom: false };
+  function ext(o) { return Object.assign({}, base, o); }
+  var pre = PSim.presets('#s-pre', [
+    { name: 'H, T_e = 3 еВ (рис. 1.6)', values: ext({}), note: 'Числа з розд. 1.7: I_is/S ≈ 1,6 мА/см², I_es/S ≈ 46 мА/см², V_f ≈ −10 В.' },
+    { name: 'Аргон', values: ext({ gas: '73440', V: -12 }), note: 'Важчі іони → менший I_is, V_f глибший (≈ −4,7 T_e/e).' },
+    { name: 'Гарячий хвіст', values: ext({ f: 0.05, Th: 4, lo: 0.05, hi: 0.5 }), note: '5 % електронів з T_h = 4 T_e: ln-графік зламаний, T_e залежить від вікна.' },
+    { name: 'Подвійний зонд', values: ext({ mode: 'double', V: 2 }), note: 'Система плаває: I ≤ I_is, T_e з нахилу в нулі (1.13).' },
+    { name: 'Шумні дані', values: ext({ noise: 0.06 }), note: 'Шум 6 % від I_is: гірше визначається хвіст поблизу V_f.' }
+  ], function (vals) { Object.assign(P, vals); ctl.sync(); reset(); draw(); });
+  var ctl = PSim.controls('#s-ctl', [
+    { key: 'mode', label: 'Зонд', type: 'select', options: [['single', 'одиночний'], ['double', 'подвійний']] },
+    { key: 'Te', label: 'T<sub>e</sub>, еВ', min: 1, max: 10, step: 0.1 },
+    { key: 'n0', label: 'n, см⁻³', min: 1e8, max: 1e13, log: true },
+    { key: 'gas', label: 'Газ (m<sub>i</sub>/m<sub>e</sub>)', type: 'select', options: [['1836', 'H (1836)'], ['3671', 'D (3671)'], ['7294', 'He (7294)'], ['73440', 'Ar (73 440)']] },
+    { key: 'S', label: 'Площа S, мм²', min: 0.5, max: 20, step: 0.5 },
+    { key: 'f', label: 'Частка гарячих f', min: 0, max: 0.1, step: 0.005 },
+    { key: 'Th', label: 'T<sub>h</sub>/T<sub>e</sub>', min: 1, max: 4, step: 0.1 },
+    { key: 'noise', label: 'Шум / I<sub>is</sub>', min: 0, max: 0.1, step: 0.005 },
+    { key: 'lo', label: 'Вікно фіту: від (частка V<sub>f</sub>→V<sub>p</sub>)', min: 0, max: 0.9, step: 0.05 },
+    { key: 'hi', label: 'Вікно фіту: до', min: 0.1, max: 1, step: 0.05 },
+    { key: 'V', label: 'Напруга V, В', min: -120, max: 80, step: 0.1 },
+    { key: 'sweep', label: 'Розгортка V', type: 'check' },
+    { key: 'zoom', label: 'Збільшити область I<sub>is</sub>', type: 'check' },
+    { key: 'spf', label: 'Кроків за кадр', min: 1, max: 40, step: 1, log: true }
+  ], P, function (k) {
+    if (k === 'spf') return;
+    if (k === 'V' || k === 'sweep') { P.V = Math.max(G.a, Math.min(G.b, P.V)); resetCounters(); }
+    else if (k === 'lo' || k === 'hi') fit();
+    else if (k !== 'zoom') reset();
+    pre.mark(-1); draw();
+  });
+  reset(); draw(); loop.start();
+})();
+</script>
+</body></html>
