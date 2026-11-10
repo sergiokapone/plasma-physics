@@ -1,0 +1,305 @@
+<title>Плазмові коливання</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="shared/theme.js"></script>
+<link rel="stylesheet" href="shared/sim.css">
+<script src="shared/sim.js"></script>
+<script src="shared/physics.js"></script>
+<header class="top">
+  <h1>Плазмові коливання: зсув електронів відносно іонного фону</h1>
+  <span class="ref">Розд. 2.1, рис. 2.1, ф-ли (2.1)–(2.2)</span>
+  <span id="theme-slot"></span>
+</header>
+<div id="app">
+  <div id="panel">
+    <section id="s-loop"></section>
+    <section><h2>Режими</h2><div id="s-pre"></div></section>
+    <section><h2>Параметри</h2><div id="s-ctl"></div></section>
+    <section><h2>Величини</h2><div id="s-out"></div></section>
+    <section class="observe"><h2>Що спостерігати</h2>
+      <ol>
+        <li>Електрони (сині) зсунуто як ціле на <i class="m">ξ</i> відносно нерухомого позитивного фону (помаранчевий). На краях виникають смуги поверхневого заряду <i class="m">σ = ∓ n e ξ</i>, а між ними поле конденсатора <i class="m">E = 4π n e ξ</i>. Воно спрямоване так, що тягне електрони назад (нижня стрілка).</li>
+        <li>Рух гармонічний: <i class="m">ξ̈ + ω<sub>p</sub>²ξ = 0</i>, <i class="m">ω<sub>p</sub> = √(4π n e²/m)</i>. Змінюйте амплітуду <i class="m">δ</i>: період не залежить від неї. Змінюйте <i class="m">n</i>: період ∝ <i class="m">n<sup>−1/2</sup></i>.</li>
+        <li>Фазовий портрет <i class="m">(ξ, ξ̇)</i> без втрат є еліпсом (у масштабі <i class="m">ω<sub>p</sub></i> колом): енергія перетікає між полем конденсатора й рухом електронів.</li>
+        <li>Температура <i class="m">T</i> розмиває електрони, але центр шару коливається з тією ж частотою: у моделі однорідного зсуву (<i class="m">k → 0</i>) тепловий рух на <i class="m">ω<sub>p</sub></i> не впливає.</li>
+        <li>«Рухомі іони»: частота <i class="m">ω² = ω<sub>p</sub>²(1 + m/M)</i> трохи зростає, бо коливаються обидві компоненти, а відносне зміщення <i class="m">ξ</i> підпорядковане зведеній масі.</li>
+        <li>Зіткнення електронів з іонами (тертя <i class="m">ν</i>) гасять коливання як <i class="m">e<sup>−νt/2</sup></i>, а частота стає <i class="m">√(ω<sub>p</sub>² − ν²/4)</i>.</li>
+      </ol>
+    </section>
+    <section class="note">
+      <p>Одновимірна листова модель. Електрони подано <i class="m">N</i> зарядженими площинами в шарі завтовшки <i class="m">L</i>, позитивний фон рівномірний. Поле площини обчислюється точно за теоремою Гаусса (<i class="m">dE/dx = 4πρ</i>, поле листа <i class="m">2πσ</i>, повне поле <i class="m">4π</i>(…)), рух схемою «стрибок жаби» з кроком <i class="m">0,02/ω<sub>p</sub></i>. Одиниці: <i class="m">e = m = 1</i>, СГС, тож <i class="m">ω<sub>p</sub> = √(4πn)</i>.</p>
+      <p>Площини зображено в довільних поперечних положеннях лише для наочності. Іони, коли рухомі, зміщуються як жорстка плита; тертя діє на швидкість електронів відносно іонів, а зворотна сила діє на іони. Модель однорідного зсуву застосовна при <i class="m">ξ ≪ L</i> (тому <i class="m">δ ≤ 0,08</i>): у крайових смугах завширшки <i class="m">ξ</i> поле лінійно спадає до нуля, ці електрони коливаються інакше, і при <i class="m">δ ≳ 0,1</i> коливання швидко розфазовуються. Період вимірюється за перетином нуля функцією <i class="m">ξ(t)</i>.</p>
+    </section>
+  </div>
+  <div id="stage" class="grid3">
+    <div class="view" id="v-slab"></div>
+    <div class="view" id="v-time"></div>
+    <div class="view" id="v-phase"></div>
+  </div>
+</div>
+<script>
+/* Плазмові коливання в 1D листовій моделі, СГС, e = m_e = 1.
+   Електрони: N листів, кожен з зарядом −w, w = n0·L/N, маса w. Іони: рівномірний шар [X, X+L] густини n0.
+   Поле на листі (після сортування, j = 0…N−1):
+     E_j = 4π·[ ion_left − n0·L/2 − w·(j − (N−1)/2) ],  ion_left = n0·clamp(x_j − X, 0, L).
+   Рух електрона a_j = −E_j − ν(v_j − V); іонний шар: a_I = (⟨E⟩ + ν(⟨v⟩ − V))/M.
+   ξ = ⟨x⟩ − (X + L/2) — зміщення електронів відносно іонів. Теорія: ξ̈ + ν(1+μ)ξ̇ + ω_p²(1+μ)ξ = 0, μ = 1/M. */
+(function () {
+  var ph = PSim.phys, C = PSim.C, fmt = PSim.fmt;
+  var P = { n0: 1, d: 0.04, T: 0, nu: 0, mobile: false, M: 16, spf: 10 };
+  var N = 300, L = 10, TWO_PI = 2 * Math.PI, WIN = 6;
+  var S = {};
+
+  function wp() { return Math.sqrt(4 * Math.PI * P.n0); }
+  function mu() { return P.mobile ? 1 / P.M : 0; }
+  function nuAbs() { return P.nu * wp(); }
+  function gam() { return nuAbs() * (1 + mu()) / 2; }
+  function wd() { var w0 = wp() * wp() * (1 + mu()); return Math.sqrt(Math.max(1e-12, w0 - gam() * gam())); }
+  function xi0() { return P.d * L; }
+
+  function reset() {
+    var i, w = P.n0 * L / N;
+    S.w = w; S.x = new Float64Array(N); S.v = new Float64Array(N); S.y = new Float64Array(N); S.E = new Float64Array(N);
+    var mv = 0;
+    for (i = 0; i < N; i++) {
+      S.x[i] = (i + 0.5) * L / N + xi0();
+      S.v[i] = Math.sqrt(P.T) * ph.randn(); mv += S.v[i];
+      S.y[i] = Math.random();
+    }
+    mv /= N; for (i = 0; i < N; i++) S.v[i] -= mv;
+    S.X = 0; S.V = 0; S.t = 0; S.k = 0;
+    S.dt = 0.02 / wp();
+    S.ring = PSim.Ring(9000, 3);
+    S.cross = []; S.prev = null;
+    S.EW = 0;
+    field(); measure();
+  }
+
+  function sortSheets() {
+    var x = S.x, v = S.v, y = S.y;
+    for (var i = 1; i < N; i++) {
+      var xi = x[i], vi = v[i], yi = y[i], j = i - 1;
+      while (j >= 0 && x[j] > xi) { x[j + 1] = x[j]; v[j + 1] = v[j]; y[j + 1] = y[j]; j--; }
+      x[j + 1] = xi; v[j + 1] = vi; y[j + 1] = yi;
+    }
+  }
+  function field() {
+    var x = S.x, E = S.E, w = S.w, n0 = P.n0, X = S.X, sum = 0;
+    for (var j = 0; j < N; j++) {
+      var il = n0 * Math.min(L, Math.max(0, x[j] - X));
+      E[j] = 4 * Math.PI * (il - n0 * L / 2 - w * (j - (N - 1) / 2));
+      sum += E[j];
+    }
+    S.Em = sum / N;
+  }
+  function meanV() { var s = 0; for (var i = 0; i < N; i++) s += S.v[i]; return s / N; }
+  function meanX() { var s = 0; for (var i = 0; i < N; i++) s += S.x[i]; return s / N; }
+
+  function step(nsteps) {
+    var dt = S.dt, nu = nuAbs(), i, M = P.M, mob = P.mobile;
+    for (var s = 0; s < nsteps; s++) {
+      var vm = meanV(), aI = mob ? (S.Em + nu * (vm - S.V)) / M : 0;
+      for (i = 0; i < N; i++) S.v[i] += 0.5 * dt * (-S.E[i] - nu * (S.v[i] - S.V));
+      S.V += 0.5 * dt * aI;
+      for (i = 0; i < N; i++) S.x[i] += dt * S.v[i];
+      S.X += dt * S.V;
+      sortSheets(); field();
+      vm = meanV(); aI = mob ? (S.Em + nu * (vm - S.V)) / M : 0;
+      for (i = 0; i < N; i++) S.v[i] += 0.5 * dt * (-S.E[i] - nu * (S.v[i] - S.V));
+      S.V += 0.5 * dt * aI;
+      S.t += dt; S.k++;
+      var xi = meanX() - (S.X + L / 2);
+      if (S.prev !== null && S.prev < 0 && xi >= 0) {
+        var f = -S.prev / (xi - S.prev); S.cross.push(S.t - dt + f * dt);
+        if (S.cross.length > 12) S.cross.shift();
+      }
+      S.prev = xi;
+    }
+    measure();
+    S.ring.push(S.t * wp() / TWO_PI, S.xi / L, S.vr / (wp() * L));
+  }
+  function measure() {
+    S.xi = meanX() - (S.X + L / 2);
+    S.vr = meanV() - S.V;
+    var i, k = 0;
+    for (i = 0; i < N; i++) k += S.v[i] * S.v[i];
+    S.KE = 0.5 * S.w * k;
+  }
+  function periodMeas() {
+    var c = S.cross, n = c.length;
+    return n >= 2 ? (c[n - 1] - c[0]) / (n - 1) : NaN;
+  }
+
+  // ---------- малювання ----------
+  function fs(w) { return w > 700 ? 14 : 12; }
+  function arrow(ctx, x0, y0, x1, y1, col, wd) {
+    ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = wd || 2.2;
+    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+    var a = Math.atan2(y1 - y0, x1 - x0), h = 9;
+    ctx.beginPath(); ctx.moveTo(x1, y1);
+    ctx.lineTo(x1 - h * Math.cos(a - 0.4), y1 - h * Math.sin(a - 0.4));
+    ctx.lineTo(x1 - h * Math.cos(a + 0.4), y1 - h * Math.sin(a + 0.4)); ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+
+  function drawSlab(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), xc = S.X + L / 2, half = 0.9 * L;
+    var px = function (x) { return (x - xc + half) / (2 * half) * (w - 24) + 12; };
+    var by0 = 0.2 * h, by1 = 0.58 * h, bh = by1 - by0;
+    var xi = S.xi, XL = S.X, XR = S.X + L, eL = XL + xi, eR = XR + xi, i;
+    // іонний фон
+    ctx.fillStyle = PSim.alpha(C.ion, 0.16); ctx.fillRect(px(XL), by0, px(XR) - px(XL), bh);
+    ctx.strokeStyle = C.ion; ctx.lineWidth = 1.5; ctx.strokeRect(px(XL), by0, px(XR) - px(XL), bh);
+    ctx.fillStyle = PSim.alpha(C.ion, 0.5); ctx.font = (f + 1) + 'px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (var cx = 0; cx < 14; cx++) for (var cy = 0; cy < 3; cy++)
+      ctx.fillText('+', px(XL + (cx + 0.5) * L / 14), by0 + (cy + 0.5) * bh / 3);
+    // смуги поверхневих зарядів
+    var sL0 = px(Math.min(XL, eL)), sL1 = px(Math.max(XL, eL)), sR0 = px(Math.min(XR, eR)), sR1 = px(Math.max(XR, eR));
+    var posLeft = xi >= 0;
+    if (Math.abs(xi) > 1e-6) {
+      ctx.fillStyle = PSim.alpha(posLeft ? C.ion : C.ele, 0.5); ctx.fillRect(sL0, by0, sL1 - sL0, bh);
+      ctx.fillStyle = PSim.alpha(posLeft ? C.ele : C.ion, 0.5); ctx.fillRect(sR0, by0, sR1 - sR0, bh);
+    }
+    // електронний шар: контур і листи
+    ctx.save(); ctx.strokeStyle = C.ele; ctx.lineWidth = 1.6; ctx.setLineDash([6, 4]);
+    ctx.strokeRect(px(eL), by0 - 5, px(eR) - px(eL), bh + 10); ctx.restore();
+    var d = w > 700 ? 2.4 : 2;
+    ctx.fillStyle = PSim.alpha(C.ele, 0.85);
+    for (i = 0; i < N; i++) {
+      ctx.beginPath(); ctx.arc(px(S.x[i]), by0 + 6 + S.y[i] * (bh - 12), d, 0, TWO_PI); ctx.fill();
+    }
+    // підписи зарядів на смугах
+    var sig = P.n0 * Math.abs(xi);
+    if (Math.abs(xi) > 0.015 * L) {
+      PSim.label(ctx, posLeft ? '+σ' : '−σ', (sL0 + sL1) / 2, by0 - 14, { size: f, color: posLeft ? C.ion : C.ele, align: 'center', bold: true });
+      PSim.label(ctx, posLeft ? '−σ' : '+σ', (sR0 + sR1) / 2, by0 - 14, { size: f, color: posLeft ? C.ele : C.ion, align: 'center', bold: true });
+    }
+    // поле в центрі й сила на електрони
+    var Ein = P.n0 * 4 * Math.PI * xi, Eref = 1.3 * 4 * Math.PI * P.n0 * P.d * L, ymid = by0 + bh / 2;
+    var cmid = px(xc + xi / 2), len = Math.max(-1, Math.min(1, Ein / Eref)) * 0.28 * (w - 24);
+    if (Math.abs(len) > 3) arrow(ctx, cmid - len / 2, by1 + 20, cmid + len / 2, by1 + 20, C.accent, 3);
+    PSim.label(ctx, 'E = 4π n e ξ', cmid, by1 + 34, { size: f, color: C.accent, align: 'center', bold: true });
+    if (Math.abs(len) > 3) arrow(ctx, cmid + len / 2, by0 - 36, cmid - len / 2, by0 - 36, C.ele, 3);
+    PSim.label(ctx, 'F = −eE на електрони', cmid, by0 - 50, { size: f, color: C.ele, align: 'center', bold: true, base: 'bottom' });
+    // зсув ξ
+    var yk = by1 + 8;
+    ctx.strokeStyle = C.fg; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(px(xc), yk - 4); ctx.lineTo(px(xc), yk + 4); ctx.moveTo(px(xc + xi), yk - 4); ctx.lineTo(px(xc + xi), yk + 4);
+    ctx.moveTo(px(xc), yk); ctx.lineTo(px(xc + xi), yk); ctx.stroke();
+    PSim.label(ctx, 'ξ = ' + fmt(xi, 2), px(xc + xi / 2), yk - 7, { size: f - 1, align: 'center', base: 'bottom' });
+    // E(x) під шаром
+    var g0 = by1 + 52, g1 = h - 18, gm = (g0 + g1) / 2, gh = (g1 - g0) / 2;
+    ctx.strokeStyle = C.gr; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(12, gm); ctx.lineTo(w - 12, gm); ctx.stroke();
+    var K = 140, xs = [], ys = [], cnt = 0, w_ = S.w, n0 = P.n0;
+    for (var g = 0; g <= K; g++) {
+      var x = xc - half + 2 * half * g / K;
+      while (cnt < N && S.x[cnt] < x) cnt++;
+      var Ex = 4 * Math.PI * (n0 * Math.min(L, Math.max(0, x - S.X)) - n0 * L / 2 - w_ * (cnt - N / 2));
+      xs.push(px(x)); ys.push(Ex);
+    }
+        ctx.beginPath(); ctx.moveTo(xs[0], gm);
+    for (i = 0; i <= K; i++) ctx.lineTo(xs[i], gm - Math.max(-1, Math.min(1, ys[i] / Eref)) * gh);
+    ctx.lineTo(xs[K], gm); ctx.closePath();
+    ctx.fillStyle = PSim.alpha(C.accent, 0.22); ctx.fill();
+    ctx.beginPath();
+    for (i = 0; i <= K; i++) { var yy = gm - Math.max(-1, Math.min(1, ys[i] / Eref)) * gh; if (i) ctx.lineTo(xs[i], yy); else ctx.moveTo(xs[i], yy); }
+    ctx.strokeStyle = C.accent; ctx.lineWidth = 2; ctx.stroke();
+    PSim.label(ctx, 'E(x): однорідне всередині, нуль зовні', 14, g0 - 2, { size: f - 1, color: C.muted, base: 'bottom' });
+    PSim.label(ctx, 'позитивний фон (іони)', px(XL) + 4, by0 + 4, { size: f - 1, color: C.ion, base: 'top' });
+    PSim.label(ctx, 'електронний шар', px(eL) + 4, by1 + 12, { size: f - 1, color: C.ele, base: 'top', align: 'left' });
+  }
+
+  function drawTime(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), tp = S.t * wp() / TWO_PI, t0 = Math.max(0, tp - WIN), a = P.d * 1.3 + 0.01;
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: t0, x1: t0 + WIN, y0: -a, y1: a, font: f,
+      xlabel: 't / T_p  (T_p = 2π/ω_p)', ylabel: 'ξ / L', title: 'Зміщення електронів ξ(t)' });
+    PSim.clip(ctx, m);
+    PSim.curve(ctx, m, [t0, t0 + WIN], [0, 0], { color: C.muted, width: 1 });
+    var xs = [], ys = [], K = 240, g = gam(), wdd = wd(), x0 = P.d;
+    for (var i = 0; i <= K; i++) {
+      var tt = t0 + WIN * i / K, tau = tt * TWO_PI / wp(); xs.push(tt);
+      ys.push(x0 * Math.exp(-g * tau) * (Math.cos(wdd * tau) + g / wdd * Math.sin(wdd * tau)));
+    }
+    PSim.curve(ctx, m, xs, ys, { color: C.c2, width: 2, dash: [7, 4] });
+    var r = S.ring, tx = [], ty = [];
+    for (var j = 0; j < r.len; j++) { var tj = r.get(0, j); if (tj >= t0) { tx.push(tj); ty.push(r.get(1, j)); } }
+    PSim.curve(ctx, m, tx, ty, { color: C.c1, width: 2.2 });
+    if (tx.length) {
+      ctx.fillStyle = C.c1; ctx.beginPath(); ctx.arc(m.X(tx[tx.length - 1]), m.Y(ty[ty.length - 1]), 4, 0, TWO_PI); ctx.fill();
+    }
+    ctx.restore();
+    var items = [{ t: 'модель (листи)', c: C.c1 }, { t: 'теорія', c: C.c2, d: [7, 4] }];
+    items.forEach(function (it, i) {
+      var y = m.t + 8 + i * (f + 6), x = m.r - 8;
+      ctx.save(); ctx.strokeStyle = it.c; ctx.lineWidth = 2; ctx.setLineDash(it.d || []);
+      ctx.beginPath(); ctx.moveTo(x - 26, y + f / 2); ctx.lineTo(x, y + f / 2); ctx.stroke(); ctx.restore();
+      PSim.label(ctx, it.t, x - 32, y + f / 2, { size: f - 1, align: 'right', base: 'middle' });
+    });
+  }
+
+  function drawPhase(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), a = P.d * 1.3 + 0.01;
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: -a, x1: a, y0: -a, y1: a, font: f,
+      xlabel: 'ξ / L', ylabel: 'ξ̇ / (ω_p L)', title: 'Фазовий портрет' });
+    PSim.clip(ctx, m);
+    var xs = [], ys = [];
+    for (var i = 0; i <= 120; i++) { var q = TWO_PI * i / 120; xs.push(P.d * Math.cos(q)); ys.push(-P.d * Math.sin(q)); }
+    PSim.curve(ctx, m, xs, ys, { color: C.c2, width: 1.6, dash: [7, 4] });
+    var r = S.ring, tx = [], ty = [], start = Math.max(0, r.len - 700);
+    for (var j = start; j < r.len; j++) { tx.push(r.get(1, j)); ty.push(r.get(2, j)); }
+    PSim.curve(ctx, m, tx, ty, { color: C.c1, width: 2 });
+    if (tx.length) { ctx.fillStyle = C.c1; ctx.beginPath(); ctx.arc(m.X(tx[tx.length - 1]), m.Y(ty[ty.length - 1]), 4.5, 0, TWO_PI); ctx.fill(); }
+    ctx.restore();
+    PSim.label(ctx, 'без втрат: коло', m.l + 8, m.t + 8, { size: f - 1, color: C.c2, base: 'top' });
+  }
+
+  // ---------- величини ----------
+  var set = PSim.readout('#s-out', [
+    ['t', 't / T<sub>p</sub>'], ['wp', 'ω<sub>p</sub> = √(4πn e²/m)'], ['Tp', 'T<sub>p</sub> = 2π/ω<sub>p</sub>'],
+    ['xi', 'ξ / L'], ['E', 'E: вимір / 4π n e ξ'], ['om', 'ω: вимір / теорія'], ['T', 'період: вимір / теорія'],
+    ['ke', 'кінетична енергія']
+  ]);
+  function updateOut() {
+    if (!S.x) return;
+    var pm = periodMeas(), pt = TWO_PI / wd(), n0 = P.n0;
+    set('t', fmt(S.t * wp() / TWO_PI, 3));
+    set('wp', fmt(wp(), 4));
+    set('Tp', fmt(TWO_PI / wp(), 4));
+    set('xi', fmt(S.xi / L, 3));
+    set('E', fmt(S.Em, 3) + ' / ' + fmt(4 * Math.PI * n0 * S.xi, 3));
+    set('om', isFinite(pm) ? fmt(TWO_PI / pm, 4) + ' / ' + fmt(wd(), 4) : '— / ' + fmt(wd(), 4),
+      isFinite(pm) && Math.abs(TWO_PI / pm / wd() - 1) < 0.02 ? 'good' : '');
+    set('T', isFinite(pm) ? fmt(pm, 4) + ' / ' + fmt(pt, 4) : '— / ' + fmt(pt, 4));
+    set('ke', fmt(S.KE, 3));
+  }
+
+  // ---------- збирання ----------
+  var views = [PSim.canvas('#v-slab', drawSlab), PSim.canvas('#v-time', drawTime), PSim.canvas('#v-phase', drawPhase)];
+  function draw() { views.forEach(function (v) { v.redraw(); }); updateOut(); }
+  var loop = PSim.loop('#s-loop', { step: step, draw: draw, reset: reset, steps: function () { return P.spf; }, autostart: true });
+
+  var pre = PSim.presets('#s-pre', [
+    { name: 'Рис. 2.1: холодна плазма', values: { n0: 1, d: 0.04, T: 0, nu: 0, mobile: false }, note: 'ξ̈ = −ω_p²ξ' },
+    { name: 'Більша амплітуда', values: { n0: 1, d: 0.08, T: 0, nu: 0, mobile: false }, note: 'період той самий, поки ξ ≪ L' },
+    { name: 'З теплом', values: { n0: 1, d: 0.04, T: 3, nu: 0, mobile: false }, note: 'центр шару коливається з ω_p' },
+    { name: 'Зіткнення', values: { n0: 1, d: 0.04, T: 0, nu: 0.3, mobile: false }, note: 'затухання e^(−νt/2)' },
+    { name: 'Рухомі іони', values: { n0: 1, d: 0.04, T: 0, nu: 0, mobile: true, M: 4 }, note: 'ω² = ω_p²(1 + m/M)' }
+  ], function (vals) { Object.assign(P, vals); ctl.sync(); reset(); draw(); });
+
+  var ctl = PSim.controls('#s-ctl', [
+    { key: 'n0', label: 'Концентрація n (ω<sub>p</sub> = √(4πn))', min: 0.25, max: 4, step: 0.01, log: true },
+    { key: 'd', label: 'Початкове зміщення δ = ξ<sub>0</sub>/L', min: 0.01, max: 0.08, step: 0.005 },
+    { key: 'T', label: 'Температура T електронів', min: 0, max: 10, step: 0.1 },
+    { key: 'nu', label: 'Зіткнення ν/ω<sub>p</sub>', min: 0, max: 1.6, step: 0.01 },
+    { key: 'mobile', label: 'Рухомі іони', type: 'check' },
+    { key: 'M', label: 'Маса іона M/m', min: 4, max: 1000, step: 1, log: true, fmt: function (v) { return String(Math.round(v)); } },
+    { key: 'spf', label: 'Кроків за кадр', min: 1, max: 60, step: 1, log: true, fmt: function (v) { return String(Math.round(v)); } }
+  ], P, function (key) {
+    if (key === 'spf') return;
+    pre.mark(-1); reset(); draw();
+  });
+
+  reset(); draw();
+})();
+</script>

@@ -11,6 +11,8 @@ head: shared/theme.js → shared/sim.css → shared/sim.js → shared/physics.js
 
 ## shared/ — ГОТОВО
 theme.js, sim.css, sim.js (у т.ч. Ring, trail), physics.js (boris, rk4, maxwellian, rng, erf, bisect).
+sim.css: стилі розгортних блоків `#panel details/summary` (2026-11-10). Поки застосовано лише у
+waves_incident_wave.html; інші симуляції можна перевести так само (`<section class="observe">` → `<details class="observe" id=… open><summary><h2>…</h2></summary>`).
 
 ## Симуляції
 | Розділ | Файл | Ідея | Стан |
@@ -22,9 +24,11 @@ theme.js, sim.css, sim.js (у т.ч. Ring, trail), physics.js (boris, rk4, maxwe
 | Basics | basics_gouy.html | нелінійне екранування Гуї–Чепмена | черга 3 |
 | Basics | basics_saha.html | ступінь іонізації x(T,n) | черга 4 |
 | Basics | basics_coupling.html | MD однокомпонентної плазми, Γ → g(r) | черга 5 |
-| Basics | basics_dsphere.html | дебаївська сфера, N_D, колективність (§1.9) | черга 6 |
+| Basics | basics_debye_sphere.html | дебаївська сфера, N_D, колективність (§1.9) | є файл (не закінчено, статус уточнити) |
+| Waves | waves_plasma_oscillations.html | ленгмюрівські коливання | є файл (статус уточнити) |
+| Waves | waves_incident_wave.html | падіння ЕМ-хвилі на шар плазми (рис. 2.2), відсічка, тунелювання | майже готово: вигляд як рис. 2.2; FDTD 1D + TF/SF; прапорці «розклад (падна + відбита)», «тепловий рух (зменшено)» (лише малювання, розв'язувач не чіпає); запізнення фази при зіткненнях ν; підпис тунелювання для тонкого шару; блоки тексту панелі — розгортні `<details>` (стан у localStorage). `node --check` ОК, у браузері НЕ тестовано |
 | Collisions | collisions_runaway.html | втікаючі електрони Драйсера | — |
-| Waves | waves_cutoff.html | відсічка й відбиття | — |
+| Waves | waves_cutoff.html | відсічка й відбиття | можливо, покрито waves_incident_wave |
 | Fluid | fluid_frozen.html | вмороженість vs дифузія, R_m | — |
 | LinearWaves | linearwaves_dispersion.html | дисперсія МГД/замагнічена | — |
 | Kinetics | kinetics_landau.html | загасання Ландау у фазовому просторі | — |

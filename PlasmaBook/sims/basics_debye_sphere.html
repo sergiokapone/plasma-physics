@@ -1,0 +1,436 @@
+<title>Сфера Дебая</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="shared/theme.js"></script>
+<link rel="stylesheet" href="shared/sim.css">
+<script src="shared/sim.js"></script>
+<script src="shared/physics.js"></script>
+<style>
+  #v-main canvas { cursor: crosshair; }
+  .tip { color: var(--muted); font-size: .85em; margin: .4em 0 0; }
+</style>
+<header class="top">
+  <h1>Сфера Дебая: молекулярна динаміка</h1>
+  <span class="ref">Розд. 1: дебаївське екранування, N<sub>D</sub>, Γ</span>
+  <span id="theme-slot"></span>
+</header>
+<div id="app">
+  <div id="panel">
+    <section id="s-loop"></section>
+    <section><h2>Режими</h2><div id="s-pre"></div></section>
+    <section><h2>Параметри</h2><div id="s-ctl"></div>
+      <p class="tip">Клік по полю ставить пробний заряд, перетягування переносить його. Наведіть курсор на будь-яку частинку, щоб побачити її власну сферу Дебая.</p>
+    </section>
+    <section><h2>Величини</h2><div id="s-out"></div></section>
+    <section class="observe"><h2>Що спостерігати</h2>
+      <ol>
+        <li>Електрони (сині) збираються навколо додатного заряду <i class="m">Q</i>, іони (помаранчеві) відступають. Повний заряд усередині сфери радіуса <i class="m">r</i> спадає від <i class="m">Q</i> до нуля за законом <i class="m">(1 + r/λ<sub>D</sub>) e<sup>−r/λ<sub>D</sub></sup></i>. Біля <i class="m">r = λ<sub>D</sub></i> лишається 74 %, а на <i class="m">3λ<sub>D</sub></i> лише 20 %.</li>
+        <li>Підвищуйте <i class="m">T</i> або знижуйте <i class="m">n</i>: <i class="m">λ<sub>D</sub> ∝ √(T/n)</i> росте, <i class="m">N<sub>D</sub></i> росте, <i class="m">Γ</i> падає, і виміряні точки лягають на теорію.</li>
+        <li>Знижуйте <i class="m">T</i> до <i class="m">N<sub>D</sub> &lt; 1</i>: у сфері менше однієї частинки, колективного екранування немає, профіль шумить і розходиться з теорією. При <i class="m">Γ ≳ 0,6</i> електрони й іони утворюють зв’язані пари.</li>
+        <li>Вимкніть пробний заряд. Той самий профіль (зелений) виміряно навколо кожної частинки плазми й усереднено: сфера Дебая існує без стороннього заряду. Карту можна перемкнути на «типову частинку».</li>
+        <li>Великі <i class="m">|Q|</i> при малих <i class="m">T</i>: <i class="m">eφ/T &gt; 1</i>, лінійна теорія перестає працювати.</li>
+      </ol>
+    </section>
+    <section class="note">
+      <p>Тривимірна плазма з кулонівською взаємодією <i class="m">1/r²</i>, показано проєкцію на площину. Півсума електронів і іонів у кубі з періодичними межами, мінімальне зображення, сила з усіченням на <i class="m">L/2</i>. М’яка сердцевина <i class="m">ε = 0,12a</i> усуває колапс пар. Температуру тримає термостат Ланжевена. Одиниці: <i class="m">e = m<sub>e</sub> = 1</i>, СГС, тож <i class="m">ω<sub>p</sub> = √(4πn)</i>, а при <i class="m">T<sub>e</sub> = T<sub>i</sub></i> <i class="m">λ<sub>D</sub> = √(T/8πn) = λ<sub>De</sub>/√2</i>.</p>
+      <p>Модель надійна при <i class="m">λ<sub>D</sub> &lt; L/4</i> і <i class="m">Γ ≲ 0,5</i>. Кількість електронів і іонів у кубі фіксована, тому заряд <i class="m">+Q</i>, якого бракує хмарі, розтікається рівномірно по кубу. На графіку його вилучено поправкою <i class="m">−(4π/3)r³/L³</i>. Профіль усереднюється після релаксації; після зміни <i class="m">T</i>, <i class="m">n</i>, <i class="m">Q</i> чи положення заряду накопичення починається заново.</p>
+      <p>Двовимірна плазма тут не годиться: при законі <i class="m">1/r²</i> у площині екранування степеневе, а при логарифмічному потенціалі <i class="m">N<sub>D</sub></i> не залежить від густини.</p>
+    </section>
+  </div>
+  <div id="stage" class="grid3">
+    <div class="view" id="v-main"></div>
+    <div class="view" id="v-map"></div>
+    <div class="view" id="v-prof"></div>
+  </div>
+</div>
+<script>
+/* Двокомпонентна плазма (електрони й іони) в кубі з періодичними межами, 3D, СГС, e = m_e = 1.
+   Сила між зарядами q1, q2: F = q1 q2 r / (r² + ε²)^{3/2}, відсічка зі зсувом на rc = L/2.
+   Статистика: (1) повний заряд усередині сфери радіуса r навколо пробного заряду,
+   (2) те саме навколо кожної частинки з усередненням (без пробного заряду),
+   (3) карти проєкції хмари. Теорія Дебая–Хюккеля: Q(<r)/Q = (1 + r/λ) e^{−r/λ}. */
+(function () {
+  var ph = PSim.phys, C = PSim.C, fmt = PSim.fmt;
+  var P = { T: 10, n: 1, Q: 3, testOn: true, N: 400, M: 16, spf: 6, map: 'test', rings: true };
+  var EPSF = 0.12, GAM = 0.05, NB = 40, NM = 33, PRE = 400;
+  var S = { hover: -1, Tm: NaN };
+
+  function Ne() { return Math.round(P.N / 2); }
+  function aSp(n) { return Math.pow(3 / (4 * Math.PI * n), 1 / 3); }
+  function wp() { return Math.sqrt(4 * Math.PI * P.n); }
+  function lamD() { return Math.sqrt(P.T / (8 * Math.PI * P.n)); }
+  function ND() { return 4 * Math.PI / 3 * P.n * Math.pow(lamD(), 3); }
+  function Gam() { return 1 / (aSp(P.n) * P.T); }
+  function eps() { return EPSF * aSp(P.n); }
+  function dtNow() { return Math.min(0.04 / wp(), 0.25 * eps() / Math.sqrt(P.T)); }
+
+  // ---------- стан ----------
+  function resetStats(testOnly) {
+    S.Ht.fill(0); S.Mt.fill(0); S.nt = 0;
+    if (!testOnly) { S.Hrel.fill(0); S.Mp.fill(0); S.ns = 0; S.R = Math.min(5 * lamD(), 0.48 * S.L); }
+  }
+  function warm() { S.warm = (2 * Math.sqrt(P.M) + 3) / wp(); }
+
+  function reset() {
+    var ne = Ne(), n = 2 * ne, i;
+    S.n = n; S.L = Math.cbrt(ne / P.n); S.Tref = P.T; S.Mref = P.M;
+    ['x', 'y', 'z', 'vx', 'vy', 'vz', 'fx', 'fy', 'fz', 'q', 'm'].forEach(function (k) { S[k] = new Float64Array(n); });
+    S.Hrel = new Float64Array(NB); S.Ht = new Float64Array(NB);
+    S.Mp = new Float64Array(NM * NM); S.Mt = new Float64Array(NM * NM);
+    for (i = 0; i < n; i++) {
+      S.x[i] = Math.random() * S.L; S.y[i] = Math.random() * S.L; S.z[i] = Math.random() * S.L;
+      S.q[i] = i < ne ? -1 : 1; S.m[i] = i < ne ? 1 : P.M;
+      var s = Math.sqrt(P.T / S.m[i]);
+      S.vx[i] = s * ph.randn(); S.vy[i] = s * ph.randn(); S.vz[i] = s * ph.randn();
+    }
+    S.t = 0; S.k = 0; S.hover = -1;
+    resetStats(false);
+    forces(false);
+    for (var k = 0; k < PRE; k++) integrate(dtNow(), 1.0 * wp(), false);
+    S.warm = 0; warm();
+    S.Tm = NaN;
+  }
+
+  // ---------- сили ----------
+  function forces(stat) {
+    var n = S.n, L = S.L, hL = 0.5 * L, e2 = eps() * eps(), rc2 = hL * hL;
+    var Fc = hL / Math.pow(rc2 + e2, 1.5);
+    var x = S.x, y = S.y, z = S.z, fx = S.fx, fy = S.fy, fz = S.fz, q = S.q, i, j;
+    fx.fill(0); fy.fill(0); fz.fill(0);
+    var R = S.R, R2 = R * R, ib = NB / R, im = NM / (2 * R), nm = NM;
+    var Hrel = S.Hrel, Mp = S.Mp;
+    for (i = 0; i < n - 1; i++) {
+      var xi = x[i], yi = y[i], zi = z[i], qi = q[i], fxi = 0, fyi = 0, fzi = 0;
+      for (j = i + 1; j < n; j++) {
+        var dx = xi - x[j], dy = yi - y[j], dz = zi - z[j];
+        if (dx > hL) dx -= L; else if (dx < -hL) dx += L;
+        if (dy > hL) dy -= L; else if (dy < -hL) dy += L;
+        if (dz > hL) dz -= L; else if (dz < -hL) dz += L;
+        var r2 = dx * dx + dy * dy + dz * dz;
+        if (r2 < rc2) {
+          var s = r2 + e2, r = Math.sqrt(r2) + 1e-12, qq = qi * q[j];
+          var g = qq * (1 / (s * Math.sqrt(s)) - Fc / r);
+          fxi += g * dx; fyi += g * dy; fzi += g * dz;
+          fx[j] -= g * dx; fy[j] -= g * dy; fz[j] -= g * dz;
+          if (stat && r2 < R2) {
+            var b = (r * ib) | 0; if (b >= NB) b = NB - 1;
+            Hrel[b] += 2 * qq;
+            var ix = ((dx + R) * im) | 0, iy = ((dy + R) * im) | 0;
+            if (ix >= 0 && ix < nm && iy >= 0 && iy < nm) Mp[iy * nm + ix] -= qq;
+            ix = ((R - dx) * im) | 0; iy = ((R - dy) * im) | 0;
+            if (ix >= 0 && ix < nm && iy >= 0 && iy < nm) Mp[iy * nm + ix] -= qq;
+          }
+        }
+      }
+      fx[i] += fxi; fy[i] += fyi; fz[i] += fzi;
+    }
+    if (P.testOn) {
+      var cx = S.fx_t * L, cy = S.fy_t * L, cz = 0.5 * L, Q = P.Q, sg = Q > 0 ? 1 : -1;
+      for (i = 0; i < n; i++) {
+        var ax = x[i] - cx, ay = y[i] - cy, az = z[i] - cz;
+        if (ax > hL) ax -= L; else if (ax < -hL) ax += L;
+        if (ay > hL) ay -= L; else if (ay < -hL) ay += L;
+        if (az > hL) az -= L; else if (az < -hL) az += L;
+        var rr2 = ax * ax + ay * ay + az * az;
+        if (rr2 < rc2) {
+          var ss = rr2 + e2, rr = Math.sqrt(rr2) + 1e-12;
+          var gg = Q * q[i] * (1 / (ss * Math.sqrt(ss)) - Fc / rr);
+          fx[i] += gg * ax; fy[i] += gg * ay; fz[i] += gg * az;
+          if (stat && rr2 < R2) {
+            var bb = (rr * ib) | 0; if (bb >= NB) bb = NB - 1;
+            S.Ht[bb] += q[i];
+            var jx = ((ax + R) * im) | 0, jy = ((ay + R) * im) | 0;
+            if (jx >= 0 && jx < nm && jy >= 0 && jy < nm) S.Mt[jy * nm + jx] -= sg * q[i];
+          }
+        }
+      }
+    }
+  }
+
+  function integrate(dt, gam, stat) {
+    var n = S.n, x = S.x, y = S.y, z = S.z, vx = S.vx, vy = S.vy, vz = S.vz;
+    var fx = S.fx, fy = S.fy, fz = S.fz, m = S.m, L = S.L, i;
+    for (i = 0; i < n; i++) {
+      var h = 0.5 * dt / m[i];
+      vx[i] += h * fx[i]; vy[i] += h * fy[i]; vz[i] += h * fz[i];
+      x[i] += dt * vx[i]; y[i] += dt * vy[i]; z[i] += dt * vz[i];
+      x[i] -= L * Math.floor(x[i] / L); y[i] -= L * Math.floor(y[i] / L); z[i] -= L * Math.floor(z[i] / L);
+    }
+    forces(stat);
+    var c1 = Math.exp(-gam * dt), c2 = Math.sqrt(P.T * (1 - c1 * c1));
+    for (i = 0; i < n; i++) {
+      var h2 = 0.5 * dt / m[i], s = c2 / Math.sqrt(m[i]);
+      vx[i] = c1 * (vx[i] + h2 * fx[i]) + s * ph.randn();
+      vy[i] = c1 * (vy[i] + h2 * fy[i]) + s * ph.randn();
+      vz[i] = c1 * (vz[i] + h2 * fz[i]) + s * ph.randn();
+    }
+    if (stat) { S.ns++; if (P.testOn) S.nt++; }
+  }
+
+  function step(nsteps) {
+    var t0 = performance.now(), dt = dtNow();
+    for (var s = 0; s < nsteps; s++) {
+      var stat = S.warm <= 0 && (S.k % 4 === 0);
+      integrate(dt, GAM * wp(), stat);
+      S.t += dt; S.k++; if (S.warm > 0) S.warm -= dt;
+      if (s > 0 && performance.now() - t0 > 14) break;
+    }
+  }
+
+  // ---------- зміни параметрів на льоту ----------
+  function onCh(key, val) {
+    var i, f;
+    if (key === 'T') {
+      f = Math.sqrt(P.T / S.Tref); S.Tref = P.T;
+      for (i = 0; i < S.n; i++) { S.vx[i] *= f; S.vy[i] *= f; S.vz[i] *= f; }
+      resetStats(false); warm();
+    } else if (key === 'n') {
+      var Ln = Math.cbrt(Ne() / P.n), k = Ln / S.L; S.L = Ln;
+      for (i = 0; i < S.n; i++) { S.x[i] *= k; S.y[i] *= k; S.z[i] *= k; }
+      resetStats(false); warm();
+    } else if (key === 'Q' || key === 'testOn') {
+      resetStats(true); warm();
+    } else if (key === 'N') {
+      P.N = parseInt(val, 10); reset();
+    } else if (key === 'M') {
+      f = Math.sqrt(S.Mref / P.M); S.Mref = P.M;
+      for (i = Ne(); i < S.n; i++) { S.m[i] = P.M; S.vx[i] *= f; S.vy[i] *= f; S.vz[i] *= f; }
+      warm();
+    }
+    draw();
+  }
+
+  // ---------- малювання ----------
+  function fs(w) { return w > 700 ? 14 : 12; }
+  function rgb(col) {
+    var m = /^#([0-9a-f]{3,8})$/i.exec(col);
+    if (!m) return [106, 27, 154];
+    var h = m[1]; if (h.length <= 4) h = h.replace(/./g, '$&$&');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  function ring(ctx, cx, cy, r, col, w, dash) {
+    ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.setLineDash(dash || []);
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI); ctx.stroke(); ctx.restore();
+  }
+
+  function drawMain(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), side = Math.max(50, Math.min(w, h) - 16), ox = (w - side) / 2, oy = (h - side) / 2;
+    var L = S.L, sc = side / L, n = S.n, hL = 0.5 * L;
+    S.geo = { ox: ox, oy: oy, sc: sc };
+    var zc = 0.5 * L, lam = lamD();
+    ctx.save(); ctx.beginPath(); ctx.rect(ox, oy, side, side); ctx.clip();
+    var ae = [0.95, 0.7, 0.45, 0.25], k = Math.max(1, side / 520);
+    var se = ae.map(function (a) { return PSim.alpha(C.ele, a); }), si = ae.map(function (a) { return PSim.alpha(C.ion, a); });
+    var rE = 2.4 * k, rI = 3.2 * k, i;
+    // далекі шари першими
+    for (var layer = 3; layer >= 0; layer--) {
+      for (i = 0; i < n; i++) {
+        var dz = Math.abs(S.z[i] - zc); if (dz > hL) dz = L - dz;
+        var lv = Math.min(3, Math.floor(dz / hL * 4));
+        if (lv !== layer) continue;
+        var px = ox + S.x[i] * sc, py = oy + S.y[i] * sc, ion = S.q[i] > 0;
+        ctx.fillStyle = ion ? si[lv] : se[lv];
+        ctx.beginPath(); ctx.arc(px, py, ion ? rI : rE, 0, 2 * Math.PI); ctx.fill();
+      }
+    }
+    if (P.rings) {
+      if (P.testOn) {
+        var cx = ox + S.fx_t * side, cy = oy + S.fy_t * side;
+        ring(ctx, cx, cy, 3 * lam * sc, PSim.alpha(C.fg, 0.35), 1, [2, 5]);
+        ring(ctx, cx, cy, 2 * lam * sc, PSim.alpha(C.fg, 0.35), 1, [2, 5]);
+        ring(ctx, cx, cy, lam * sc, C.accent, 2.2, [7, 4]);
+        PSim.label(ctx, 'λ_D', cx + lam * sc * 0.72 + 4, cy - lam * sc * 0.72 - 4, { size: f, color: C.accent, bold: true });
+      }
+      if (S.hover >= 0) {
+        var hx = ox + S.x[S.hover] * sc, hy = oy + S.y[S.hover] * sc;
+        ring(ctx, hx, hy, lam * sc, C.fg, 1.8, [5, 4]);
+        ring(ctx, hx, hy, 6, C.fg, 2);
+      }
+    }
+    if (P.testOn) {
+      var tx = ox + S.fx_t * side, ty = oy + S.fy_t * side, rr = 9 * k;
+      ctx.beginPath(); ctx.arc(tx, ty, rr, 0, 2 * Math.PI);
+      ctx.fillStyle = C.accent; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = C.bg; ctx.stroke();
+      PSim.label(ctx, (P.Q > 0 ? '+' : P.Q < 0 ? '−' : '') + fmt(Math.abs(P.Q), 2), tx, ty, { size: f - 1, color: C.bg, align: 'center', bold: true });
+    }
+    ctx.restore();
+    ctx.strokeStyle = C.ax; ctx.lineWidth = 1; ctx.strokeRect(ox, oy, side, side);
+    PSim.label(ctx, S.warm > 0 ? 'релаксація…' : 'усереднення: ' + S.ns, ox + 8, oy + 8, { size: f, color: S.warm > 0 ? C.warn : C.muted, base: 'top' });
+    // масштабна лінійка 1 λ_D
+    var bx = ox + side - 12 - lam * sc, by = oy + side - 14;
+    ctx.strokeStyle = C.fg; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + lam * sc, by); ctx.stroke();
+    PSim.label(ctx, '1 λ_D', bx + lam * sc / 2, by - 4, { size: f, align: 'center', base: 'bottom' });
+    PSim.label(ctx, 'куб L = ' + fmt(L, 3) + ', проєкція (далекі частинки блідіші)', ox + 8, oy + side - 8, { size: f - 1, color: C.muted, base: 'bottom' });
+  }
+
+  function mapData() {
+    var useTest = P.map === 'test' && P.testOn;
+    var src = useTest ? S.Mt : S.Mp, cnt = useTest ? S.nt : S.ns * S.n;
+    return { src: src, cnt: cnt, test: useTest };
+  }
+  function drawMap(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), md = mapData(), nm = NM;
+    var side = Math.max(40, Math.min(w, h - 34) - 12), ox = (w - side) / 2, oy = 28 + (h - 28 - side) / 2;
+    PSim.label(ctx, md.test ? 'Хмара екранування навколо пробного заряду' : 'Хмара екранування навколо типової частинки',
+      8, 6, { size: f, bold: true, base: 'top' });
+    ctx.save(); ctx.strokeStyle = C.ax; ctx.lineWidth = 1; ctx.strokeRect(ox, oy, side, side); ctx.restore();
+    if (md.cnt > 0) {
+      if (!S.off) { S.off = document.createElement('canvas'); S.off.width = nm; S.off.height = nm; }
+      var oc = S.off.getContext('2d'), img = oc.createImageData(nm, nm), c = rgb(C.accent), mx = 0, i;
+      for (i = 0; i < nm * nm; i++) if (md.src[i] > mx) mx = md.src[i];
+      for (i = 0; i < nm * nm; i++) {
+        var v = mx > 0 ? md.src[i] / mx : 0;
+        img.data[4 * i] = c[0]; img.data[4 * i + 1] = c[1]; img.data[4 * i + 2] = c[2];
+        img.data[4 * i + 3] = Math.round(255 * Math.max(0, Math.min(1, v)) * 0.95);
+      }
+      oc.putImageData(img, 0, 0);
+      ctx.save(); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      ctx.beginPath(); ctx.rect(ox, oy, side, side); ctx.clip();
+      ctx.drawImage(S.off, ox, oy, side, side); ctx.restore();
+    } else {
+      PSim.label(ctx, 'накопичення…', ox + side / 2, oy + side / 2, { size: f, color: C.muted, align: 'center' });
+    }
+    var cx = ox + side / 2, cy = oy + side / 2, lr = lamD() / S.R * side / 2;
+    ctx.save(); ctx.beginPath(); ctx.rect(ox, oy, side, side); ctx.clip();
+    ring(ctx, cx, cy, lr, C.fg, 1.6, [6, 4]);
+    ctx.strokeStyle = C.muted; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx - 6, cy); ctx.lineTo(cx + 6, cy); ctx.moveTo(cx, cy - 6); ctx.lineTo(cx, cy + 6); ctx.stroke();
+    ctx.restore();
+    PSim.label(ctx, 'коло: λ_D;  сторона: ±' + fmt(S.R / lamD(), 2) + ' λ_D', ox + 4, oy + side - 4, { size: f - 1, color: C.muted, base: 'bottom' });
+  }
+
+  function profile() {
+    var R = S.R, l = lamD(), typ = [[0, 1]], tst = [[0, 1]], b, cum;
+    if (S.ns > 0) {
+      cum = 0;
+      for (b = 0; b < NB; b++) { cum += S.Hrel[b]; typ.push([(b + 1) / NB * R / l, 1 + cum / (S.n * S.ns)]); }
+    }
+    if (P.testOn && S.nt > 0 && P.Q !== 0) {
+      cum = 0;
+      var V = S.L * S.L * S.L;
+      for (b = 0; b < NB; b++) {
+        var rb = (b + 1) / NB * R;
+        // поправка: у скінченному кубі з фіксованим числом частинок заряд +Q, що «залишився», розтікається рівномірно
+        cum += S.Ht[b];
+        tst.push([rb / l, 1 + cum / (S.nt * P.Q) - 4 * Math.PI / 3 * rb * rb * rb / V]);
+      }
+    }
+    return { typ: S.ns > 0 ? typ : null, tst: P.testOn && S.nt > 0 ? tst : null };
+  }
+  function dots(ctx, m, pts, col) {
+    if (!pts) return;
+    PSim.curve(ctx, m, pts.map(function (p) { return p[0]; }), pts.map(function (p) { return p[1]; }), { color: col, width: 1.4 });
+    ctx.fillStyle = col;
+    pts.forEach(function (p, i) { if (i === 0 || i % 2) return; ctx.beginPath(); ctx.arc(m.X(p[0]), m.Y(p[1]), 2.8, 0, 2 * Math.PI); ctx.fill(); });
+  }
+  function drawProf(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), X = S.R / lamD();
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: 0, x1: X, y0: -0.3, y1: 1.3, font: f,
+      xlabel: 'r / λ_D', ylabel: 'Q(<r) / Q', title: 'Повний заряд усередині сфери радіуса r' });
+    PSim.clip(ctx, m);
+    PSim.curve(ctx, m, [0, X], [1, 1], { color: C.muted, width: 1.2, dash: [3, 4] });
+    PSim.curve(ctx, m, [0, X], [0, 0], { color: C.muted, width: 1 });
+    var xs = ph.linspace(0, X, 120);
+    PSim.curve(ctx, m, xs, xs.map(function (x) { return (1 + x) * Math.exp(-x); }), { color: C.accent, width: 2.4 });
+    var pr = profile();
+    dots(ctx, m, pr.typ, C.c3);
+    dots(ctx, m, pr.tst, C.c1);
+    PSim.curve(ctx, m, [1, 1], [-0.3, 1.3], { color: C.muted, width: 1, dash: [2, 4] });
+    ctx.restore();
+    var items = [{ t: 'теорія (1 + x)e^−x', c: C.accent }, { t: 'навколо пробного заряду', c: C.c1 },
+      { t: 'навколо типової частинки', c: C.c3 }, { t: 'без екранування', c: C.muted, d: [3, 4] }];
+    items.forEach(function (it, i) {
+      var y = m.t + 10 + i * (f + 6), x = m.r - 8;
+      ctx.save(); ctx.strokeStyle = it.c; ctx.lineWidth = 2; ctx.setLineDash(it.d || []);
+      ctx.beginPath(); ctx.moveTo(x - 24, y + f / 2); ctx.lineTo(x, y + f / 2); ctx.stroke(); ctx.restore();
+      PSim.label(ctx, it.t, x - 30, y + f / 2, { size: f - 1, align: 'right', base: 'middle' });
+    });
+  }
+
+  // ---------- величини ----------
+  var set = PSim.readout('#s-out', [
+    ['t', 't·ω<sub>p</sub>'], ['lam', 'λ<sub>D</sub> = √(T/8πn)'], ['a', 'a = (3/4πn)<sup>1/3</sup>'],
+    ['nd', 'N<sub>D</sub> = (4π/3) n λ<sub>D</sub>³'], ['g', 'Γ = e²/(aT)'], ['reg', 'режим'],
+    ['wp', 'ω<sub>p</sub> = √(4πn)'], ['ll', 'λ<sub>D</sub>/L (має бути &lt; 0,25)'],
+    ['psi', 'eφ(λ<sub>D</sub>)/T від Q'], ['tm', 'T: вимір / задане'], ['ns', 'вибірок: типова / пробний']
+  ]);
+  function updateOut() {
+    if (!S.x) return;
+    var l = lamD(), nd = ND(), g = Gam(), ll = l / S.L, i, k = 0;
+    for (i = 0; i < S.n; i++) k += S.m[i] * (S.vx[i] * S.vx[i] + S.vy[i] * S.vy[i] + S.vz[i] * S.vz[i]);
+    k /= 3 * S.n; S.Tm = isFinite(S.Tm) ? 0.9 * S.Tm + 0.1 * k : k;
+    set('t', fmt(S.t * wp(), 4));
+    set('lam', fmt(l, 3));
+    set('a', fmt(aSp(P.n), 3));
+    set('nd', fmt(nd, 3), nd < 1 ? 'bad' : nd > 3 ? 'good' : '');
+    set('g', fmt(g, 3), g > 0.6 ? 'bad' : g < 0.3 ? 'good' : '');
+    set('reg', g > 0.6 ? 'пари e–i' : nd < 1 ? 'N_D < 1' : nd < 3 ? 'помірне екранування' : 'слабкозв’язана', g > 0.6 || nd < 1 ? 'bad' : 'good');
+    set('wp', fmt(wp(), 3));
+    set('ll', fmt(ll, 3), ll > 0.25 ? 'bad' : 'good');
+    var psi = P.testOn ? P.Q * Math.exp(-1) / (l * P.T) : 0;
+    set('psi', P.testOn ? fmt(psi, 3) : '—', Math.abs(psi) > 1 ? 'bad' : 'good');
+    set('tm', fmt(S.Tm, 3) + ' / ' + fmt(P.T, 3));
+    set('ns', S.ns + ' / ' + S.nt);
+  }
+
+  // ---------- збирання ----------
+  var vMain = PSim.canvas('#v-main', drawMain), vMap = PSim.canvas('#v-map', drawMap), vProf = PSim.canvas('#v-prof', drawProf);
+  function draw() { vMain.redraw(); vMap.redraw(); vProf.redraw(); updateOut(); }
+
+  var loop = PSim.loop('#s-loop', { step: step, draw: draw, reset: reset, steps: function () { return P.spf; }, autostart: true });
+
+  var pre = PSim.presets('#s-pre', [
+    { name: 'Типова плазма', values: { T: 10, n: 1, Q: 3, testOn: true, N: 400 }, note: 'N_D ≈ 1, Γ ≈ 0,16' },
+    { name: 'Гаряча, розріджена', values: { T: 30, n: 0.5, Q: 3, testOn: true, N: 600 }, note: 'N_D ≈ 8, Γ ≈ 0,04: ідеальна плазма' },
+    { name: 'Холодна, густа', values: { T: 3, n: 2, Q: 2, testOn: true, N: 400 }, note: 'N_D < 1, Γ ≈ 0,7: пари' },
+    { name: 'Без пробного заряду', values: { T: 20, n: 0.7, testOn: false, N: 600 }, note: 'сфера Дебая навколо кожної частинки' }
+  ], function (vals) { Object.assign(P, vals); ctl.sync(); reset(); draw(); });
+
+  var ctl = PSim.controls('#s-ctl', [
+    { key: 'T', label: 'Температура T', min: 1.5, max: 40, step: 0.1, log: true },
+    { key: 'n', label: 'Концентрація n', min: 0.3, max: 3, step: 0.01, log: true },
+    { key: 'testOn', label: 'Пробний заряд', type: 'check' },
+    { key: 'Q', label: 'Величина заряду Q (в одиницях e)', min: -6, max: 6, step: 0.5,
+      fmt: function (v) { return (v > 0 ? '+' : v < 0 ? '−' : '') + fmt(Math.abs(v), 2); } },
+    { key: 'N', label: 'Частинок (e + i)', type: 'select', options: [[200, '200'], [400, '400'], [600, '600']] },
+    { key: 'M', label: 'Маса іона M/m<sub>e</sub>', min: 4, max: 100, step: 1, log: true, fmt: function (v) { return String(Math.round(v)); } },
+    { key: 'rings', label: 'Показувати кола λ<sub>D</sub>', type: 'check' },
+    { key: 'map', label: 'Карта хмари', type: 'select', options: [['test', 'навколо пробного заряду'], ['typ', 'навколо типової частинки']] },
+    { key: 'spf', label: 'Кроків за кадр', min: 1, max: 40, step: 1, log: true, fmt: function (v) { return String(Math.round(v)); } }
+  ], P, function (key, val) {
+    if (key === 'spf' || key === 'rings' || key === 'map') { draw(); return; }
+    pre.mark(-1); onCh(key, val);
+  });
+
+  // ---------- миша: поставити / перенести пробний заряд, навести на частинку ----------
+  var cv = vMain.cv, drag = false;
+  function simPos(e) {
+    var r = cv.getBoundingClientRect(), g = S.geo; if (!g) return null;
+    return [(e.clientX - r.left - g.ox) / g.sc, (e.clientY - r.top - g.oy) / g.sc];
+  }
+  function place(e) {
+    var p = simPos(e); if (!p) return;
+    S.fx_t = Math.min(1, Math.max(0, p[0] / S.L)); S.fy_t = Math.min(1, Math.max(0, p[1] / S.L));
+    if (!P.testOn || P.Q === 0) { P.testOn = true; if (P.Q === 0) P.Q = 3; ctl.sync(); }
+    pre.mark(-1); resetStats(true); warm(); draw();
+  }
+  cv.addEventListener('pointerdown', function (e) { drag = true; cv.setPointerCapture(e.pointerId); place(e); });
+  cv.addEventListener('pointermove', function (e) {
+    if (drag) { place(e); return; }
+    var p = simPos(e); if (!p || !S.x) return;
+    var best = -1, bd = 14 / S.geo.sc, bd2 = bd * bd;
+    for (var i = 0; i < S.n; i++) {
+      var dx = S.x[i] - p[0], dy = S.y[i] - p[1], d2 = dx * dx + dy * dy;
+      if (d2 < bd2) { bd2 = d2; best = i; }
+    }
+    if (best !== S.hover) { S.hover = best; vMain.redraw(); }
+  });
+  cv.addEventListener('pointerup', function () { drag = false; });
+  cv.addEventListener('pointerleave', function () { if (S.hover >= 0) { S.hover = -1; vMain.redraw(); } });
+
+  S.fx_t = 0.5; S.fy_t = 0.5;
+  reset(); draw();
+})();
+</script>
