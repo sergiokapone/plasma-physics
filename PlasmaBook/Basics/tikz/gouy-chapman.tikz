@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+	\begin{axis}[
+		width=0.8\linewidth, height=0.45\linewidth,
+		ymode=log, xmin=0, xmax=4, ymin=0.02, ymax=30,
+		xlabel={$x/\lambda_D$}, ylabel={$e\varphi/T$},
+		grid=both, minor tick num=0,
+		legend style={at={(0.97,0.97)}, anchor=north east, font=\footnotesize,
+			fill=white, fill opacity=0.9, draw=black!40, cells={anchor=west}},
+		label style={font=\small}, ticklabel style={font=\small}]
+		% точний розв'язок Гуї--Чепмена, e phi_0/T = 6
+		\addplot[very thick, blue!70!black, domain=0.03:4, samples=120]
+			{2*ln((1+0.9051*exp(-x))/(1-0.9051*exp(-x)))};
+		\addlegendentry{Гуї--Чепмен}
+		% лінійна теорія
+		\addplot[very thick, red!70!black, dashed, domain=0:4, samples=40] {6*exp(-x)};
+		\addlegendentry{лінійна теорія}
+		% логарифмічна асимптотика біля стінки
+		\addplot[thick, black!60, dotted, domain=0.03:0.9, samples=40] {2*ln(2/x)};
+		\addlegendentry{$2\ln(2\lambda_D/x)$}
+	\end{axis}
+\end{tikzpicture}
