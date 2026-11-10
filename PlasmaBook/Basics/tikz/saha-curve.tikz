@@ -39,5 +39,8 @@
              + 4*(3.02e21/1e19)*x^1.5*exp(-13.6/x)))/2};
 \addlegendentry{$n_0=10^{19}\ \text{см}^{-3}$}
 
+% T = I/10
+\draw[dashed, black!60] (axis cs:1.36,0) -- (axis cs:1.36,1.05);
+\node[font=\footnotesize, anchor=south west, black!70] at (axis cs:1.4,0.01) {$T=I/10$};
 \end{axis}
 \end{tikzpicture}
