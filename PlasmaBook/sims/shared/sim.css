@@ -74,6 +74,15 @@ header.top #theme-slot { margin-left: auto; }
   font-size: .82em; text-transform: uppercase; letter-spacing: .06em;
   color: var(--muted); margin: 0 0 .4em; font-weight: 650;
 }
+/* розгортні текстові блоки: <details class="observe" open><summary><h2>…</h2></summary>…</details> */
+#panel details { margin-top: .9em; }
+#panel summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: .4em; }
+#panel summary::-webkit-details-marker { display: none; }
+#panel summary::before { content: "▸"; color: var(--muted); font-size: .8em; transition: transform .15s; }
+#panel details[open] > summary::before { transform: rotate(90deg); }
+#panel summary h2 { margin: 0; display: inline; }
+#panel details[open] > summary { margin-bottom: .4em; }
+#panel summary:hover h2 { color: var(--accent); }
 .buttons { display: flex; gap: .4em; flex-wrap: wrap; }
 button.b {
   font: inherit; font-size: .95em; padding: .45em .9em; border-radius: 6px; cursor: pointer;
