@@ -1,0 +1,122 @@
+/* Спільні стилі симуляцій PlasmaBook.
+   Кольори — лише через CSS-змінні; темна тема задається двічі:
+   за системною схемою (якщо тему не вибрано вручну) і за html[data-theme=dark]. */
+:root {
+  --bg: #fbfbf8; --fg: #1d1f24; --muted: #5b6070; --panel: #ffffff; --line: #8885;
+  --ax: #4a4f5c; --gr: #0000001a; --accent: #6a1b9a; --accent-fg: #ffffff;
+  --c1: #1f5fbf; --c2: #c2410c; --c3: #157a3c; --c4: #8e24aa; --c5: #b08900;
+  --ion: #c2410c; --ele: #1f5fbf; --warn: #b3261e; --ok: #157a3c;
+  --obs-bg: #f3ecf7; --note-bg: #f2f4f7;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme=light]) {
+    --bg: #14161b; --fg: #e8e8ea; --muted: #a3a8b5; --panel: #1e2128; --line: #8886;
+    --ax: #b4b8c2; --gr: #ffffff1c; --accent: #ce93d8; --accent-fg: #1a1020;
+    --c1: #6ea8ff; --c2: #ff9a5c; --c3: #5fd38d; --c4: #d79bf0; --c5: #f2c94c;
+    --ion: #ff9a5c; --ele: #6ea8ff; --warn: #ff7a70; --ok: #5fd38d;
+    --obs-bg: #2a2131; --note-bg: #22262e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme=dark] {
+  --bg: #14161b; --fg: #e8e8ea; --muted: #a3a8b5; --panel: #1e2128; --line: #8886;
+  --ax: #b4b8c2; --gr: #ffffff1c; --accent: #ce93d8; --accent-fg: #1a1020;
+  --c1: #6ea8ff; --c2: #ff9a5c; --c3: #5fd38d; --c4: #d79bf0; --c5: #f2c94c;
+  --ion: #ff9a5c; --ele: #6ea8ff; --warn: #ff7a70; --ok: #5fd38d;
+  --obs-bg: #2a2131; --note-bg: #22262e;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 17px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  display: flex; flex-direction: column;
+}
+i.m, .m { font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif; font-style: italic; }
+
+/* ---------- шапка ---------- */
+header.top {
+  display: flex; align-items: center; gap: .8em; flex-wrap: wrap;
+  padding: .45em .9em; border-bottom: 1px solid var(--line); background: var(--panel);
+}
+header.top h1 { font-size: 1.25em; margin: 0; font-weight: 650; }
+header.top .ref { color: var(--muted); font-size: .9em; }
+header.top #theme-slot { margin-left: auto; }
+.theme-btn {
+  width: 2.1em; height: 2.1em; border-radius: 50%; border: 1px solid var(--line);
+  background: transparent; color: var(--fg); font-size: 1em; cursor: pointer;
+}
+
+/* ---------- основна розкладка ---------- */
+#app { flex: 1; display: flex; min-height: 0; }
+#panel {
+  width: 380px; flex: none; overflow-y: auto; padding: .7em .9em 1.2em;
+  border-right: 1px solid var(--line); background: var(--panel);
+}
+#stage { flex: 1; min-width: 0; display: grid; gap: 6px; padding: 6px; }
+#stage.rows2 { grid-template-rows: 3fr 2fr; }
+#stage.cols2 { grid-template-columns: 1fr 1fr; }
+#stage.grid3 { grid-template-columns: 3fr 2fr; grid-template-rows: 1fr 1fr; }
+#stage.grid3 > .view:first-child { grid-row: 1 / span 2; }
+#stage.grid4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.view {
+  position: relative; min-height: 0; min-width: 0;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--bg);
+}
+.view canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+
+/* ---------- панель ---------- */
+#panel section { margin-top: .9em; }
+#panel h2 {
+  font-size: .82em; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); margin: 0 0 .4em; font-weight: 650;
+}
+.buttons { display: flex; gap: .4em; flex-wrap: wrap; }
+button.b {
+  font: inherit; font-size: .95em; padding: .45em .9em; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+}
+button.b.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
+button.b:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.presets { display: flex; flex-wrap: wrap; gap: .35em; }
+.presets button.b { font-size: .88em; padding: .35em .7em; }
+.presets button.b.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+.ctl { margin: .55em 0; }
+.ctl .row { display: flex; justify-content: space-between; align-items: baseline; gap: .5em; }
+.ctl label { font-size: .95em; }
+.ctl output { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.ctl input[type=range] { width: 100%; height: 1.6em; margin: .1em 0 0; accent-color: var(--accent); }
+.ctl.check { display: flex; align-items: center; gap: .5em; }
+.ctl.check input { width: 1.2em; height: 1.2em; accent-color: var(--accent); }
+.ctl select { font: inherit; width: 100%; padding: .3em; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; }
+.hint { font-size: .85em; color: var(--muted); margin: .1em 0 0; }
+
+.readout { display: grid; grid-template-columns: auto 1fr; gap: .15em .7em; font-size: .95em; }
+.readout dt { color: var(--muted); }
+.readout dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.readout .bad { color: var(--warn); }
+.readout .good { color: var(--ok); }
+
+.observe { background: var(--obs-bg); border-left: 4px solid var(--accent); padding: .5em .7em; border-radius: 4px; }
+.observe ol { margin: 0; padding-left: 1.3em; }
+.observe li { margin: .3em 0; }
+.note { background: var(--note-bg); padding: .5em .7em; border-radius: 4px; font-size: .9em; }
+.note p { margin: .3em 0; }
+.legend { display: flex; flex-wrap: wrap; gap: .3em 1em; font-size: .9em; }
+.legend span::before { content: ""; display: inline-block; width: 1.6em; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: .35em; }
+
+/* ---------- телефон / вузьке вікно: сцена зверху, панель під нею ---------- */
+@media (max-width: 860px) {
+  body { display: block; height: auto; }
+  #app { flex-direction: column; }
+  #panel { width: auto; border-right: 0; border-top: 1px solid var(--line); overflow: visible; }
+  #stage { height: auto; grid-template-columns: 1fr !important; grid-template-rows: none !important; }
+  #stage > .view { height: 62vh; min-height: 260px; grid-row: auto !important; }
+  #stage > .view + .view { height: 42vh; min-height: 220px; }
+}
+/* ---------- проєктор / великий екран ---------- */
+@media (min-width: 1600px) { body { font-size: 19px; } #panel { width: 420px; } }
