@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пристінний шар і критерій Бома</title>
+<script src="shared/theme.js"></script>
+<link rel="stylesheet" href="shared/sim.css">
+<script src="shared/sim.js"></script>
+<script src="shared/physics.js"></script>
+</head>
+<body>
+<header class="top">
+  <h1>Пристінний шар: критерій Бома і плаваючий потенціал</h1>
+  <span class="ref">Розд. 1.7, ф-ли (1.10)–(1.12)</span>
+  <span id="theme-slot"></span>
+</header>
+<div id="app">
+  <div id="panel">
+    <section id="s-loop"></section>
+    <section><h2>Режими</h2><div id="s-pre"></div></section>
+    <section><h2>Параметри</h2><div id="s-ctl"></div></section>
+    <section><h2>Величини</h2><div id="s-out"></div></section>
+    <section class="observe"><h2>Що спостерігати</h2>
+      <ol>
+        <li>Зменшуйте <i class="m">M = u<sub>0</sub>/c<sub>s</sub></i> нижче 1: потенціал Сагдеєва <i class="m">F(χ)</i> стає від’ємним
+          біля нуля, монотонного розв’язку немає — потенціал лише осцилює і до стінки не доходить. Це і є критерій Бома (1.11).</li>
+        <li>У шарі <i class="m">n<sub>i</sub> &gt; n<sub>e</sub></i> скрізь (суцільна крива над штриховою): іони, розігнані полем,
+          розріджуються як <i class="m">1/u</i>, а електрони — за Больцманом <i class="m">e<sup>−χ</sup></i>, швидше.</li>
+        <li>Більшість електронів (×) відбивається від потенціального бар’єра; до стінки долітає лише частка
+          <i class="m">e<sup>−χ<sub>w</sub></sup></i> — саме вона врівноважує іонний потік і задає <i class="m">φ<sub>f</sub></i> (1.12).</li>
+        <li>Важчий газ (D, Ar) — глибший плаваючий потенціал: <i class="m">eφ<sub>f</sub>/T<sub>e</sub></i> росте як
+          <i class="m">½ ln(m<sub>i</sub>/m<sub>e</sub>)</i>. Шар завжди тонкий — кілька <i class="m">λ<sub>De</sub></i>; сильніше
+          від’ємна стінка (вимкніть «плаваюча») його потовщує.</li>
+      </ol>
+    </section>
+    <section class="note">
+      <p>Модель: стаціонарний одновимірний шар, холодні іони (без зіткнень) і больцманівські електрони.
+      Позначення: <i class="m">χ = −eφ/T<sub>e</sub></i> (відлік від межі шару), <i class="m">x</i> — у <i class="m">λ<sub>De</sub></i>,
+      густини — в одиницях <i class="m">n<sub>s</sub></i> на межі шару. Тоді <i class="m">n<sub>i</sub> = (1 + 2χ/M²)<sup>−1/2</sup></i>,
+      <i class="m">n<sub>e</sub> = e<sup>−χ</sup></i>, рівняння Пуассона <i class="m">χ″ = n<sub>i</sub> − n<sub>e</sub></i> має
+      перший інтеграл <i class="m">½χ′² = F(χ) = M²(√(1+2χ/M²) − 1) + e<sup>−χ</sup> − 1</i>; його збереження контролюється.
+      Інтегрування — RK4 від <i class="m">χ = 10<sup>−3</sup></i>.</p>
+      <p>Плаваюча стінка: <i class="m">M n<sub>s</sub>c<sub>s</sub> = ¼n<sub>s</sub>v̄<sub>e</sub>e<sup>−χ<sub>w</sub></sup></i> ⇒
+      <i class="m">χ<sub>w</sub> = ln(√(m<sub>i</sub>/2πm<sub>e</sub>)/M)</i>; передшар додає <i class="m">M²/2</i> і зменшує густину до
+      <i class="m">n<sub>s</sub> = e<sup>−M²/2</sup>n<sub>0</sub></i>. Іони-маркери розставлено за часом прольоту (густина ∝ 1/u);
+      електрони рухаються в полі шару з відбиттям, їх для наочності сповільнено (реально вони в √(m<sub>i</sub>/m<sub>e</sub>) ≈ 40 разів
+      швидші за <i class="m">c<sub>s</sub></i>); на лівій межі вікна вони вприскуються з напівмаксвеллівським потоком.</p>
+      <p>Книга: розд. 1.7 «Шар біля стінки: критерій Бома і зонд Ленгмюра», ф-ли (1.10)–(1.12), рис. 1.6.</p>
+    </section>
+  </div>
+  <div id="stage" class="grid3">
+    <div class="view" id="v-phi"></div>
+    <div class="view" id="v-n"></div>
+    <div class="view" id="v-F"></div>
+  </div>
+</div>
+<script>
+/* Пристінний шар (Бом). Одиниці: x — λ_De, χ = −eφ/T_e, швидкість іонів — c_s, електронів — v_Te = √(T_e/m_e).
+   Стінка в x = 0, плазма при x < 0. */
+(function () {
+  var P = { M: 1, gas: '1836', float: true, chiW: 6, spf: 4 };
+  var ph = PSim.phys, C = PSim.C, fmt = PSim.fmt;
+  var EPS = 1e-3, WMAX = 60, NG = 800, NI = 80, NE = 220, DT = 0.02, KE = 4;
+  var G = {}, S = {};
+
+  // ---------- фізика (чисті функції) ----------
+  function ni(c, M) { return 1 / Math.sqrt(1 + 2 * c / (M * M)); }
+  function ne(c) { return Math.exp(-c); }
+  function F(c, M) { return M * M * (Math.sqrt(1 + 2 * c / (M * M)) - 1) + Math.exp(-c) - 1; }
+  function rhs(M) { return function (x, y) { return [y[1], ni(y[0], M) - ne(y[0])]; }; }
+  function floatChi(M, mu) { return Math.log(Math.sqrt(mu / (2 * Math.PI)) / M); }
+
+  // монотонний шар (M ≥ 1): від χ = EPS до χ = chiW; стінка зсувається в x = 0
+  function sheath(M, chiW) {
+    var f = rhs(M), y = [EPS, Math.sqrt(2 * F(EPS, M))], x = 0, xs = [0], cs = [y[0]], ds = [y[1]], err = 0;
+    var Fw = Math.max(F(chiW, M), 1e-12);
+    for (var k = 0; k < 400000 && y[0] < chiW - 1e-9; k++) {
+      var h = Math.min(0.05, 0.05 * y[0] / Math.max(y[1], 1e-12));
+      var yn = ph.rk4(f, x, y, h);
+      if (yn[0] >= chiW) {              // останній крок: укорочений RK4-крок рівно до стінки
+        for (var it = 0; it < 3; it++) {
+          h *= (chiW - y[0]) / (yn[0] - y[0]);
+          yn = ph.rk4(f, x, y, h);
+        }
+      }
+      x += h; y = yn;
+      xs.push(x); cs.push(y[0]); ds.push(y[1]);
+      err = Math.max(err, Math.abs(0.5 * y[1] * y[1] - F(y[0], M)) / Fw);
+    }
+    for (var i = 0; i < xs.length; i++) xs[i] -= x;
+    return { x: xs, chi: cs, d: ds, err: err, mono: true };
+  }
+
+  // M < 1: ½χ′² = F < 0 біля нуля — монотонного розв’язку немає; показуємо осциляцію
+  function oscill(M, W) {
+    var cstar = ph.bisect(function (c) { return ni(c, M) - ne(c); }, 1e-6, 50);
+    var f = rhs(M), y = [0.5 * cstar, 0], x = -W, xs = [x], cs = [y[0]], ds = [0], err = 0;
+    var E0 = -F(y[0], M), sc = Math.max(Math.abs(F(y[0], M)), 1e-12);
+    while (x < 0) {
+      y = ph.rk4(f, x, y, DT); x += DT;
+      xs.push(x); cs.push(y[0]); ds.push(y[1]);
+      err = Math.max(err, Math.abs(0.5 * y[1] * y[1] - F(y[0], M) - E0) / sc);
+    }
+    return { x: xs, chi: cs, d: ds, err: err, mono: false };
+  }
+
+  // перерахунок на рівномірну сітку + час прольоту іонів
+  function grid(pr, M) {
+    var xL = Math.max(pr.x[0], -WMAX), dx = -xL / (NG - 1), g = { xL: xL, dx: dx, chi: [], d: [], tof: [0] };
+    var j = 0;
+    for (var i = 0; i < NG; i++) {
+      var xx = xL + i * dx;
+      while (j < pr.x.length - 2 && pr.x[j + 1] < xx) j++;
+      var s = Math.min(1, Math.max(0, (xx - pr.x[j]) / (pr.x[j + 1] - pr.x[j])));
+      g.chi.push(pr.chi[j] + s * (pr.chi[j + 1] - pr.chi[j]));
+      g.d.push(pr.d[j] + s * (pr.d[j + 1] - pr.d[j]));
+      if (i) {
+        var cm = 0.5 * (g.chi[i] + g.chi[i - 1]);
+        g.tof.push(g.tof[i - 1] + dx / Math.sqrt(M * M + 2 * Math.max(cm, 0)));
+      }
+    }
+    return g;
+  }
+  function at(arr, x) {
+    var u = (x - G.xL) / G.dx, i = Math.max(0, Math.min(NG - 2, Math.floor(u))), s = Math.min(1, Math.max(0, u - i));
+    return arr[i] + s * (arr[i + 1] - arr[i]);
+  }
+  function xOfTof(t) {
+    var a = 0, b = NG - 1, T = G.tof;
+    while (b - a > 1) { var c = (a + b) >> 1; if (T[c] < t) a = c; else b = c; }
+    return G.xL + (a + (t - T[a]) / (T[b] - T[a])) * G.dx;
+  }
+  function xAtChi(pr, c) {
+    for (var i = 1; i < pr.chi.length; i++) if (pr.chi[i] >= c) {
+      var s = (c - pr.chi[i - 1]) / (pr.chi[i] - pr.chi[i - 1]);
+      return pr.x[i - 1] + s * (pr.x[i] - pr.x[i - 1]);
+    }
+    return NaN;
+  }
+
+  // ---------- стан ----------
+  function mu() { return parseFloat(P.gas); }
+  function chiW() { return P.float ? Math.max(0.05, floatChi(P.M, mu())) : P.chiW; }
+  function injV() { return Math.sqrt(-2 * Math.log(1 - Math.random())); }   // потоково-зважений максвелл
+  function newE(x, v) { return { x: x, v: v, y: 0.04 + 0.92 * Math.random() }; }
+  function reset() {
+    var cw = chiW();
+    G.pr = P.M >= 1 ? sheath(P.M, cw) : oscill(P.M, 40);
+    G.cw = cw;
+    Object.assign(G, grid(G.pr, P.M));
+    S = { t: 0, ions: [], els: [], inj: 0, hit: 0 };
+    var Tt = G.tof[NG - 1];
+    for (var i = 0; i < NI; i++) S.ions.push({ tau: Tt * (i + Math.random()) / NI, y: 0.04 + 0.92 * Math.random() });
+    var cL = G.chi[0];
+    while (S.els.length < NE) {
+      var x = G.xL - G.xL * Math.random();
+      if (Math.random() < Math.exp(-(at(G.chi, x) - cL))) S.els.push(newE(x, ph.randn()));
+    }
+  }
+  function stepIons() {
+    var Tt = G.tof[NG - 1];
+    S.ions.forEach(function (p) {
+      p.tau += DT;
+      if (p.tau >= Tt) { p.tau -= Tt; p.y = 0.04 + 0.92 * Math.random(); }
+    });
+  }
+  function stepEls() {
+    var h = DT * KE / 2;
+    for (var k = 0; k < 2; k++) S.els.forEach(function (e) {
+      e.v -= at(G.d, e.x) * h; e.x += e.v * h;
+      if (e.x >= 0 || e.x < G.xL) {
+        if (e.x >= 0) S.hit++;
+        Object.assign(e, newE(G.xL, injV())); S.inj++;
+      }
+    });
+  }
+  function step() {
+    S.t += DT;
+    if (!G.pr.mono) return;
+    stepIons(); stepEls();
+  }
+
+  // ---------- малювання ----------
+  function fs(w) { return w > 700 ? 15 : 13; }
+  function vline(ctx, m, x, y0, y1, col, dash) { PSim.curve(ctx, m, [x, x], [y0, y1], { color: col, width: 1.2, dash: dash }); }
+  function legend(ctx, m, f, items) {
+    items.forEach(function (it, i) {
+      var y = m.t + 8 + i * (f + 6), x = m.r - 8;
+      ctx.save(); ctx.strokeStyle = it.color; ctx.lineWidth = 2; ctx.setLineDash(it.dash || []);
+      ctx.beginPath(); ctx.moveTo(x - 26, y + f / 2); ctx.lineTo(x, y + f / 2); ctx.stroke(); ctx.restore();
+      PSim.label(ctx, it.text, x - 32, y + f / 2, { size: f - 1, color: C.fg, align: 'right', base: 'middle' });
+    });
+  }
+  function xsGrid() { var a = []; for (var i = 0; i < NG; i++) a.push(G.xL + i * G.dx); return a; }
+
+  function drawParticles(ctx, m) {
+    var H = m.b - m.t;
+    ctx.save();
+    ctx.fillStyle = PSim.alpha(C.ion, 0.85);
+    S.ions.forEach(function (p) {
+      ctx.beginPath(); ctx.arc(m.X(xOfTof(p.tau)), m.t + p.y * H, 3.2, 0, 2 * Math.PI); ctx.fill();
+    });
+    ctx.strokeStyle = PSim.alpha(C.ele, 0.85); ctx.lineWidth = 1.4;
+    S.els.forEach(function (e) {
+      var X = m.X(e.x), Y = m.t + e.y * H;
+      ctx.beginPath(); ctx.moveTo(X - 3, Y - 3); ctx.lineTo(X + 3, Y + 3); ctx.moveTo(X - 3, Y + 3); ctx.lineTo(X + 3, Y - 3); ctx.stroke();
+    });
+    ctx.restore();
+  }
+  function drawPhi(ctx, w, h) {
+    var f = fs(w), cw = G.cw, lo = Math.min(0, Math.min.apply(null, G.chi) * 1.2);
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: G.xL, x1: 0, y0: lo, y1: cw * 1.12, font: f,
+      xlabel: 'x / λ_De  (стінка в x = 0)', ylabel: 'χ = −eφ/T_e', title: 'Потенціал шару і частинки' });
+    PSim.clip(ctx, m);
+    if (G.pr.mono) drawParticles(ctx, m);
+    PSim.curve(ctx, m, [G.xL, 0], [cw, cw], { color: C.muted, width: 1, dash: [3, 4] });
+    PSim.curve(ctx, m, xsGrid(), G.chi, { color: C.accent, width: 2.6 });
+    ctx.restore();
+    ctx.save(); ctx.fillStyle = C.fg; ctx.fillRect(m.X(0) - 4, m.t, 4, m.b - m.t); ctx.restore();
+    PSim.label(ctx, 'χ_w = ' + fmt(cw, 3), m.l + 6, m.Y(cw) - 3, { size: f - 1, color: C.muted, base: 'bottom' });
+    if (!G.pr.mono) PSim.label(ctx, 'M < 1: шару немає — χ осцилює, до стінки не доходить', (m.l + m.r) / 2, m.t + 6,
+      { size: f, color: C.warn, align: 'center', base: 'top', bold: true });
+    else legend(ctx, m, f, [{ text: 'χ(x)', color: C.accent }, { text: '● іони   × електрони', color: C.muted }]);
+  }
+  function drawN(ctx, w, h) {
+    var f = fs(w), xs = xsGrid(), a = [], b = [];
+    G.chi.forEach(function (c) { a.push(ni(c, P.M)); b.push(ne(c)); });
+    var hi = Math.max(1.05, Math.max.apply(null, a) * 1.05);
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: G.xL, x1: 0, y0: 0, y1: hi, font: f,
+      xlabel: 'x / λ_De', ylabel: 'n / n_s', title: 'Густини: іони і електрони' });
+    PSim.clip(ctx, m);
+    PSim.curve(ctx, m, xs, a, { color: C.ion, width: 2.4 });
+    PSim.curve(ctx, m, xs, b, { color: C.ele, width: 2.4, dash: [7, 4] });
+    ctx.restore();
+    legend(ctx, m, f, [{ text: 'n_i (холодні іони)', color: C.ion }, { text: 'n_e = e^−χ', color: C.ele, dash: [7, 4] }]);
+  }
+  function drawF(ctx, w, h) {
+    var f = fs(w), X = Math.min(G.cw, 3), xs = [], a = [], b = [];
+    for (var i = 0; i <= 300; i++) { var c = X * i / 300; xs.push(c); a.push(F(c, P.M)); b.push(F(c, 1)); }
+    var lo = Math.min(0, Math.min.apply(null, a)), hi = Math.max(Math.max.apply(null, a), Math.max.apply(null, b));
+    var pad = 0.08 * (hi - lo || 1);
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: 0, x1: X, y0: lo - pad, y1: hi + pad, font: f,
+      xlabel: 'χ', ylabel: 'F(χ) = ½χ′²', title: 'Потенціал Сагдеєва' });
+    PSim.clip(ctx, m);
+    PSim.curve(ctx, m, [0, X], [0, 0], { color: C.muted, width: 1 });
+    PSim.curve(ctx, m, xs, b, { color: C.muted, width: 1.8, dash: [6, 4] });
+    PSim.curve(ctx, m, xs, a, { color: P.M >= 1 ? C.c1 : C.warn, width: 2.6 });
+    ctx.restore();
+    legend(ctx, m, f, [{ text: 'M = ' + fmt(P.M, 3), color: P.M >= 1 ? C.c1 : C.warn },
+      { text: 'M = 1 (межа Бома)', color: C.muted, dash: [6, 4] }]);
+    if (P.M < 1) PSim.label(ctx, 'F < 0: ½χ′² < 0 — неможливо', m.l + 8, m.b - 6, { size: f, color: C.warn, base: 'bottom', bold: true });
+  }
+
+  // ---------- величини ----------
+  var set = PSim.readout('#s-out', [
+    ['bohm', 'критерій Бома M ≥ 1'], ['inv', '½χ′² = F: відн. похибка'],
+    ['chs', 'χ<sub>w</sub> (спад у шарі)'], ['chp', 'спад у передшарі M²/2'],
+    ['phf', '−eφ<sub>f</sub>/T<sub>e</sub>: модель / (1.12)'], ['ns', 'n<sub>s</sub>/n<sub>0</sub> = e<sup>−M²/2</sup>'],
+    ['d', 'товщина шару (χ: 1→χ<sub>w</sub>), λ<sub>De</sub>'],
+    ['fr', 'частка e⁻ до стінки: вимір / e<sup>−(χ<sub>w</sub>−χ<sub>L</sub>)</sup>']
+  ]);
+  function updateOut() {
+    var M = P.M, cw = G.cw, mono = G.pr.mono;
+    set('bohm', M >= 1 ? 'виконано' : 'порушено', M >= 1 ? 'good' : 'bad');
+    set('inv', G.pr.err.toExponential(1), G.pr.err < 1e-5 ? 'good' : 'bad');
+    set('chs', fmt(cw, 3)); set('chp', fmt(M * M / 2, 3));
+    var book = 0.5 * (Math.log(mu() / (2 * Math.PI)) + 1), tot = cw + M * M / 2;
+    set('phf', P.float ? fmt(tot, 3) + ' / ' + fmt(book, 3) : '— (стінка не плаваюча)',
+      P.float && Math.abs(M - 1) < 1e-9 && Math.abs(tot - book) < 1e-3 ? 'good' : '');
+    set('ns', fmt(Math.exp(-M * M / 2), 3));
+    set('d', mono && cw > 1 ? fmt(-xAtChi(G.pr, 1), 3) : '—');
+    var th = Math.exp(-(cw - G.chi[0]));
+    set('fr', mono && S.inj > 50 ? fmt(S.hit / S.inj, 2) + ' / ' + fmt(th, 2) : '—',
+      mono && S.inj > 300 && Math.abs(S.hit / S.inj - th) < 3 * Math.sqrt(th / S.inj) + 0.01 ? 'good' : '');
+  }
+
+  // ---------- збирання ----------
+  var views = [PSim.canvas('#v-phi', drawPhi), PSim.canvas('#v-n', drawN), PSim.canvas('#v-F', drawF)];
+  function draw() { views.forEach(function (v) { v.redraw(); }); updateOut(); }
+
+  var loop = PSim.loop('#s-loop', { step: step, draw: draw, reset: reset, steps: function () { return P.spf; } });
+
+  var pre = PSim.presets('#s-pre', [
+    { name: 'Бом: M = 1, водень', values: { M: 1, gas: '1836', float: true }, note: 'плаваюча стінка, φ_f ≈ −3,3 T_e/e' },
+    { name: 'Надзвуковий вхід', values: { M: 2, gas: '1836', float: true }, note: 'шар тонший, n_i ≫ n_e' },
+    { name: 'Порушення Бома', values: { M: 0.8, gas: '1836', float: true }, note: 'F < 0 — розв’язку немає' },
+    { name: 'Дейтерій', values: { M: 1, gas: '3671', float: true }, note: 'φ_f ≈ −3,7 T_e/e' },
+    { name: 'Аргон', values: { M: 1, gas: '73440', float: true }, note: 'φ_f ≈ −5,3 T_e/e' },
+    { name: 'Від’ємна стінка', values: { M: 1, gas: '1836', float: false, chiW: 15 }, note: 'χ_w ≫ 1: електрони не долітають, шар товщий' }
+  ], function (vals) { Object.assign(P, vals); ctl.sync(); reset(); draw(); });
+
+  var ctl = PSim.controls('#s-ctl', [
+    { key: 'M', label: 'Число Маха на межі M = u<sub>0</sub>/c<sub>s</sub>', min: 0.5, max: 3, step: 0.01 },
+    { key: 'gas', label: 'Газ (m<sub>i</sub>/m<sub>e</sub>)', type: 'select',
+      options: [['1836', 'H (1836)'], ['3671', 'D (3671)'], ['7294', 'He (7294)'], ['73440', 'Ar (73 440)']] },
+    { key: 'float', label: 'Плаваюча стінка (I = 0)', type: 'check' },
+    { key: 'chiW', label: 'χ<sub>w</sub> заданий (якщо не плаваюча)', min: 0.5, max: 20, step: 0.1 },
+    { key: 'spf', label: 'Кроків за кадр', min: 1, max: 40, step: 1, log: true }
+  ], P, function (key) {
+    if (key === 'spf') return;
+    pre.mark(-1); reset(); draw();
+  });
+
+  reset(); draw();
+  loop.start();
+})();
+</script>
+</body>
+</html>

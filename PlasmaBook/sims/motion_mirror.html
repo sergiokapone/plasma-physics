@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Магнітне дзеркало</title>
+<script src="shared/theme.js"></script>
+<link rel="stylesheet" href="shared/sim.css">
+<script src="shared/sim.js"></script>
+<script src="shared/physics.js"></script>
+</head>
+<body>
+<header class="top">
+  <h1>Магнітне дзеркало і конус втрат</h1>
+  <span class="ref">Розд. 2.5, ф-ла (2.9)</span>
+  <span id="theme-slot"></span>
+</header>
+<div id="app">
+  <div id="panel">
+    <section id="s-loop"></section>
+    <section><h2>Режими</h2><div id="s-pre"></div></section>
+    <section><h2>Параметри</h2><div id="s-ctl"></div></section>
+    <section><h2>Величини</h2><div id="s-out"></div></section>
+    <section class="observe"><h2>Що спостерігати</h2>
+      <ol>
+        <li>Частинка відбивається там, де <i class="m">B = B<sub>0</sub>/sin²θ<sub>0</sub></i>: виміряне <i class="m">z<sub>m</sub></i> збігається з теорією (штрихові лінії).</li>
+        <li>У площині швидкостей точка рухається по колу <i class="m">|v| = const</i>; відбиття — це точка <i class="m">v<sub>∥</sub> = 0</i>.</li>
+        <li>Режим «Порушення адіабатичності»: <i class="m">μ</i> стрибає в горловинах, пітч-кут блукає, і частинка може потрапити в конус втрат.</li>
+        <li>Більше <i class="m">R</i> звужує конус: <i class="m">θ<sub>c</sub> = arcsin(1/√R)</i>, частка втрат ізотропного розподілу <i class="m">1 − √(1 − 1/R)</i>.</li>
+      </ol>
+    </section>
+    <section class="note">
+      <p>Схема Боріса, крок <i class="m">Δt = 0,08/(Rω<sub>c0</sub>)</i>: у статичному <i class="m">B</i> енергія зберігається точно, <i class="m">μ</i> — лише адіабатично.
+      Поле параксіальне: <i class="m">B<sub>z</sub>(z) = B<sub>0</sub>[1 + (R−1)sin²(πz/2L)]</i>, <i class="m">B<sub>r</sub> = −(r/2)dB<sub>z</sub>/dz</i>
+      (div <b>B</b> = 0 точно, rot <b>B</b> ∝ r/L²). Одиниці: <i class="m">q/m = B<sub>0</sub> = 1</i>, довжини в <i class="m">v<sub>0</sub>/ω<sub>c0</sub></i>.</p>
+      <p>Книга: розд. 2.5 «Магнітне дзеркало і конус втрат», умова захоплення (2.9) <i class="m">sin²θ ≥ B<sub>min</sub>/B<sub>max</sub></i>.</p>
+    </section>
+  </div>
+  <div id="stage" class="grid3">
+    <div class="view" id="v-orbit"></div>
+    <div class="view" id="v-vel"></div>
+    <div class="view" id="v-inv"></div>
+  </div>
+</div>
+<script>
+/* Магнітне дзеркало: рух зарядженої частинки в параксіальній пробкотроні.
+   Одиниці: q/m = 1, B0 = 1 (ω_c0 = 1), довжини в v0/ω_c0. Поле за |z| > L знову спадає
+   (періодичне продовження), тож частинка, що пройшла пробку, гарантовано йде до |z| = 1,5L, де її знято. */
+(function () {
+  var P = { R: 4, theta: 60, L: 40, v: 1, spf: 200 };
+  var ph = PSim.phys, C = PSim.C, fmt = PSim.fmt, DEG = Math.PI / 180;
+
+  // ---------- поле ----------
+  function Bz0(z) { var s = Math.sin(Math.PI * z / (2 * P.L)); return 1 + (P.R - 1) * s * s; }
+  function dBz0(z) { return (P.R - 1) * (Math.PI / (2 * P.L)) * Math.sin(Math.PI * z / P.L); }
+  function field(x, out) {
+    var d = dBz0(x[2]);
+    out[0] = -0.5 * x[0] * d; out[1] = -0.5 * x[1] * d; out[2] = Bz0(x[2]);
+    return out;
+  }
+
+  // ---------- теорія ----------
+  function thetaC() { return Math.asin(1 / Math.sqrt(P.R)); }
+  function trappedTheory() { var s = Math.sin(P.theta * DEG); return s * s > 1 / P.R; }
+  function zmTheory() {
+    var s = Math.sin(P.theta * DEG), a = (1 / (s * s) - 1) / (P.R - 1);
+    return a > 1 ? NaN : (2 * P.L / Math.PI) * Math.asin(Math.sqrt(a));
+  }
+
+  // ---------- стан ----------
+  var S = {}, B = [0, 0, 0], E0v = [0, 0, 0];
+  var TR = PSim.Ring(16000, 2), VR = PSim.Ring(3000, 2), IR = PSim.Ring(4000, 3);
+
+  function diag() {
+    field(S.x, B);
+    var b = Math.hypot(B[0], B[1], B[2]), v = S.v;
+    var vpar = (v[0] * B[0] + v[1] * B[1] + v[2] * B[2]) / b;
+    var v2 = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    var vperp = Math.sqrt(Math.max(0, v2 - vpar * vpar));
+    return { vpar: vpar, vperp: vperp, mu: vperp * vperp / (2 * b), En: v2 / 2, B: b };
+  }
+
+  function reset() {
+    var s = Math.sin(P.theta * DEG), c = Math.cos(P.theta * DEG);
+    S = { x: [P.v * s, 0, 0], v: [0, -P.v * s, P.v * c], t: 0, n: 0, dt: 0.08 / P.R,
+          lost: false, bounces: 0, sgn: 1, zPeak: 0, zTurn: NaN, dmu: 0, dE: 0 };
+    var d = diag(); S.mu0 = d.mu; S.E0 = d.En;
+    TR.clear(); VR.clear(); IR.clear();
+    sample(d);
+  }
+
+  function sample(d) {
+    TR.push(S.x[2], S.x[0]);
+    VR.push(d.vpar, d.vperp);
+    IR.push(S.t, d.mu / S.mu0, d.En / S.E0);
+    S.dmu = Math.max(S.dmu, Math.abs(d.mu / S.mu0 - 1));
+    S.dE = Math.max(S.dE, Math.abs(d.En / S.E0 - 1));
+    S.d = d;
+  }
+
+  // Відбиття: зміна знаку v∥ з гістерезисом 1 % від v.
+  function bounceCheck(vpar) {
+    var eps = 0.01 * P.v, z = S.x[2];
+    S.zPeak = Math.max(S.zPeak, S.sgn * z);
+    if (S.sgn * vpar < -eps) {
+      S.bounces++; S.zTurn = S.zPeak; S.sgn = -S.sgn; S.zPeak = S.sgn * z;
+    }
+  }
+
+  function step(n) {
+    for (var i = 0; i < n && !S.lost; i++) {
+      field(S.x, B);
+      ph.boris(S.x, S.v, 1, E0v, B, S.dt);
+      S.t += S.dt; S.n++;
+      var bb = Math.hypot(B[0], B[1], B[2]);
+      bounceCheck((S.v[0] * B[0] + S.v[1] * B[1] + S.v[2] * B[2]) / bb);
+      if (Math.abs(S.x[2]) > 1.5 * P.L) S.lost = true;
+      if (S.n % 4 === 0 || S.lost) sample(diag());
+    }
+  }
+
+  // ---------- малювання ----------
+  function fs(w) { return w > 700 ? 15 : 13; }
+
+  function drawOrbit(ctx, w, h) {
+    var f = fs(w), Z = 1.6 * P.L, X = Math.max(2.4 * P.v * Math.sin(P.theta * DEG), 0.3);
+    var h1 = Math.round(h * 0.64);
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h1 }, { x0: -Z, x1: Z, y0: -X, y1: X, font: f,
+      xlabel: 'z', ylabel: 'x', title: 'Траєкторія в площині (z, x); масштаби осей різні' });
+    PSim.clip(ctx, m);
+    shadeExit(ctx, m, -X, X);
+    [0.25, 0.5, 0.75, 1].forEach(function (k) { fieldLine(ctx, m, k * 0.95 * X, Z); });
+    vline(ctx, m, -P.L, -X, X, C.fg, [6, 4]); vline(ctx, m, P.L, -X, X, C.fg, [6, 4]);
+    var zm = zmTheory();
+    if (zm === zm) { vline(ctx, m, -zm, -X, X, C.accent, [3, 3]); vline(ctx, m, zm, -X, X, C.accent, [3, 3]); }
+    PSim.trail(ctx, m, TR, 0, 1, { color: C.ion, width: 1.2 });
+    dot(ctx, m.X(S.x[2]), m.Y(S.x[0]), C.ion);
+    ctx.restore();
+    PSim.label(ctx, 'пробка (B = R·B₀)', m.X(P.L) - 4, m.t + 4, { size: f - 2, align: 'right', base: 'top' });
+    if (zm === zm) PSim.label(ctx, 'точка відбиття (теорія)', m.X(zm) - 4, m.b - 4, { size: f - 2, color: C.accent, align: 'right', base: 'bottom' });
+    if (S.lost) PSim.label(ctx, 'Частинка вилетіла через пробку', (m.l + m.r) / 2, (m.t + m.b) / 2, { size: f + 2, bold: true, color: C.warn, align: 'center' });
+    drawBz(ctx, { x: 0, y: h1, w: w, h: h - h1 }, f, Z);
+  }
+
+  function shadeExit(ctx, m, y0, y1) {
+    ctx.fillStyle = PSim.alpha(C.warn, 0.08);
+    ctx.fillRect(m.l, m.t, m.X(-1.5 * P.L) - m.l, m.b - m.t);
+    ctx.fillRect(m.X(1.5 * P.L), m.t, m.r - m.X(1.5 * P.L), m.b - m.t);
+  }
+
+  // Силова лінія параксіального поля: r(z) = r0/√Bz(z) (збереження потоку).
+  function fieldLine(ctx, m, r0, Z) {
+    var zs = ph.linspace(-Z, Z, 200);
+    [1, -1].forEach(function (sg) {
+      PSim.curve(ctx, m, zs, zs.map(function (z) { return sg * r0 / Math.sqrt(Bz0(z)); }),
+        { color: PSim.alpha(C.muted, 0.55), width: 1 });
+    });
+  }
+
+  function vline(ctx, m, x, y0, y1, col, dash) {
+    PSim.curve(ctx, m, [x, x], [y0, y1], { color: col, width: 1.3, dash: dash });
+  }
+  function dot(ctx, px, py, col) {
+    ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fillStyle = col; ctx.fill();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = C.bg; ctx.stroke();
+  }
+
+  function drawBz(ctx, box, f, Z) {
+    var s2 = Math.pow(Math.sin(P.theta * DEG), 2), yTop = Math.max(P.R, Math.min(1 / s2, 1.6 * P.R)) * 1.15;
+    var m = PSim.frame(ctx, box, { x0: -Z, x1: Z, y0: 0, y1: yTop, font: f, xlabel: 'z', ylabel: 'B/B₀' });
+    var zs = ph.linspace(-Z, Z, 300);
+    PSim.clip(ctx, m);
+    PSim.curve(ctx, m, zs, zs.map(Bz0), { color: C.fg, width: 2 });
+    PSim.curve(ctx, m, [-Z, Z], [1 / s2, 1 / s2], { color: C.accent, width: 1.3, dash: [6, 4] });
+    vline(ctx, m, S.x[2], 0, yTop, C.ion, [2, 3]);
+    dot(ctx, m.X(S.x[2]), m.Y(S.d.B), C.ion);
+    ctx.restore();
+    var txt = 'B₀/sin²θ₀' + (1 / s2 > P.R ? ' > R·B₀: прохідна' : '');
+    PSim.label(ctx, txt, m.l + 6, Math.max(m.t + 2, m.Y(1 / s2) - 3), { size: f - 2, color: C.accent, base: 'bottom' });
+  }
+
+  function drawVel(ctx, w, h) {
+    var f = fs(w), Wi = w - 64, Hi = h - 62, v = P.v;
+    var k = Math.max(2.3 * v / Wi, 1.15 * v / Hi);
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: -Wi * k / 2, x1: Wi * k / 2, y0: 0, y1: Hi * k,
+      font: f, xlabel: 'v∥', ylabel: 'v⊥', title: 'Площина швидкостей (v∥, v⊥)' });
+    var tc = thetaC();
+    PSim.clip(ctx, m);
+    cone(ctx, m, 0, tc, v); cone(ctx, m, Math.PI - tc, Math.PI, v);
+    var a = ph.linspace(0, Math.PI, 120);
+    PSim.curve(ctx, m, a.map(function (t) { return v * Math.cos(t); }), a.map(function (t) { return v * Math.sin(t); }),
+      { color: C.muted, width: 1.2, dash: [5, 4] });
+    var t0 = P.theta * DEG;
+    PSim.curve(ctx, m, [0, 1.1 * v * Math.cos(t0)], [0, 1.1 * v * Math.sin(t0)], { color: C.muted, width: 1, dash: [2, 3] });
+    PSim.trail(ctx, m, VR, 0, 1, { color: C.accent, width: 1.5 });
+    if (S.d) dot(ctx, m.X(S.d.vpar), m.Y(S.d.vperp), C.accent);
+    ctx.restore();
+    PSim.label(ctx, 'конус втрат', m.X(0.75 * v), m.Y(0.12 * v), { size: f - 1, color: C.warn, align: 'center' });
+    PSim.label(ctx, 'θ₀', m.X(1.12 * v * Math.cos(t0)), m.Y(1.12 * v * Math.sin(t0)), { size: f - 1, align: 'center' });
+  }
+
+  function cone(ctx, m, a0, a1, v) {
+    var r = 1.15 * v, ox = m.X(0), oy = m.Y(0), pr = m.X(r) - ox;
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.arc(ox, oy, pr, -a1, -a0); ctx.closePath();
+    ctx.fillStyle = PSim.alpha(C.warn, 0.13); ctx.fill();
+    ctx.setLineDash([4, 3]); ctx.strokeStyle = C.warn; ctx.lineWidth = 1.2; ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  function drawInv(ctx, w, h) {
+    var f = fs(w), n = IR.len;
+    var t0 = n ? IR.get(0, 0) : 0, t1 = Math.max(n ? IR.get(0, n - 1) : 1, t0 + 1);
+    var a = IR.minmax(1), b = IR.minmax(2);
+    var y0 = Math.min(0.9, a[0], b[0]), y1 = Math.max(1.1, a[1], b[1]);
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: t0, x1: t1, y0: y0, y1: y1, font: f,
+      xlabel: 't·ω_c0', title: 'Інваріанти: μ/μ₀ і E/E₀' });
+    PSim.clip(ctx, m);
+    PSim.trail(ctx, m, IR, 0, 1, { color: C.c1, width: 1.8 });
+    PSim.trail(ctx, m, IR, 0, 2, { color: C.c2, width: 1.8, dash: [7, 4] });
+    ctx.restore();
+    if (n) {
+      PSim.label(ctx, 'μ/μ₀', m.r - 4, m.Y(IR.get(1, n - 1)) - 4, { size: f - 1, color: C.c1, align: 'right', base: 'bottom' });
+      PSim.label(ctx, 'E/E₀ (штрих)', m.r - 4, m.Y(IR.get(2, n - 1)) + 4, { size: f - 1, color: C.c2, align: 'right', base: 'top' });
+    }
+  }
+
+  // ---------- величини ----------
+  var set = PSim.readout('#s-out', [
+    ['t', 't·ω<sub>c0</sub>'], ['rho', 'ρ<sub>L</sub>/L'], ['tc', 'θ<sub>c</sub>'], ['th', 'пітч-кут θ'],
+    ['fc', 'прогноз за (2.9)'], ['st', 'стан'], ['nb', 'відбиттів'], ['zm', 'z<sub>m</sub>: вимір / теорія'],
+    ['dmu', 'max|μ/μ₀ − 1|'], ['dE', 'max|E/E₀ − 1|'], ['loss', 'частка втрат (ізотропно)']
+  ]);
+  function updateOut() {
+    var d = S.d, tc = thetaC();
+    set('t', fmt(S.t, 4));
+    set('rho', fmt(P.v * Math.sin(P.theta * DEG) / P.L, 3));
+    set('tc', fmt(tc / DEG, 3) + '°');
+    set('th', fmt(Math.atan2(d.vperp, d.vpar) / DEG, 3) + '°');
+    set('fc', trappedTheory() ? 'захоплена' : 'у конусі втрат', trappedTheory() ? 'good' : 'bad');
+    set('st', S.lost ? 'вилетіла' : 'у пастці', S.lost ? 'bad' : '');
+    set('nb', String(S.bounces));
+    var zm = zmTheory();
+    set('zm', (S.zTurn === S.zTurn ? fmt(S.zTurn, 3) : '—') + ' / ' + (zm === zm ? fmt(zm, 3) : '—'));
+    set('dmu', fmt(S.dmu, 2), S.dmu < 0.05 ? 'good' : 'bad');
+    set('dE', fmt(S.dE, 2));
+    set('loss', fmt(100 * (1 - Math.sqrt(1 - 1 / P.R)), 3) + ' %');
+  }
+
+  // ---------- збирання ----------
+  var views = [PSim.canvas('#v-orbit', drawOrbit), PSim.canvas('#v-vel', drawVel), PSim.canvas('#v-inv', drawInv)];
+  function draw() { views.forEach(function (v) { v.redraw(); }); updateOut(); }
+
+  var loop = PSim.loop('#s-loop', { step: step, draw: draw, reset: reset, steps: function () { return P.spf; } });
+
+  var pre = PSim.presets('#s-pre', [
+    { name: 'Захоплена', values: { R: 4, theta: 60, L: 40, v: 1 } },
+    { name: 'Біля межі конуса', values: { R: 4, theta: 31, L: 40, v: 1 }, note: 'θ₀ трохи більше θ_c = 30°' },
+    { name: 'У конусі втрат', values: { R: 4, theta: 25, L: 40, v: 1 } },
+    { name: 'Порушення адіабатичності', values: { R: 4, theta: 45, L: 4, v: 2.5 }, note: 'ρ_L ~ L: μ не зберігається' },
+    { name: 'Велике R', values: { R: 10, theta: 20, L: 40, v: 1 } }
+  ], function (vals) { Object.assign(P, vals); ctl.sync(); reset(); draw(); });
+
+  var ctl = PSim.controls('#s-ctl', [
+    { key: 'R', label: 'Пробкове відношення R = B<sub>max</sub>/B<sub>min</sub>', min: 1.2, max: 12, step: 0.1 },
+    { key: 'theta', label: 'Початковий пітч-кут θ<sub>0</sub>', min: 2, max: 88, step: 1, fmt: function (x) { return x + '°'; } },
+    { key: 'L', label: 'Півдовжина пастки L', min: 3, max: 80, step: 1 },
+    { key: 'v', label: 'Швидкість v (ρ<sub>L</sub> = v sinθ<sub>0</sub>/ω<sub>c0</sub>)', min: 0.2, max: 4, step: 0.1 },
+    { key: 'spf', label: 'Кроків за кадр', min: 20, max: 2000, step: 1, log: true }
+  ], P, function (key) {
+    if (key === 'spf') return;
+    pre.mark(-1); reset(); draw();
+  });
+
+  reset(); draw();
+  loop.start();
+})();
+</script>
+</body>
+</html>
