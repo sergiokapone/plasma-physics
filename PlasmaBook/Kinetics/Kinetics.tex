@@ -9,6 +9,8 @@
 
 \graphicspath{{\currfilebase/Pictures}}
 
+\Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
+\Writetofile{answer}{\protect\section*{\nameref*{sec:plasma-kinetic}}}
 \chapter{Кінетичний опис плазми}\label{sec:plasma-kinetic}\hypertarget{plasma-kinetic}{}
 %% --------------------------------------------------------
 
@@ -975,7 +977,9 @@ $\varepsilon(\omega,k)$ з~усіма хвильовими модами й~за�
 \end{equation*}
 Яку властивість функції розподілу потрібно використати, щоб поверхневий інтеграл
 у~просторі швидкостей зник?
-\emph{Відповідь:} $f\to0$ при $|\vect v|\to\infty$ швидше за~$1/v^2$; крім того, для сили Лоренца $\nabla_{\vect v}\cdot\vect F=0$.
+	\begin{solution}
+		$f\to0$ при $|\vect v|\to\infty$ швидше за~$1/v^2$; крім того, для сили Лоренца $\nabla_{\vect v}\cdot\vect F=0$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:MaxwellPressure}
@@ -985,7 +989,9 @@ p_s=\frac{m_s}{3}\int c^2f_s\,d^3v
 =n_sT_s.
 \end{equation*}
 Поясніть, чому цей результат потребує ізотропності розподілу.
-\emph{Відповідь:} для ізотропного $f$ тензор $\mathsf P_{ij}=p\,\delta_{ij}$, тож $p=\operatorname{Tr}\mathsf P/3$; для максвеллівського розподілу $\int c^2f\,d^3v=3nT/m$.
+	\begin{solution}
+		для ізотропного $f$ тензор $\mathsf P_{ij}=p\,\delta_{ij}$, тож $p=\operatorname{Tr}\mathsf P/3$; для максвеллівського розподілу $\int c^2f\,d^3v=3nT/m$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:LandauResonance}
@@ -994,15 +1000,20 @@ $\lambda=2\pi/k=1$~мм: (а)~знайдіть $v_\varphi$, відношення
 за~\eqref{eq:landau-gamma}. Чи виконується умова слабкого загасання? Поясніть, чому саме
 частинки з~$v\simeq v_\varphi$ відіграють особливу роль. (б)~За~якої довжини хвилі амплітуда
 спадає в~$e$ разів за~$\sim10$ періодів?
-\emph{Відповідь:} (а)~$\lambda_{De}\approx2{,}4\times10^{-3}$~см, $k\lambda_{De}\approx0{,}15$, $\omega\approx1{,}03\,\omega_{pe}$,
+	\begin{solution}
+		(а)~$\lambda_{De}\approx2{,}4\times10^{-3}$~см, $k\lambda_{De}\approx0{,}15$, $\omega\approx1{,}03\,\omega_{pe}$,
 $v_\varphi\approx9\times10^8$~см/с, $v_\varphi/v_{Te}\approx7$, $\gamma/\omega_{pe}\approx5\times10^{-9}$~--- загасання дуже слабке;
 (б)~$\gamma/\omega\approx1/(2\pi\cdot10)\approx0{,}016$ дає $k\lambda_{De}\approx0{,}3$, тобто $\lambda\approx2\pi\lambda_{De}/0{,}3\approx0{,}5$~мм.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:MaxwellSpeeds}
 Для максвеллівського розподілу обчисліть найімовірнішу швидкість, середню швидкість $\langle v\rangle$
-і~середньоквадратичну швидкість. \emph{Відповідь:} $\sqrt{2T/m}$, $\sqrt{8T/\pi m}$, $\sqrt{3T/m}$
+і~середньоквадратичну швидкість.
+	\begin{solution}
+		$\sqrt{2T/m}$, $\sqrt{8T/\pi m}$, $\sqrt{3T/m}$
 (у~відношенні $1:1{,}13:1{,}22$).
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:BGKModel}
@@ -1010,7 +1021,9 @@ $v_\varphi\approx9\times10^8$~см/с, $v_\varphi/v_{Te}\approx7$, $\gamma/\omeg
 Знайдіть $\delta f$ і~покажіть, що в~знаменниках~\eqref{eq:eps-kinetic} відбувається заміна
 $\omega\to\omega+i\nu$. Як це поєднує результати розділу про зіткнення й~кінетичну теорію?
 (Проста форма не зберігає число частинок; це наближення слід мати на~увазі.)
-\emph{Відповідь:} $\delta f=-i\,(q/m)\,E\,F'/(\omega-kv+i\nu)$, тобто $\omega\to\omega+i\nu$.
+	\begin{solution}
+		$\delta f=-i\,(q/m)\,E\,F'/(\omega-kv+i\nu)$, тобто $\omega\to\omega+i\nu$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:BohmGrossDerivation}
@@ -1021,14 +1034,18 @@ $\omega\to\omega+i\nu$. Як це поєднує результати розді
 \begin{problem}\label{prb:TwoStreamKinetic}
 Для розподілу $F=(n/2)[\delta(v-u)+\delta(v+u)]$ одержіть із~\eqref{eq:eps-kinetic} дисперсійне
 рівняння двопотокової нестійкості і~порівняйте з~задачею~\ref{prb:SymmetricTwoStream}.
-\emph{Відповідь:} $1=\dfrac{\omega_p^2}2\Bigl[\dfrac1{(\omega-ku)^2}+\dfrac1{(\omega+ku)^2}\Bigr]$.
+	\begin{solution}
+		$1=\dfrac{\omega_p^2}2\Bigl[\dfrac1{(\omega-ku)^2}+\dfrac1{(\omega+ku)^2}\Bigr]$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:TrappingCheck}
 Оцініть частоту коливань захопленої частинки $\omega_b=\sqrt{ek^2\varphi_0/m}$ для хвилі з~$e\varphi_0/T_e=10^{-3}$
 при $k\lambda_{De}=0{,}3$ і~порівняйте з~$\gamma$. Чи встигне відбутися захоплення?
-\emph{Відповідь:} $\omega_b\approx0{,}01\,\omega_{pe}$, $\gamma\approx0{,}02\,\omega_{pe}$: хвиля загасає швидше, ніж
+	\begin{solution}
+		$\omega_b\approx0{,}01\,\omega_{pe}$, $\gamma\approx0{,}02\,\omega_{pe}$: хвиля загасає швидше, ніж
 починається захоплення.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:BumpOnTail}
@@ -1036,21 +1053,27 @@ $\omega\to\omega+i\nu$. Як це поєднує результати розді
 ($n_b\ll n_0$, швидкість $v_b\gg v_{Te}$, розкид $\Delta v\ll v_b$). Використовуючи
 \eqref{eq:landau-general}, оцініть інкремент нестійкості $\gamma\sim\omega_{pe}(n_b/n_0)(v_b/\Delta v)^2$ та поясніть, чому
 він максимальний при $v_\varphi$ трохи менше $v_b$.
-\emph{Відповідь:} $F_b'\sim n_b/\Delta v^2$ максимальна на~висхідному схилі пучка, при $v\approx v_b-\Delta v$.
+	\begin{solution}
+		$F_b'\sim n_b/\Delta v^2$ максимальна на~висхідному схилі пучка, при $v\approx v_b-\Delta v$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ThomsonTe}
 Спектр томсонівського розсіяння ($\theta=90^\circ$, $\lambda_i=1064$~нм) має гауссів профіль зі~стандартним відхиленням
 $\sigma_\lambda=20$~нм. Знайдіть $T_e$ і~переконайтеся, що розсіяння некогерентне при $n_e=5\times10^{13}~\text{см}^{-3}$.
-\emph{Відповідь:} $T_e=m_ec^2\bigl[\sigma_\lambda/(2\lambda_i\sin45^\circ)\bigr]^2\approx90$~еВ,
+	\begin{solution}
+		$T_e=m_ec^2\bigl[\sigma_\lambda/(2\lambda_i\sin45^\circ)\bigr]^2\approx90$~еВ,
 $\lambda_{De}\approx10^{-3}$~см, $\alpha\approx0{,}01\ll1$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ThomsonCollective}
 Для CO$_2$-лазера ($\lambda_i=10{,}6$~мкм) у~плазмі з~$T_e=100$~еВ, $n_e=10^{14}~\text{см}^{-3}$ знайдіть кут розсіяння, при~якому
 $\alpha=1$. При яких кутах розсіяння колективне? Чому для~$\lambda_i=1064$~нм колективний режим при тих самих параметрах недосяжний?
-\emph{Відповідь:} $\sin(\theta/2)=\lambda_i/4\pi\lambda_{De}\approx0{,}11$, $\theta\approx13^\circ$; колективне при $\theta\lesssim13^\circ$.
+	\begin{solution}
+		$\sin(\theta/2)=\lambda_i/4\pi\lambda_{De}\approx0{,}11$, $\theta\approx13^\circ$; колективне при $\theta\lesssim13^\circ$.
 Для 1064~нм потрібно $\sin(\theta/2)\approx0{,}011$, тобто $\theta\approx1^\circ$~--- відокремити сигнал від~пучка практично неможливо.
+	\end{solution}
 \end{problem}
 
 %% --------------------------------------------------------
@@ -1083,3 +1106,5 @@ $\alpha=1$. При яких кутах розсіяння колективне? 
 \item Чим відрізняється томсонівське розсіяння при $\alpha\ll1$ та~$\alpha\gtrsim1$ і~яку інформацію про плазму дає кожен режим?
 \end{quizlist}
 \end{Questions}
+
+\Closesolutionfile{answer}

@@ -9,6 +9,8 @@
 
 \graphicspath{{\currfilebase/Pictures}}
 
+\Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
+\Writetofile{answer}{\protect\section*{\nameref*{sec:magnetic-confinement}}}
 \chapter{Магнітне утримання плазми}\label{sec:magnetic-confinement}\hypertarget{magnetic-confinement}{}
 %% --------------------------------------------------------
 
@@ -452,15 +454,19 @@ $n_G[10^{20}\,\text{м}^{-3}]=I[\text{МА}]/(\pi a^2[\text{м}^2])\approx1{,}2$
 	Для $\varepsilon=a/R=0{,}3$ ($a=2$~м), $q=2$ знайдіть частку захоплених частинок $f_t$ і~ширину банана
 	для іона дейтерію ($T=10$~кеВ, $B=5\times10^4$~Гс). Порівняйте з~$a$ і~оцініть
 	$D_\mathrm{neo}/D_\mathrm{cl}$.
-	\emph{Відповідь:} $f_t\approx\sqrt{2\varepsilon}\approx0{,}77$; $r_L\approx0{,}3$~см, $\Delta_b\sim qr_L/\sqrt\varepsilon\approx1$~см $\ll a=200$~см;
+	\begin{solution}
+		$f_t\approx\sqrt{2\varepsilon}\approx0{,}77$; $r_L\approx0{,}3$~см, $\Delta_b\sim qr_L/\sqrt\varepsilon\approx1$~см $\ll a=200$~см;
 	$D_\mathrm{neo}/D_\mathrm{cl}\sim q^2\varepsilon^{-3/2}\approx24$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:Troyon}
 	Знайдіть межу Тройона й~межу Грінвальда для $I=2$~МА, $a=0{,}5$~м, $B=2$~Тл. Яким буде
 	тиск плазми при досягненні цієї межі $\beta$?
-	\emph{Відповідь:} $\beta_{\max}\approx2{,}8\cdot2/(0{,}5\cdot2)\approx5{,}6\%$; $n_G\approx2{,}5\times10^{20}~\mathrm{м}^{-3}=2{,}5\times10^{14}~\mathrm{см}^{-3}$;
+	\begin{solution}
+		$\beta_{\max}\approx2{,}8\cdot2/(0{,}5\cdot2)\approx5{,}6\%$; $n_G\approx2{,}5\times10^{20}~\mathrm{м}^{-3}=2{,}5\times10^{14}~\mathrm{см}^{-3}$;
 	$p=\beta B^2/8\pi\approx9\times10^5~\mathrm{дин/см^2}\approx0{,}9$~атм.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:PlasmaBennett}
@@ -468,8 +474,10 @@ $n_G[10^{20}\,\text{м}^{-3}]=I[\text{МА}]/(\pi a^2[\text{м}^2])\approx1{,}2$
 	$R=0{,}5$~см дейтерієвої плазми з~концентрацією електронів та іонів по $5\times10^{17}~\mathrm{см}^{-3}$ і~середньою
 	температурою $200$~еВ. Яке при цьому поле $B_\theta$ на поверхні шнура? Оцініть час
 	наростання перетяжки ($m=0$).
-	\emph{Відповідь:} $N_1=2n\pi R^2\approx7{,}9\times10^{17}~\mathrm{см}^{-1}$, $I\approx2{,}2\times10^{5}$~А,
+	\begin{solution}
+		$N_1=2n\pi R^2\approx7{,}9\times10^{17}~\mathrm{см}^{-1}$, $I\approx2{,}2\times10^{5}$~А,
 	$B_\theta=2I/cR\approx9\times10^{4}$~Гс; $\tau\sim R/v_A\sim2\times10^{-8}$~с.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ThetaPinch}
@@ -477,27 +485,35 @@ $n_G[10^{20}\,\text{м}^{-3}]=I[\text{МА}]/(\pi a^2[\text{м}^2])\approx1{,}2$
 	Знайдіть $\beta$ на осі, тиск плазми й~концентрацію дейтерієвої плазми при
 	$T_e=T_i=1$~кеВ. Оцініть час витікання через торці для шнура довжиною $L=3$~м
 	і~порівняйте $n\tau$ з~критерієм Лоусона~\eqref{eq:lawson}.
-	\emph{Відповідь:} $\beta=1-B_z^2(0)/B_0^2=0{,}75$; $p=(B_0^2-B_z^2)/8\pi\approx4{,}8\times10^7~\mathrm{дин/см^2}\approx47$~атм;
+	\begin{solution}
+		$\beta=1-B_z^2(0)/B_0^2=0{,}75$; $p=(B_0^2-B_z^2)/8\pi\approx4{,}8\times10^7~\mathrm{дин/см^2}\approx47$~атм;
 	$n=p/2T\approx1{,}5\times10^{16}~\mathrm{см}^{-3}$; $v_{Ti}\approx2{,}2\times10^7$~см/с, $\tau\sim L/2v_{Ti}\approx7$~мкс;
 	$n\tau\approx10^{11}~\mathrm{см}^{-3}\,\mathrm{с}$, на три порядки менше за потрібне.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:SafetyFactor}
 	Оцініть запас стійкості $q(a)=aB_\varphi/(RB_\theta)$ для $a=0{,}5$~м, $R=1{,}5$~м, $B_\varphi=2$~Тл,
 	$I=1$~МА, де $B_\theta=2I/(ca)$ у~СГС ($0{,}4$~Тл). Чи виконується умова Крускала--Шафранова $q(a)>1$?
-	\emph{Відповідь:} $q\approx1{,}7$.
+	\begin{solution}
+		$q\approx1{,}7$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:LossConeFraction}
 	Для пробкового відношення $R_m=B_{\max}/B_{\min}=5$ знайдіть частку частинок ізотропного розподілу,
 	що потрапляють у~конус втрат. Як вона зміниться при $R_m=10$?
-	\emph{Відповідь:} $1-\sqrt{1-1/R_m}\approx0{,}11$ і~$\approx0{,}05$.
+	\begin{solution}
+		$1-\sqrt{1-1/R_m}\approx0{,}11$ і~$\approx0{,}05$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ShafranovShift}
 	У~токамаку з~$a=0{,}5$~м, $R=1{,}5$~м, $B_\theta=0{,}4$~Тл середня концентрація $n_e=n_i=5\times10^{13}~\mathrm{см}^{-3}$, $T_e=T_i=1$~кеВ.
 	Знайдіть $\beta_p=8\pi\langle p\rangle/B_\theta^2$ і~зсув Шафранова $\Delta$ за~\eqref{eq:shafranov-diagnostic} при $l_i=1$.
-	\emph{Відповідь:} $\langle p\rangle=2nT\approx1{,}6\times10^5$~дин/см$^2$, $\beta_p\approx0{,}25$; $\Delta\approx(a^2/R)(\beta_p+l_i/2)\approx12$~см.
+	\begin{solution}
+		$\langle p\rangle=2nT\approx1{,}6\times10^5$~дин/см$^2$, $\beta_p\approx0{,}25$; $\Delta\approx(a^2/R)(\beta_p+l_i/2)\approx12$~см.
+	\end{solution}
 \end{problem}
 
 \Needspace{6\baselineskip}
@@ -529,3 +545,5 @@ $n_G[10^{20}\,\text{м}^{-3}]=I[\text{МА}]/(\pi a^2[\text{м}^2])\approx1{,}2$
 
 \end{quizlist}
 \end{Questions}
+
+\Closesolutionfile{answer}

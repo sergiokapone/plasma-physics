@@ -9,6 +9,8 @@
 
 \graphicspath{{\currfilebase/Pictures}}
 
+\Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
+\Writetofile{answer}{\protect\section*{\nameref*{sec:plasma-collisions}}}
 \chapter{Зіткнення, провідність та перенос у~плазмі}\label{sec:plasma-collisions}\hypertarget{plasma-collisions}{}
 
 Досі ми розглядали колективне екранування (розд.~\ref{sec:plasma-basics}) та рух окремих частинок у~заданих полях
@@ -366,28 +368,36 @@ $\sigma\approx1{,}3\times10^{7}~\text{См/м}\approx1{,}2\times10^{17}~\mathrm{
 	Як змінюється провідність водневої плазми при зростанні температури від $10$ до
 	$100$~еВ (вважайте $\ln\Lambda$ сталим)? Знайдіть $\sigma$ при $T_e=1$~кеВ, $\ln\Lambda=15$ і~порівняйте з~провідністю міді. Як змінюється
 	з~температурою питома потужність омічного нагрівання при заданій густині струму?
-	\emph{Відповідь:} $\sigma\propto T^{3/2}$: зростання в~$31{,}6$ раза; $\sigma(1~\text{кеВ})\approx3{,}6\times10^{17}~\mathrm{с}^{-1}$ (мідь: $\approx5\times10^{17}~\mathrm{с}^{-1}$); $j^2/\sigma\propto T^{-3/2}$.
+	\begin{solution}
+		$\sigma\propto T^{3/2}$: зростання в~$31{,}6$ раза; $\sigma(1~\text{кеВ})\approx3{,}6\times10^{17}~\mathrm{с}^{-1}$ (мідь: $\approx5\times10^{17}~\mathrm{с}^{-1}$); $j^2/\sigma\propto T^{-3/2}$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:PlasmaThermal}
 	У~скільки разів змінюються електронна теплопровідність і~провідність при нагріванні
 	від $10$ до $100$~еВ? Як змінюється відношення $\kappa_e/\sigma T_e$?
-	\emph{Відповідь:} $\kappa_e$ зростає в~316 разів, $\sigma$ в~31,6 раза; $\kappa_e/\sigma\propto T_e$ зростає в~10 разів, а~$\kappa_e/(\sigma T_e)$ не змінюється
+	\begin{solution}
+		$\kappa_e$ зростає в~316 разів, $\sigma$ в~31,6 раза; $\kappa_e/\sigma\propto T_e$ зростає в~10 разів, а~$\kappa_e/(\sigma T_e)$ не змінюється
 		(аналог закону Відемана~--- Франца).
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:Dreicer}
 	Знайдіть поле Драйсера для $n=10^{14}$~см$^{-3}$, $T_e=10$~кеВ і~для $n=10^{13}$~см$^{-3}$, $T_e=1$~кеВ
 	($\ln\Lambda=15$). Для $E=0{,}1$~В/м оцініть критичну швидкість $v_c/v_{Te}$ і~частку втікаючих електронів.
-	\emph{Відповідь:} в~обох випадках $E_D\approx3{,}9$~В/м (відношення $n/T_e$ однакове);
+	\begin{solution}
+		в~обох випадках $E_D\approx3{,}9$~В/м (відношення $n/T_e$ однакове);
 	$v_c/v_{Te}=\sqrt{E_D/E}\approx6{,}2$, частка $\sim\exp(-E_D/2E)\approx3\times10^{-9}$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:PlasmaAmbipolar}
 	Знайдіть $D_a/D_i$ для $T_e=T_i$ та $T_e=10T_i$. Покажіть, що при $D_e\gg D_i$
 	амбіполярне поле $\vect E=-(T_e/e)\nabla\ln n$, тобто електрони
 	розподілені за Больцманом.
-	\emph{Відповідь:} $D_a=2D_i$ при $T_e=T_i$ і~$D_a=11D_i$ при $T_e=10T_i$.
+	\begin{solution}
+		$D_a=2D_i$ при $T_e=T_i$ і~$D_a=11D_i$ при $T_e=10T_i$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:LnLambdaPractice}
@@ -395,9 +405,11 @@ $\sigma\approx1{,}3\times10^{7}~\text{См/м}\approx1{,}2\times10^{17}~\mathrm{
 	частоту $\nu_{ei}$ для трьох плазм: іоносфери ($n\sim10^{6}~\text{см}^{-3}$, $T\sim0{,}1$~еВ),
 	сонячної корони ($n\sim10^{8}~\text{см}^{-3}$, $T\sim100$~еВ) і~лабораторної плазми
 	($n\sim10^{13}~\text{см}^{-3}$, $T\sim10$~еВ). Яка з~них найбільш зіткненнєва щодо $\omega_p$?
-	\emph{Відповідь:} іоносфера: $\ln\Lambda\approx12{,}6$, $\nu_{ei}\approx10^{3}~\mathrm{с}^{-1}$, $\nu_{ei}/\omega_{pe}\approx2\times10^{-5}$;
+	\begin{solution}
+		іоносфера: $\ln\Lambda\approx12{,}6$, $\nu_{ei}\approx10^{3}~\mathrm{с}^{-1}$, $\nu_{ei}/\omega_{pe}\approx2\times10^{-5}$;
 	корона: $\ln\Lambda\approx19$, $\nu_{ei}\approx6~\mathrm{с}^{-1}$, $\nu_{ei}/\omega_{pe}\approx10^{-8}$;
 	лабораторна: $\ln\Lambda\approx11{,}5$, $\nu_{ei}\approx10^{7}~\mathrm{с}^{-1}$, $\nu_{ei}/\omega_{pe}\approx6\times10^{-5}$~--- найбільш зіткненнєва.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:TokamakMFP}
@@ -406,24 +418,30 @@ $\sigma\approx1{,}3\times10^{7}~\text{См/м}\approx1{,}2\times10^{17}~\mathrm{
 	пробігу $\ell_e=v_{Te}\tau_e$ і~порівняйте її з~довжиною обходу тора $2\pi R$.
 	(б)~За який час вирівнюються $T_e$ та $T_i$? Оцініть $\tau_{eq}\sim(m_i/2m_e)\,\tau_e$ і~порівняйте
 	з~часом утримання енергії $\sim1$~с.
-	\emph{Відповідь:} $\tau_e\approx2\times10^{-4}$~с, $\ell_e\approx8$~км $\gg2\pi R\approx19$~м;
+	\begin{solution}
+		$\tau_e\approx2\times10^{-4}$~с, $\ell_e\approx8$~км $\gg2\pi R\approx19$~м;
 	$\tau_{eq}\sim0{,}2$~с для водню.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ClassicalVsBohm}
 	Порівняйте класичну дифузію $D_\perp\sim r_{Le}^2\nu_{ei}$ з~бомівською $D_B=cT/(16eB)$ для
 	параметрів із~задачі~\ref{prb:TokamakMFP} при $B=5$~Тл. У~скільки разів вони відрізняються
 	і~що це означає для утримання?
-	\emph{Відповідь:} $\nu_{ei}\approx5\times10^{3}~\mathrm{с}^{-1}$, $r_{Le}\approx5\times10^{-3}$~см, $D_\perp\approx0{,}1$~см$^2$/с;
+	\begin{solution}
+		$\nu_{ei}\approx5\times10^{3}~\mathrm{с}^{-1}$, $r_{Le}\approx5\times10^{-3}$~см, $D_\perp\approx0{,}1$~см$^2$/с;
 	$D_B\approx1{,}3\times10^{6}$~см$^2$/с, тобто в~$\sim10^{7}$ разів більший. Якби дифузія була бомівською,
 	утримання в~реакторних масштабах було б неможливим; реальний (аномальний) перенос лежить між цими межами.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:SpitzerTe}
 	У~омічному розряді $j=2\times10^{6}$~А/м$^2$, $E=0{,}2$~В/м, $\ln\Lambda=15$. Оцініть $T_e$ за
 	формулою~\eqref{eq:spitzer-temperature}. Лінія $\mathrm{H}_\alpha$ має ширину $\Delta\lambda=0{,}8$~нм; оцініть $T_i$.
-	\emph{Відповідь:} $\sigma=10^{7}$~См/м $=9\times10^{16}~\mathrm{с}^{-1}$, $T_e\approx0{,}4$~кеВ; $T_i\approx250$~еВ
+	\begin{solution}
+		$\sigma=10^{7}$~См/м $=9\times10^{16}~\mathrm{с}^{-1}$, $T_e\approx0{,}4$~кеВ; $T_i\approx250$~еВ
 	($\Delta\lambda/\lambda_0=1{,}22\times10^{-3}$, $T_i=(\Delta\lambda/\lambda_0)^2Mc^2/8\ln2$).
+	\end{solution}
 \end{problem}
 
 %% --------------------------------------------------------
@@ -455,3 +473,5 @@ $\sigma\approx1{,}3\times10^{7}~\text{См/м}\approx1{,}2\times10^{17}~\mathrm{
 
 \end{quizlist}
 \end{Questions}
+
+\Closesolutionfile{answer}

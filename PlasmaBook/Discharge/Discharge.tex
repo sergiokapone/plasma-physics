@@ -9,6 +9,8 @@
 
 \graphicspath{{\currfilebase/Pictures}}
 
+\Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
+\Writetofile{answer}{\protect\section*{\nameref*{sec:discharge}}}
 \chapter{Низькотемпературна плазма та газовий розряд}\label{sec:discharge}\hypertarget{discharge}{}
 %% --------------------------------------------------------
 
@@ -515,24 +517,30 @@ $\omega_{pe}$.
 	Нехай переріз іонізації поблизу порога $\sigma_{iz}=C(\varepsilon-\varepsilon_{iz})$ при $\varepsilon>\varepsilon_{iz}$.
 	Усередніть $\sigma_{iz}v$ за максвеллівським розподілом і~отримайте~\eqref{eq:kiz}. У~скільки разів зросте
 	$k_{iz}$ аргону ($\varepsilon_{iz}=15{,}8$~еВ) при зростанні $T_e$ від $2$ до $3$~еВ?
-	\emph{Відповідь:} $k_{iz}=C\bar v_e(\varepsilon_{iz}+2T_e)e^{-\varepsilon_{iz}/T_e}$; зростання приблизно в~$\approx6$ разів
+	\begin{solution}
+		$k_{iz}=C\bar v_e(\varepsilon_{iz}+2T_e)e^{-\varepsilon_{iz}/T_e}$; зростання приблизно в~$\approx6$ разів
 	(за апроксимацією з~розд.~\ref{sec:ionization-rate}~--- у~$\approx6{,}5$ раза).
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:Paschen}
 	Знайдіть положення і~величину мінімуму кривої Пашена~\eqref{eq:paschen}. Обчисліть їх для повітря
 	($A=15~\mathrm{см}^{-1}\mathrm{Торр}^{-1}$, $B=365$~В/(см$\,\cdot\,$Торр), $\gamma=0{,}01$). Якою буде напруга
 	пробою проміжку $d=1$~мм при атмосферному тиску?
-	\emph{Відповідь:} $(pd)_{\min}=e\ln(1+1/\gamma)/A\approx0{,}84$~Торр$\,\cdot\,$см, $V_{\min}=B(pd)_{\min}\approx305$~В;
+	\begin{solution}
+		$(pd)_{\min}=e\ln(1+1/\gamma)/A\approx0{,}84$~Торр$\,\cdot\,$см, $V_{\min}=B(pd)_{\min}\approx305$~В;
 	при $pd=76$~Торр$\,\cdot\,$см $V_b\approx4{,}6$~кВ.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ChildLangmuir}
 	Виведіть~\eqref{eq:sheath-thickness} з~\eqref{eq:child-langmuir} і~умови $J=en_su_B$. Знайдіть товщину шару
 	біля електрода під напругою $V_0=300$~В в~аргоновій плазмі з~$T_e=3$~еВ, $n_s=10^{10}~\mathrm{см}^{-3}$
 	і~час прольоту іона через шар. Порівняйте його з~періодом поля $13{,}56$~МГц.
-	\emph{Відповідь:} $r_D\approx0{,}13$~мм, $s\approx3{,}2$~мм; кінцева швидкість іона $\approx3{,}8\times10^6$~см/с,
+	\begin{solution}
+		$r_D\approx0{,}13$~мм, $s\approx3{,}2$~мм; кінцева швидкість іона $\approx3{,}8\times10^6$~см/с,
 	час прольоту $3s/v\approx0{,}25$~мкс, тобто $\approx3{,}4$ періоду поля.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:GlobalModel}
@@ -540,29 +548,37 @@ $\omega_{pe}$.
 	$k_{iz}\approx2{,}3\times10^{-8}T_e^{0{,}59}e^{-17{,}4/T_e}~\mathrm{см}^3/\mathrm{с}$, знайдіть $T_e$ з~\eqref{eq:global-te}.
 	Яку густину підтримує поглинена потужність $500$~Вт при $A_{\rm eff}=10^3~\mathrm{см}^2$ і~$\mathcal E_T=80$~еВ?
 	Як зміняться $T_e$ і~$n_0$, якщо потужність подвоїти, а~тиск зменшити вдвічі?
-	\emph{Відповідь:} $T_e\approx2{,}8$~еВ, $n_0\approx1{,}5\times10^{11}~\mathrm{см}^{-3}$; від потужності
+	\begin{solution}
+		$T_e\approx2{,}8$~еВ, $n_0\approx1{,}5\times10^{11}~\mathrm{см}^{-3}$; від потужності
 	$T_e$ не залежить, а~зменшення тиску вдвічі підвищує її до $\approx3{,}3$~еВ; густина зросте менш ніж
 	удвічі, бо зростають $u_B$ і~$\mathcal E_T$ ($A_{\rm eff}$ вважаємо сталою).
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ECRSource}
 	Знайдіть резонансне магнітне поле ЕЦР-джерела з~частотою $2{,}45$~ГГц і~критичну густину для звичайної
 	хвилі цієї частоти. Чому мікрохвилі вводять з~боку сильного поля?
-	\emph{Відповідь:} $B=2\pi fmc/e\approx875$~Гс; $n_c\approx7{,}4\times10^{10}~\mathrm{см}^{-3}$; при $\omega<\omega_{ce}$
+	\begin{solution}
+		$B=2\pi fmc/e\approx875$~Гс; $n_c\approx7{,}4\times10^{10}~\mathrm{см}^{-3}$; при $\omega<\omega_{ce}$
 	права хвиля є свистовою і~не має відсічки за густиною.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:Helicon}
 	Геліконне джерело: трубка радіуса $a=2{,}5$~см, $f=13{,}56$~МГц, антена задає $\lambda_z=20$~см, $B=500$~Гс.
 	Оцініть густину плазми з~\eqref{eq:helicon}, взявши $k_\perp=3{,}83/a$.
-	\emph{Відповідь:} $k_\perp\approx1{,}5~\mathrm{см}^{-1}$, $k_z\approx0{,}31~\mathrm{см}^{-1}$, $k\approx1{,}6~\mathrm{см}^{-1}$;
+	\begin{solution}
+		$k_\perp\approx1{,}5~\mathrm{см}^{-1}$, $k_z\approx0{,}31~\mathrm{см}^{-1}$, $k\approx1{,}6~\mathrm{см}^{-1}$;
 	$n\approx1{,}4\times10^{13}~\mathrm{см}^{-3}$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:Magnetron}
 	У~магнетроні $B=300$~Гс, енергія електронів $\sim3$~еВ, іонів аргону~--- до $\sim10$~еВ. Порівняйте
 	ларморівські радіуси електронів та іонів із~товщиною розрядної області $\sim1$~см.
-	\emph{Відповідь:} $\rho_e\approx0{,}15$~мм (замагнічені), $\rho_i\approx7$~см (незамагнічені).
+	\begin{solution}
+		$\rho_e\approx0{,}15$~мм (замагнічені), $\rho_i\approx7$~см (незамагнічені).
+	\end{solution}
 \end{problem}
 
 %% --------------------------------------------------------
@@ -579,3 +595,5 @@ $\omega_{pe}$.
 	\item Чому для актинометрії вибирають лінії з~близькими порогами збудження?
 \end{quizlist}
 \end{Questions}
+
+\Closesolutionfile{answer}

@@ -9,6 +9,8 @@
 
 \graphicspath{{\currfilebase/Pictures}}
 
+\Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
+\Writetofile{answer}{\protect\section*{\nameref*{sec:particle-motion}}}
 \chapter{Рух зарядженої частинки в~електромагнітних полях}\label{sec:particle-motion}\hypertarget{particle-motion}{}
 
 Колективний опис не скасовує руху окремих частинок. Щоб зрозуміти магнітне утримання,
@@ -529,13 +531,17 @@ $I\propto\exp(-Ze\varphi/T_i)$, тож $T_i$ дорівнює оберненом
 	Електрон з~енергією 100~еВ рухається перпендикулярно полю $B=10^4$~Гс. Знайдіть
 	ларморівський радіус і~порівняйте його з~$\lambda_{De}$ для
 	$n_e=10^{12}~\mathrm{см}^{-3}$, $T_e=100$~еВ.
-	\emph{Відповідь:} $r_{Le}\approx3{,}4\times10^{-3}$~см $<\lambda_{De}\approx7{,}4\times10^{-3}$~см.
+	\begin{solution}
+		$r_{Le}\approx3{,}4\times10^{-3}$~см $<\lambda_{De}\approx7{,}4\times10^{-3}$~см.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:PlasmaExB}
 	У~схрещених полях $E=1$~В/см і~$B=10^3$~Гс (в~СГС $1~\text{В/см}=1/300$~СГС) знайдіть
 	швидкість дрейфу. Чи залежить вона від того, чи рухається електрон, чи протон?
-	\emph{Відповідь:} $v_E=cE/B=10^{5}$~см/с (1~км/с), однакова для електрона й~протона.
+	\begin{solution}
+		$v_E=cE/B=10^{5}$~см/с (1~км/с), однакова для електрона й~протона.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:DipoleBelts}
@@ -543,8 +549,10 @@ $I\propto\exp(-Ze\varphi/T_i)$, тож $T_i$ дорівнює оберненом
 	пітч-кут на екваторі $\alpha_{\rm eq}=30^\circ$. Оцініть: ларморівський радіус, період обертання
 	навколо силової лінії, час відбиття між дзеркальними точками і~період дрейфу навколо Землі.
 	Перевірте ієрархію $\omega_c\gg\omega_b\gg\omega_d$.
-	\emph{Відповідь:} електрон релятивістський ($\gamma\approx3$, $v\approx0{,}94c$); $r_L\approx5$~км,
+	\begin{solution}
+		електрон релятивістський ($\gamma\approx3$, $v\approx0{,}94c$); $r_L\approx5$~км,
 	$2\pi/\omega_c\approx2\times10^{-4}$~с, $\tau_b\approx0{,}4$~с, $\tau_d\approx15$~хв.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:DriftCurrent}
@@ -561,28 +569,36 @@ $I\propto\exp(-Ze\varphi/T_i)$, тож $T_i$ дорівнює оберненом
 	що наближаються одне до одного зі швидкістю $10$~км/с кожне (початкова відстань $L=10^{10}$~км).
 	Використайте інваріантність $J=\oint v_\parallel\,ds$ і~пружне відбиття від рухомої стінки: за який час частинка потрапить у~конус втрат
 	і~якою буде її енергія?
-	\emph{Відповідь:} $v_\perp$ стала, а~вихід настає за $v_\parallel/v_\perp=\cot\theta_c=2$, тобто коли $L$ зменшиться вдвічі:
+	\begin{solution}
+		$v_\perp$ стала, а~вихід настає за $v_\parallel/v_\perp=\cot\theta_c=2$, тобто коли $L$ зменшиться вдвічі:
 	$t\approx2{,}5\times10^8$~с ($\approx8$~років), $\mathcal E\approx2{,}5$~кеВ.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:PlasmaMirror}
 	У~магнітній пастці $B_{\min}=2\times10^4$~Гс, $B_{\max}=8\times10^4$~Гс. Знайдіть
 	критичний пітч-кут конуса втрат і~частку частинок ізотропного розподілу, що
 	потрапляють у~конуси втрат.
-	\emph{Відповідь:} $\sin\theta_c=\sqrt{B_{\min}/B_{\max}}=1/2$, $\theta_c=30^\circ$; частка $1-\cos\theta_c\approx13\,\%$.
+	\begin{solution}
+		$\sin\theta_c=\sqrt{B_{\min}/B_{\max}}=1/2$, $\theta_c=30^\circ$; частка $1-\cos\theta_c\approx13\,\%$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:IonThruster}
 	Для іонного двигуна потрібен дрейф $v_E=1000$~км/с у~полі $B=1$~Тл. Яке електричне поле
 	для цього потрібне? Виразіть відповідь у~СГС (де $B=10^4$~Гс) і~у~В/см. Чи залежить результат від сорту іонів?
-	\emph{Відповідь:} $E=v_EB/c\approx33$~СГС $\approx10^4$~В/см; від сорту іонів не залежить.
+	\begin{solution}
+		$E=v_EB/c\approx33$~СГС $\approx10^4$~В/см; від сорту іонів не залежить.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ExBRotation}
 	Плазмовий стовп радіуса $a=10$~см у~полі $B=1$~кГс має параболічний потенціал
 	$\varphi(r)=\varphi_0\,r^2/a^2$ відносно осі, $\varphi_0=1$~кВ. Знайдіть кутову швидкість
 	$\mathrm E\times\mathrm B$-обертання $\omega=cE_r/(Br)$. Чому стовп обертається як тверде тіло?
-	\emph{Відповідь:} $\omega=2c\varphi_0/(Ba^2)\approx2\times10^6$~рад/с.
+	\begin{solution}
+		$\omega=2c\varphi_0/(Ba^2)\approx2\times10^6$~рад/с.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ToroidalDriftEstimate}
@@ -590,18 +606,24 @@ $I\propto\exp(-Ze\varphi/T_i)$, тож $T_i$ дорівнює оберненом
 	дрейфу $v_d\simeq v^2/(\omega_c R)$ і~час, за який електрон без обертального перетворення
 	досяг би стінки на відстані $0{,}3$~м. Як цей результат пояснює необхідність
 	полоїдальної складової поля?
-	\emph{Відповідь:} $v_d\approx2$~км/с, $t\approx1{,}5\times10^{-4}$~с.
+	\begin{solution}
+		$v_d\approx2$~км/с, $t\approx1{,}5\times10^{-4}$~с.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ECERadius}
 	У~токамаку $R_0=1{,}65$~м, $B(R_0)=5$~Тл. На якому радіусі ЕЦЕ-приймач, налаштований на другу гармоніку
 	$252$~ГГц, бачить плазму? Куди зсунеться ця точка, якщо $B(R_0)$ зросте на~10\,\%?
-	\emph{Відповідь:} $\omega_{ce}=2\pi\cdot126$~ГГц відповідає $B\approx4{,}5$~Тл, $R=R_0\cdot5/4{,}5\approx1{,}83$~м; точка зміщується до $R\approx2{,}0$~м.
+	\begin{solution}
+		$\omega_{ce}=2\pi\cdot126$~ГГц відповідає $B\approx4{,}5$~Тл, $R=R_0\cdot5/4{,}5\approx1{,}83$~м; точка зміщується до $R\approx2{,}0$~м.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:RetardingAnalyzer}
 	Струм колектора гальмівного аналізатора спадає в~$e$ разів при зростанні потенціалу сітки на~$20$~В. Знайдіть $T_i$ однозарядних іонів.
-	\emph{Відповідь:} $T_i=20$~еВ.
+	\begin{solution}
+		$T_i=20$~еВ.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:BorisPusher}
@@ -642,3 +664,5 @@ $I\propto\exp(-Ze\varphi/T_i)$, тож $T_i$ дорівнює оберненом
 
 \end{quizlist}
 \end{Questions}
+
+\Closesolutionfile{answer}
