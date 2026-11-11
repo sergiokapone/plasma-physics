@@ -9,6 +9,8 @@
 
 \graphicspath{{\currfilebase/Pictures}}
 
+\Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
+\Writetofile{answer}{\protect\section*{\nameref*{sec:instability}}}
 \chapter{Загальний принцип нестійкості плазми}\label{sec:instability}
 \label{sec:plasma-instability}\hypertarget{plasma-instability}{}
 
@@ -667,21 +669,27 @@ $\rho_s=c_s/\omega_{ci}$ (гіро-Бомівська модель) $D\sim(\rho_
 $\omega^2=-Agk+\sigma_sk^3/(\rho_1+\rho_2)$, де $A=(\rho_2-\rho_1)/(\rho_2+\rho_1)$~--- число Атвуда.
 Знайдіть критичне хвильове число $k_c=\sqrt{(\rho_2-\rho_1)g/\sigma_s}$ і~поясніть, чому моди з~малою
 $\lambda$ стабілізуються. Яку роль у~плазмі відіграє \enquote{поверхневий натяг}?
-\emph{Відповідь:} $A=1/3$; $\gamma(1~\text{см})\approx46~\mathrm{с}^{-1}$, $\gamma(10~\text{см})\approx14{,}5~\mathrm{с}^{-1}$; швидше росте коротша хвиля (без поверхневого натягу). Умова $\omega^2=0$ дає $k_c$; при $k>k_c$ натяг переважає, $\omega^2>0$. У~плазмі роль натягу відіграє натяг силових ліній (збурення з~$k_\parallel\ne0$, шир) і~скінченний ларморівський радіус.
+	\begin{solution}
+		$A=1/3$; $\gamma(1~\text{см})\approx46~\mathrm{с}^{-1}$, $\gamma(10~\text{см})\approx14{,}5~\mathrm{с}^{-1}$; швидше росте коротша хвиля (без поверхневого натягу). Умова $\omega^2=0$ дає $k_c$; при $k>k_c$ натяг переважає, $\omega^2>0$. У~плазмі роль натягу відіграє натяг силових ліній (збурення з~$k_\parallel\ne0$, шир) і~скінченний ларморівський радіус.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:BeamGrowth}
 Електронний пучок з~$n_b=10^{9}$~см$^{-3}$ проходить крізь плазму з~$n_0=10^{12}$~см$^{-3}$. Знайдіть $\omega_p$,
 $\gamma$ за~\eqref{eq:beam-growth}, оптимальну довжину хвилі при $v_b=10^{9}$~см/с та число
 плазмових періодів за час росту в~$e^{10}$ разів.
-\emph{Відповідь:} $\omega_p\approx5{,}6\times10^{10}$~с$^{-1}$; $\gamma\approx0{,}069\,\omega_p\approx3{,}9\times10^{9}$~с$^{-1}$;
+	\begin{solution}
+		$\omega_p\approx5{,}6\times10^{10}$~с$^{-1}$; $\gamma\approx0{,}069\,\omega_p\approx3{,}9\times10^{9}$~с$^{-1}$;
 $\lambda=2\pi v_b/\omega_p\approx1{,}1$~мм; $t=10/\gamma\approx2{,}6$~нс, тобто $\approx23$ плазмові періоди.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:Firehose}
 У~сонячному вітрі $B=5\times10^{-5}$~Гс, $n=5$~см$^{-3}$, $T_\parallel=2\times10^5$~К, $T_\perp=10^5$~К. Перевірте
 критерій шлангової нестійкості $\beta_\parallel-\beta_\perp>2$.
-\emph{Відповідь:} $\beta_\parallel\approx1{,}4$, $\beta_\perp\approx0{,}7$, різниця $\approx0{,}7<2$~--- плазма стійка.
+	\begin{solution}
+		$\beta_\parallel\approx1{,}4$, $\beta_\perp\approx0{,}7$, різниця $\approx0{,}7<2$~--- плазма стійка.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:PlasmaInstabilityGrowth}
@@ -691,7 +699,9 @@ $\delta X\propto\exp[i(\vect k\cdot\vect r-\omega t)]$,
 $\omega=\omega_r+i\gamma$ і
 $\gamma=2\times10^5~\mathrm{с}^{-1}$.
 Що зміниться, якщо $\gamma<0$?
-\emph{Відповідь:} $t_{\text{зр}}=1/\gamma=5~\text{мкс}$ (амплітуда зростає в~$e$ разів); при $\gamma<0$ збурення загасає.
+	\begin{solution}
+		$t_{\text{зр}}=1/\gamma=5~\text{мкс}$ (амплітуда зростає в~$e$ разів); при $\gamma<0$ збурення загасає.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:SymmetricTwoStream}
@@ -700,21 +710,27 @@ $1=\omega_p^2/(\omega-kv_0)^2+\omega_p^2/(\omega+kv_0)^2$. Покажіть, щ�
 $\omega^2=k^2v_0^2+\omega_p^2-\omega_p\sqrt{4k^2v_0^2+\omega_p^2}$, що нестійкість існує при
 $kv_0<\sqrt2\,\omega_p$, а~максимальний інкремент $\gamma_{\max}=\omega_p/2$ досягається при
 $kv_0=(\sqrt3/2)\,\omega_p$. Проілюструйте графічно: побудуйте праву частину як функцію $\omega$ і~пряму $1$.
-\emph{Відповідь:} межа нестійкості $\omega^2=0$ дає $k^2v_0^2=2\omega_p^2$; мінімум $\omega^2$ за~$k^2$ досягається при
+	\begin{solution}
+		межа нестійкості $\omega^2=0$ дає $k^2v_0^2=2\omega_p^2$; мінімум $\omega^2$ за~$k^2$ досягається при
 $\sqrt{4k^2v_0^2+\omega_p^2}=2\omega_p$, де $\omega^2=-\omega_p^2/4$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:EnergyPrinciplePendulum}
 Для математичного маятника довжини $l$ у~перевернутому положенні задайте пробне зміщення $\theta$ і~знайдіть
 зміну потенціальної енергії $\delta W(\theta)$. Як за~знаком $\delta W$ визначити стійкість положень
 $\theta=0$ і~$\theta=\pi$? Чому для доведення нестійкості достатньо знайти одне пробне зміщення з~$\delta W<0$?
-\emph{Відповідь:} $\delta W=mgl(1-\cos\theta)\approx mgl\,\theta^2/2>0$ біля $\theta=0$ (стійке); для $\theta=\pi+\vartheta$
+	\begin{solution}
+		$\delta W=mgl(1-\cos\theta)\approx mgl\,\theta^2/2>0$ біля $\theta=0$ (стійке); для $\theta=\pi+\vartheta$
 $\delta W\approx-mgl\,\vartheta^2/2<0$ (нестійке). Оскільки $\omega^2_{\min}=\min(\delta W/K)$, одне зміщення з~$\delta W<0$ уже гарантує $\omega^2<0$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:MirnovCoil}
 Котушка Мірнова має $N=100$ витків площею $S=1$~см$^2$. Яку ЕРС вона дає за~\eqref{eq:mirnov} для моди з~$f=10$~кГц і~$\delta B=10$~Гс? Дві котушки на~одному тороїдальному перерізі, рознесені на~$\Delta\theta=30^\circ$, показують фазовий зсув $90^\circ$. Яке $m$?
-\emph{Відповідь:} $|\mathcal E|\approx2{,}1\times10^{-3}$~ст.В $\approx0{,}6$~В; $m\Delta\theta=90^\circ\Rightarrow m=3$.
+	\begin{solution}
+		$|\mathcal E|\approx2{,}1\times10^{-3}$~ст.В $\approx0{,}6$~В; $m\Delta\theta=90^\circ\Rightarrow m=3$.
+	\end{solution}
 \end{problem}
 
 %% --------------------------------------------------------
@@ -762,3 +778,4 @@ $\omega$?
 \end{quizlist}
 \end{Questions}
 
+\Closesolutionfile{answer}

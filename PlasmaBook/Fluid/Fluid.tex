@@ -9,6 +9,8 @@
 
 \graphicspath{{\currfilebase/Pictures}}
 
+\Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
+\Writetofile{answer}{\protect\section*{\nameref*{sec:mhd}}}
 \chapter{Гідродинамічний та магнітогідродинамічний опис}\label{sec:mhd}
 \label{\currfilebase}\hypertarget{mhd}{}
 %% --------------------------------------------------------
@@ -1093,26 +1095,35 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 
 \begin{problem}\label{prb:SolenoidPressure}
 	Довгим соленоїдом з~$n$ витками на одиницю довжини тече струм $I$. Знайдіть тиск на бічну поверхню
-	соленоїда. \emph{Відповідь:} $p=B^2/8\pi=2\pi n^2I^2/c^2$, $B=4\pi nI/c$.
+	соленоїда.
+	\begin{solution}
+		$p=B^2/8\pi=2\pi n^2I^2/c^2$, $B=4\pi nI/c$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:PlasmaBeta}
 	Плазма з~$n_e=n_i=10^{14}~\mathrm{см}^{-3}$, $T_e=T_i=10$~кеВ. Знайдіть тиск і~поле,
 	при якому $\beta=1$. Яким буде $\beta$ при $B=5\times10^4$~Гс?
-	\emph{Відповідь:} $p=2nT=3{,}2\times10^{6}$~дин/см$^2$, $B(\beta=1)\approx9\times10^{3}$~Гс; $\beta\approx3{,}2\,\%$ при $5\times10^4$~Гс.
+	\begin{solution}
+		$p=2nT=3{,}2\times10^{6}$~дин/см$^2$, $B(\beta=1)\approx9\times10^{3}$~Гс; $\beta\approx3{,}2\,\%$ при $5\times10^4$~Гс.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:PlasmaDiffusion}
 	Оцініть час дифузії магнітного поля для плазми з~$T_e=1$~кеВ,
 	$\ln\Lambda=15$, $L=1$~м. Знайдіть магнітне число Рейнольдса при швидкості руху плазми
 	$10^5$~см/с.
-	\emph{Відповідь:} $\sigma\approx3{,}6\times10^{17}~\mathrm{с}^{-1}$ (порівнянна з~міддю), $\tau_d=4\pi\sigma L^2/c^2\approx50$~с, $R_m\approx5\times10^4$.
+	\begin{solution}
+		$\sigma\approx3{,}6\times10^{17}~\mathrm{с}^{-1}$ (порівнянна з~міддю), $\tau_d=4\pi\sigma L^2/c^2\approx50$~с, $R_m\approx5\times10^4$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:PlasmaAlfven}
 	Знайдіть швидкість Альвена для водневої плазми з~$n_i=10^{14}~\mathrm{см}^{-3}$ у~полі
 	$B=10^4$~Гс і~порівняйте її з~тепловою швидкістю іонів $v_{Ti}$ при $T_i=10$~кеВ.
-	\emph{Відповідь:} $v_A\approx2{,}2\times10^{8}$~см/с, $v_{Ti}\approx1{,}0\times10^{8}$~см/с ($v_{Ti}/v_A\approx0{,}45$).
+	\begin{solution}
+		$v_A\approx2{,}2\times10^{8}$~см/с, $v_{Ti}\approx1{,}0\times10^{8}$~см/с ($v_{Ti}/v_A\approx0{,}45$).
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:MaxwellStress}
@@ -1120,14 +1131,18 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	$f_i=\partial_j\sigma_{ij}$ з~тензором~\eqref{eq:maxwell-stress}. Знайдіть
 	магнітний тиск при $B=5{,}3$~Тл (у~барах) і~порівняйте з~газовим тиском плазми
 	в~задачі~\ref{prb:PlasmaBeta}. Чому дорівнює $\beta$?
-	\emph{Відповідь:} $B^2/8\pi\approx1{,}1\times10^{8}$~дин/см$^2\approx112$~бар, $\beta\approx3\,\%$.
+	\begin{solution}
+		$B^2/8\pi\approx1{,}1\times10^{8}$~дин/см$^2\approx112$~бар, $\beta\approx3\,\%$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:AlfvenString}
 	Виведіть швидкість альвенівської хвилі, розглядаючи силову лінію як струну з~натягом
 	$B^2/4\pi$. Знайдіть $v_A$ для дейтерієвої плазми $n_i=10^{14}~\mathrm{см}^{-3}$,
 	$B=5\times10^4$~Гс і~час, за~який хвиля проходить $L=1$~м.
-	\emph{Відповідь:} $v_A\approx7{,}7\times10^{8}$~см/с, $t=L/v_A\approx1{,}3\times10^{-7}$~с.
+	\begin{solution}
+		$v_A\approx7{,}7\times10^{8}$~см/с, $t=L/v_A\approx1{,}3\times10^{-7}$~с.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:FluidScales}
@@ -1135,8 +1150,10 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	$\lambda_{\mathrm{пр}}=v_{Te}/\nu_{ei}$, $r_{Li}$, відношення $D_\perp/D_\parallel$.
 	Поясніть, чому МГД застосовна поперек поля, хоча довжина пробігу набагато більша
 	за~розмір установки.
-	\emph{Відповідь:} $\lambda_{\mathrm{пр}}\sim10^{6}$~см (10~км), $r_{Li}\approx0{,}3$~см, для іонів $D_\perp/D_\parallel\sim(\nu_{ii}/\omega_{ci})^2\sim10^{-13}$, для електронів $(\nu_{ei}/\omega_{ce})^2\sim10^{-17}$.
+	\begin{solution}
+		$\lambda_{\mathrm{пр}}\sim10^{6}$~см (10~км), $r_{Li}\approx0{,}3$~см, для іонів $D_\perp/D_\parallel\sim(\nu_{ii}/\omega_{ci})^2\sim10^{-13}$, для електронів $(\nu_{ei}/\omega_{ce})^2\sim10^{-17}$.
 	Вздовж поля частинки вільно пролітають $\lambda_{\mathrm{пр}}\gg L$, а~поперек поля гірація з~$r_L\ll L$ локалізує їх: роль довжини пробігу відіграє $r_L$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:DiamagneticFlux}
@@ -1144,34 +1161,45 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	що центр кола має координату $x_g=x+v_y/\omega_c$. Знайдіть потік $\Gamma_y$ через
 	площину $x=x_0$ і~густину струму $j_y$. Перевірте збіг
 	із~\eqref{eq:diamagnetic-current}.
-	\emph{Відповідь:} $\Gamma_y=c\,T\,n^\prime/(qB)$, $j_y=c\,p^\prime/B$.
+	\begin{solution}
+		$\Gamma_y=c\,T\,n^\prime/(qB)$, $j_y=c\,p^\prime/B$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:FluxTube}
 	Покажіть, що при поперечному стисненні вмороженої силової трубки $B/\rho=\text{const}$
 	(довжина трубки не змінюється), а~при ізотропному стисненні $B\propto\rho^{2/3}$.
 	У~скільки разів зросте $B$ хмари, що колапсує в~зорю з~ростом густини в~$10^{6}$ разів?
-	\emph{Відповідь:} у~$10^4$ разів.
+	\begin{solution}
+		у~$10^4$ разів.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ParkerSpiral}
 	Сонце обертається з~$\Omega\approx2{,}7\times10^{-6}$~рад/с, сонячний вітер має швидкість
 	$400$~км/с. З~умови вмороженості знайдіть кут між $\vect B$ і~радіальним напрямом на орбіті Землі
-	($r=1{,}5\times10^{8}$~км): $\tan\psi=\Omega r/v$. \emph{Відповідь:} $\psi\approx45^\circ$.
+	($r=1{,}5\times10^{8}$~км): $\tan\psi=\Omega r/v$.
+	\begin{solution}
+		$\psi\approx45^\circ$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:DiamagneticLoop}
 Діамагнітна петля зареєструвала зменшення потоку тороїдального поля $|\Delta\Phi|=3\times10^{6}$~Мкс у~токамаку з~$R=150$~см,
 $B_0=5\times10^4$~Гс. Знайдіть теплову енергію плазми $W$, вважаючи тиск ізотропним. Чи можна за~цим сигналом визначити
 окремо $n$ і~$T$?
-\emph{Відповідь:} $W=\tfrac34RB_0|\Delta\Phi|\approx1{,}7\times10^{13}$~ерг~$=1{,}7$~МДж; ні, петля дає лише $\int p\,dS$, тобто добуток~$nT$.
+	\begin{solution}
+		$W=\tfrac34RB_0|\Delta\Phi|\approx1{,}7\times10^{13}$~ерг~$=1{,}7$~МДж; ні, петля дає лише $\int p\,dS$, тобто добуток~$nT$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:Rogowski}
 Пояс Роговського має $n_c=20$~см$^{-1}$ і~$S=0{,}5$~см$^2$. Яким буде інтеграл $\int\varepsilon\,dt$ (в~В$\cdot$с) при $I=1$~МА? Чи залежить
 результат від положення шнура всередині пояса?
-\emph{Відповідь:} $\mu_0n_cSI$ в~одиницях СІ $=4\pi\!\times\!10^{-7}\cdot2000\cdot0{,}5\!\times\!10^{-4}\cdot10^{6}\approx0{,}13$~В$\cdot$с;
+	\begin{solution}
+		$\mu_0n_cSI$ в~одиницях СІ $=4\pi\!\times\!10^{-7}\cdot2000\cdot0{,}5\!\times\!10^{-4}\cdot10^{6}\approx0{,}13$~В$\cdot$с;
 не залежить~--- лише від повного охопленого струму.
+	\end{solution}
 \end{problem}
 
 %% --------------------------------------------------------
@@ -1206,3 +1234,5 @@ $B_0=5\times10^4$~Гс. Знайдіть теплову енергію плаз�
 
 \end{quizlist}
 \end{Questions}
+
+\Closesolutionfile{answer}

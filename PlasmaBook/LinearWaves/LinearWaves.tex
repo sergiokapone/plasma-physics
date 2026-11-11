@@ -11,6 +11,8 @@
 
 
 
+\Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
+\Writetofile{answer}{\protect\section*{\nameref*{sec:mhd-waves}}}
 \chapter{МГД-хвилі та хвилі в~замагніченій плазмі}
 \label{sec:mhd-waves}\hypertarget{mhd-waves}{}
 %% --------------------------------------------------------
@@ -407,7 +409,7 @@ $\vect N\times(\vect N\times\vect E)+\hat\varepsilon\vect E=0$. Зручні д�
 \subsection*{Поширення вздовж поля ($\theta=0$)}
 Поперечні хвилі розпадаються на дві кругові поляризації:
 $N^2=R$ (права, обертання в~той самий бік, що й~електрони) і~$N^2=L$ (ліва, у~бік іонів);
-поздовжня хвиля має $P=0$, тобто $\omega=\omega_p$ (розд.~\ref{sec:plasma-oscillations}).
+поздовжня хвиля має $P=0$, тобто $\omega=\omega_p$ (§\,\ref{sec:plasma-oscillations}).
 \emph{Чому резонанс.} Вектор $\vect E$ $R$-хвилі обертається в~той самий бік, що й~електрони навколо $\vect B_0$
 (напрям відраховують від $\vect B_0$, а~не від $\vect k$). При $\omega=\omega_{ce}$ електрон \enquote{бачить} стале поле й~необмежено прискорюється~---
 як гойдалка, яку штовхають у~такт (циклотронний резонанс з~розд.~\ref{sec:particle-motion}). Для $L$-хвилі так само з~іонами.
@@ -609,15 +611,19 @@ edge={->, thick, draw=black!60},
 	Для дейтерієвої плазми токамака ($n_i=10^{14}$~см$^{-3}$, $B=5\times10^4$~Гс,
 	$T_e=T_i=10$~кеВ) знайдіть $v_A$, $c_s$ (з~формули для іонного звуку) і~час
 	проходу альвенівської хвилі вздовж малого радіуса $a=2$~м. Порівняйте $v_A$ з~$v_{Ti}$.
-\emph{Відповідь:} $v_A\approx7{,}7\times10^{8}$~см/с (дейтерій), $c_s\approx1{,}4\times10^{8}$~см/с, $v_{Ti}\sim10^{8}$~см/с~--- $v_A\gg v_{Ti}$; час проходу $a/v_A\approx2{,}6\times10^{-7}$~с.
+	\begin{solution}
+		$v_A\approx7{,}7\times10^{8}$~см/с (дейтерій), $c_s\approx1{,}4\times10^{8}$~см/с, $v_{Ti}\sim10^{8}$~см/с~--- $v_A\gg v_{Ti}$; час проходу $a/v_A\approx2{,}6\times10^{-7}$~с.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:MhdModes}
 	Покажіть, що рівняння~\eqref{eq:mhd-dispersion-vector} для $\vect k\perp\vect B_0$ і~$\vect v\parallel\vect k$ дає
 	$\omega^2=k^2(c_s^2+v_A^2)$. Знайдіть границі швидкостей швидкої й~повільної мод при $\theta\to0$ для
 	$v_A>c_s$ та $v_A<c_s$.
-	\emph{Відповідь:} при $\theta\to0$ $v_+\to\max(v_A,c_s)$, $v_-\to\min(v_A,c_s)$: для $v_A>c_s$ швидка мода
+	\begin{solution}
+		при $\theta\to0$ $v_+\to\max(v_A,c_s)$, $v_-\to\min(v_A,c_s)$: для $v_A>c_s$ швидка мода
 	переходить в~альвенівську, а~повільна~--- у~звук; для $v_A<c_s$~--- навпаки.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:Whistler}
@@ -625,32 +631,40 @@ edge={->, thick, draw=black!60},
 	$L\approx10^{10}$~см. Для $f_{ce}=1$~МГц, $f_{pe}=5$~МГц знайдіть групову швидкість на частотах
 	$0{,}1\,f_{ce}$ і~$0{,}2\,f_{ce}$ і~різницю часів приходу. Порівняйте з~реальним свистом
 	(секунди).
-	\emph{Відповідь:} $v_g\approx2c\sqrt{\omega\omega_{ce}}/\omega_{pe}\approx3{,}8\times10^{9}$ і~$5{,}4\times10^{9}$~см/с;
+	\begin{solution}
+		$v_g\approx2c\sqrt{\omega\omega_{ce}}/\omega_{pe}\approx3{,}8\times10^{9}$ і~$5{,}4\times10^{9}$~см/с;
 	час проходу $\approx2{,}6$ і~$1{,}9$~с, $\Delta t\approx0{,}8$~с.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:HybridResonances}
 	Для $n_e=5\times10^{13}$~см$^{-3}$, $B=3\times10^4$~Гс (водень) знайдіть $f_{pe}$, $f_{ce}$, $f_{UH}$
 	і~$f_{LH}$. Чи може $X$-мода з~частотою $f_{ce}$ потрапити в~центр плазми?
-	\emph{Відповідь:} $f_{pe}\approx63$~ГГц, $f_{ce}\approx84$~ГГц, $f_{UH}\approx105$~ГГц; $f_{ci}\approx46$~МГц,
+	\begin{solution}
+		$f_{pe}\approx63$~ГГц, $f_{ce}\approx84$~ГГц, $f_{UH}\approx105$~ГГц; $f_{ci}\approx46$~МГц,
 	$f_{pi}\approx1{,}5$~ГГц, $f_{LH}\approx1{,}2$~ГГц. З~боку слабкого поля $X$-мода спершу натрапляє
 	на відсікання $\omega=\omega_R$ і~відбивається; запущена з~боку сильного поля, вона доходить до резонансу.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:AlfvenAstro}
 	Знайдіть альвенівську швидкість для: іоносфери (O$^+$, $n\sim10^{5}~\text{см}^{-3}$, $B\sim0{,}3$~Гс),
 	сонячної корони (H$^+$, $n\sim10^{8}~\text{см}^{-3}$, $B\sim1$~Гс) і~міжзоряного середовища
 	($n\sim1~\text{см}^{-3}$, $B\sim3\times10^{-6}$~Гс).
-	\emph{Відповідь:} $\approx520$~км/с; $\approx220$~км/с; $\approx6{,}5$~км/с.
+	\begin{solution}
+		$\approx520$~км/с; $\approx220$~км/с; $\approx6{,}5$~км/с.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:AlfvenDamping}
 	Врахувавши скінченну провідність ($\omega^2=k^2v_A^2-i\omega k^2\nu_m$, $\nu_m=c^2/4\pi\sigma$),
 	покажіть, що слабке просторове загасання альвенівської хвилі $\operatorname{Im}k=\omega^2\nu_m/(2v_A^3)$.
 	Чому така хвиля в~короні Сонця дисипує вкрай повільно?
-	\emph{Відповідь:} у~короні ($T\sim100$~еВ) спітцерівська $\nu_m\sim10^{4}$~см$^2$/с; для $\omega\sim10^{-2}$~с$^{-1}$
+	\begin{solution}
+		у~короні ($T\sim100$~еВ) спітцерівська $\nu_m\sim10^{4}$~см$^2$/с; для $\omega\sim10^{-2}$~с$^{-1}$
 	і~$v_A\sim7\times10^{7}$~см/с довжина загасання $1/\operatorname{Im}k\sim10^{24}$~см$\;\gg R_\odot$. Дисипація
 	можлива лише на дуже малих масштабах (фазове перемішування, турбулентний каскад).
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:FaradayRotation}
@@ -658,19 +672,27 @@ edge={->, thick, draw=black!60},
 	(200~мкм, $f=1{,}5$~ТГц) у~токамаку ($n=10^{14}~\text{см}^{-3}$, полоїдальне поле вздовж хорди
 	$B_\parallel=0{,}5$~Тл, шлях 1~м). Використайте
 	$\psi=2{,}6\times10^{-13}\lambda^2\int nB_\parallel\,dl$ (СІ: $\lambda$ в~м, $n$ в~м$^{-3}$, $B$ в~Тл, $dl$ в~м).
-	Перевірте, що $\omega\gg\omega_{pe},\omega_{ce}$. \emph{Відповідь:} $f_{pe}\approx90$~ГГц, $f_{ce}\lesssim140$~ГГц $\ll1{,}5$~ТГц; $\psi\approx0{,}53$~рад $\approx30^\circ$.
+	Перевірте, що $\omega\gg\omega_{pe},\omega_{ce}$.
+	\begin{solution}
+		$f_{pe}\approx90$~ГГц, $f_{ce}\lesssim140$~ГГц $\ll1{,}5$~ТГц; $\psi\approx0{,}53$~рад $\approx30^\circ$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ECRHRadius}
 	Поле токамака $B(R)=B_0R_0/R$, $B_0=6$~Тл при $R_0=3$~м. На якому радіусі поглинається
 	потужність гіротрона 140~ГГц на основній гармоніці електронного циклотронного резонансу
-	($f_{ce}=28\,B[\text{Тл}]$~ГГц)? \emph{Відповідь:} $B=5$~Тл, $R=B_0R_0/B=3{,}6$~м.
+	($f_{ce}=28\,B[\text{Тл}]$~ГГц)?
+	\begin{solution}
+		$B=5$~Тл, $R=B_0R_0/B=3{,}6$~м.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:IonAcoustic}
 	Знайдіть швидкість іонного звуку в~водневій плазмі з~$T_e=10$~еВ, $T_i\ll T_e$. При якому $k\lambda_{De}$
 	частота іонного звуку відрізняється від $kc_s$ на 10~\%?
-	\emph{Відповідь:} $c_s\approx3{,}1\times10^{6}$~см/с; $k\lambda_{De}\approx0{,}48$.
+	\begin{solution}
+		$c_s\approx3{,}1\times10^{6}$~см/с; $k\lambda_{De}\approx0{,}48$.
+	\end{solution}
 \end{problem}
 
 %% --------------------------------------------------------
@@ -708,3 +730,5 @@ edge={->, thick, draw=black!60},
 
 \end{quizlist}
 \end{Questions}
+
+\Closesolutionfile{answer}

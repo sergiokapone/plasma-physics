@@ -9,6 +9,8 @@
 
 \graphicspath{{\currfilebase/Pictures}}
 
+\Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
+\Writetofile{answer}{\protect\section*{\nameref*{sec:fusion}}}
 \chapter{Керований термоядерний синтез}\label{sec:fusion}\hypertarget{fusion}{}
 %% --------------------------------------------------------
 
@@ -361,14 +363,18 @@ $e^{\gamma t}$, $\gamma=\sqrt{Agk}$, де $A$~--- число Атвуда, а~$g
 	знайдіть $P_f$, $P_\alpha$, $P_{br}$ (у~Вт/$\mathrm{см}^3$) та мінімальний час
 	утримання $\tau_E$ для запалювання без урахування випромінювання. Знайдіть $n\tau_E$
 	при $20$~кеВ ($\langle\sigma v\rangle=4{,}3\times10^{-16}~\mathrm{см}^3/\mathrm{с}$).
-	\emph{Відповідь:} $P_f\approx0{,}80$, $P_\alpha\approx0{,}16$, $P_{br}\approx0{,}017$~Вт/см$^3$; $\tau_E\approx3$~с ($n\tau_E\approx3\times10^{14}~\mathrm{см}^{-3}\mathrm{с}$); при 20~кеВ $n\tau_E\approx1{,}6\times10^{14}$.
+	\begin{solution}
+		$P_f\approx0{,}80$, $P_\alpha\approx0{,}16$, $P_{br}\approx0{,}017$~Вт/см$^3$; $\tau_E\approx3$~с ($n\tau_E\approx3\times10^{14}~\mathrm{см}^{-3}\mathrm{с}$); при 20~кеВ $n\tau_E\approx1{,}6\times10^{14}$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:AlphaHeating}
 	Знайдіть швидкість і~ларморівський радіус $\alpha$-частинки з~енергією $3{,}5$~МеВ
 	у~полі $5{,}3$~Тл. Покажіть, що частка нагріву плазми $\alpha$-частинками дорівнює
 	$Q/(Q+5)$, і~обчисліть її для $Q=10$.
-	\emph{Відповідь:} $v_\alpha\approx1{,}3\times10^{9}$~см/с, $r_{L\alpha}\approx5{,}1$~см; частка $Q/(Q+5)$, при $Q=10$ це $2/3$.
+	\begin{solution}
+		$v_\alpha\approx1{,}3\times10^{9}$~см/с, $r_{L\alpha}\approx5{,}1$~см; частка $Q/(Q+5)$, при $Q=10$ це $2/3$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:NetElectricity}
@@ -380,21 +386,26 @@ $e^{\gamma t}$, $\gamma=\sqrt{Agk}$, де $A$~--- число Атвуда, а~$g
 	$Q$ при $M=1{,}2$, $\eta_{\mathrm{th}}=0{,}35$, $\eta_{\mathrm{aux}}=0{,}4$. Як
 	зміниться результат, якщо додатково $20\%$ електрики йде на~власні потреби (магніти,
 	кріогеніка)?
-	\emph{Відповідь:} $Q_{\min}\approx5{,}3$; з~урахуванням власних потреб умова стає
+	\begin{solution}
+		$Q_{\min}\approx5{,}3$; з~урахуванням власних потреб умова стає
 	$0{,}8\,\eta_{\mathrm{th}}[(0{,}8M+0{,}2)Q+1]\geq1/\eta_{\mathrm{aux}}$, звідки $Q_{\min}\approx6{,}8$.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:ICFHotSpot}
 	Для інерційного синтезу задано $\rho R=0{,}3$~г/см$^2$ при $\rho=300$~г/см$^3$. Знайдіть радіус
 	гарячої плями та оцініть час інерційного утримання $\tau\sim R/c_s$ при $T=10$~кеВ
 	($c_s\approx\sqrt{2T/\bar m_i}$, $\bar m_i=2{,}5\,m_p$).
-	\emph{Відповідь:} $R=10$~мкм, $c_s\sim9\times10^{7}$~см/с, $\tau\sim10$~пс.
+	\begin{solution}
+		$R=10$~мкм, $c_s\sim9\times10^{7}$~см/с, $\tau\sim10$~пс.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:DTvsDHe}
 	Порівняйте реакції D--T і~D--$^3$He: енерговиділення, частку енергії в~заряджених продуктах,
 	типову оптимальну температуру (рис.~\ref{fig:sigmav}). У~чому перевага й~недолік безнейтронного синтезу?
-	\emph{Відповідь:} D--T дає $17{,}6$~МеВ, із~них лише $20\%$ у~заряджених продуктах;
+	\begin{solution}
+		D--T дає $17{,}6$~МеВ, із~них лише $20\%$ у~заряджених продуктах;
 	$\mathrm D+{}^3\mathrm{He}\to{}^4\mathrm{He}\,(3{,}6~\text{МеВ})+p\,(14{,}7~\text{МеВ})$ дає $18{,}3$~МеВ,
 	усе в~заряджених частинках. Оптимальна температура для D--$^3$He значно вища
 	($\sim50$--$100$~кеВ проти $10$--$20$~кеВ), а~$\langle\sigma v\rangle$ там приблизно на~порядок менше
@@ -402,20 +413,25 @@ $e^{\gamma t}$, $\gamma=\sqrt{Agk}$, де $A$~--- число Атвуда, а~$g
 	активація конструкцій і~можливість прямого перетворення енергії заряджених продуктів в~електрику.
 	Недоліки: потрібні вищі $T$ і~$nT\tau_E$, гальмівне випромінювання ($Z=2$) відносно більше,
 	а~$^3$He на~Землі майже немає.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:FuelConsumption}
 	Яка енергія виділяється на~1~кг суміші D\,+\,T? Скільки палива на~добу споживає
 	термоядерна електростанція з~електричною потужністю $1$~ГВт ($\eta=0{,}4$) і~скільки
 	вугілля (теплотворність $29$~МДж/кг, $\eta=0{,}35$) потрібно звичайній?
-	\emph{Відповідь:} $3{,}4\times10^{14}$~Дж/кг; якщо все тепло $P_{\mathrm{th}}=2{,}5$~ГВт дає синтез,~---
+	\begin{solution}
+		$3{,}4\times10^{14}$~Дж/кг; якщо все тепло $P_{\mathrm{th}}=2{,}5$~ГВт дає синтез,~---
 	$\approx0{,}64$~кг/добу (з~урахуванням тепла бланкета, $M=1{,}2$,~--- $\approx0{,}55$~кг/добу) проти
 	$\approx8{,}5$~тис.~т вугілля на~добу.
+	\end{solution}
 \end{problem}
 
 \begin{problem}\label{prb:NeutronYield}
 	Скільки D--T-нейтронів за секунду випромінює плазма з~термоядерною потужністю $P_f=500$~МВт? Яка допплерівська ширина лінії при $T_i=15$~кеВ?
-	\emph{Відповідь:} $dN_n/dt=P_f/(17{,}6~\text{МеВ})\approx1{,}8\times10^{20}$~с$^{-1}$; $\Delta E\approx82{,}5\sqrt{15}\approx320$~кеВ.
+	\begin{solution}
+		$dN_n/dt=P_f/(17{,}6~\text{МеВ})\approx1{,}8\times10^{20}$~с$^{-1}$; $\Delta E\approx82{,}5\sqrt{15}\approx320$~кеВ.
+	\end{solution}
 \end{problem}
 
 %% --------------------------------------------------------
@@ -437,3 +453,5 @@ $e^{\gamma t}$, $\gamma=\sqrt{Agk}$, де $A$~--- число Атвуда, а~$g
 \item Чим відрізняється $Q$ для NIF від $Q$ для ITER?
 \end{quizlist}
 \end{Questions}
+
+\Closesolutionfile{answer}
