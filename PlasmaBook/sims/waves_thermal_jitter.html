@@ -1,0 +1,494 @@
+<title>Теплове дрижання плазми</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="shared/theme.js"></script>
+<link rel="stylesheet" href="shared/sim.css">
+<style>
+  #stage { grid-template-columns: 1fr 1fr; grid-template-rows: 1.2fr 1fr 1fr; }
+  #stage > .view.wide { grid-column: 1 / span 2; }
+  @media (max-width: 860px) { #stage > .view.wide { grid-column: auto !important; } }
+</style>
+<script src="shared/sim.js"></script>
+<script src="shared/physics.js"></script>
+<header class="top">
+  <h1>Теплове «дрижання» плазми: хаос, хмара навколо частинки і гул на <i class="m">ω<sub>p</sub></i></h1>
+  <span class="ref">Розд. 2 (теплові флуктуації, дебаївська хмара) — чернетка</span>
+  <span id="theme-slot"></span>
+</header>
+<div id="app">
+  <div id="panel">
+    <section id="s-loop"></section>
+    <details class="observe" id="d-what" open><summary><h2>Що показує симуляція</h2></summary>
+      <p>Рівноважна плазма <b>без жодного зовнішнього збурення</b>: електрони (точки) на однорідному іонному фоні, швидкості теплові (максвеллівські), потім вони просто рухаються під дією власного поля. Одиниці: <i class="m">λ<sub>D</sub> = 1</i>, <i class="m">ω<sub>p</sub> = 1</i>, <i class="m">v<sub>T</sub> = 1</i>.</p>
+      <p><b>Ліворуч угорі — хаос.</b> Кожна точка — електрон у площині <i class="m">(x, v)</i>. Помаранчева точка — пробна частинка (клікніть по будь-якій, щоб вибрати іншу), смуга навколо неї — відстань <i class="m">±λ<sub>D</sub></i>. Нижче — заряд у комірках уздовж <i class="m">x</i> у шумових σ: синє — надлишок електронів, оранжеве — нестача (тобто надлишок іонного фону).</p>
+      <p><b>Праворуч угорі — «кіно» заряду.</b> Кожен рядок — один момент часу (нові знизу), колір — той самий надлишок/нестача заряду. Це миттєва «шуба»: випадкові плями розміром <i class="m">∼λ<sub>D</sub></i>, що виникають і зникають.</p>
+      <p><b>Посередині ліворуч — хмара.</b> Середня густина електронів на відстані <i class="m">r</i> від частинки. <b>Посередині праворуч</b> — структурний фактор <i class="m">S(k)</i>: наскільки сильно флуктують заряди на масштабі <i class="m">2π/k</i>; пунктир — ідеальний газ. <b>Внизу</b> — одна хвильова мода: її зміна в часі й спектр.</p>
+    </details>
+    <section><h2>Режими</h2><div id="s-pre"></div></section>
+    <section><h2>Параметри</h2><div id="s-ctl"></div></section>
+    <section><h2>Величини</h2><div id="s-out"></div></section>
+    <details class="observe" id="d-obs" open><summary><h2>Що спостерігати</h2></summary>
+      <ol>
+        <li><b>Хаос.</b> Подивіться на ліву верхню панель: рух окремих частинок безладний, швидкості розкидані, як у газі. Жодної «хвилі» на ній не видно.</li>
+        <li><b>Мерехтіння.</b> На правій верхній карті заряд виникає плямами розміром <i class="m">∼λ<sub>D</sub></i>. Плями мерехтять на місці: надлишок електронів через час <i class="m">∼π/ω<sub>p</sub></i> змінюється нестачею, бо поле повертає електрони. Вимкніть «Кулонівську взаємодію»: плями перестають мерехтіти й розпливаються похилими смугами, бо кожна частинка летить прямо (<i class="m">x = x<sub>0</sub> + vt</i>).</li>
+        <li><b>Шуба.</b> У будь-який момент сусіди пробної частинки (оранжеві мітки внизу середньої лівої панелі) розкидані випадково. Тонка лінія — один знімок, усереднений по всіх частинках, товста — усереднення в часі. Лише так проявляється «хмара»: електронів навколо частинки в середньому <b>менше</b> (вона відштовхує своїх), на глибину <i class="m">1/(2N<sub>D</sub>)</i>. Пунктир — теорія <i class="m">−e<sup>−|r|/λ<sub>D</sub></sup>/(2N<sub>D</sub>)</i>. Загальний дефіцит електронів у хмарі дорівнює одному електрону, тобто хмара екранує заряд частинки.</li>
+        <li><b>Ідеальний газ проти плазми.</b> Права панель середнього ряду: без взаємодії <i class="m">S(k) = 1</i> на всіх масштабах (пуассонів шум). У плазмі при <i class="m">kλ<sub>D</sub> ≪ 1</i> маємо <i class="m">S ≈ (kλ<sub>D</sub>)²</i>, тобто великомасштабні флуктуації заряду придушені: плазма «не дозволяє» заряду збиратися у великі області. При <i class="m">kλ<sub>D</sub> ≫ 1</i> знову <i class="m">S → 1</i>: на малих відстанях частинки поводяться як у газі.</li>
+        <li><b>Гул на <i class="m">ω<sub>p</sub></i>.</b> У нижній панелі подивіться на спектр моди: з взаємодією — гострий пік поблизу <i class="m">ω<sub>BG</sub> = ω<sub>p</sub>√(1 + 3k²λ<sub>D</sub>²)</i>, без неї — широкий горб <i class="m">ω = kv</i> без піка. Хаотичні теплові рухи самі «розгойдують» колективну моду (це не зовнішній удар), а її амплітуда стаціонарна.</li>
+        <li><b>Роль <i class="m">N<sub>D</sub></i>.</b> Змінюйте число частинок на <i class="m">λ<sub>D</sub></i>. Хмара стає глибшою при малому <i class="m">N<sub>D</sub></i> (кожна частинка помітно збурює сусідів) і зникає при великому (газ), а положення піка від <i class="m">N<sub>D</sub></i> не залежить: воно визначається лише <i class="m">kλ<sub>D</sub></i>. Дуже мале <i class="m">N<sub>D</sub></i> — це вже сильно зв'язана плазма, де ідеальний опис псується.</li>
+      </ol>
+    </details>
+    <details class="note" id="d-model"><summary><h2>Модель і чисельна схема</h2></summary>
+      <p>Одновимірна модель заряджених площин (листів) у періодичному ящику довжиною <i class="m">L = 40 λ<sub>D</sub></i>. Електрони — <i class="m">N = 40·N<sub>D</sub></i> листів; позитивний іонний фон нерухомий і однорідний. Поле на листі з номером <i class="m">j</i> (після сортування за координатою) точне за теоремою Гаусса: <i class="m">E<sub>j</sub> = 4π[n<sub>0</sub>x<sub>j</sub> − w(j + ½)] + c</i>, стала <i class="m">c</i> обрана так, щоб сума сил дорівнювала нулю (збереження імпульсу). Схема «стрибок жаби», <i class="m">dt = 0,04/ω<sub>p</sub></i>. СГС, <i class="m">e = m = 1</i>, <i class="m">T = 1</i>.</p>
+      <p><b>Хто тут хто.</b> Усі рухомі частинки — електрони, зокрема й пробна (виділена); іони подано нерухомим однорідним позитивним фоном, окремих іонів немає. Тому «хмара» навколо електрона — це нестача інших електронів (тобто нескомпенсований іонний фон), а <i class="m">λ<sub>D</sub></i> — електронний дебаївський радіус. У реальній плазмі рухомі іони теж притягуються до електрона й додають свою частку до екранування, але на часах порядку <i class="m">1/ω<sub>p</sub></i> іони майже нерухомі.</p>
+      <p><b>Початковий стан.</b> Якщо взаємодія увімкнена, положення спершу беруть випадковими (пуассонів шум), а потім зміщують так, щоб структурний фактор дорівнював рівноважному <i class="m">k²λ<sub>D</sub>²/(1 + k²λ<sub>D</sub>²)</i> (лінійна поправка, дві ітерації); швидкості — максвеллівські з <i class="m">T = 1</i>. Це означає, що симуляція стартує вже з дебаївською хмарою. Без такої підготовки великомасштабні флуктуації пуассонового старту в безстовкненній моделі не розсмоктуються (вони лише коливаються на <i class="m">ω<sub>p</sub></i>). Без взаємодії початок — випадкові положення, це і є рівновага ідеального газу.</p>
+      <p><b>Що це за модель.</b> Фізика колективних мод (дебаївське екранування, <i class="m">ω<sub>p</sub></i>, закон Бома–Гросса, затухання Ландау) та сама, що в 3D, а форма хмари інша: у 1D <i class="m">h(r) = −e<sup>−|r|/λ<sub>D</sub></sup>/(2N<sub>D</sub>)</i>, де <i class="m">N<sub>D</sub> = n<sub>1</sub>λ<sub>D</sub></i> — число листів на довжині <i class="m">λ<sub>D</sub></i> (у 3D було б <i class="m">nλ<sub>D</sub>³</i> і профіль <i class="m">e<sup>−r/λ<sub>D</sub></sup>/r</i>). Листи вільно проходять одне крізь одного, тому зіткнень у звичному розумінні немає: система не релаксує до рівноваги, а лише підтримує підготовлену рівновагу. Усереднення (<i>EMA</i>) у <i>S(k)</i> триває ∼100, у хмарі ∼40 одиниць часу, спектр усереднюється за відрізками по 51 одиниці часу. Окремі моди з малим <i>k</i> мають довгий час кореляції, тому їхнє <i>S(k)</i> шумить сильніше.</p>
+    </details>
+  </div>
+  <div id="stage">
+    <div class="view" id="v-phase"></div>
+    <div class="view" id="v-st"></div>
+    <div class="view" id="v-cloud"></div>
+    <div class="view" id="v-sk"></div>
+    <div class="view wide" id="v-ts"></div>
+  </div>
+</div>
+<script>
+/*CORE-BEGIN*/
+var Core = (function (randn) {
+  var LB = 40, N0 = 1 / (4 * Math.PI), DT = 0.04, MM = 30, RMAX = 4, NR = 20, NB = 80, NT = 150, SMP = 5, GS = 2;
+  var NBUF = 4096, NSEG = 256, HOP = 128, NW = 150, WMAX = 3;
+  var TWO_PI = 2 * Math.PI, K1 = TWO_PI / LB, DS = SMP * DT;
+  var S = {};
+  var C = { LB: LB, N0: N0, DT: DT, MM: MM, RMAX: RMAX, NR: NR, NB: NB, NT: NT, SMP: SMP, NW: NW, WMAX: WMAX, K1: K1, DS: DS, NSEG: NSEG, NBUF: NBUF };
+
+  function wrap(x) { return x < 0 ? x + LB : (x >= LB ? x - LB : x); }
+
+  function sortAll() {
+    var x = S.x, v = S.v, id = S.id, N = S.N;
+    for (var i = 1; i < N; i++) {
+      var xi = x[i], vi = v[i], di = id[i], j = i - 1;
+      if (x[j] <= xi) continue;
+      while (j >= 0 && x[j] > xi) { x[j + 1] = x[j]; v[j + 1] = v[j]; id[j + 1] = id[j]; j--; }
+      x[j + 1] = xi; v[j + 1] = vi; id[j + 1] = di;
+    }
+  }
+  function calcField() {
+    var N = S.N, x = S.x, E = S.E, w = S.w, k4 = 4 * Math.PI, sum = 0, j;
+    for (j = 0; j < N; j++) { E[j] = k4 * (N0 * x[j] - w * (j + 0.5)); sum += E[j]; }
+    var c = sum / N;
+    for (j = 0; j < N; j++) E[j] -= c;
+  }
+  // ρ_m = Σ_j exp(−i k_m x_j), m = 1…M
+  function rhoModes(x, N, M, Rr, Ri) {
+    var m, j;
+    for (m = 0; m <= M; m++) { Rr[m] = 0; Ri[m] = 0; }
+    for (j = 0; j < N; j++) {
+      var a = K1 * x[j], cr = Math.cos(a), ci = -Math.sin(a), zr = 1, zi = 0;
+      for (m = 1; m <= M; m++) {
+        var t = zr * cr - zi * ci; zi = zr * ci + zi * cr; zr = t;
+        Rr[m] += zr; Ri[m] += zi;
+      }
+    }
+  }
+  // Зміщення випадкових положень до рівноважного S(k) = k²/(1+k²) (λ_D = 1): ρ'_k → f_k ρ_k, f = k/√(1+k²).
+  function screen(x, N) {
+    var M = Math.min(60, Math.floor(N / 2)), m, j, it;
+    var Rr0 = new Float64Array(M + 1), Ri0 = new Float64Array(M + 1), Rr = new Float64Array(M + 1), Ri = new Float64Array(M + 1);
+    var Tr = new Float64Array(M + 1), Ti = new Float64Array(M + 1), uR = new Float64Array(M + 1), uI = new Float64Array(M + 1);
+    rhoModes(x, N, M, Rr0, Ri0);
+    for (m = 1; m <= M; m++) { var k = K1 * m, f = k / Math.sqrt(1 + k * k); Tr[m] = f * Rr0[m]; Ti[m] = f * Ri0[m]; }
+    for (it = 0; it < 3; it++) {
+      rhoModes(x, N, M, Rr, Ri);
+      for (m = 1; m <= M; m++) { var kk = K1 * m * N; uR[m] = -(Ti[m] - Ri[m]) / kk; uI[m] = (Tr[m] - Rr[m]) / kk; }
+      for (j = 0; j < N; j++) {
+        var a = K1 * x[j], cr = Math.cos(a), ci = Math.sin(a), zr = 1, zi = 0, u = 0;
+        for (m = 1; m <= M; m++) {
+          var t = zr * cr - zi * ci; zi = zr * ci + zi * cr; zr = t;
+          u += uR[m] * zr - uI[m] * zi;
+        }
+        x[j] = wrap(x[j] + 2 * u);
+      }
+    }
+  }
+
+  function build(ND, field) {
+    var N = Math.max(8, Math.round(LB * ND)), i, mv = 0, s2 = 0;
+    S.N = N; S.ND = N / LB; S.field = !!field; S.w = N0 / S.ND;
+    S.x = new Float64Array(N); S.v = new Float64Array(N); S.id = new Int32Array(N); S.E = new Float64Array(N);
+    for (i = 0; i < N; i++) { S.x[i] = Math.random() * LB; S.id[i] = i; }
+    if (S.field) screen(S.x, N);
+    for (i = 0; i < N; i++) { S.v[i] = randn(); mv += S.v[i]; }
+    mv /= N; for (i = 0; i < N; i++) { S.v[i] -= mv; s2 += S.v[i] * S.v[i]; }
+    var sc = Math.sqrt(N / s2); for (i = 0; i < N; i++) S.v[i] *= sc;
+    S.tracer = Math.floor(Math.random() * N);
+    sortAll(); calcField();
+    S.t = 0; S.k = 0; S.ns = 0; S.ng = 0;
+    S.Rr = new Float64Array(MM + 1); S.Ri = new Float64Array(MM + 1); S.Sk = new Float64Array(MM + 1);
+    S.Tk = 1; S.Tm = 1;
+    S.z = new Float32Array(NB); S.zt = new Float32Array(NB * NT).fill(NaN);
+    S.h = new Float64Array(NR); S.H = new Float64Array(NR);
+    S.msel = S.msel || 2; clearTS();
+    sample();
+  }
+  function clearTS() {
+    S.tsR = new Float64Array(NBUF); S.tsT = new Float64Array(NBUF); S.tsn = 0; S.lastSeg = 0; S.nseg = 0;
+    S.Pcur = new Float64Array(NW); S.Pbar = new Float64Array(NW);
+  }
+  function setMode(m) { S.msel = m; clearTS(); }
+
+  function step(n) {
+    var N = S.N, x = S.x, v = S.v, E = S.E, hd = 0.5 * DT, fl = S.field;
+    for (var s = 0; s < n; s++) {
+      var i;
+      if (fl) for (i = 0; i < N; i++) v[i] -= hd * E[i];
+      for (i = 0; i < N; i++) x[i] = wrap(x[i] + DT * v[i]);
+      sortAll();
+      if (fl) { calcField(); for (i = 0; i < N; i++) v[i] -= hd * E[i]; }
+      S.t += DT; S.k++;
+      if (S.k % SMP === 0) sample();
+    }
+  }
+
+  function pairHist(h) {
+    var N = S.N, x = S.x, dr = RMAX / NR, i, d;
+    for (i = 0; i < NR; i++) h[i] = 0;
+    for (i = 0; i < N; i++) {
+      for (d = 1; d < N; d++) {
+        var j = i + d, dx;
+        if (j >= N) { j -= N; dx = x[j] + LB - x[i]; } else dx = x[j] - x[i];
+        if (dx >= RMAX) break;
+        h[(dx / dr) | 0] += 2;
+      }
+    }
+  }
+
+  function sample() {
+    var N = S.N, i, m, sq = Math.sqrt(N), x = S.x;
+    rhoModes(x, N, MM, S.Rr, S.Ri);
+    var a = Math.max(1 / (S.ns + 1), 1 / 500);
+    for (m = 1; m <= MM; m++) {
+      var s = (S.Rr[m] * S.Rr[m] + S.Ri[m] * S.Ri[m]) / N;
+      S.Sk[m] = S.ns === 0 ? s : S.Sk[m] + a * (s - S.Sk[m]);
+    }
+    // тимчасовий ряд вибраної моди
+    var q = S.tsn % NBUF; S.tsR[q] = S.Rr[S.msel] / sq; S.tsT[q] = S.t; S.tsn++;
+    if (S.tsn >= NSEG && S.tsn - S.lastSeg >= HOP) spectrum();
+    // заряд у комірках (z-оцінки, згладжування по 3 комірках)
+    var c = new Float64Array(NB), dx = LB / NB, cb = N / NB;
+    for (i = 0; i < N; i++) { var b = Math.floor(x[i] / dx); c[b >= NB ? NB - 1 : b]++; }
+    for (i = 0; i < NB; i++) {
+      var c3 = c[(i + NB - 1) % NB] + c[i] + c[(i + 1) % NB];
+      S.z[i] = (c3 - 3 * cb) / Math.sqrt(3 * cb);
+    }
+    S.zt.copyWithin(0, NB);
+    S.zt.set(S.z, NB * (NT - 1));
+    // кінетична температура
+    var s2 = 0; for (i = 0; i < N; i++) s2 += S.v[i] * S.v[i];
+    S.Tk = s2 / N; S.Tm = S.ns === 0 ? S.Tk : S.Tm + 0.05 * (S.Tk - S.Tm);
+    // парна кореляція
+    if (S.ns % GS === 0) {
+      pairHist(S.hh || (S.hh = new Float64Array(NR)));
+      var dr = RMAX / NR, nref = (N - 1) / LB, ag = Math.max(1 / (S.ng + 1), 0.04);
+      for (i = 0; i < NR; i++) {
+        S.h[i] = S.hh[i] / (N * nref * 2 * dr) - 1;
+        S.H[i] = S.ng === 0 ? S.h[i] : S.H[i] + ag * (S.h[i] - S.H[i]);
+      }
+      S.ng++;
+    }
+    S.ns++;
+  }
+
+  function spectrum() {
+    S.lastSeg = S.tsn;
+    var z = new Float64Array(NSEG), mean = 0, i, iw;
+    for (i = 0; i < NSEG; i++) { z[i] = S.tsR[(S.tsn - NSEG + i) % NBUF]; mean += z[i]; }
+    mean /= NSEG;
+    for (i = 0; i < NSEG; i++) z[i] = (z[i] - mean) * (0.5 - 0.5 * Math.cos(TWO_PI * i / (NSEG - 1)));
+    var a = Math.max(1 / (S.nseg + 1), 0.2);
+    for (iw = 0; iw < NW; iw++) {
+      var om = WMAX * iw / (NW - 1), re = 0, im = 0;
+      for (i = 0; i < NSEG; i++) { var ph = om * i * DS; re += z[i] * Math.cos(ph); im -= z[i] * Math.sin(ph); }
+      S.Pcur[iw] = re * re + im * im;
+      S.Pbar[iw] = S.nseg === 0 ? S.Pcur[iw] : S.Pbar[iw] + a * (S.Pcur[iw] - S.Pbar[iw]);
+    }
+    S.nseg++;
+  }
+  function peak() {
+    if (S.nseg === 0) return NaN;
+    var P = S.Pbar, i0 = 0, i;
+    for (i = 1; i < NW; i++) if (P[i] > P[i0]) i0 = i;
+    var d = 0;
+    if (i0 > 0 && i0 < NW - 1) {
+      var den = P[i0 - 1] - 2 * P[i0] + P[i0 + 1];
+      if (den < 0) d = 0.5 * (P[i0 - 1] - P[i0 + 1]) / den;
+    }
+    return WMAX * (i0 + d) / (NW - 1);
+  }
+
+  return { S: S, C: C, build: build, step: step, setMode: setMode, peak: peak, rhoModes: rhoModes, screen: screen, calcField: calcField, sortAll: sortAll };
+})(typeof PSim !== 'undefined' ? PSim.phys.randn : null);
+/*CORE-END*/
+
+/* ---------- інтерфейс ---------- */
+(function () {
+  var C = PSim.C, fmt = PSim.fmt, S = Core.S, K = Core.C;
+  var P = { ND: 10, field: true, m: 2, spf: 5 };
+  var TWO_PI = 2 * Math.PI, lastMap = null;
+
+  function fs(w) { return w > 700 ? 13 : 12; }
+  function rgb(col) { var m = /^#([0-9a-f]{6})$/i.exec(col); if (!m) return [128, 128, 128]; var h = parseInt(m[1], 16); return [(h >> 16) & 255, (h >> 8) & 255, h & 255]; }
+  function lam() { return Math.sqrt(S.Tm); }
+  function kOf(m) { return m * K.K1; }
+  function omBG(m) { var k = kOf(m); return Math.sqrt(1 + 3 * k * k * S.Tm); }
+  function tracerIndex() { for (var i = 0; i < S.N; i++) if (S.id[i] === S.tracer) return i; return 0; }
+  function dper(a, b) { var d = a - b; if (d > K.LB / 2) d -= K.LB; else if (d < -K.LB / 2) d += K.LB; return d; }
+
+  function reset() { Core.build(P.ND, P.field); Core.setMode(P.m); }
+
+  // ---------- 1. фазова площина + заряд у комірках ----------
+  function drawPhase(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), H1 = Math.max(130, h * 0.7), i, N = S.N;
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: H1 }, { x0: 0, x1: K.LB, y0: -4, y1: 4, font: f, padB: 4, xfmt: function () { return ''; },
+      ylabel: 'v / v_T', title: 'Хаос: електрони в площині (x, v)', nx: 8, ny: 4 });
+    lastMap = m;
+    var it = tracerIndex(), xt = S.x[it];
+    function band(mp, extra) {
+      PSim.clip(ctx, mp);
+      ctx.fillStyle = PSim.alpha(C.c2, 0.13);
+      for (var o = -1; o <= 1; o++) ctx.fillRect(mp.X(xt - 1 + o * K.LB), mp.t, mp.X(xt + 1 + o * K.LB) - mp.X(xt - 1 + o * K.LB), mp.b - mp.t);
+      ctx.restore();
+    }
+    band(m);
+    PSim.clip(ctx, m);
+    ctx.fillStyle = PSim.alpha(C.ele, 0.6);
+    var inside = 0;
+    for (i = 0; i < N; i++) {
+      var v = S.v[i]; if (v < -4 || v > 4) continue;
+      ctx.fillRect(m.X(S.x[i]) - 1, m.Y(v) - 1, 2.2, 2.2);
+      if (i !== it && Math.abs(dper(S.x[i], xt)) <= 1) inside++;
+    }
+    S.inside = inside;
+    ctx.fillStyle = C.c2; ctx.strokeStyle = C.bg; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(m.X(xt), m.Y(Math.max(-4, Math.min(4, S.v[it]))), 5.5, 0, TWO_PI); ctx.fill(); ctx.stroke();
+    ctx.restore();
+    PSim.label(ctx, 'λ_D', m.X(xt), m.t + 8, { size: f, color: C.c2, align: 'center', bold: true });
+    PSim.label(ctx, 'у смузі ±λ_D: ' + inside + ' частинок (в середньому ' + fmt(2 * S.ND, 3) + ')', m.r - 6, m.t + 8, { size: f - 1, color: C.muted, align: 'right', base: 'top' });
+    // заряд у комірках
+    var m2 = PSim.frame(ctx, { x: 0, y: H1, w: w, h: h - H1 }, { x0: 0, x1: K.LB, y0: -3, y1: 3, font: f, padB: 34, padT: 6, xlabel: 'x / λ_D', ylabel: 'заряд, σ', nx: 8, ny: 2 });
+    band(m2);
+    PSim.clip(ctx, m2);
+    var y0 = m2.Y(0), dx = K.LB / K.NB;
+    for (i = 0; i < K.NB; i++) {
+      var z = Math.max(-3, Math.min(3, S.z[i]));
+      ctx.fillStyle = PSim.alpha(z >= 0 ? C.ele : C.ion, 0.85);
+      ctx.fillRect(m2.X(i * dx) + 0.5, Math.min(y0, m2.Y(z)), Math.max(1, m2.X(dx) - m2.X(0) - 1), Math.abs(m2.Y(z) - y0));
+    }
+    ctx.restore();
+    PSim.label(ctx, '↑ надлишок електронів', m2.l + 6, m2.t + 4, { size: f - 1, color: C.ele, base: 'top' });
+    PSim.label(ctx, '↓ нестача електронів', m2.l + 6, m2.b - 4, { size: f - 1, color: C.ion, base: 'bottom' });
+  }
+
+  // ---------- 2. просторово-часова карта ----------
+  var off = document.createElement('canvas'); off.width = K.NB; off.height = K.NT;
+  var offc = off.getContext('2d'), img = offc.createImageData(K.NB, K.NT);
+  function drawST(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), i, j;
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: 0, x1: K.LB, y0: 0, y1: K.NT * K.DS, font: f, grid: false, nx: 8,
+      xlabel: 'x / λ_D', ylabel: 'скільки часу тому, 1/ω_p',
+      title: S.field ? 'Заряд у просторі й часі: плями мерехтять на місці' : 'Без взаємодії: плями розпливаються похилими смугами' });
+    var bg = rgb(C.bg), pe = rgb(C.ele), pi = rgb(C.ion);
+    for (j = 0; j < K.NT; j++) for (i = 0; i < K.NB; i++) {
+      var z = S.zt[j * K.NB + i], o = (j * K.NB + i) * 4;
+      if (z !== z) { img.data[o + 3] = 0; continue; }
+      var t = Math.min(1, Math.abs(z) / 2.5), tg = z >= 0 ? pe : pi;
+      img.data[o] = bg[0] + (tg[0] - bg[0]) * t; img.data[o + 1] = bg[1] + (tg[1] - bg[1]) * t; img.data[o + 2] = bg[2] + (tg[2] - bg[2]) * t; img.data[o + 3] = 255;
+    }
+    offc.putImageData(img, 0, 0);
+    ctx.save(); ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(off, 0, 0, K.NB, K.NT, m.l, m.t, m.r - m.l, m.b - m.t);
+    ctx.restore();
+    ctx.strokeStyle = C.ax; ctx.lineWidth = 1; ctx.strokeRect(m.l, m.t, m.r - m.l, m.b - m.t);
+    // вертикальна лінійка «період плазмових коливань»
+    var Tp = TWO_PI, y1 = m.Y(Tp), yb = m.Y(0);
+    ctx.strokeStyle = C.fg; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(m.r - 10, yb - 2); ctx.lineTo(m.r - 10, y1); ctx.moveTo(m.r - 15, yb - 2); ctx.lineTo(m.r - 5, yb - 2); ctx.moveTo(m.r - 15, y1); ctx.lineTo(m.r - 5, y1); ctx.stroke();
+    PSim.label(ctx, '2π/ω_p', m.r - 18, (y1 + yb) / 2, { size: f - 1, align: 'right', bold: true });
+  }
+
+  // ---------- 3. хмара навколо частинки ----------
+  function drawCloud(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), ND = S.ND, dr = K.RMAX / K.NR, i;
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: -K.RMAX, x1: K.RMAX, y0: -1.2, y1: 0.7, font: f,
+      xlabel: 'r / λ_D — відстань від частинки', ylabel: '(n(r)/n̄ − 1)·N_D', title: 'Дебаївська хмара: дефіцит електронів навколо частинки', nx: 8, ny: 5 });
+    PSim.clip(ctx, m);
+    PSim.curve(ctx, m, [-K.RMAX, K.RMAX], [0, 0], { color: C.muted, width: 1 });
+    function bins(arr) {
+      var xs = [], ys = [];
+      for (i = K.NR - 1; i >= 0; i--) { xs.push(-(i + 0.5) * dr); ys.push(arr[i] * ND); }
+      for (i = 0; i < K.NR; i++) { xs.push((i + 0.5) * dr); ys.push(arr[i] * ND); }
+      return [xs, ys];
+    }
+    var a = bins(S.h), b = bins(S.H);
+    PSim.curve(ctx, m, a[0], a[1], { color: PSim.alpha(C.muted, 0.75), width: 1.2 });
+    if (S.ng > 0) PSim.curve(ctx, m, b[0], b[1], { color: C.c1, width: 2.6 });
+    var xs = [], ys = [], l = lam();
+    for (i = 0; i <= 160; i++) { var r = -K.RMAX + 2 * K.RMAX * i / 160; xs.push(r); ys.push(S.field ? -Math.exp(-Math.abs(r) / l) / (2 * l) : 0); }
+    PSim.curve(ctx, m, xs, ys, { color: S.field ? C.c2 : C.muted, width: 2, dash: [7, 4] });
+    // сусіди пробної частинки (миттєво)
+    var it = tracerIndex(), xt = S.x[it], N = S.N, d, j;
+    ctx.strokeStyle = C.c2; ctx.lineWidth = 1.5; ctx.beginPath();
+    for (d = 1; d < N; d++) { j = (it + d) % N; var dx = dper(S.x[j], xt); if (dx >= K.RMAX || dx < 0) break; ctx.moveTo(m.X(dx), m.b); ctx.lineTo(m.X(dx), m.b - 10); }
+    for (d = 1; d < N; d++) { j = (it - d + N) % N; var dy = dper(S.x[j], xt); if (dy <= -K.RMAX || dy > 0) break; ctx.moveTo(m.X(dy), m.b); ctx.lineTo(m.X(dy), m.b - 10); }
+    ctx.stroke();
+    ctx.restore();
+    var items = [{ t: 'усі частинки, один знімок', c: PSim.alpha(C.muted, 0.75), wd: 1.2 }, { t: 'усереднення в часі', c: C.c1, wd: 2.6 },
+      { t: S.field ? 'теорія −e^(−|r|/λ)/(2N_D)·N_D' : 'теорія: ідеальний газ (0)', c: S.field ? C.c2 : C.muted, wd: 2, d: [7, 4] },
+      { t: 'сусіди пробної частинки зараз', c: C.c2, wd: 1.5 }];
+    items.forEach(function (it2, k) {
+      var y = m.b - 20 - (items.length - 1 - k) * (f + 5), x = m.r - 8;
+      ctx.save(); ctx.strokeStyle = it2.c; ctx.lineWidth = it2.wd; ctx.setLineDash(it2.d || []);
+      ctx.beginPath(); ctx.moveTo(x - 24, y); ctx.lineTo(x, y); ctx.stroke(); ctx.restore();
+      PSim.label(ctx, it2.t, x - 30, y, { size: f - 1, align: 'right', base: 'middle' });
+    });
+  }
+
+  // ---------- 4. структурний фактор ----------
+  function drawSk(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), i;
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: 0.1, x1: 5, y0: 0.008, y1: 3, logx: true, logy: true, font: f,
+      xlabel: 'k λ_D', ylabel: 'S(k) = ⟨|ρ_k|²⟩ / N', title: 'Флуктуації заряду на масштабі 2π/k: газ проти плазми' });
+    PSim.clip(ctx, m);
+    var xs = [], g = [], pl = [], l2 = S.Tm;
+    for (i = 0; i <= 120; i++) { var k = 0.1 * Math.pow(50, i / 120); xs.push(k); g.push(1); pl.push(k * k * l2 / (1 + k * k * l2)); }
+    PSim.curve(ctx, m, [1, 1], [0.008, 3], { color: PSim.alpha(C.muted, 0.7), width: 1, dash: [3, 4] });
+    PSim.curve(ctx, m, xs, g, { color: C.muted, width: 2, dash: [7, 4] });
+    PSim.curve(ctx, m, xs, pl, { color: C.c2, width: 2.2, dash: S.field ? [] : [2, 5] });
+    if (S.ns > 0) {
+      for (var mm = 1; mm <= K.MM; mm++) {
+        var X = m.X(kOf(mm)), Y = m.Y(Math.max(0.0081, S.Sk[mm]));
+        ctx.fillStyle = C.c1; ctx.beginPath(); ctx.arc(X, Y, mm === S.msel ? 5.5 : 3.6, 0, TWO_PI); ctx.fill();
+        if (mm === S.msel) { ctx.strokeStyle = C.fg; ctx.lineWidth = 1.5; ctx.stroke(); }
+      }
+    }
+    ctx.restore();
+    PSim.label(ctx, 'ідеальний газ: S = 1', m.r - 6, m.Y(1) - 10, { size: f - 1, color: C.muted, align: 'right', base: 'bottom' });
+    PSim.label(ctx, 'плазма: S = k²λ²/(1+k²λ²)', m.l + 8, m.Y(0.025), { size: f - 1, color: C.c2, base: 'bottom' });
+    PSim.label(ctx, 'kλ_D = 1', m.X(1) + 4, m.b - 6, { size: f - 1, color: C.muted, base: 'bottom' });
+    PSim.label(ctx, '● вимір (обведена — мода внизу)', m.r - 6, m.b - 6, { size: f - 1, color: C.c1, align: 'right', base: 'bottom' });
+  }
+
+  // ---------- 5. часовий ряд і спектр моди ----------
+  function drawTS(ctx, w, h) {
+    if (!S.x) return;
+    var f = fs(w), wl = Math.floor(w * 0.48), i, k = kOf(S.msel);
+    var tNow = S.t, TW = 40, x0 = Math.max(0, tNow - TW), xs = [], ys = [], amax = 0;
+    for (i = Math.min(S.tsn, K.NBUF) - 1; i >= 0; i--) {
+      var q = (S.tsn - 1 - (Math.min(S.tsn, K.NBUF) - 1 - i)) % K.NBUF, tt = S.tsT[q];
+      if (tt < x0) continue;
+      xs.push(tt); ys.push(S.tsR[q]); if (Math.abs(S.tsR[q]) > amax) amax = Math.abs(S.tsR[q]);
+    }
+    var A = Math.max(0.05, amax * 1.25);
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: wl, h: h }, { x0: x0, x1: x0 + TW, y0: -A, y1: A, font: f, xlabel: 't · ω_p', ylabel: 'Re ρ_k / √N',
+      title: 'Одна мода, k = ' + fmt(k, 3) + '/λ_D: дрижання' });
+    PSim.clip(ctx, m);
+    PSim.curve(ctx, m, [x0, x0 + TW], [0, 0], { color: C.muted, width: 1 });
+    PSim.curve(ctx, m, xs, ys, { color: C.c1, width: 2 });
+    ctx.restore();
+    // спектр
+    var m2 = PSim.frame(ctx, { x: wl, y: 0, w: w - wl, h: h }, { x0: 0, x1: K.WMAX, y0: 0, y1: 1.12, font: f, xlabel: 'ω / ω_p',
+      ylabel: 'потужність (норм.)', title: 'Спектр цієї моди', ny: 4 });
+    var pk = 0; for (i = 0; i < K.NW; i++) if (S.Pbar[i] > pk) pk = S.Pbar[i];
+    PSim.clip(ctx, m2);
+    if (S.field) {
+      PSim.curve(ctx, m2, [1, 1], [0, 1.12], { color: C.muted, width: 1.4, dash: [4, 4] });
+      var wb = omBG(S.msel);
+      PSim.curve(ctx, m2, [wb, wb], [0, 1.12], { color: C.c2, width: 1.8, dash: [7, 4] });
+    } else {
+      var gx = [], gy = [], sg = k * lam();
+      for (i = 0; i <= 150; i++) { var om = K.WMAX * i / 150; gx.push(om); gy.push(Math.exp(-om * om / (2 * sg * sg))); }
+      PSim.curve(ctx, m2, gx, gy, { color: C.c2, width: 2, dash: [7, 4] });
+    }
+    if (pk > 0) {
+      var sx = [], sy = [];
+      for (i = 0; i < K.NW; i++) { sx.push(K.WMAX * i / (K.NW - 1)); sy.push(S.Pbar[i] / pk); }
+      ctx.beginPath(); ctx.moveTo(m2.X(sx[0]), m2.Y(0));
+      for (i = 0; i < K.NW; i++) ctx.lineTo(m2.X(sx[i]), m2.Y(sy[i]));
+      ctx.lineTo(m2.X(sx[K.NW - 1]), m2.Y(0)); ctx.closePath(); ctx.fillStyle = PSim.alpha(C.c1, 0.2); ctx.fill();
+      PSim.curve(ctx, m2, sx, sy, { color: C.c1, width: 2.2 });
+    }
+    ctx.restore();
+    if (S.field) {
+      PSim.label(ctx, 'ω_p', m2.X(1) - 4, m2.t + 6, { size: f - 1, color: C.muted, align: 'right', base: 'top' });
+      PSim.label(ctx, 'Бом–Гросс', m2.X(omBG(S.msel)) + 5, m2.t + 6, { size: f - 1, color: C.c2, base: 'top', bold: true });
+    } else {
+      PSim.label(ctx, 'вільний політ: ω = kv', m2.l + 8, m2.t + 8, { size: f - 1, color: C.c2, base: 'top' });
+    }
+    if (S.nseg === 0) PSim.label(ctx, 'накопичення спектра (≈ 50 одиниць часу)…', (m2.l + m2.r) / 2, (m2.t + m2.b) / 2, { size: f, color: C.muted, align: 'center' });
+  }
+
+  // ---------- величини ----------
+  var set = PSim.readout('#s-out', [
+    ['t', 'час, періодів <i class="m">2π/ω<sub>p</sub></i>'], ['ND', 'частинок на <i class="m">λ<sub>D</sub></i>: <i class="m">N<sub>D</sub></i>'],
+    ['N', 'усього частинок <i class="m">N</i>'], ['T', '<i class="m">T</i> кінетична (початково 1)'],
+    ['cl', 'заряд хмари, <i class="m">|r| &lt; 4λ<sub>D</sub></i> (вимір / теорія)'], ['wb', '<i class="m">ω</i> моди: пік / Бом–Гросс'],
+    ['p', '<i class="m">P/N</i> у системі (має ≈ 0)']
+  ]);
+  function updateOut() {
+    if (!S.x) return;
+    set('t', fmt(S.t / TWO_PI, 3));
+    set('ND', fmt(S.ND, 3)); set('N', String(S.N)); set('T', fmt(S.Tm, 3));
+    var dr = K.RMAX / K.NR, nref = (S.N - 1) / K.LB, c = 0, i;
+    for (i = 0; i < K.NR; i++) c += S.H[i] * nref * 2 * dr;
+    set('cl', S.ng > 0 ? fmt(c, 3) + ' / ' + (S.field ? fmt(-(1 - Math.exp(-K.RMAX / lam())), 3) : '0') : '—');
+    var pk = Core.peak(), tb = S.field ? omBG(S.msel) : NaN;
+    set('wb', S.field ? (isFinite(pk) ? fmt(pk, 3) : '—') + ' / ' + fmt(tb, 3) : (isFinite(pk) ? fmt(pk, 3) : '—') + ' (без поля — піка немає)',
+      S.field && isFinite(pk) && Math.abs(pk / tb - 1) < 0.06 ? 'good' : '');
+    var mp = 0; for (i = 0; i < S.N; i++) mp += S.v[i]; set('p', fmt(mp / S.N, 2));
+  }
+
+  var views = [PSim.canvas('#v-phase', drawPhase), PSim.canvas('#v-st', drawST), PSim.canvas('#v-cloud', drawCloud), PSim.canvas('#v-sk', drawSk), PSim.canvas('#v-ts', drawTS)];
+  function draw() { views.forEach(function (v) { v.redraw(); }); updateOut(); }
+  var loop = PSim.loop('#s-loop', { step: function (n) { Core.step(n); }, draw: draw, reset: reset, steps: function () { return P.spf; }, autostart: true });
+
+  // вибір пробної частинки кліком
+  views[0].cv.addEventListener('click', function (e) {
+    if (!lastMap || !S.x) return;
+    var r = views[0].cv.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top, best = -1, bd = 1e9;
+    for (var i = 0; i < S.N; i++) {
+      var dx = lastMap.X(S.x[i]) - px, dy = lastMap.Y(S.v[i]) - py, d = dx * dx + dy * dy;
+      if (d < bd) { bd = d; best = i; }
+    }
+    if (best >= 0 && bd < 900) { S.tracer = S.id[best]; draw(); }
+  });
+
+  var pre = PSim.presets('#s-pre', [
+    { name: 'Плазма, N_D = 10', values: { ND: 10, field: true }, note: 'типова газоподібна плазма' },
+    { name: 'Мало частинок, N_D = 3', values: { ND: 3, field: true }, note: 'хмара глибока, ідеальність псується' },
+    { name: 'Багато частинок, N_D = 40', values: { ND: 40, field: true }, note: 'хмара майже непомітна' },
+    { name: 'Той самий газ без взаємодії', values: { ND: 10, field: false }, note: 'S = 1, без піка й без хмари' }
+  ], function (vals) { Object.assign(P, vals); ctl.sync(); reset(); draw(); });
+
+  var modeOpts = [1, 2, 3, 4].map(function (m) { return [m, 'm = ' + m + ':  kλ_D = ' + fmt(m * K.K1, 3)]; });
+  var ctl = PSim.controls('#s-ctl', [
+    { key: 'ND', label: 'Частинок на <i class="m">λ<sub>D</sub></i>: <i class="m">N<sub>D</sub></i>', min: 2, max: 50, step: 1, log: true, fmt: function (v) { return String(Math.round(v)); } },
+    { key: 'field', label: 'Кулонівська взаємодія (колективне поле)', type: 'check' },
+    { key: 'm', label: 'Мода для нижніх панелей', type: 'select', options: modeOpts },
+    { key: 'spf', label: 'Кроків за кадр', min: 1, max: 40, step: 1, log: true, fmt: function (v) { return String(Math.round(v)); } }
+  ], P, function (key) {
+    if (key === 'spf') return;
+    if (key === 'm') { P.m = parseInt(P.m, 10); Core.setMode(P.m); draw(); return; }
+    pre.mark(-1); reset(); draw();
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('#panel details[id]'), function (d) {
+    var key = 'waves_thermal_jitter:' + d.id;
+    try { var v = localStorage.getItem(key); if (v !== null) d.open = v === '1'; } catch (e) {}
+    d.addEventListener('toggle', function () { try { localStorage.setItem(key, d.open ? '1' : '0'); } catch (e) {} });
+  });
+
+  reset(); draw();
+})();
+</script>
