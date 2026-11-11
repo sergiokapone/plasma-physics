@@ -1,0 +1,73 @@
+% Рис.: одна й та сама дебаївська сфера, але різне число частинок у ній.
+% (а) N_D >> 1: поле = сума багатьох слабких внесків; (б) N_D ~ 1: переважає пара з найближчим сусідом.
+\begin{tikzpicture}[
+		ion/.style={circle, fill=blue!60, inner sep=0pt, minimum size=4pt},
+		el/.style={circle, fill=red!70, inner sep=0pt, minimum size=4pt},
+		test/.style={circle, ball color=blue!50, inner sep=2.2pt, font=\scriptsize, text=white},
+		lab/.style={font=\footnotesize, anchor=north},
+	]
+	\def\R{1.7}
+	\pgfmathsetseed{7}
+	%% ---------- (а) густо: N_D >> 1 ----------
+	\begin{scope}
+		\path[inner color=red!25, outer color=white] (0,0) circle(\R+0.3);
+		\draw[thick, dashed, gray!70!black] (0,0) circle(\R);
+		\def\sp{0.36}
+		\foreach \ix in {-5,...,5}{
+			\foreach \iy in {-5,...,5}{
+				\pgfmathsetmacro{\px}{\ix*\sp+(rnd-0.5)*0.7*\sp}
+				\pgfmathsetmacro{\py}{\iy*\sp+(rnd-0.5)*0.7*\sp}
+				\pgfmathsetmacro{\rr}{veclen(\px,\py)}
+				\ifdim\rr pt<\R pt
+					\ifdim\rr pt>0.2pt
+						\pgfmathtruncatemacro{\sgn}{mod(\ix+\iy+10,2)}
+						\ifnum\sgn=0
+							\draw[gray!45, line width=0.2pt] (0,0)--(\px,\py);
+							\node[el] at (\px,\py) {};
+						\else
+							\draw[gray!45, line width=0.2pt] (0,0)--(\px,\py);
+							\node[ion] at (\px,\py) {};
+						\fi
+					\fi
+				\fi
+			}
+		}
+		\node[test] at (0,0) {$+$};
+		\draw[<->, thick] (0,0)--(35:\R) node[midway, above, sloped, font=\footnotesize] {$\lambda_D$};
+		% відстань a надто мала для стрілки в масштабі рисунка: показуємо збільшений фрагмент
+		\draw[gray!70!black, thin] (-3.3,0.2) circle(0.62);
+		\node[ion, minimum size=5pt] at (-3.3-0.3,0.2) {};
+		\node[el, minimum size=5pt] at (-3.3+0.3,0.2) {};
+		\draw[<->, thick] (-3.3-0.3,-0.05)--(-3.3+0.3,-0.05) node[midway, below, font=\footnotesize] {$a$};
+		\node[font=\scriptsize, gray!50!black, align=center] at (-3.3,1.2) {збільшений\\ фрагмент};
+		\node[lab] at (0,-\R-1.0) {\textbf{(а)} $\lambda_D\gg a$};
+	\end{scope}
+	%% ---------- (б) рідко: N_D ~ 1 ----------
+	\begin{scope}[xshift=6.0cm]
+		\draw[thick, dashed, gray!70!black] (0,0) circle(\R);
+		\def\sp{1.45}
+		\foreach \ix in {-2,...,2}{
+			\foreach \iy in {-2,...,2}{
+				\pgfmathsetmacro{\px}{\ix*\sp+(rnd-0.5)*0.5*\sp}
+				\pgfmathsetmacro{\py}{\iy*\sp+(rnd-0.5)*0.5*\sp}
+				\pgfmathsetmacro{\rr}{veclen(\px,\py)}
+				\ifdim\rr pt<\R pt
+					\ifdim\rr pt>0.2pt
+						\pgfmathtruncatemacro{\sgn}{mod(\ix+\iy+10,2)}
+						\ifnum\sgn=0
+							\draw[black!70, line width=0.9pt] (0,0)--(\px,\py);
+							\node[el] at (\px,\py) {};
+						\else
+							\draw[black!70, line width=0.9pt] (0,0)--(\px,\py);
+							\node[ion] at (\px,\py) {};
+						\fi
+					\fi
+				\fi
+			}
+		}
+		\node[test] at (0,0) {$+$};
+		\draw[<->, thick] (0,0)--(35:\R) node[midway, above, sloped, font=\footnotesize] {$\lambda_D$};
+		\draw[<->, thick] (-\R+0.0,-\R-0.45)--(-\R+\sp,-\R-0.45) node[midway, below, font=\footnotesize] {$a$};
+		\node[lab] at (0,-\R-1.0) {\textbf{(б)} $\lambda_D\sim a$};
+	\end{scope}
+\end{tikzpicture}
