@@ -1,0 +1,304 @@
+<title>Хвиля на шарі плазми</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="shared/theme.js"></script>
+<link rel="stylesheet" href="shared/sim.css">
+<script src="shared/sim.js"></script>
+<script src="shared/physics.js"></script>
+<header class="top">
+  <h1>Електромагнітна хвиля, що падає з вакууму на шар плазми</h1>
+  <span class="ref">Розд. 2.2–2.3, рис. 2.2, ф-ли (2.3), (2.5)</span>
+  <span id="theme-slot"></span>
+</header>
+<div id="app">
+  <div id="panel">
+    <section id="s-loop"></section>
+    <section><h2>Режими</h2><div id="s-pre"></div></section>
+    <section><h2>Параметри</h2><div id="s-ctl"></div></section>
+    <section><h2>Величини</h2><div id="s-out"></div></section>
+    <section class="observe"><h2>Що спостерігати</h2>
+      <ol>
+        <li><b>ω &gt; ω<sub>p</sub></b>: <i class="m">ε &gt; 0</i>, хвиля заходить у плазму з довшою довжиною хвилі <i class="m">λ = 2πc/√(ω² − ω<sub>p</sub>²)</i>. Відбивається лише мала частка (формула Френеля), у вакуумі видно слабку стоячу хвилю.</li>
+        <li><b>ω &lt; ω<sub>p</sub></b>: <i class="m">ε &lt; 0</i>, показник заломлення уявний. Поле спадає як <i class="m">e<sup>−κx</sup></i>, <i class="m">κ = √(ω<sub>p</sub>² − ω²)/c</i> (штрихова крива), енергії в плазмі немає. Відбиття повне: у вакуумі чітка стояча хвиля з вузлами й пучностями.</li>
+        <li>Зменшуйте товщину шару при <i class="m">ω &lt; ω<sub>p</sub></i>: поле просочується крізь шар (тунелювання), з’являється пройшла хвиля, <i class="m">R</i> падає, а <i class="m">R + T = 1</i>.</li>
+        <li>Наближайте <i class="m">ω</i> до <i class="m">ω<sub>p</sub></i>: довжина хвилі в плазмі й глибина проникнення розбігаються, <i class="m">R</i> швидко змінюється на кривій праворуч.</li>
+        <li>Зіткнення <i class="m">ν</i> поглинають хвилю: <i class="m">R + T &lt; 1</i>. Плавний профіль густини зменшує відбиття при <i class="m">ω &gt; ω<sub>p</sub></i>, але не скасовує його при <i class="m">ω &lt; ω<sub>p</sub></i>.</li>
+      </ol>
+    </section>
+    <section class="note">
+      <p>Одновимірне числове розв’язання рівнянь Максвелла (метод скінченних різниць у часовій області, FDTD), <i class="m">c = 1</i>, СГС: <i class="m">∂<sub>t</sub>B = −∂<sub>x</sub>E</i>, <i class="m">∂<sub>t</sub>E = −∂<sub>x</sub>B − 4πj</i>, струм електронів <i class="m">∂<sub>t</sub>j = ω<sub>p</sub>²(x)E/4π − νj</i>. Крок сітки 1, крок часу 0,95, <i class="m">c/ω<sub>p</sub> = 10</i> комірок. Падаюча хвиля одиничної амплітуди вводиться в точці ліворуч методом повного й розсіяного поля, тож усе, що лишається ліворуч від неї, є відбитою хвилею. Поле на екрані — сума падаючої й відбитої. Справа стоїть поглинач.</p>
+      <p>Виміряне <i class="m">R</i> = (<i class="m">E</i><sub>max</sub> − <i class="m">E</i><sub>min</sub>)/(<i class="m">E</i><sub>max</sub> + <i class="m">E</i><sub>min</sub>) за огинаючою стоячої хвилі у вакуумі, виміряне <i class="m">T</i> — квадрат амплітуди за шаром. Теорія: формули Френеля для різкого шару з <i class="m">ε = 1 − ω<sub>p</sub>²/[ω(ω + iν)]</i>. Для плавного профілю теорії немає, лише вимір.</p>
+    </section>
+  </div>
+  <div id="stage" class="grid3">
+    <div class="view" id="v-main"></div>
+    <div class="view" id="v-R"></div>
+    <div class="view" id="v-eps"></div>
+  </div>
+</div>
+<script>
+/* FDTD 1D: E = E_y(i), B = B_z(i+1/2), c = 1, dx = 1, dt = 0,95 (при dt = dx схема нестійка з плазмовим членом).
+   Плазма: K = 4π j, K^{n+1/2} = ((1 − ν/2)K^{n−1/2} + ω_p²(x)E^n)/(1 + ν/2).
+   Падаюча хвиля A sin(ω(t − x)) вводиться на межі повного/розсіяного поля i0: ліворуч — тільки відбита хвиля.
+   Поглинач: останні ABS комірок (провідність s(x) ~ x² і зростання ν). */
+(function () {
+  var C = PSim.C, fmt = PSim.fmt;
+  var P = { r: 2, d: 3, half: true, ell: 0, nu: 0, spf: 10 };
+  var DT = 0.95, NX = 1100, I0 = 60, XP = 450, ABS = 150, WP = 0.1, CELL = 10;
+  var S = {};
+
+  // ---------- комплексна арифметика ----------
+  function cm(a, b) { return { re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re }; }
+  function ca(a, b) { return { re: a.re + b.re, im: a.im + b.im }; }
+  function cs(a, b) { return { re: a.re - b.re, im: a.im - b.im }; }
+  function cd(a, b) { var d = b.re * b.re + b.im * b.im; return { re: (a.re * b.re + a.im * b.im) / d, im: (a.im * b.re - a.re * b.im) / d }; }
+  function ce(a) { var e = Math.exp(a.re); return { re: e * Math.cos(a.im), im: e * Math.sin(a.im) }; }
+  function csq(a) {
+    var m = Math.sqrt(a.re * a.re + a.im * a.im), re = Math.sqrt(Math.max(0, (m + a.re) / 2)), im = Math.sqrt(Math.max(0, (m - a.re) / 2));
+    if (a.im < 0) im = -im;
+    if (im < 0) { re = -re; im = -im; }
+    return { re: re, im: im };
+  }
+  function cabs2(a) { return a.re * a.re + a.im * a.im; }
+
+  function eps(rr, nu) { // ε = 1 − 1/[r(r + iν)], r = ω/ω_p, ν = ν/ω_p
+    var den = { re: rr * rr, im: rr * nu };
+    var q = cd({ re: 1, im: 0 }, den);
+    return { re: 1 - q.re, im: -q.im };
+  }
+  function theory(rr) { // |r|², |t|² для різкого шару
+    var n = csq(eps(rr, P.nu)), one = { re: 1, im: 0 };
+    var r12 = cd(cs(one, n), ca(one, n));
+    if (P.half) return { R: cabs2(r12), T: 0, n: n };
+    var ph = cm(n, { re: rr * P.d, im: 0 }), e1 = ce({ re: -ph.im, im: ph.re }), e2 = cm(e1, e1);
+    var r2 = cm(r12, r12);
+    var rr_ = cd(cm(r12, cs(one, e2)), cs(one, cm(r2, e2)));
+    var tt = cd(cm(cs(one, r2), e1), cs(one, cm(r2, e2)));
+    return { R: cabs2(rr_), T: cabs2(tt), n: n };
+  }
+
+  // ---------- сітка ----------
+  function xe() { return P.half ? NX : XP + Math.round(P.d * CELL); }
+  function profile() {
+    var wp2 = new Float64Array(NX), x1 = xe(), ell = P.ell * CELL, i;
+    for (i = 0; i < NX; i++) {
+      var f = 0;
+      if (i >= XP && i < x1) {
+        f = 1;
+        if (ell > 0) {
+          f = Math.min(1, (i - XP) / ell);
+          if (!P.half) f = Math.min(f, (x1 - i) / ell);
+          f = Math.max(0, Math.min(1, f));
+        }
+      }
+      wp2[i] = f * WP * WP;
+    }
+    S.wp2 = wp2;
+  }
+  function reset() {
+    S.E = new Float64Array(NX); S.B = new Float64Array(NX); S.K = new Float64Array(NX);
+    S.nu = new Float64Array(NX); S.s = new Float64Array(NX); S.Et = new Float64Array(NX);
+    var i, nu0 = P.nu * WP;
+    for (i = 0; i < NX; i++) {
+      var u = Math.max(0, (i - (NX - ABS)) / ABS);
+      S.nu[i] = nu0 + 0.3 * u * u; S.s[i] = 0.08 * u * u;
+    }
+    profile();
+    S.om = P.r * WP; S.kd = 2 * Math.asin(Math.min(1, Math.sin(S.om * DT / 2) / DT)); S.per = 2 * Math.PI / (S.om * DT);
+    S.n = 0; S.winLen = Math.max(8, Math.round(S.per)); S.winCnt = 0;
+    S.envAcc = new Float64Array(NX); S.envDone = null;
+    S.ready = 1200 + 5 * S.per;
+    fill();
+  }
+  function ramp(t) { var u = Math.min(1, Math.max(0, t / (4 * S.per))); return 0.5 * (1 - Math.cos(Math.PI * u)); }
+
+  function step(nsteps) {
+    var E = S.E, B = S.B, K = S.K, N = NX, i, t0 = performance.now(), om = S.om, kd = S.kd, cc = (DT - 1) / (DT + 1);
+    for (var s = 0; s < nsteps; s++) {
+      var n = S.n, tn = n * DT;
+      for (i = 0; i < N - 1; i++) B[i] -= DT * (E[i + 1] - E[i]);
+      B[I0 - 1] += DT * ramp(n) * Math.sin(om * tn - kd * I0);
+      var e0 = E[0], e1 = E[1], eN = E[N - 1], eM = E[N - 2];
+      for (i = 0; i < N; i++) {
+        var nu = S.nu[i] * 0.5 * DT;
+        K[i] = ((1 - nu) * K[i] + DT * S.wp2[i] * E[i]) / (1 + nu);
+      }
+      for (i = 1; i < N - 1; i++) {
+        var sg = S.s[i];
+        E[i] = ((1 - sg) * E[i] - DT * (B[i] - B[i - 1]) - DT * K[i]) / (1 + sg);
+      }
+      E[I0] += DT * ramp(n + 0.5) * Math.sin(om * (n + 0.5) * DT - kd * (I0 - 0.5));
+      E[0] = e1 + cc * (E[1] - e0); E[N - 1] = eM + cc * (E[N - 2] - eN);
+      S.n++;
+      // огинаюча |E_повне|
+      var ea = S.envAcc, nn = S.n, rp = ramp(nn);
+      for (i = 0; i < N; i++) {
+        var v = E[i];
+        if (i < I0) v += rp * Math.sin(om * nn * DT - kd * i);
+        v = Math.abs(v); if (v > ea[i]) ea[i] = v;
+      }
+      if (++S.winCnt >= S.winLen) {
+        if (S.n > S.ready - S.winLen) S.envDone = Float64Array.from(ea);
+        ea.fill(0); S.winCnt = 0;
+      }
+      if (s > 0 && performance.now() - t0 > 14) break;
+    }
+    fill();
+  }
+  function fill() { // повне поле для показу
+    var nn = S.n, rp = ramp(nn), om = S.om;
+    for (var i = 0; i < NX; i++) S.Et[i] = S.E[i] + (i < I0 ? rp * Math.sin(om * nn * DT - S.kd * i) : 0);
+  }
+
+  // ---------- виміри ----------
+  function measured() {
+    var env = S.envDone; if (!env || S.n < S.ready) return null;
+    var lo = 20, hi = XP - 25, mx = 0, mn = 1e9, i;
+    for (i = lo; i < hi; i++) { if (env[i] > mx) mx = env[i]; if (env[i] < mn) mn = env[i]; }
+    var R = Math.pow((mx - mn) / (mx + mn), 2), T = NaN;
+    if (!P.half) {
+      var a = xe() + Math.round(P.ell * CELL) + 15, b = NX - ABS - 10, sm = 0, c = 0;
+      for (i = a; i < b; i++) { sm += env[i]; c++; }
+      if (c > 5) T = Math.pow(sm / c, 2);
+    }
+    return { R: R, T: T };
+  }
+
+  // ---------- малювання ----------
+  function fs(w) { return w > 700 ? 14 : 12; }
+  function drawMain(ctx, w, h) {
+    if (!S.E) return;
+    var f = fs(w), X1 = NX / CELL;
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: 0, x1: X1, y0: -2.3, y1: 2.3, font: f,
+      xlabel: 'x, c/ω_p', ylabel: 'E_y (амплітуда падаючої хвилі = 1)', title: 'Поле E(x) у даний момент і огинаюча стоячої хвилі' });
+    PSim.clip(ctx, m);
+    // плазма
+    var i, x1 = xe(), col = C.accent;
+    for (i = XP; i < Math.min(x1, NX); i += 2) {
+      var a = S.wp2[i] / (WP * WP);
+      ctx.fillStyle = PSim.alpha(col, 0.22 * a); ctx.fillRect(m.X(i / CELL), m.t, m.X((i + 2) / CELL) - m.X(i / CELL) + 0.5, m.b - m.t);
+    }
+    ctx.fillStyle = PSim.alpha(C.muted, 0.18); ctx.fillRect(m.X((NX - ABS) / CELL), m.t, m.X(NX / CELL) - m.X((NX - ABS) / CELL), m.b - m.t);
+    // огинаюча
+    var env = S.envDone, xs = [], ys = [], ys2 = [], th = theory(P.r);
+    if (env) for (i = 0; i < NX; i += 3) { xs.push(i / CELL); ys.push(env[i]); ys2.push(-env[i]); }
+    if (env) { PSim.curve(ctx, m, xs, ys, { color: C.muted, width: 1.4, dash: [5, 4] }); PSim.curve(ctx, m, xs, ys2, { color: C.muted, width: 1.4, dash: [5, 4] }); }
+    // теорія спадання в плазмі (різкий край, півпростір або шар)
+    if (P.ell === 0) {
+      var n = th.n, t12 = Math.sqrt(cabs2(cd({ re: 2, im: 0 }, { re: 1 + n.re, im: n.im })));
+      var kap = P.r * n.im, xs3 = [], ys3 = [];
+      for (i = XP; i < Math.min(x1, NX - ABS); i += 3) { xs3.push(i / CELL); ys3.push(t12 * Math.exp(-kap * (i - XP) / CELL)); }
+      if (P.half || kap > 0) PSim.curve(ctx, m, xs3, ys3, { color: C.c2, width: 2, dash: [2, 3] });
+    }
+    // поле
+    var fx = [], fy = [];
+    for (i = 0; i < NX; i++) { fx.push(i / CELL); fy.push(S.Et[i]); }
+    PSim.curve(ctx, m, fx, fy, { color: C.c1, width: 2 });
+    ctx.restore();
+    PSim.label(ctx, 'вакуум', m.X(XP / CELL / 2), m.t + 8, { size: f, color: C.muted, align: 'center', base: 'top' });
+    PSim.label(ctx, 'плазма  ε = ' + fmt(eps(P.r, P.nu).re, 3), m.X((XP + Math.min(x1, NX - ABS)) / 2 / CELL), m.t + 8, { size: f, color: C.accent, align: 'center', base: 'top', bold: true });
+    PSim.label(ctx, 'поглинач', m.X((NX - ABS / 2) / CELL), m.t + 8, { size: f - 1, color: C.muted, align: 'center', base: 'top' });
+    PSim.label(ctx, '→ падаюча', m.X(I0 / CELL) + 4, m.b - 8, { size: f, color: C.c1, base: 'bottom' });
+    PSim.label(ctx, '← відбита', m.X(I0 / CELL) + 4, m.b - 8 - f - 4, { size: f, color: C.c1, base: 'bottom' });
+    PSim.label(ctx, S.n < S.ready ? 'установлення…' : 'огинаюча виміряна', m.l + 6, m.t + 26, { size: f - 1, color: S.n < S.ready ? C.warn : C.muted, base: 'top' });
+    var lg = [{ t: 'E(x)', c: C.c1 }, { t: 'огинаюча ±|E|', c: C.muted, d: [5, 4] }, { t: 'теорія в плазмі', c: C.c2, d: [2, 3] }];
+    lg.forEach(function (it, k) {
+      var y = m.b - 60 - (lg.length - 1 - k) * (f + 6) - 0, x = m.r - 8;
+      ctx.save(); ctx.strokeStyle = it.c; ctx.lineWidth = 2; ctx.setLineDash(it.d || []);
+      ctx.beginPath(); ctx.moveTo(x - 26, y + f / 2); ctx.lineTo(x, y + f / 2); ctx.stroke(); ctx.restore();
+      PSim.label(ctx, it.t, x - 32, y + f / 2, { size: f - 1, align: 'right', base: 'middle' });
+    });
+  }
+
+  function drawR(ctx, w, h) {
+    var f = fs(w), X = 3;
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: 0.05, x1: X, y0: 0, y1: 1.05, font: f,
+      xlabel: 'ω / ω_p', ylabel: 'R, T', title: 'Відбиття R і проходження T (різкий шар)' });
+    PSim.clip(ctx, m);
+    var xs = [], R = [], T = [], K = 240, i;
+    for (i = 0; i <= K; i++) { var x = 0.05 + (X - 0.05) * i / K, t = theory(x); xs.push(x); R.push(t.R); T.push(t.T); }
+    PSim.curve(ctx, m, [1, 1], [0, 1.05], { color: C.muted, width: 1, dash: [3, 4] });
+    PSim.curve(ctx, m, xs, R, { color: C.accent, width: 2.4 });
+    if (!P.half) PSim.curve(ctx, m, xs, T, { color: C.c1, width: 2.2 });
+    PSim.curve(ctx, m, [P.r, P.r], [0, 1.05], { color: C.c2, width: 1.5, dash: [6, 4] });
+    var me = measured();
+    if (me) {
+      ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(m.X(P.r), m.Y(me.R), 5, 0, 2 * Math.PI); ctx.fill();
+      if (!P.half && me.T === me.T) { ctx.fillStyle = C.c1; ctx.beginPath(); ctx.arc(m.X(P.r), m.Y(me.T), 5, 0, 2 * Math.PI); ctx.fill(); }
+    }
+    ctx.restore();
+    PSim.label(ctx, 'ω = ω_p', m.X(1) + 4, m.b - 6, { size: f - 1, color: C.muted, base: 'bottom' });
+    var lg = [{ t: 'R', c: C.accent }].concat(P.half ? [] : [{ t: 'T', c: C.c1 }]).concat([{ t: 'поточне ω', c: C.c2, d: [6, 4] }]);
+    lg.forEach(function (it, k) {
+      var y = m.t + 10 + k * (f + 6), x = m.r - 8;
+      ctx.save(); ctx.strokeStyle = it.c; ctx.lineWidth = 2; ctx.setLineDash(it.d || []);
+      ctx.beginPath(); ctx.moveTo(x - 24, y + f / 2); ctx.lineTo(x, y + f / 2); ctx.stroke(); ctx.restore();
+      PSim.label(ctx, it.t, x - 30, y + f / 2, { size: f - 1, align: 'right', base: 'middle' });
+    });
+  }
+
+  function drawEps(ctx, w, h) {
+    var f = fs(w), X = 3;
+    var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: 0.05, x1: X, y0: -3, y1: 1.3, font: f,
+      xlabel: 'ω / ω_p', ylabel: 'ε', title: 'ε(ω) = 1 − ω_p²/ω²' });
+    PSim.clip(ctx, m);
+    ctx.fillStyle = PSim.alpha(C.warn, 0.08); ctx.fillRect(m.X(0.05), m.t, m.X(1) - m.X(0.05), m.b - m.t);
+    PSim.curve(ctx, m, [0.05, X], [0, 0], { color: C.muted, width: 1 });
+    var xs = [], re = [], im = [], i, K = 240;
+    for (i = 0; i <= K; i++) { var x = 0.05 + (X - 0.05) * i / K, e = eps(x, P.nu); xs.push(x); re.push(e.re); im.push(e.im); }
+    PSim.curve(ctx, m, xs, re, { color: C.accent, width: 2.4 });
+    if (P.nu > 0) PSim.curve(ctx, m, xs, im, { color: C.c3, width: 1.8, dash: [6, 4] });
+    var ep = eps(P.r, P.nu);
+    ctx.fillStyle = C.c2; ctx.beginPath(); ctx.arc(m.X(P.r), m.Y(ep.re), 5, 0, 2 * Math.PI); ctx.fill();
+    ctx.restore();
+    PSim.label(ctx, 'ε < 0: хвиля згасає', m.X(0.1) + 4, m.t + 8, { size: f - 1, color: C.warn, base: 'top' });
+    PSim.label(ctx, 'ε > 0: поширюється', m.X(1.1), m.b - 8, { size: f - 1, color: C.ok, base: 'bottom' });
+    PSim.label(ctx, 'ω = ω_p, ε = 0', m.X(1) + 4, m.Y(0) - 6, { size: f - 1, color: C.muted, base: 'bottom' });
+  }
+
+  // ---------- величини ----------
+  var set = PSim.readout('#s-out', [
+    ['r', 'ω / ω_p'], ['eps', 'ε(ω)'], ['n', 'n = √ε'], ['len', 'λ у плазмі / глибина c/κ, c/ω_p'],
+    ['R', 'R: вимір / теорія'], ['T', 'T: вимір / теорія'], ['S', 'R + T (вимір)'], ['t', 't ω<sub>p</sub>']
+  ]);
+  function updateOut() {
+    if (!S.E) return;
+    var th = theory(P.r), e = eps(P.r, P.nu), me = measured(), n = th.n;
+    set('r', fmt(P.r, 3));
+    set('eps', fmt(e.re, 3) + (P.nu > 0 ? (e.im >= 0 ? ' + ' : ' − ') + fmt(Math.abs(e.im), 2) + 'i' : ''));
+    set('n', n.im > 1e-6 && n.re < 1e-6 ? 'i·' + fmt(n.im, 3) : fmt(n.re, 3) + (n.im > 1e-6 ? ' + ' + fmt(n.im, 2) + 'i' : ''));
+    if (P.r > 1) set('len', fmt(2 * Math.PI / (P.r * n.re), 3) + ' c/ω_p'); else set('len', P.r > 0 ? fmt(1 / (P.r * n.im), 3) + ' c/ω_p' : '—');
+    set('R', (me ? fmt(me.R, 3) : '—') + ' / ' + fmt(th.R, 3), me && Math.abs(me.R - th.R) < 0.03 && P.ell === 0 ? 'good' : '');
+    if (P.half) set('T', '—'); else set('T', (me && me.T === me.T ? fmt(me.T, 3) : '—') + ' / ' + fmt(th.T, 3), me && me.T === me.T && Math.abs(me.T - th.T) < 0.03 && P.ell === 0 ? 'good' : '');
+    set('S', me ? (P.half ? fmt(me.R, 3) : me.T === me.T ? fmt(me.R + me.T, 3) : '—') : '—');
+    set('t', fmt(S.n * DT * WP, 4));
+  }
+
+  // ---------- збирання ----------
+  var views = [PSim.canvas('#v-main', drawMain), PSim.canvas('#v-R', drawR), PSim.canvas('#v-eps', drawEps)];
+  function draw() { views.forEach(function (v) { v.redraw(); }); updateOut(); }
+  var loop = PSim.loop('#s-loop', { step: step, draw: draw, reset: reset, steps: function () { return P.spf; }, autostart: true });
+
+  var pre = PSim.presets('#s-pre', [
+    { name: 'ω > ω_p: хвиля проходить', values: { r: 2, half: true, ell: 0, nu: 0 }, note: 'слабке відбиття за Френелем' },
+    { name: 'ω < ω_p: відбиття', values: { r: 0.5, half: true, ell: 0, nu: 0 }, note: 'R = 1, поле спадає e^(−κx)' },
+    { name: 'Тунелювання крізь тонкий шар', values: { r: 0.5, half: false, d: 1.2, ell: 0, nu: 0 }, note: 'R < 1, T > 0' },
+    { name: 'Біля відсікання', values: { r: 1.1, half: true, ell: 0, nu: 0 }, note: 'довга хвиля в плазмі' },
+    { name: 'Зіткнення', values: { r: 0.7, half: false, d: 3, ell: 0, nu: 0.15 }, note: 'R + T < 1' },
+    { name: 'Плавний профіль', values: { r: 2, half: true, ell: 6, nu: 0 }, note: 'відбиття зникає' }
+  ], function (vals) { Object.assign(P, vals); ctl.sync(); reset(); draw(); });
+
+  var ctl = PSim.controls('#s-ctl', [
+    { key: 'r', label: 'Частота ω/ω<sub>p</sub>', min: 0.2, max: 3, step: 0.01 },
+    { key: 'half', label: 'Півпростір (товстий шар)', type: 'check' },
+    { key: 'd', label: 'Товщина шару d, c/ω<sub>p</sub>', min: 0.2, max: 40, step: 0.1, log: true },
+    { key: 'ell', label: 'Довжина плавного краю ℓ, c/ω<sub>p</sub>', min: 0, max: 10, step: 0.5 },
+    { key: 'nu', label: 'Зіткнення ν/ω<sub>p</sub>', min: 0, max: 0.6, step: 0.01 },
+    { key: 'spf', label: 'Кроків за кадр', min: 1, max: 60, step: 1, log: true, fmt: function (v) { return String(Math.round(v)); } }
+  ], P, function (key) {
+    if (key === 'spf') return;
+    pre.mark(-1); reset(); draw();
+  });
+
+  reset(); draw();
+})();
+</script>

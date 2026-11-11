@@ -4,17 +4,17 @@
 
 ## Стан на 2026-11-09
 
-- [x] **Розд. 4 Waves — пілот готовий** (не закомічено). Збірка: 165 с., без нових overfull.
-- [x] **Розд. 7 Kinetics — томсонівське розсіяння готово** (не закомічено; 167 с., +2 с.). Мітки: `sec:thomson`, `eq:scattering-parameter`, `eq:thomson-width`, `pic:thomson`, `prb:ThomsonTe`, `prb:ThomsonCollective`. TikZ: `Kinetics/tikz/thomson_incoherent.tikz`, `thomson_collective.tikz`. Секція стоїть після «Коли потрібен кінетичний опис?», перед Summary.
-- [x] **Розд. 5 Fluid — магнітні виміри готово** (не закомічено; 169 с. загалом). Мітки: `sec:magnetic-diagnostics`, `eq:rogowski`, `eq:diamagnetic-loop`, `pic:magnetic-diagnostics`, `prb:DiamagneticLoop`, `prb:Rogowski`. TikZ: `Fluid/tikz/magnetic-loops.tikz`, `diamagnetic-profile.tikz`. Секція стоїть наприкінці теорії, перед Summary.
-- [x] **Розд. 1 Basics — подвійний зонд готово** (не закомічено; 171 с.). Мітки: `eq:double-probe`, `prb:DoubleProbe`. Вставка `\subsection*{Подвійний зонд і межі застосовності}` у розділі про зонд Ленгмюра. Не перевірено, чи нові Overfull у `main.log` належать саме Basics, а не іншим розділам.
-- [x] **Розд. 2 Motion — аналізатор енергій і ЕЦЕ готово** (не закомічено; 172 с.). Мітки: `sec:motion-diagnostics`, `eq:ece-frequency`, `prb:ECERadius`, `prb:RetardingAnalyzer`.
-- [x] **Розд. 3 Collisions — T_e з опору, допплерівське/штарківське розширення готово** (не закомічено; 173 с.). Мітки: `sec:collision-diagnostics`, `eq:spitzer-temperature`, `eq:doppler-width`, `prb:SpitzerTe`.
-- [x] **Розд. 6 LinearWaves — обертання Фарадея готово** (не закомічено; 170 с.). Мітки: `sec:faraday-diagnostics`, `eq:faraday-rotation`; задача `prb:FaradayRotation` уже була.
-- [x] **Розд. 8 Instability — котушки Мірнова, м'який рентген готово** (не закомічено; 174 с.). Мітки: `sec:instability-diagnostics`, `eq:mirnov`, `prb:MirnovCoil`. Секція — §8.15, наприкінці теорії перед Summary.
-- [x] **Розд. 9 Confinement — магнітна реконструкція рівноваги готово** (не закомічено; 174 с.). Мітки: `sec:equilibrium-diagnostics`, `eq:shafranov-diagnostic`, `prb:ShafranovShift`. Візуально сторінки не перевірено.
-- [x] **Розд. 10 Fusion — нейтронна діагностика готово** (не закомічено; 175 с.). Мітки: `sec:fusion-diagnostics`, `eq:neutron-yield`, `prb:NeutronYield`. Візуально не перевірено.
-- [x] **Розд. 11 Scales — таблиця «масштаб – метод» готово** (не закомічено; 176 с.). Мітки: `sec:scales-diagnostics`, `tab:scales-methods`. Візуально не перевірено (pdftotext/pdftoppm недоступні в оболонці).
+- [x] **Розд. 4 Waves — пілот готовий**. Збірка: 165 с., без нових overfull.
+- [x] **Розд. 7 Kinetics — томсонівське розсіяння готово** (167 с., +2 с.). Мітки: `sec:thomson`, `eq:scattering-parameter`, `eq:thomson-width`, `pic:thomson`, `prb:ThomsonTe`, `prb:ThomsonCollective`. TikZ: `Kinetics/tikz/thomson_incoherent.tikz`, `thomson_collective.tikz`. Секція стоїть після «Коли потрібен кінетичний опис?», перед Summary.
+- [x] **Розд. 5 Fluid — магнітні виміри готово** (169 с. загалом). Мітки: `sec:magnetic-diagnostics`, `eq:rogowski`, `eq:diamagnetic-loop`, `pic:magnetic-diagnostics`, `prb:DiamagneticLoop`, `prb:Rogowski`. TikZ: `Fluid/tikz/magnetic-loops.tikz`, `diamagnetic-profile.tikz`. Секція стоїть наприкінці теорії, перед Summary.
+- [x] **Розд. 1 Basics — подвійний зонд готово** (171 с.). Мітки: `eq:double-probe`, `prb:DoubleProbe`. Вставка `\subsection*{Подвійний зонд і межі застосовності}` у розділі про зонд Ленгмюра. Не перевірено, чи нові Overfull у `main.log` належать саме Basics, а не іншим розділам.
+- [x] **Розд. 2 Motion — аналізатор енергій і ЕЦЕ готово** (172 с.). Мітки: `sec:motion-diagnostics`, `eq:ece-frequency`, `prb:ECERadius`, `prb:RetardingAnalyzer`.
+- [x] **Розд. 3 Collisions — T_e з опору, допплерівське/штарківське розширення готово** (173 с.). Мітки: `sec:collision-diagnostics`, `eq:spitzer-temperature`, `eq:doppler-width`, `prb:SpitzerTe`.
+- [x] **Розд. 6 LinearWaves — обертання Фарадея готово** (170 с.). Мітки: `sec:faraday-diagnostics`, `eq:faraday-rotation`; задача `prb:FaradayRotation` уже була.
+- [x] **Розд. 8 Instability — котушки Мірнова, м'який рентген готово** (174 с.). Мітки: `sec:instability-diagnostics`, `eq:mirnov`, `prb:MirnovCoil`. Секція — §8.15, наприкінці теорії перед Summary.
+- [x] **Розд. 9 Confinement — магнітна реконструкція рівноваги готово** (174 с.). Мітки: `sec:equilibrium-diagnostics`, `eq:shafranov-diagnostic`, `prb:ShafranovShift`. Візуально сторінки не перевірено.
+- [x] **Розд. 10 Fusion — нейтронна діагностика готово** (175 с.). Мітки: `sec:fusion-diagnostics`, `eq:neutron-yield`, `prb:NeutronYield`. Візуально не перевірено.
+- [x] **Розд. 11 Scales — таблиця «масштаб – метод» готово** (176 с.). Мітки: `sec:scales-diagnostics`, `tab:scales-methods`. Візуально не перевірено (pdftotext/pdftoppm недоступні в оболонці).
 
 **Усі розділи пройдені. Далі: візуальна перевірка нових сторінок (розд. 9–11), рев'ю, коміт за запитом автора.**
 
