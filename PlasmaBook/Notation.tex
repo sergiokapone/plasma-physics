@@ -4,12 +4,12 @@
 % !TeX root = main.tex
 
 %% --------------------------------------------------------
-%% Додаток: таблиця позначень (поки що розд. 1)
+%% Додаток: таблиця позначень (поки що розд. 1 і 2)
 %% --------------------------------------------------------
 
 \section{Таблиця позначень}\label{sec:notation}
 
-Нижче зібрано позначення, що вживаються в~розд.~\ref{sec:plasma-basics}, у~порядку
+Нижче зібрано позначення, що вживаються в~розд.~\ref{sec:plasma-basics} і~\ref{sec:plasma-waves}, у~порядку
 їхнього введення. Усі формули подано в~системі СГС (гаусовій), як у~розд.~\ref{sec:plasma-basics}; температури $T$
 (у~тому числі $T_e$, $T_i$) записано в~енергетичних одиницях, $k_{\mathrm B}=1$, а~числові значення дають
 в~електронвольтах: $1~\text{еВ}\approx1{,}16\times10^{4}$~К. Одиниці СГС потенціалу й~поля відповідають
@@ -105,6 +105,18 @@ $\lambda_{TF}$ & довжина Томаса~--- Фермі & см & \eqref{eq:t
 $\lambda$ & довжина екранування в~загальному випадку $[4\pi e^2\partial n/\partial\mu]^{-1/2}$ & см & \eqref{eq:screening-general} \\
 $a_B$ & борівський радіус $\hbar^2/me^2=0{,}53\times10^{-8}$~см & см & \eqref{eq:thomas-fermi} \\
 \end{longtblr}
+
+\par\Needspace{7\baselineskip}\medskip\noindent\textbf{Хвилі в плазмі (розд.~\ref{sec:plasma-waves})}\par\nobreak\smallskip
+\noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
+Символ & Значення & Одиниця (СГС) & Де \\
+$\omega_{pe}$, $\omega_p$ & електронна плазмова частота $\sqrt{4\pi n_ee^2/m_e}$; далі $\omega_p\equiv\omega_{pe}$ & с$^{-1}$ & \eqref{eq:plasma-frequency} \\
+$\varepsilon$ & діелектрична проникність $1-\omega_p^2/\omega^2$ & --- & \eqref{eq:plasma-permittivity} \\
+$N$ & показник заломлення $\sqrt\varepsilon$ (літеру $n$ зарезервовано для концентрації) & --- & §\,\ref{sec:plasma-permittivity} \\
+$v_\phi$, $v_g$ & фазова $\omega/k$ та групова $d\omega/dk$ швидкості & см/с & §\,\ref{sec:plasma-permittivity} \\
+$n_{\mathrm{кр}}$ & критична концентрація $m_e\omega^2/4\pi e^2$, при якій $\omega=\omega_p$ & см$^{-3}$ & \eqref{eq:critical-density} \\
+$\nu$ & ефективна частота зіткнень електрона ($\nu_{ei}$) & с$^{-1}$ & \eqref{eq:eps-collisions-waves} \\
+$\delta$ & товщина скін-шару, глибина проникнення $1/\kappa$ & см & §\,\ref{sec:plasma-permittivity} \\
+\end{longtblr}
 }
 
 \paragraph{Символи з кількома значеннями.} У~розд.~\ref{sec:plasma-basics} деякі літери означають різні величини;
@@ -117,6 +129,8 @@ $a_B$ & борівський радіус $\hbar^2/me^2=0{,}53\times10^{-8}$~с�
 	\item $\rho$~--- густина заряду; ларморівський радіус позначено $r_{L}$ ($r_{Le}$ для електрона), а~не $\rho$;
 	\item $u$~--- швидкість іонів у~шарі; допоміжна змінна $u=r\varphi$ у~§\,\ref{sec:debye-screening} вживається лише в~одному виведенні;
 	\item $\lambda$ без індексу~--- довжина екранування в~загальному випадку~\eqref{eq:screening-general}, $\lambda_D$~--- дебаївська;
-	\item $E$~--- напруженість електричного поля, $E_F$~--- енергія Фермі.
+	\item $E$~--- напруженість електричного поля, $E_F$~--- енергія Фермі;
+	\item $N$~--- показник заломлення (розд.~\ref{sec:plasma-waves}); у~розд.~\ref{sec:plasma-basics} $N_D$~--- число частинок у~дебаївській сфері, а~$n$~--- завжди концентрація;
+	\item $\delta$~--- товщина скін-шару (розд.~\ref{sec:plasma-waves}) і~дельта-функція $\delta(\vect r)$.
 \end{itemize}
 
