@@ -1,4 +1,4 @@
-\begin{tikzpicture}[>=latex', scale=1.5]
+\begin{tikzpicture}[>=latex', scale=1.85]
 	% c_s = 1, v_A = 1.5  =>  v_A^2 + c_s^2 = 3.25, 4 v_A^2 c_s^2 = 9
 	\draw[->] (-2.1,0) -- (2.1,0) node[right, font=\footnotesize] {$\perp\vect B_0$};
 	\draw[->] (0,-2.1) -- (0,2.2) node[above, font=\footnotesize] {$\vect B_0$};

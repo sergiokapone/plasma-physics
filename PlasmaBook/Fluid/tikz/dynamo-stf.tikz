@@ -1,0 +1,31 @@
+\begin{tikzpicture}[>=latex', every node/.style={font=\footnotesize, text width=3.2cm, align=center}]
+	\tikzset{fline/.style={blue!60!black, very thick, line cap=round}}
+	% (1) петля потоку: потік Φ, поле B
+	\begin{scope}
+		\draw[fline] (0,0) ellipse (0.8 and 0.55);
+		\node[anchor=north] at (0,-0.8) {(1) петля:\\потік $\Phi$, поле $B$};
+	\end{scope}
+	% (2) розтягнули вдвічі: потік той самий, лінії довші й тонші, поле вздовж петлі сильніше
+	\begin{scope}[xshift=4.2cm]
+		\draw[fline] (0,0) ellipse (1.6 and 0.28);
+		\node[anchor=north] at (0,-0.8) {(2) розтягнули:\\довжина $\times2$, $B$ зростає};
+	\end{scope}
+	% (3) скрутили у вісімку
+	\begin{scope}[xshift=8.4cm]
+		\draw[fline] (-1.6,0) .. controls (-1.6,0.6) and (-0.5,0.6) .. (0,0)
+			.. controls (0.5,-0.6) and (1.6,-0.6) .. (1.6,0)
+			.. controls (1.6,0.6) and (0.5,0.6) .. (0,0)
+			.. controls (-0.5,-0.6) and (-1.6,-0.6) .. (-1.6,0);
+		\node[anchor=north] at (0,-0.8) {(3) скрутили\\у~вісімку};
+	\end{scope}
+	% (4) склали: дві петлі поруч, потік крізь будь-який переріз подвоєно
+	\begin{scope}[xshift=12.6cm]
+		\draw[fline] (0,0.12) ellipse (0.8 and 0.5);
+		\draw[fline] (0,-0.12) ellipse (0.8 and 0.5);
+		\node[anchor=north] at (0,-0.8) {(4) склали: дві петлі,\\потік $2\Phi$, поле $2B$};
+	\end{scope}
+	% стрілки між етапами
+	\foreach \a/\b in {1.0/2.4, 5.9/6.6, 10.1/11.6} {
+		\draw[->, thick, black!60] (\a,0) -- (\b,0);
+	}
+\end{tikzpicture}
