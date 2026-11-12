@@ -920,13 +920,40 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 		\iffieldundef{url}{#1}{\href{\thefield{url}}{#1}}%
 	}
 	\DeclareFieldFormat{title}{\usebibmacro{string+url}{#1}}
+	% Для @online gost-standard друкує ще й довге «URL: ... (дата звернення)»; посилання вже
+	% накладено на назву, тож у списку лишаємо лише примітку (note)
+	\renewbibmacro*{url+urldate+note}{\printfield{note}}
 	\RequirePackage{csquotes}
+	% Анотація (поле annotation у .bib): з нового рядка, дрібнішим шрифтом, кольором теми книги;
+	% \foreignlanguage: анотація українська, а langid запису може бути англійським
+	\DeclareFieldFormat{annotation}{\par\small\color{themecolormain}\foreignlanguage{ukrainian}{#1}}
+	\renewbibmacro*{finentry}{%
+		\finentry
+		\iffieldundef{annotation}{}{\printfield{annotation}}}
+	% Після ініціала (spacefactor 999) крапка вже є: не додаємо другу («J. L..»)
+	\renewcommand*{\labelnamepunct}{\ifnum\spacefactor=999 \else\addperiod\fi\space}
 
 	\DefineBibliographyStrings{ukrainian}{%
 		bibliography = {Література},
 	}
 	\DeclareBibliographyCategory{Textbooks}   % категорія джерел: підручники
 	\DeclareBibliographyCategory{Problems}    % категорія джерел: задачники
+
+	% Два списки літератури: підручники (@book) і джерела фактів та результатів (@article,
+	% @online). Розділяє biber за типом запису: статті й онлайн-джерела дістають userf=facts.
+	\DeclareSourcemap{\maps[datatype=bibtex]{\map{\pertype{article}\pertype{online}%
+		\step[fieldset=userf, fieldvalue=facts]}}}
+	\defbibcheck{textbooks}{\iffieldequalstr{userf}{facts}{\skipentry}{}}
+	\defbibcheck{facts}{\iffieldequalstr{userf}{facts}{}{\skipentry}}
+	% Заголовок підрозділу списку: запис у змісті на рівні section
+	\defbibheading{bibsub}[\bibname]{\section*{#1}\addcontentsline{toc}{section}{#1}}
+	\newcommand{\printbibliographies}{%
+		\printbibheading[heading=bibintoc]%
+		\printbibliography[check=textbooks, heading=bibsub, title={Підручники та посібники}]%
+		% Джерела фактів --- у порядку появи в тексті (sorting=none)
+		\begin{refcontext}[sorting=none]
+		\printbibliography[check=facts, heading=bibsub, title={Джерела фактів і результатів}]
+		\end{refcontext}}
 
 	% Перевизначає стандартний заголовок "bibintoc" (як його викликає
 	% \printbibliography[heading=bibintoc] у майстер-файлі): замість
