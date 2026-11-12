@@ -69,6 +69,11 @@ header.top #theme-slot { margin-left: auto; }
 .view canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 
 /* ---------- панель ---------- */
+/* Керування (кнопки, режими, повзунки, величини) — угорі, довгі тексти «Що показує…» / «Що спостерігати» — під ними,
+   щоб повзунки не йшли за нижній край екрана. Порядок усередині кожної групи — як у HTML. */
+#panel { display: flex; flex-direction: column; }
+#panel > * { flex: none; }
+#panel > details { order: 5; }
 #panel section { margin-top: .9em; }
 #panel h2 {
   font-size: .82em; text-transform: uppercase; letter-spacing: .06em;
@@ -121,7 +126,7 @@ button.b:focus-visible, input:focus-visible { outline: 2px solid var(--accent); 
 /* ---------- телефон / вузьке вікно: сцена зверху, панель під нею ---------- */
 @media (max-width: 860px) {
   body { display: block; height: auto; }
-  #app { flex-direction: column; }
+  #app { flex-direction: column-reverse; }
   #panel { width: auto; border-right: 0; border-top: 1px solid var(--line); overflow: visible; }
   #stage { height: auto; grid-template-columns: 1fr !important; grid-template-rows: none !important; }
   #stage > .view { height: 62vh; min-height: 260px; grid-row: auto !important; }

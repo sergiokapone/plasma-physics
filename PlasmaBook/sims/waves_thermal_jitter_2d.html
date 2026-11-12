@@ -3,9 +3,13 @@
 <script src="shared/theme.js"></script>
 <link rel="stylesheet" href="shared/sim.css">
 <style>
-  #stage { grid-template-columns: 1.35fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
-  #stage > .view.big { grid-row: 1 / span 2; }
-  @media (max-width: 860px) { #stage > .view.big { grid-row: auto !important; } }
+  #stage { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr;
+           grid-template-areas: "xy nin sk" "cl ts ts"; }
+  #v-xy { grid-area: xy; } #v-nin { grid-area: nin; } #v-sk { grid-area: sk; } #v-cloud { grid-area: cl; } #v-ts { grid-area: ts; }
+  @media (max-width: 860px) {
+    #stage { grid-template-areas: none !important; }
+    #stage > .view { grid-area: auto !important; }
+  }
 </style>
 <script src="shared/sim.js"></script>
 <script src="shared/physics.js"></script>
@@ -453,7 +457,7 @@ var Core = (function (randn) {
     }
     var lo = Math.max(0, Math.floor(nd - 4.5 * sd - 1)), hi = Math.ceil(nd + 4.5 * sd + 1);
     var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: x0, x1: x0 + TW, y0: lo, y1: hi, font: f, xlabel: 't · ω_p', ylabel: 'частинок у колі',
-      title: 'Скільки частинок у колі Дебая навколо пробної' });
+      title: 'Частинок у колі Дебая' });
     PSim.clip(ctx, m);
     ctx.fillStyle = PSim.alpha(C.muted, 0.14);
     ctx.fillRect(m.l, m.Y(nd + sd), m.r - m.l, m.Y(nd - sd) - m.Y(nd + sd));
@@ -468,7 +472,7 @@ var Core = (function (randn) {
     if (!S.x) return;
     var f = fs(w), ND = S.ND, dr = K.RMAX / K.NR, i;
     var m = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, { x0: 0, x1: K.RMAX, y0: -1.4, y1: 0.6, font: f, xlabel: 'r / λ_D — відстань від частинки',
-      ylabel: '(n(r)/n̄ − 1)·N_D', title: 'Дебаївська хмара: нестача електронів навколо частинки', nx: 6, ny: 5 });
+      ylabel: '(n(r)/n̄ − 1)·N_D', title: 'Дебаївська хмара навколо частинки', nx: 6, ny: 5 });
     PSim.clip(ctx, m);
     ctx.fillStyle = PSim.alpha(C.muted, 0.12); ctx.fillRect(m.l, m.t, m.X(0.4) - m.l, m.b - m.t);
     PSim.curve(ctx, m, [0, K.RMAX], [0, 0], { color: C.muted, width: 1 });
