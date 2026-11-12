@@ -17,6 +17,9 @@
 % Рубрикатор літери \glossbadge визначено в ConspectBook.cls (спільний зі словником і предметним покажчиком).
 % \glossletter стоїть між двома списками (закриває попередній і відкриває новий), тому
 % плашка лежить рівно по лівому краю тексту; не відривається від наступного терміна.
+% Початок списку за~замовчуванням допускає розрив сторінки (\@beginparpenalty<0) --- забороняємо,
+% щоб літера не лишалась самотньою внизу сторінки; у кінці файлу значення повертається.
+\makeatletter\edef\glosssavedbpp{\the\@beginparpenalty}\@beginparpenalty=10000\makeatother
 \newcommand{\glossletterfirst}[1]{\glossbadge{#1}\begin{itemize}[topsep=0pt]}
 \newcommand{\glossletter}[1]{\end{itemize}\glossbadge{#1}\begin{itemize}[topsep=0pt]}
 
@@ -120,3 +123,4 @@
 	\item \textbf{Шуба}~--- образна назва дебаївської хмари заряду протилежного знака навколо частинки
 	  (§\,\ref{sec:debye-screening}\,(с.\,\pageref{sec:debye-screening})). Не стандартний термін.
 \end{itemize}
+\makeatletter\@beginparpenalty=\glosssavedbpp\relax\makeatother
