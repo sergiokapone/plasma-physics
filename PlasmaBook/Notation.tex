@@ -4,12 +4,12 @@
 % !TeX root = main.tex
 
 %% --------------------------------------------------------
-%% Додаток: таблиця позначень (поки що Basics і Waves)
+%% Додаток: таблиця позначень (поки що Basics, Waves і розд. «Хвилі в замагніченій плазмі»)
 %% --------------------------------------------------------
 
 \section{Таблиця позначень}\label{sec:notation}
 
-Нижче зібрано позначення, що вживаються в~розд.~\ref{sec:plasma-basics} і~\ref{sec:plasma-waves}, у~порядку
+Нижче зібрано позначення, що вживаються в~розд.~\ref{sec:plasma-basics}, \ref{sec:plasma-waves} і~\ref{sec:mhd-waves}, у~порядку
 їхнього введення. Усі формули подано в~системі СГС (гаусовій), як у~розд.~\ref{sec:plasma-basics}; температури $T$
 (у~тому числі $T_e$, $T_i$) записано в~енергетичних одиницях, $k_{\mathrm B}=1$, а~числові значення дають
 в~електронвольтах: $1~\text{еВ}\approx1{,}16\times10^{4}$~К. Одиниці СГС потенціалу й~поля відповідають
@@ -88,7 +88,7 @@ $p$ & тиск ідеального газу $\sum_sn_sT_s$ & дин$/$см$^{2}
 Символ & Значення & Одиниця (СГС) & Де \\
 $\sigma$ & поверхнева густина заряду площини & СГСЕ$/$см$^{2}$ & §\,\ref{sec:debye-layer}\,(с.\,\pageref{sec:debye-layer}) \\
 $x$, $y$ & відстань від площини; $y=e\varphi/T$ & см; --- & §\,\ref{sec:debye-layer}\,(с.\,\pageref{sec:debye-layer}) \\
-$c_s$ & іонно-звукова швидкість $\sqrt{T_e/m_i}$ & см/с & \eqref{eq:bohm-criterion} \\
+$c_s$ & іонно-звукова швидкість $\sqrt{T_e/m_i}$ при $T_i\ll T_e$ (загальна~--- розд.~\ref{sec:mhd-waves}) & см/с & \eqref{eq:bohm-criterion} \\
 $u$, $u_0$ & швидкість іонів у~шарі; їхня швидкість на вході в~шар (критерій Бома $u_0\ge c_s$) & см/с & \eqref{eq:bohm-criterion} \\
 $n_0$, $n_\mathrm{sh}$ & концентрація в~незбуреній плазмі; на межі шару ($n_\mathrm{sh}\approx0{,}6\,n_0$) & см$^{-3}$ & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
 $\chi$ & безрозмірний потенціал $-e\varphi/T_e$ & --- & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
@@ -117,9 +117,28 @@ $n_{\mathrm{кр}}$ & критична концентрація $m_e\omega^2/4\p
 $\nu$ & ефективна частота зіткнень електрона ($\nu_{ei}$) & с$^{-1}$ & \eqref{eq:eps-collisions-waves} \\
 $\delta$ & товщина скін-шару, глибина проникнення $1/\kappa$ & см & §\,\ref{sec:plasma-permittivity}\,(с.\,\pageref{sec:plasma-permittivity}) \\
 \end{longtblr}
+
+\par\Needspace{7\baselineskip}\medskip\noindent\textbf{Хвилі в замагніченій плазмі (розд.~\ref{sec:mhd-waves})}\par\nobreak\smallskip
+\noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
+Символ & Значення & Одиниця (СГС) & Де \\
+$\vect B_0$, $\theta$ & рівноважне поле (вздовж осі $z$); кут між $\vect k$ і~$\vect B_0$ & Гс; рад & \eqref{eq:magnetosonic-biquad} \\
+$\rho_m$, $\rho_0$, $\delta\rho$ & масова густина, її рівноважне значення й~збурення (не плутати з~густиною заряду $\rho$) & г$/$см$^{3}$ & \eqref{eq:wave-linear-continuity} \\
+$p_e$, $p_i$, $\beta$ & тиск електронів, іонів; $\beta=8\pi p/B^2$ & дин$/$см$^{2}$; --- & розд.~\ref{sec:mhd} \\
+$\gamma$, $\gamma_e$, $\gamma_i$ & показник адіабати: спільний; електронів ($\gamma_e=1$, ізотермічні); іонів ($\gamma_i=3$, одновимірне стискання) & --- & §\,\ref{sec:sound-wave}\,(с.\,\pageref{sec:sound-wave}) \\
+$c_s$ & швидкість звуку $\sqrt{\gamma(p_e+p_i)/\rho_m}$; для іонного звуку $\sqrt{(ZT_e+3T_i)/m_i}$ & см/с & \eqref{eq:wave-sound-equation}, \eqref{eq:ion-acoustic} \\
+$v_A$, $\vect v_A$ & альвенівська швидкість $B_0/\sqrt{4\pi\rho_0}$ (вектор вздовж $\vect B_0$) & см/с & \eqref{eq:wave-alfven-speed} \\
+$v_\pm$ & фазові швидкості швидкої ($+$) і~повільної ($-$) магнітозвукових мод & см/с & \eqref{eq:wave-magnetosonic-general} \\
+$\nu_m$ & магнітна в'язкість $c^2/4\pi\sigma$ (коефіцієнт дифузії поля) & см$^{2}/$с & §\,\ref{sec:linear-mhd}\,(с.\,\pageref{sec:linear-mhd}) \\
+$\omega_{ce}$, $\omega_{ci}$, $\Omega_s$ & циклотронні частоти електрона $eB_0/m_ec$ та~іона $ZeB_0/m_ic$; $\Omega_s=q_sB_0/m_sc$ зі~знаком & с$^{-1}$ & §\,\ref{sec:cold-magnetized}\,(с.\,\pageref{sec:cold-magnetized}) \\
+$\omega_{ps}$ & плазмова частота сорту $s$ ($\omega_{pe}$, $\omega_{pi}$) & с$^{-1}$ & \eqref{eq:stix-RLP} \\
+$\hat\varepsilon$; $S$, $D$, $P$, $R$, $L$ & тензор діелектричної проникності та~його елементи (позначення Стікса) & --- & \eqref{eq:stix-tensor}, \eqref{eq:stix-RLP} \\
+$\omega_R$, $\omega_L$ & частоти відсікання $R$- і~$L$-хвиль вздовж поля & с$^{-1}$ & §\,\ref{sec:cold-magnetized}\,(с.\,\pageref{sec:cold-magnetized}) \\
+$\omega_{UH}$, $\omega_{LH}$ & верхній і~нижній гібридні резонанси & с$^{-1}$ & \eqref{eq:upper-hybrid} \\
+$\psi$ & кут обертання Фарадея & рад & \eqref{eq:faraday-rotation} \\
+\end{longtblr}
 }
 
-\paragraph{Символи з кількома значеннями.} У~розд.~\ref{sec:plasma-basics} деякі літери означають різні величини;
+\paragraph{Символи з кількома значеннями.} У~розд.~\ref{sec:plasma-basics} і~\ref{sec:mhd-waves} деякі літери означають різні величини;
 значення визначається контекстом та індексами.
 \begin{itemize}
 	\item $I$~--- енергія іонізації (\S\,\ref{sec:saha}) і~струм на зонд (\S\,\ref{sec:bohm-sheath});
@@ -131,6 +150,10 @@ $\delta$ & товщина скін-шару, глибина проникненн
 	\item $\lambda$ без індексу~--- довжина екранування в~загальному випадку~\eqref{eq:screening-general}, $\lambda_D$~--- дебаївська;
 	\item $E$~--- напруженість електричного поля, $E_F$~--- енергія Фермі;
 	\item $N$~--- показник заломлення (розд.~\ref{sec:plasma-waves}); у~розд.~\ref{sec:plasma-basics} $N_D$~--- число частинок у~дебаївській сфері, а~$n$~--- завжди концентрація;
-	\item $\delta$~--- товщина скін-шару (розд.~\ref{sec:plasma-waves}) і~дельта-функція $\delta(\vect r)$.
+	\item $\delta$~--- товщина скін-шару (розд.~\ref{sec:plasma-waves}) і~дельта-функція $\delta(\vect r)$;
+	\item $S$~--- площа зонда (розд.~\ref{sec:plasma-basics}) і~елемент тензора Стікса (розд.~\ref{sec:mhd-waves});
+	\item $\lambda$~--- довжина екранування (розд.~\ref{sec:plasma-basics}) і~довжина хвилі в~обертанні Фарадея (розд.~\ref{sec:mhd-waves});
+	\item $c_s$~--- $\sqrt{T_e/m_i}$ у~розд.~\ref{sec:plasma-basics} (межа $T_i\ll T_e$) і~загальна швидкість звуку в~розд.~\ref{sec:mhd-waves};
+	\item $\rho_m$~--- масова густина (розд.~\ref{sec:mhd-waves}), на~відміну від густини заряду $\rho$.
 \end{itemize}
 
