@@ -4,7 +4,7 @@
 % !TeX root = main.tex
 
 %% --------------------------------------------------------
-%% Додаток: таблиця позначень (поки що розд. 1 і 2)
+%% Додаток: таблиця позначень (поки що Basics і Waves)
 %% --------------------------------------------------------
 
 \section{Таблиця позначень}\label{sec:notation}
@@ -28,14 +28,14 @@ $300$~В і~$300$~В$/$см. Стовпець «Де» вказує
 \par\Needspace{7\baselineskip}\medskip\noindent\textbf{Загальні сталі та позначення}\par\nobreak\smallskip
 \noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
 Символ & Значення & Одиниця (СГС) & Де \\
-$e$ & елементарний заряд & $4{,}80\times10^{-10}$~СГСЕ & §\,\ref{sec:debye-screening} \\
-$m_e$, $m_i$, $m_a$, $m$ & маса електрона, іона, атома; $m$~--- маса частинки (у~формулі Саха~--- електрона) & г & §\,\ref{sec:saha} \\
-$k_{\mathrm B}$ & стала Больцмана (далі $k_{\mathrm B}=1$) & ерг/К & §\,\ref{sec:what-is-plasma} \\
+$e$ & елементарний заряд & $4{,}80\times10^{-10}$~СГСЕ & §\,\ref{sec:debye-screening}\,(с.\,\pageref{sec:debye-screening}) \\
+$m_e$, $m_i$, $m_a$, $m$ & маса електрона, іона, атома; $m$~--- маса частинки (у~формулі Саха~--- електрона) & г & §\,\ref{sec:saha}\,(с.\,\pageref{sec:saha}) \\
+$k_{\mathrm B}$ & стала Больцмана (далі $k_{\mathrm B}=1$) & ерг/К & §\,\ref{sec:what-is-plasma}\,(с.\,\pageref{sec:what-is-plasma}) \\
 $\hbar$, $h=2\pi\hbar$ & стала Планка & ерг$\cdot$с & \eqref{eq:saha} \\
 $c$ & швидкість світла & см/с & \eqref{eq:larmor} \\
 $Z$ & кратність іонізації: заряд іона $Ze$ & --- & \eqref{eq:quasineutrality} \\
 $n$, $n_e$, $n_i$, $n_n$ & концентрація (загальна), електронів, іонів, нейтральних частинок & см$^{-3}$ & \eqref{eq:ionization-degree} \\
-$T$, $T_e$, $T_i$, $T_s$ & температура (в~енергетичних одиницях): загальна, електронів, іонів, сорту $s$ & еВ & §\,\ref{sec:two-temperatures} \\
+$T$, $T_e$, $T_i$, $T_s$ & температура (в~енергетичних одиницях): загальна, електронів, іонів, сорту $s$ & еВ & §\,\ref{sec:two-temperatures}\,(с.\,\pageref{sec:two-temperatures}) \\
 \end{longtblr}
 
 \par\Needspace{7\baselineskip}\medskip\noindent\textbf{Іонізація (формула Саха)}\par\nobreak\smallskip
@@ -43,67 +43,67 @@ $T$, $T_e$, $T_i$, $T_s$ & температура (в~енергетичних �
 Символ & Значення & Одиниця (СГС) & Де \\
 $\alpha$ & ступінь іонізації $n_i/(n_i+n_n)$ & --- & \eqref{eq:ionization-degree} \\
 $I$ & енергія іонізації атома (для водню $13{,}6$~еВ) & еВ & \eqref{eq:saha} \\
-$g$, $g_e$, $g_i$, $g_a$ & статистичні ваги & --- & §\,\ref{sec:saha} \\
-$\mu$ & хімічний потенціал & еВ & §\,\ref{sec:saha} \\
-$\lambda_T$, $\lambda_{Te}$ & теплова довжина хвилі де~Бройля $h/\sqrt{2\pi mT}$ (для електрона~--- $\lambda_{Te}$) & см & §\,\ref{sec:saha} \\
-$n_q$ & квантова концентрація $\lambda_{Te}^{-3}=(mT/2\pi\hbar^2)^{3/2}$ & см$^{-3}$ & §\,\ref{sec:saha} \\
-$\Delta E/E$ & частка енергії, яку електрон передає іону при пружному зіткненні & --- & §\,\ref{sec:two-temperatures} \\
+$g$, $g_e$, $g_i$, $g_a$ & статистичні ваги & --- & §\,\ref{sec:saha}\,(с.\,\pageref{sec:saha}) \\
+$\mu$ & хімічний потенціал & еВ & §\,\ref{sec:saha}\,(с.\,\pageref{sec:saha}) \\
+$\lambda_T$, $\lambda_{Te}$ & теплова довжина хвилі де~Бройля $h/\sqrt{2\pi mT}$ (для електрона~--- $\lambda_{Te}$) & см & §\,\ref{sec:saha}\,(с.\,\pageref{sec:saha}) \\
+$n_q$ & квантова концентрація $\lambda_{Te}^{-3}=(mT/2\pi\hbar^2)^{3/2}$ & см$^{-3}$ & §\,\ref{sec:saha}\,(с.\,\pageref{sec:saha}) \\
+$\Delta E/E$ & частка енергії, яку електрон передає іону при пружному зіткненні & --- & §\,\ref{sec:two-temperatures}\,(с.\,\pageref{sec:two-temperatures}) \\
 \end{longtblr}
 
 \par\Needspace{7\baselineskip}\medskip\noindent\textbf{Квазінейтральність і дебаївське екранування}\par\nobreak\smallskip
 \noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
 Символ & Значення & Одиниця (СГС) & Де \\
 $\rho$ & густина заряду $\sum_sq_sn_s$ & СГСЕ$/$см$^{3}$ & \eqref{eq:quasineutrality} \\
-$\vect E$, $E$ & напруженість електричного поля & СГС (поле) & §\,\ref{sec:quasineutrality} \\
-$\delta n$ & локальне відхилення концентрації від середньої & см$^{-3}$ & §\,\ref{sec:quasineutrality} \\
+$\vect E$, $E$ & напруженість електричного поля & СГС (поле) & §\,\ref{sec:quasineutrality}\,(с.\,\pageref{sec:quasineutrality}) \\
+$\delta n$ & локальне відхилення концентрації від середньої & см$^{-3}$ & §\,\ref{sec:quasineutrality}\,(с.\,\pageref{sec:quasineutrality}) \\
 $L$ & розмір плазми (характерний масштаб неоднорідності) & см & \eqref{eq:size-condition} \\
-$\varphi$ & електростатичний потенціал; $\varphi_0=\varphi(0)$~--- потенціал поверхні & СГС (потенціал) & §\,\ref{sec:debye-screening} \\
-$q$, $q_s$ & пробний заряд; заряд частинки сорту $s$ & СГСЕ & §\,\ref{sec:debye-screening} \\
-$n_{s0}$ & незбурена концентрація сорту $s$ & см$^{-3}$ & §\,\ref{sec:debye-screening} \\
+$\varphi$ & електростатичний потенціал; $\varphi_0=\varphi(0)$~--- потенціал поверхні & СГС (потенціал) & §\,\ref{sec:debye-screening}\,(с.\,\pageref{sec:debye-screening}) \\
+$q$, $q_s$ & пробний заряд; заряд частинки сорту $s$ & СГСЕ & §\,\ref{sec:debye-screening}\,(с.\,\pageref{sec:debye-screening}) \\
+$n_{s0}$ & незбурена концентрація сорту $s$ & см$^{-3}$ & §\,\ref{sec:debye-screening}\,(с.\,\pageref{sec:debye-screening}) \\
 $\lambda_D$, $\lambda_{De}$, $\lambda_{Di}$ & дебаївська довжина (повна, електронна, іонна); $\lambda_D=\lambda_{De}/\sqrt2$ при $T_e=T_i$ & см & \eqref{eq:poisson-screened}, \eqref{eq:debye-radius} \\
 $\delta(\vect r)$ & дельта-функція (точковий заряд) & см$^{-3}$ & \eqref{eq:poisson-screened} \\
-$\sigma$ & поверхнева густина заряду площини & СГСЕ$/$см$^{2}$ & §\,\ref{sec:debye-layer} \\
-$x$, $y$ & відстань від площини; $y=e\varphi/T$ & см; --- & §\,\ref{sec:debye-layer} \\
-\end{longtblr}
-
-\par\Needspace{7\baselineskip}\medskip\noindent\textbf{Колективність і зв'язаність}\par\nobreak\smallskip
-\noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
-Символ & Значення & Одиниця (СГС) & Де \\
-$N_D$ & число електронів у~дебаївській сфері $\frac{4\pi}{3}n_e\lambda_{De}^3$ & --- & \eqref{eq:ND} \\
-$a$ & середня відстань між частинками $n^{-1/3}$ & см & §\,\ref{sec:debye-sphere} \\
-$U_{\mathrm C}$, $U_T$ & енергія кулонівської взаємодії $e^2/a$ та теплова енергія $T$ & еВ & §\,\ref{sec:coupling} \\
-$\Gamma$ & параметр зв'язку $e^2/(aT)$ & --- & \eqref{eq:Gamma} \\
-$p$ & тиск ідеального газу $\sum_sn_sT_s$ & дин$/$см$^{2}$ & §\,\ref{sec:coupling} \\
-\end{longtblr}
-
-\par\Needspace{7\baselineskip}\medskip\noindent\textbf{Шар біля стінки та зонд Ленгмюра}\par\nobreak\smallskip
-\noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
-Символ & Значення & Одиниця (СГС) & Де \\
-$c_s$ & іонно-звукова швидкість $\sqrt{T_e/m_i}$ & см/с & \eqref{eq:bohm-criterion} \\
-$u$, $u_0$ & швидкість іонів у~шарі; їхня швидкість на вході в~шар (критерій Бома $u_0\ge c_s$) & см/с & \eqref{eq:bohm-criterion} \\
-$n_0$, $n_\mathrm{sh}$ & концентрація в~незбуреній плазмі; на межі шару ($n_\mathrm{sh}\approx0{,}6\,n_0$) & см$^{-3}$ & §\,\ref{sec:bohm-sheath} \\
-$\chi$ & безрозмірний потенціал $-e\varphi/T_e$ & --- & §\,\ref{sec:bohm-sheath} \\
-$j_i$, $j_e$ & потік іонів, електронів на стінку & см$^{-2}\cdot$с$^{-1}$ & §\,\ref{sec:bohm-sheath} \\
-$\bar v_e$, $v_{Te}$, $v_{Ti}$ & середня швидкість електрона $\sqrt{8T_e/\pi m_e}$; теплові швидкості електронів і~іонів & см/с & §\,\ref{sec:bohm-sheath} \\
-$\varphi_f$ & плаваючий потенціал відносно плазми, $\varphi_f=V_f-V_p<0$ & СГС (потенціал) & \eqref{eq:floating-potential} \\
-$V$, $V_f$, $V_p$ & потенціал зонда відносно опорного електрода; плаваючий потенціал; потенціал плазми & В & §\,\ref{sec:bohm-sheath} \\
-$I$ & струм на зонд (не плутати з~енергією іонізації $I$) & мА & §\,\ref{sec:bohm-sheath} \\
-$I_{is}$, $I_{es}$, $I_e$ & струми іонного та електронного насичення; електронний струм & мА & §\,\ref{sec:bohm-sheath} \\
-$S$, $r_p$ & площа зонда; його характерний розмір & см$^{2}$; см & §\,\ref{sec:bohm-sheath} \\
-$V_1$, $V_2$, $I_{e1}$, $I_{e2}$ & потенціали й~електронні струми двох електродів подвійного зонда & В; мА & \eqref{eq:double-probe} \\
-$\lambda_{\mathrm{fp}}$ & довжина вільного пробігу (відстань між зіткненнями) & см & §\,\ref{sec:bohm-sheath} \\
-$\vect B$, $B$ & індукція магнітного поля & Гс & \eqref{eq:larmor} \\
-$v_\perp$ & складова швидкості поперек $\vect B$ & см/с & \eqref{eq:larmor} \\
-$r_{Le}$ & ларморівський радіус електрона $m_ecv_\perp/eB$ (розд.~\ref{sec:particle-motion}) & см & \eqref{eq:larmor} \\
 \end{longtblr}
 
 \par\Needspace{7\baselineskip}\medskip\noindent\textbf{Екранування у виродженому газі}\par\nobreak\smallskip
 \noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
 Символ & Значення & Одиниця (СГС) & Де \\
 $E_F$ & енергія Фермі & еВ & \eqref{eq:thomas-fermi} \\
-$\lambda_{TF}$ & довжина Томаса~--- Фермі & см & \eqref{eq:thomas-fermi} \\
+$\lambda_{TF}$ & довжина Томаса--Фермі & см & \eqref{eq:thomas-fermi} \\
 $\lambda$ & довжина екранування в~загальному випадку $[4\pi e^2\partial n/\partial\mu]^{-1/2}$ & см & \eqref{eq:screening-general} \\
 $a_B$ & борівський радіус $\hbar^2/me^2=0{,}53\times10^{-8}$~см & см & \eqref{eq:thomas-fermi} \\
+\end{longtblr}
+
+\par\Needspace{7\baselineskip}\medskip\noindent\textbf{Колективність і зв'язаність}\par\nobreak\smallskip
+\noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
+Символ & Значення & Одиниця (СГС) & Де \\
+$N_D$ & число електронів у~дебаївській сфері $\frac{4\pi}{3}n_e\lambda_{De}^3$ & --- & \eqref{eq:ND} \\
+$a$ & середня відстань між частинками $n^{-1/3}$ & см & §\,\ref{sec:debye-sphere}\,(с.\,\pageref{sec:debye-sphere}) \\
+$U_{\mathrm C}$, $U_T$ & енергія кулонівської взаємодії $e^2/a$ та теплова енергія $T$ & еВ & §\,\ref{sec:coupling}\,(с.\,\pageref{sec:coupling}) \\
+$\Gamma$ & параметр зв'язку $e^2/(aT)$ & --- & \eqref{eq:Gamma} \\
+$p$ & тиск ідеального газу $\sum_sn_sT_s$ & дин$/$см$^{2}$ & §\,\ref{sec:coupling}\,(с.\,\pageref{sec:coupling}) \\
+\end{longtblr}
+
+\par\Needspace{7\baselineskip}\medskip\noindent\textbf{Шар біля стінки та зонд Ленгмюра}\par\nobreak\smallskip
+\noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
+Символ & Значення & Одиниця (СГС) & Де \\
+$\sigma$ & поверхнева густина заряду площини & СГСЕ$/$см$^{2}$ & §\,\ref{sec:debye-layer}\,(с.\,\pageref{sec:debye-layer}) \\
+$x$, $y$ & відстань від площини; $y=e\varphi/T$ & см; --- & §\,\ref{sec:debye-layer}\,(с.\,\pageref{sec:debye-layer}) \\
+$c_s$ & іонно-звукова швидкість $\sqrt{T_e/m_i}$ & см/с & \eqref{eq:bohm-criterion} \\
+$u$, $u_0$ & швидкість іонів у~шарі; їхня швидкість на вході в~шар (критерій Бома $u_0\ge c_s$) & см/с & \eqref{eq:bohm-criterion} \\
+$n_0$, $n_\mathrm{sh}$ & концентрація в~незбуреній плазмі; на межі шару ($n_\mathrm{sh}\approx0{,}6\,n_0$) & см$^{-3}$ & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
+$\chi$ & безрозмірний потенціал $-e\varphi/T_e$ & --- & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
+$j_i$, $j_e$ & потік іонів, електронів на стінку & см$^{-2}\cdot$с$^{-1}$ & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
+$\bar v_e$, $v_{Te}$, $v_{Ti}$ & середня швидкість електрона $\sqrt{8T_e/\pi m_e}$; теплові швидкості електронів і~іонів & см/с & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
+$\varphi_f$ & плаваючий потенціал відносно плазми, $\varphi_f=V_f-V_p<0$ & СГС (потенціал) & \eqref{eq:floating-potential} \\
+$V$, $V_f$, $V_p$ & потенціал зонда відносно опорного електрода; плаваючий потенціал; потенціал плазми & В & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
+$I$ & струм на зонд (не плутати з~енергією іонізації $I$) & мА & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
+$I_{is}$, $I_{es}$, $I_e$ & струми іонного та електронного насичення; електронний струм & мА & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
+$S$, $r_p$ & площа зонда; його характерний розмір & см$^{2}$; см & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
+$V_1$, $V_2$, $I_{e1}$, $I_{e2}$ & потенціали й~електронні струми двох електродів подвійного зонда & В; мА & \eqref{eq:double-probe} \\
+$\lambda_{\mathrm{fp}}$ & довжина вільного пробігу (відстань між зіткненнями) & см & §\,\ref{sec:bohm-sheath}\,(с.\,\pageref{sec:bohm-sheath}) \\
+$\vect B$, $B$ & індукція магнітного поля & Гс & \eqref{eq:larmor} \\
+$v_\perp$ & складова швидкості поперек $\vect B$ & см/с & \eqref{eq:larmor} \\
+$r_{Le}$ & ларморівський радіус електрона $m_ecv_\perp/eB$ (розд.~\ref{sec:particle-motion}) & см & \eqref{eq:larmor} \\
 \end{longtblr}
 
 \par\Needspace{7\baselineskip}\medskip\noindent\textbf{Хвилі в плазмі (розд.~\ref{sec:plasma-waves})}\par\nobreak\smallskip
@@ -111,11 +111,11 @@ $a_B$ & борівський радіус $\hbar^2/me^2=0{,}53\times10^{-8}$~с�
 Символ & Значення & Одиниця (СГС) & Де \\
 $\omega_{pe}$, $\omega_p$ & електронна плазмова частота $\sqrt{4\pi n_ee^2/m_e}$; далі $\omega_p\equiv\omega_{pe}$ & с$^{-1}$ & \eqref{eq:plasma-frequency} \\
 $\varepsilon$ & діелектрична проникність $1-\omega_p^2/\omega^2$ & --- & \eqref{eq:plasma-permittivity} \\
-$N$ & показник заломлення $\sqrt\varepsilon$ (літеру $n$ зарезервовано для концентрації) & --- & §\,\ref{sec:plasma-permittivity} \\
-$v_\phi$, $v_g$ & фазова $\omega/k$ та групова $d\omega/dk$ швидкості & см/с & §\,\ref{sec:plasma-permittivity} \\
+$N$ & показник заломлення $\sqrt\varepsilon$ (літеру $n$ зарезервовано для концентрації) & --- & §\,\ref{sec:plasma-permittivity}\,(с.\,\pageref{sec:plasma-permittivity}) \\
+$v_\phi$, $v_g$ & фазова $\omega/k$ та групова $d\omega/dk$ швидкості & см/с & §\,\ref{sec:plasma-permittivity}\,(с.\,\pageref{sec:plasma-permittivity}) \\
 $n_{\mathrm{кр}}$ & критична концентрація $m_e\omega^2/4\pi e^2$, при якій $\omega=\omega_p$ & см$^{-3}$ & \eqref{eq:critical-density} \\
 $\nu$ & ефективна частота зіткнень електрона ($\nu_{ei}$) & с$^{-1}$ & \eqref{eq:eps-collisions-waves} \\
-$\delta$ & товщина скін-шару, глибина проникнення $1/\kappa$ & см & §\,\ref{sec:plasma-permittivity} \\
+$\delta$ & товщина скін-шару, глибина проникнення $1/\kappa$ & см & §\,\ref{sec:plasma-permittivity}\,(с.\,\pageref{sec:plasma-permittivity}) \\
 \end{longtblr}
 }
 
@@ -124,10 +124,10 @@ $\delta$ & товщина скін-шару, глибина проникненн
 \begin{itemize}
 	\item $I$~--- енергія іонізації (\S\,\ref{sec:saha}) і~струм на зонд (\S\,\ref{sec:bohm-sheath});
 	\item $\Gamma$~--- параметр зв'язку~\eqref{eq:Gamma} ; потоки частинок на стінку позначено $j_i$, $j_e$;
-	\item $n_s$~--- концентрація сорту $s$ (§\,\ref{sec:debye-screening}); концентрацію на межі шару позначено $n_\mathrm{sh}$;
+	\item $n_s$~--- концентрація сорту $s$ (§\,\ref{sec:debye-screening}\,(с.\,\pageref{sec:debye-screening})); концентрацію на межі шару позначено $n_\mathrm{sh}$;
 	\item $a$~--- середня відстань між частинками (розмір зонда позначено $r_p$);
 	\item $\rho$~--- густина заряду; ларморівський радіус позначено $r_{L}$ ($r_{Le}$ для електрона), а~не $\rho$;
-	\item $u$~--- швидкість іонів у~шарі; допоміжна змінна $u=r\varphi$ у~§\,\ref{sec:debye-screening} вживається лише в~одному виведенні;
+	\item $u$~--- швидкість іонів у~шарі; допоміжна змінна $u=r\varphi$ у~§\,\ref{sec:debye-screening}\,(с.\,\pageref{sec:debye-screening}) вживається лише в~одному виведенні;
 	\item $\lambda$ без індексу~--- довжина екранування в~загальному випадку~\eqref{eq:screening-general}, $\lambda_D$~--- дебаївська;
 	\item $E$~--- напруженість електричного поля, $E_F$~--- енергія Фермі;
 	\item $N$~--- показник заломлення (розд.~\ref{sec:plasma-waves}); у~розд.~\ref{sec:plasma-basics} $N_D$~--- число частинок у~дебаївській сфері, а~$n$~--- завжди концентрація;

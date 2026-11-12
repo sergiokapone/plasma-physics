@@ -10,7 +10,7 @@
 \graphicspath{{\currfilebase/Pictures}}
 
 \Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
-\Writetofile{answer}{\protect\section*{\nameref*{sec:mhd}}}
+\Writetofile{answer}{\protect\section*{Розділ~\ref*{sec:mhd}. \nameref*{sec:mhd}}}
 \chapter{Гідродинамічний та магнітогідродинамічний опис}\label{sec:mhd}
 \label{\currfilebase}\hypertarget{mhd}{}
 %% --------------------------------------------------------
@@ -39,7 +39,7 @@ L\gg r_{Li},\qquad \omega\ll\omega_{ci},
 
 
 %% --------------------------------------------------------
-\section{Дворідинний опис}
+\section{Дворідинний опис}\index{Дворідинний опис|textbf}
 %% --------------------------------------------------------
 
 
@@ -47,7 +47,7 @@ L\gg r_{Li},\qquad \omega\ll\omega_{ci},
 Для звичайної рідини з~густиною $\rho$ і~швидкістю $\vect v$ маємо рівняння неперервності
 $\partial_t\rho+\nabla\cdot(\rho\vect v)=0$ та~рівняння Ейлера
 \[\rho\Bigl(\frac{\partial\vect v}{\partial t}+(\vect v\cdot\nabla)\vect v\Bigr)=-\nabla p+\vect f,\]
-де $\vect f$~--- об'ємна сила; в'язкість додає член Нав'є~--- Стокса $\eta\nabla^2\vect v$. Зверніть увагу
+де $\vect f$~--- об'ємна сила; в'язкість додає член Нав'є--Стокса $\eta\nabla^2\vect v$. Зверніть увагу
 на \emph{проблему замикання}: рівняння для $\rho$ містить $\vect v$, рівняння для $\vect v$~--- тиск $p$,
 рівняння для $p$~--- потік тепла і~т.~д. Ланцюжок обривають моделлю стану (наприклад, $p\propto\rho^\gamma$).
 Нижче рівняння для електронної та іонної \enquote{рідин} читаються як \enquote{Ейлер + сила Лоренца + тертя $\vect R$}.
@@ -77,7 +77,7 @@ $\partial_t\rho+\nabla\cdot(\rho\vect v)=0$ та~рівняння Ейлера
 можна отримати безпосередньо, додаючи та віднімаючи рівняння для електронів та іонів.
 
 
-\section{Від дворідинної моделі до однорідинної МГД}
+\section{Від дворідинної моделі до однорідинної МГД}\index{Магнітна гідродинаміка (МГД)|textbf}
 
 
 Для однозарядної плазми рівняння руху мають вигляд
@@ -148,7 +148,7 @@ en_i\vect E-en_e\vect E\simeq0.
 \end{equation}
 
 
-\subsection*{Електронне рівняння: закон Ома}
+\subsection*{Електронне рівняння: закон Ома}\index{Ома закон!узагальнений|textbf}
 
 
 Тепер скористаємося рівнянням для електронів. Для квазінейтральної плазми покладемо
@@ -173,7 +173,7 @@ $-en\bigl(\vect E+\vect v\times\vect B/c\bigr)+\vect j\times\vect B/c-\nabla p_e
     \frac{\nabla p_e}{en}.
 }
 \end{equation}
-Тут перший доданок праворуч описує опір зіткненням, другий є \emphx{холлівським} доданком,
+Тут перший доданок праворуч описує опір зіткненням, другий є \emphx{холлівським}\index{Холла член|textbf} доданком,
 а~третій виникає через градієнт електронного тиску. Холлівський доданок важливий на масштабах порядку іонної інерційної довжини $c/\omega_{pi}$: на менших масштабах іони \enquote{відклеюються}
 від поля, а~електрони ще ні (токамак, $n=10^{14}~\mathrm{см}^{-3}$: $c/\omega_{pi}\approx2$--$3$~см; магнітосфера, $n\sim1~\mathrm{см}^{-3}$: $\approx230$~км).
 Саме ці доданки порушують вмороженість і~уможливлюють перез'єднання силових ліній (розд.~\ref{sec:reconnection}). Якщо нехтувати всіма цими поправками,
@@ -364,7 +364,7 @@ B-\nabla(B^2/2)$, перепишемо його. (Тотожність випл�
 розтягнуті гумові шнури.
 
 
-\subsection*{Замикання системи та межі застосовності}
+\subsection*{Замикання системи та межі застосовності}\index{Замикання системи рівнянь|textbf}
 
 Рівняння~\eqref{eq:MHD-equation} саме по собі не утворює замкненої системи. Для визначення
 густини, швидкості, тиску та магнітного поля необхідні додаткові рівняння.
@@ -435,7 +435,7 @@ $\vect j\times\vect B/enc$ і~градієнт електронного тиск
 
 Рівняння МГД показує, що магнітне поле має не лише тиск, а~й~натяг. Це означає, що
 викривлення силових ліній може породжувати хвилю: магнітний натяг $B^2/4\pi$ відіграє
-роль натягу струни, а~$\rho_m$~--- роль лінійної інерції. Така \emphx{альвенівська хвиля}
+роль натягу струни, а~$\rho_m$~--- роль лінійної інерції. Така \emphx{альвенівська хвиля}\index{Альвена хвиля|textbf}
 біжить уздовж $\vect B_0$ зі швидкістю
 \begin{equation}\label{eq:alfven-wave}
     \tcbhighmath{v_A=\frac{B_0}{\sqrt{4\pi\rho_m}}}
@@ -463,7 +463,7 @@ M_A=\frac{v}{v_A}
 
 
 %% --------------------------------------------------------
-\section{МГД-рівновага та магнітні поверхні}\label{sec:mhd-equilibrium}
+\section{МГД-рівновага та магнітні поверхні}\index{Рівновага!магнітогідродинамічна|textbf}\index{Магнітні поверхні|textbf}\label{sec:mhd-equilibrium}
 %% --------------------------------------------------------
 
 
@@ -540,7 +540,7 @@ j\times\vect B)=0$, маємо
 Це саме діамагнітний струм~\eqref{eq:diamagnetic-current}, який детальніше розглянуто в~розд.~\ref{sec:diamagnetism}.
 
 
-\subsection*{Параметр плазми \texorpdfstring{$\beta$}{beta}}
+\subsection*{Параметр плазми \texorpdfstring{$\beta$}{beta}}\index{Бета плазми|textbf}
 
 
 Важливим безрозмірним параметром плазми є відношення газокінетичного тиску до магнітного:
@@ -631,7 +631,7 @@ $\vect v\cdot(\vect j\times\vect B)/c$ перекачує енергію між 
 
 
 %% --------------------------------------------------------
-\section{Діамагнетизм плазми}\label{sec:diamagnetism}
+\section{Діамагнетизм плазми}\index{Діамагнетизм!плазми|textbf}\label{sec:diamagnetism}
 %% --------------------------------------------------------
 
 
@@ -674,7 +674,7 @@ $\vect B=B(x)\vect e_z$. Тоді $j_y=-(c/4\pi)\,dB/dx$, і~умова рівн
 
 
 %% --------------------------------------------------------
-\section{Вмороженість магнітного поля}
+\section{Вмороженість магнітного поля}\index{Вмороженість магнітного поля|textbf}
 %% --------------------------------------------------------
 
 
@@ -688,14 +688,14 @@ $\vect B=B(x)\vect e_z$. Тоді $j_y=-(c/4\pi)\,dB/dx$, і~умова рівн
 % ========================================================
 
 Підставляючи в~закон індукції $\partial_t\vect B=-c\,\rot\vect E$ і~враховуючи
-$\nabla\cdot\vect B=0$, одержуємо \emphx{рівняння індукції}
+$\nabla\cdot\vect B=0$, одержуємо \emphx{рівняння індукції}\index{Індукції рівняння|textbf}
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{equation}\label{eq:induction}
 	\frac{\partial\vect B}{\partial t}=\rot(\vect v\times\vect B)+\frac{c^2}{4\pi\sigma}\Delta\vect B.
 \end{equation}
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Перший доданок описує перенесення поля течією, другий~--- дифузію поля. Їхнє відношення
-визначає \emphx{магнітне число Рейнольдса}
+визначає \emphx{магнітне число Рейнольдса}\index{Рейнольдса магнітне число|textbf}
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{equation*}
 	R_m\sim\frac{4\pi\sigma Lv}{c^2}.
@@ -756,7 +756,7 @@ $L\sim10^{10}$~см) $\tau_d\sim10^{16}$~с~--- значно більше за �
 дифузією можна знехтувати й~користуватися наближенням вмороженості.
 
 %% --------------------------------------------------------
-\section{Перез'єднання силових ліній}\label{sec:reconnection}
+\section{Перез'єднання силових ліній}\index{Перез'єднання силових ліній|textbf}\label{sec:reconnection}
 %% --------------------------------------------------------
 
 В~ідеальній МГД силові лінії вморожені в~плазму, тож топологія поля не~змінюється. Але в~тонкому струмовому шарі,
@@ -774,7 +774,7 @@ $L\sim10^{10}$~см) $\tau_d\sim10^{16}$~с~--- значно більше за �
 	\label{pic:reconnection}
 \end{figure}
 
-\emph{Оцінка швидкості.} У~моделі Світа~--- Паркера шар довжиною $L$ і~товщиною $\delta$: вхідний потік $v_{\rm in}$ і~вихідний $\sim v_A$ зв'язані збереженням маси,
+\emph{Оцінка швидкості.}\index{Світа--Паркера модель|textbf} У~моделі Світа--Паркера шар довжиною $L$ і~товщиною $\delta$: вхідний потік $v_{\rm in}$ і~вихідний $\sim v_A$ зв'язані збереженням маси,
 $v_{\rm in}L\sim v_A\delta$, а~товщина визначається дифузією, $\delta\sim\sqrt{(c^2/4\pi\sigma)\,L/v_A}$. Звідси
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{equation}\label{eq:sweet-parker}
@@ -999,7 +999,7 @@ $\tau\sim L^2/\chi_\perp\sim10^{3}$~с. Тобто по~класиці плаз�
 дає ЕРС $\varepsilon=-(NS/c)\,dB/dt$; сигнал інтегрують, і~$\int\varepsilon\,dt\propto B$.
 Різні геометрії котушок дають різні величини: струм, енергію, положення шнура.
 
-\subsection*{Пояс Роговського: повний струм}
+\subsection*{Пояс Роговського: повний струм}\index{Діагностика плазми!магнітні виміри}\index{Роговського пояс|textbf}
 Гнучку котушку з~рівномірним намотуванням ($n_c$ витків на~одиницю довжини, переріз $S$)
 замикають навколо плазмового шнура (рис.~\ref{pic:magnetic-diagnostics}\,а). Потік крізь неї
 $\Phi=n_cS\oint B_\theta\,dl=(4\pi n_cS/c)\,I$ за~законом Ампера, тому
@@ -1011,11 +1011,13 @@ $\Phi=n_cS\oint B_\theta\,dl=(4\pi n_cS/c)\,I$ за~законом Ампера,
 Результат не залежить ні від розподілу струму по~перерізу, ні від форми контуру. Це робить
 пояс основним датчиком струму плазми.
 
-\emph{Оцінка.} Для $n_c=10$~см$^{-1}$, $S=1$~см$^2$ і~наростання струму $1$~МА за~$0{,}1$~с
+\begin{Estimate}
+Для $n_c=10$~см$^{-1}$, $S=1$~см$^2$ і~наростання струму $1$~МА за~$0{,}1$~с
 ЕРС дорівнює $4\pi n_cS\,\dot I/c^2\approx4\times10^{-3}$~статВ~$\approx1{,}3$~В
 ($1$~статВ~$\approx300$~В).
+\end{Estimate}
 
-\subsection*{Діамагнітна петля: енергія плазми}
+\subsection*{Діамагнітна петля: енергія плазми}\index{Діамагнітна петля|textbf}
 Петля, що охоплює плазмовий шнур у~площині, перпендикулярній до~$\vect B_0$ (там же, де і~пояс),
 вимірює потік поздовжнього поля. З~балансу тисків~\eqref{eq:pressure-balance} при $\beta\ll1$
 поле всередині плазми $B_z\approx B_0-4\pi p/B_0$ (рис.~\ref{pic:magnetic-diagnostics}\,б), тобто
@@ -1028,10 +1030,12 @@ $\Phi=n_cS\oint B_\theta\,dl=(4\pi n_cS/c)\,I$ за~законом Ампера,
 Для ізотропної плазми у~тороїдальній системі з~великим радіусом $R$ повна теплова енергія
 $W=\tfrac32\int p\,dV\approx\tfrac32\,(2\pi R)\int p\,dS=\tfrac34\,RB_0|\Delta\Phi|$.
 
-\emph{Оцінка.} Для $R=150$~см, $a=50$~см, $B_0=5\times10^4$~Гс і~$p=3{,}2\times10^6$~дин/см$^2$
+\begin{Estimate}
+Для $R=150$~см, $a=50$~см, $B_0=5\times10^4$~Гс і~$p=3{,}2\times10^6$~дин/см$^2$
 (задача~\ref{prb:PlasmaBeta}) маємо $\int p\,dS=p\pi a^2$ і~$|\Delta\Phi|=4\pi p\,\pi a^2/B_0
 \approx6\times10^{6}$~Мкс ($0{,}06$~Вб), тобто лише $\beta/2\approx1{,}6\,\%$ повного
 тороїдального потоку $B_0\pi a^2$. Звідси $W\approx3{,}5$~МДж.
+\end{Estimate}
 
 \begin{figure}[ht]\centering
 	\begin{subfigure}[t]{0.5\linewidth}\centering
@@ -1048,7 +1052,7 @@ $W=\tfrac32\int p\,dV\approx\tfrac32\,(2\pi R)\int p\,dS=\tfrac34\,RB_0|\Delta\P
 	\label{pic:magnetic-diagnostics}
 \end{figure}
 
-\subsection*{Магнітні зонди}
+\subsection*{Магнітні зонди}\index{Магнітні зонди|textbf}
 Невелика котушка біля стінки вимірює локальну похідну $\dot B$. Для збурення
 $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\widetilde B$ зростає з~частотою,
 тому зонди чутливі до~швидких збурень. Приклад: $N=100$, $S=1$~см$^2$, $\widetilde B=1$~Гс
@@ -1093,7 +1097,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 \section*{Задачі}
 %% --------------------------------------------------------
 
-\begin{problem}\label{prb:SolenoidPressure}
+\begin{problem}\label{prb:SolenoidPressure}\lvl{2}
 	Довгим соленоїдом з~$n$ витками на одиницю довжини тече струм $I$. Знайдіть тиск на бічну поверхню
 	соленоїда.
 	\begin{solution}
@@ -1101,7 +1105,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:PlasmaBeta}
+\begin{problem}\label{prb:PlasmaBeta}\lvl{1}
 	Плазма з~$n_e=n_i=10^{14}~\mathrm{см}^{-3}$, $T_e=T_i=10$~кеВ. Знайдіть тиск і~поле,
 	при якому $\beta=1$. Яким буде $\beta$ при $B=5\times10^4$~Гс?
 	\begin{solution}
@@ -1109,7 +1113,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:PlasmaDiffusion}
+\begin{problem}\label{prb:PlasmaDiffusion}\lvl{2}
 	Оцініть час дифузії магнітного поля для плазми з~$T_e=1$~кеВ,
 	$\ln\Lambda=15$, $L=1$~м. Знайдіть магнітне число Рейнольдса при швидкості руху плазми
 	$10^5$~см/с.
@@ -1118,7 +1122,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:PlasmaAlfven}
+\begin{problem}\label{prb:PlasmaAlfven}\lvl{1}
 	Знайдіть швидкість Альвена для водневої плазми з~$n_i=10^{14}~\mathrm{см}^{-3}$ у~полі
 	$B=10^4$~Гс і~порівняйте її з~тепловою швидкістю іонів $v_{Ti}$ при $T_i=10$~кеВ.
 	\begin{solution}
@@ -1126,7 +1130,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:MaxwellStress}
+\begin{problem}\label{prb:MaxwellStress}\lvl{3}
 	Покажіть, що сила на одиницю об'єму $\vect f=\vect j\times\vect B/c$ записується як
 	$f_i=\partial_j\sigma_{ij}$ з~тензором~\eqref{eq:maxwell-stress}. Знайдіть
 	магнітний тиск при $B=5{,}3$~Тл (у~барах) і~порівняйте з~газовим тиском плазми
@@ -1136,7 +1140,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:AlfvenString}
+\begin{problem}\label{prb:AlfvenString}\lvl{2}
 	Виведіть швидкість альвенівської хвилі, розглядаючи силову лінію як струну з~натягом
 	$B^2/4\pi$. Знайдіть $v_A$ для дейтерієвої плазми $n_i=10^{14}~\mathrm{см}^{-3}$,
 	$B=5\times10^4$~Гс і~час, за~який хвиля проходить $L=1$~м.
@@ -1145,7 +1149,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:FluidScales}
+\begin{problem}\label{prb:FluidScales}\lvl{2}
 	Для дейтерієвої плазми з~$n=10^{14}~\mathrm{см}^{-3}$, $T=10$~кеВ, $B=5\times10^4$~Гс оцініть
 	$\lambda_{\mathrm{пр}}=v_{Te}/\nu_{ei}$, $r_{Li}$, відношення $D_\perp/D_\parallel$.
 	Поясніть, чому МГД застосовна поперек поля, хоча довжина пробігу набагато більша
@@ -1156,7 +1160,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:DiamagneticFlux}
+\begin{problem}\label{prb:DiamagneticFlux}\lvl{3}
 	Для позитивних частинок у~полі $\vect B=B\vect e_z$ з~концентрацією $n(x)$ покажіть,
 	що центр кола має координату $x_g=x+v_y/\omega_c$. Знайдіть потік $\Gamma_y$ через
 	площину $x=x_0$ і~густину струму $j_y$. Перевірте збіг
@@ -1166,7 +1170,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:FluxTube}
+\begin{problem}\label{prb:FluxTube}\lvl{3}
 	Покажіть, що при поперечному стисненні вмороженої силової трубки $B/\rho=\text{const}$
 	(довжина трубки не змінюється), а~при ізотропному стисненні $B\propto\rho^{2/3}$.
 	У~скільки разів зросте $B$ хмари, що колапсує в~зорю з~ростом густини в~$10^{6}$ разів?
@@ -1175,7 +1179,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:ParkerSpiral}
+\begin{problem}\label{prb:ParkerSpiral}\lvl{3}
 	Сонце обертається з~$\Omega\approx2{,}7\times10^{-6}$~рад/с, сонячний вітер має швидкість
 	$400$~км/с. З~умови вмороженості знайдіть кут між $\vect B$ і~радіальним напрямом на орбіті Землі
 	($r=1{,}5\times10^{8}$~км): $\tan\psi=\Omega r/v$.
@@ -1184,7 +1188,7 @@ $\widetilde B\,e^{-i\omega t}$ сигнал $|\varepsilon|=(NS/c)\,\omega\wideti
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:DiamagneticLoop}
+\begin{problem}\label{prb:DiamagneticLoop}\lvl{2}
 Діамагнітна петля зареєструвала зменшення потоку тороїдального поля $|\Delta\Phi|=3\times10^{6}$~Мкс у~токамаку з~$R=150$~см,
 $B_0=5\times10^4$~Гс. Знайдіть теплову енергію плазми $W$, вважаючи тиск ізотропним. Чи можна за~цим сигналом визначити
 окремо $n$ і~$T$?
@@ -1193,7 +1197,7 @@ $B_0=5\times10^4$~Гс. Знайдіть теплову енергію плаз�
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:Rogowski}
+\begin{problem}\label{prb:Rogowski}\lvl{2}
 Пояс Роговського має $n_c=20$~см$^{-1}$ і~$S=0{,}5$~см$^2$. Яким буде інтеграл $\int\varepsilon\,dt$ (в~В$\cdot$с) при $I=1$~МА? Чи залежить
 результат від положення шнура всередині пояса?
 	\begin{solution}
