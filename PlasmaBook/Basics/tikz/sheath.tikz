@@ -1,22 +1,51 @@
-\begin{tikzpicture}[>=latex, scale=1]
-	% осі
+% Потенціал біля поглинальної стінки + заряди (напівпрозорі, під графіком).
+\begin{tikzpicture}[>=latex, scale=1.25]
+	\def\xw{5.9}  % положення стінки
+	\def\xs{3.7}  % межа шару
+	% ---------- заряди (на фоні) ----------
+	\pgfmathsetseed{23}
+	\foreach \i in {1,...,300} {
+		\pgfmathsetmacro{\px}{(\xw-0.1)*rnd}
+		\pgfmathsetmacro{\py}{-3.5+3.9*rnd}
+		\pgfmathsetmacro{\keep}{(rnd<ifthenelse(\px<\xs,1-0.2*(\px/\xs)^2,0.8-0.25*(\px-\xs)/(\xw-\xs)))?1:0}
+		\ifnum\keep=1 \fill[blue, opacity=0.3] (\px,\py) circle (0.055); \fi
+	}
+	\pgfmathsetseed{57}
+	\foreach \i in {1,...,300} {
+		\pgfmathsetmacro{\px}{(\xw-0.1)*rnd}
+		\pgfmathsetmacro{\py}{-3.5+3.9*rnd}
+		\pgfmathsetmacro{\keep}{(rnd<ifthenelse(\px<\xs,1-0.2*(\px/\xs)^2,0.8*exp(-1.3*(\px-\xs))))?1:0}
+		\ifnum\keep=1 \fill[red, opacity=0.3] (\px,\py) circle (0.055); \fi
+	}
+	% ---------- осі ----------
 	\draw[->] (-0.2,0) -- (7.2,0) node[right] {$x$};
 	\draw[->] (0,-3.6) -- (0,0.6) node[above] {$\varphi$};
 	% стінка
 	\fill[pattern=north east lines, pattern color=gray] (5.9,-3.6) rectangle (6.5,0.6);
 	\draw[thick] (5.9,-3.6) -- (5.9,0.6) node[above, font=\footnotesize] {стінка};
+	% негативний заряд стінки
+	\foreach \y in {-3.2,-2.7,-2.2,-1.7,-1.2,-0.7,-0.2} {
+		\node[font=\small, fill=white, inner sep=0.5pt, text=red!70!black] at (6.2,\y) {$-$};
+	}
 	% потенціал
 	\draw[very thick, blue!70!black] plot[smooth] coordinates
 		{(0,0) (1,-0.04) (2,-0.16) (3,-0.5) (3.7,-0.62) (4.4,-1.1) (5.2,-2.2) (5.9,-3.3)};
 	% межі областей
 	\draw[dashed] (3.7,-3.6) -- (3.7,0.4);
 	\node[font=\footnotesize] at (1.4,0.35) {плазма};
-	\node[font=\footnotesize, align=center] at (1.9,-1.9) {передшар\\(квазінейтральний)};
-	\node[font=\footnotesize, align=center] at (4.75,-0.45) {шар:\\ $n_i>n_e$};
+	\node[font=\footnotesize, align=center, fill=white, fill opacity=0.7, text opacity=1, inner sep=1pt]
+		at (1.9,-1.9) {передшар\\(квазінейтральний)};
+	\node[font=\footnotesize, align=center, fill=white, fill opacity=0.7, text opacity=1, inner sep=1pt]
+		at (4.75,-0.45) {шар:\\ $n_i>n_e$};
 	\node[font=\footnotesize] at (3.7,-3.85) {межа шару};
 	% рівень kT/2e
 	\draw[dotted] (0,-0.5) -- (3,-0.5);
 	\node[left, font=\footnotesize] at (0,-0.5) {$-\dfrac{T_e}{2e}$};
 	\draw[dotted] (0,-3.3) -- (5.9,-3.3);
 	\node[left, font=\footnotesize] at (0,-3.3) {$\varphi_f$};
+	% легенда
+	\fill[blue, opacity=0.5] (6.7,-1.2) circle (0.07);
+	\node[font=\footnotesize, anchor=west, blue!60!black] at (6.85,-1.2) {іони};
+	\fill[red, opacity=0.5] (6.7,-1.7) circle (0.07);
+	\node[font=\footnotesize, anchor=west, red!70!black] at (6.85,-1.7) {електрони};
 \end{tikzpicture}
