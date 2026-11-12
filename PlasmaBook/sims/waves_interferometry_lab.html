@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Лабораторна: інтерферометрія і рефлектометрія</title>
+<script src="shared/theme.js"></script>
+<style>
+:root{
+  --bg:#f4f5f7; --card:#ffffff; --fg:#1b2130; --muted:#5a6375; --line:#dde1e8; --grid:#0000001a; --axis:#555;
+  --accent:#1f5fd6; --valbg:#eef3fd;
+  --cu:#1f6fb5; --ci:#2e8b57; --cp:#c0392b; --true:#888; --wire:#2a3242; --ion:#c2410c; --ele:#1f5fbf; --plasma:#6a1b9a14;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0e1117; --card:#161a22; --fg:#e4e8ef; --muted:#9aa3b3; --line:#283040; --grid:#ffffff1a; --axis:#aaa;
+  --accent:#6ea2ff; --valbg:#18233a;
+  --cu:#6ea2ff; --ci:#4fd18b; --cp:#ff7a6e; --true:#9aa3b3; --wire:#cfd6e2; --ion:#ff9a5c; --ele:#6ea8ff; --plasma:#ce93d822;
+  color-scheme:dark;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="dark"]){
+  --bg:#0e1117; --card:#161a22; --fg:#e4e8ef; --muted:#9aa3b3; --line:#283040; --grid:#ffffff1a; --axis:#aaa;
+  --accent:#6ea2ff; --valbg:#18233a;
+  --cu:#6ea2ff; --ci:#4fd18b; --cp:#ff7a6e; --true:#9aa3b3; --wire:#cfd6e2; --ion:#ff9a5c; --ele:#6ea8ff; --plasma:#ce93d822;
+  color-scheme:dark;}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--fg);-webkit-text-size-adjust:100%}
+header.top{position:sticky;top:0;z-index:30;background:var(--card);border-bottom:1px solid var(--line);padding:8px 16px;display:flex;align-items:center;gap:12px}
+header h1{font-size:15px;margin:0;font-weight:650;line-height:1.25;flex:1}
+header h1 small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.theme-btn{font-size:16px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:7px;cursor:pointer;padding:2px 9px}
+main{padding:14px;max-width:1560px;margin:0 auto}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;align-items:start}
+aside.params{position:sticky;top:62px;max-height:calc(100vh - 74px);overflow:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.card>h3,.card>summary{font-size:15px;font-weight:650;margin:0 0 8px}
+.card>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:0}
+.card>summary::-webkit-details-marker{display:none}
+.card>summary::before{content:"▸";transition:transform .2s;color:var(--muted)}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{margin-bottom:8px}
+.hint{font-size:12.5px;color:var(--muted);margin:6px 0}
+label.f{display:block;margin-top:10px;font-size:13px}
+select,input[type=text],input[type=number]{width:100%;margin:3px 0 0;font:inherit;font-size:13px;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+option{background:var(--card);color:var(--fg)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.pgroup{border-top:1px solid var(--line);margin-top:12px;padding-top:6px}
+.pgroup b{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600}
+.btn{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--bg);color:var(--fg);padding:5px 10px;border-radius:7px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.val{font:12.5px/1.6 ui-monospace,Consolas,monospace;background:var(--valbg);border-left:3px solid var(--accent);padding:5px 9px;margin:6px 0;border-radius:0 5px 5px 0}
+.good{color:#1b7f3b}.bad{color:var(--cp)}
+.chk{display:flex;align-items:flex-start;gap:6px;font-size:13px;margin-top:8px;cursor:pointer}
+.chk input{margin-top:3px}
+[hidden]{display:none !important}
+
+/* стенд */
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.schem-wrap{flex:1 1 520px;min-width:0}
+.schem-wrap canvas{display:block;width:100%;height:330px}
+.panel{flex:0 1 330px;background:linear-gradient(180deg,#d6d8d2 0%,#c2c5be 45%,#b1b4ac 100%);border:1px solid #858881;border-radius:6px;
+  box-shadow:inset 0 1px 0 #f1f2ee, inset 0 -3px 6px rgba(0,0,0,.16), 0 3px 8px rgba(0,0,0,.28);
+  padding:12px 16px;color:#1d1d1b;position:relative;font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif;max-width:100%;min-width:260px}
+:root[data-theme="dark"] .panel{filter:brightness(.86)}
+.plate{display:flex;justify-content:space-between;align-items:baseline;gap:14px;border-bottom:1px solid #8b8e87;margin:0 10px 8px;padding-bottom:3px}
+.plate b{font-size:16px;letter-spacing:1.5px}
+.plate span{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:#3a3a36}
+.disp{display:flex;align-items:center;gap:10px;margin:8px 0}
+.disp i{font:normal 10px Arial,sans-serif;text-transform:uppercase;letter-spacing:.5px;width:78px;color:#26261f;line-height:1.15}
+.led{flex:1;background:#140606;padding:6px 12px 4px;border-radius:4px;box-shadow:inset 0 0 10px #000;display:flex;align-items:baseline;justify-content:flex-end;gap:8px}
+.led b{font:bold 28px ui-monospace,Consolas,monospace;color:#ff5236;text-shadow:0 0 6px #ff3a1a;letter-spacing:2px}
+.led u{text-decoration:none;font:bold 14px Arial;color:#ff5236;text-shadow:0 0 6px #ff3a1a}
+.rh{margin-top:12px;border:1px solid #8b8e87;border-radius:5px;padding:9px 9px 6px;position:relative}
+.rh>i{position:absolute;top:-7px;left:8px;background:#c4c6bf;padding:0 4px;font:normal 9.5px Arial,sans-serif;text-transform:uppercase;letter-spacing:.6px;color:#2b2b26}
+.rh input[type=range]{accent-color:#3c3c36;margin:2px 0}
+.rh .vrow{display:flex;gap:6px;align-items:center;justify-content:center;margin-top:4px}
+.rh .vrow input[type=number]{width:90px;margin:0;text-align:center;background:#e8e9e4;color:#111;border-color:#8b8e87}
+.btn-sov{background:linear-gradient(#f4f4f0,#c8c9c3);border:1px solid #6f716b;border-radius:3px;font:10.5px Arial,sans-serif;padding:5px 8px;cursor:pointer;color:#111;
+  box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(0,0,0,.35);text-transform:uppercase;letter-spacing:.3px}
+.btn-sov:active{box-shadow:inset 0 2px 3px rgba(0,0,0,.45)}
+.sovbtns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center}
+.panel .hint{color:#3b3b36;font-size:10.5px;margin:8px 0 0}
+.sweepbox{margin-top:10px;font-size:11px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;text-transform:uppercase;letter-spacing:.3px}
+.sweepbox label{display:block}
+.sweepbox input{width:100%;margin:2px 0 0;font-size:12px;padding:2px 4px;background:#e8e9e4;color:#111;border:1px solid #8b8e87;border-radius:3px}
+
+/* графіки */
+.graphs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(440px,100%),1fr));gap:12px}
+.g{border:1px solid var(--line);border-radius:8px;padding:4px;min-width:0}
+.g canvas{display:block;width:100%;height:360px}
+.gbar{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;justify-content:space-between;margin:0 0 6px}
+.gbar .hint,.gbar .chk{margin:0}
+.th{font-size:14.5px}
+.th h4{margin:16px 0 4px;font-size:14.5px;color:var(--accent)}
+.th p{margin:6px 0}
+.th ol,.th ul{margin:6px 0;padding-left:22px}
+.th .eq{margin:6px 0 6px 12px;font-family:"Cambria Math",Cambria,"Times New Roman",serif;font-size:16px}
+.th table{margin:8px 0;font-size:13px}
+.th .warn{border-left:3px solid #c27100;background:rgba(194,113,0,.12);padding:7px 10px;margin:10px 0;border-radius:0 6px 6px 0;font-size:14px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid var(--line);padding:2px 7px;text-align:center}
+th{background:var(--valbg)}
+.tw{max-height:300px;overflow:auto}
+textarea{width:100%;margin-top:8px;font:12px ui-monospace,Consolas,monospace;background:transparent;color:inherit;border:1px solid var(--line);border-radius:4px}
+
+@media (max-width:920px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .content{display:contents}
+  .c-th{order:1}.c-stand{order:2}
+  aside.params{order:3;position:static;max-height:none}
+  .content>details:not(.c-th):not(.c-stand){order:4}
+  header.top{position:static}
+  .panel{flex:1 1 100%}
+}
+@media (max-width:520px){main{padding:8px}.card{padding:10px}}
+.sch{display:block;width:100%;height:300px}
+.rowtabs{display:flex;gap:6px;margin:4px 0 8px}
+.g{position:relative}
+.cur{position:absolute;top:4px;bottom:4px;width:2px;background:var(--cp);opacity:.75;pointer-events:none}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Фізика плазми. Розд. 2: «Як це вимірюють: інтерферометрія і рефлектометрія»<small>Віртуальний практикум · лабораторна «Мікрохвильова діагностика густини»</small></h1>
+  <span id="theme-slot"></span>
+</header>
+
+<main>
+<div class="layout">
+ <aside class="params card">
+  <h3>Параметри</h3>
+  <label class="f">Режим
+    <select id="mode">
+      <option value="box" selected>Чорний ящик (знайти густину)</option>
+      <option value="study">Навчальний (плазма відома)</option>
+    </select>
+  </label>
+  <label class="f">Метод
+    <select id="method">
+      <option value="int" selected>Інтерферометр (набіг фази)</option>
+      <option value="ref">Рефлектометр (затримка τ(f))</option>
+    </select>
+  </label>
+
+  <div id="known" hidden>
+    <div class="pgroup"><b>Плазма (задана)</b>
+      <label class="f">lg n₀, n₀ у см⁻³ (у центрі) <span id="ln" style="color:var(--muted)"></span><input type="range" id="n0" min="11" max="14" step="0.05" value="13"></label>
+      <label class="f">Півширина a, см <span id="la" style="color:var(--muted)"></span><input type="range" id="a" min="5" max="60" step="1" value="25"></label>
+      <label class="f">Показник профілю p: n = n₀(1−s²)<sup>p</sup> <span id="lp" style="color:var(--muted)"></span><input type="range" id="p" min="0.5" max="3" step="0.1" value="1"></label>
+      <div class="hint">Зміна параметрів скидає виміряні точки.</div>
+    </div>
+  </div>
+
+  <div id="optInt" class="pgroup"><b>Інтерферометр</b>
+    <label class="f">Довжина хвилі λ
+      <select id="lam">
+        <option value="0.8">8 мм (37,5 ГГц)</option>
+        <option value="0.4">4 мм (75 ГГц)</option>
+        <option value="0.2" selected>2 мм (150 ГГц)</option>
+        <option value="0.1">1 мм (300 ГГц)</option>
+        <option value="0.0337">337 мкм (HCN-лазер)</option>
+        <option value="0.00106">10,6 мкм (CO₂-лазер)</option>
+      </select>
+    </label>
+    <label class="f">Частота вибірки детектора
+      <select id="fs">
+        <option value="10">10 кГц</option>
+        <option value="50" selected>50 кГц</option>
+        <option value="200">200 кГц</option>
+        <option value="1000">1 МГц</option>
+      </select>
+    </label>
+    <label class="f">Амплітуда вібрацій дзеркал δl, мкм <span id="ldl" style="color:var(--muted)"></span><input type="range" id="dl" min="0" max="50" step="1" value="5"></label>
+    <label class="chk"><input type="checkbox" id="comp"><span>компенсація вібрацій (другий інтерферометр на іншій λ, лишається 3 %)</span></label>
+  </div>
+
+  <div id="optRef" class="pgroup" hidden><b>Рефлектометр</b>
+    <label class="f">Частота розгортки від, ГГц<input type="number" id="f1" value="4" step="1" min="0.5"></label>
+    <label class="f">до, ГГц<input type="number" id="f2" value="40" step="1" min="2" max="120"></label>
+    <label class="f">Шум групової затримки σ<sub>τ</sub>, пс <span id="lst" style="color:var(--muted)"></span><input type="range" id="st" min="0" max="200" step="5" value="30"></label>
+    <label class="f">Невидима ділянка 0…f<sub>1</sub> (екстраполяція τ)
+      <select id="ext">
+        <option value="zero">τ = 0 (нічого не додаємо)</option>
+        <option value="quad" selected>лінійний профіль: τ ∝ f²</option>
+      </select>
+    </label>
+  </div>
+
+  <div id="boxAns" class="pgroup"><b>Ваша відповідь</b>
+    <div class="hint" id="boxTask"></div>
+    <label class="f"><span id="ansLab"></span><input type="text" id="ans" inputmode="decimal" autocomplete="off"></label>
+    <div class="btns"><button class="btn primary" id="chkAns">Перевірити</button><button class="btn" id="newBox">Нова плазма</button><button class="btn" id="showAns" hidden>Показати еталон</button></div>
+    <div class="hint" id="boxMsg"></div>
+  </div>
+
+  <div class="pgroup"><b>Результат обробки</b>
+    <div class="val" id="fr"></div>
+    <div class="hint" id="chk"></div>
+    <label class="chk"><input type="checkbox" id="showTrue"><span>показати істинні криві й профіль (еталон)</span></label>
+  </div>
+  <div class="hint">Адреса для викладача: <code>?teacher=1</code> — еталон показується завжди.</div>
+ </aside>
+
+ <div class="content">
+  <details class="card th c-th">
+   <summary>Теорія: хвиля як зонд густини</summary>
+   <p class="hint">Позначення як у розд. 2: N = √(1 − n<sub>e</sub>/n<sub>кр</sub>) — показник заломлення звичайної хвилі, n<sub>кр</sub> = π/(r<sub>e</sub>λ²) — критична концентрація, r<sub>e</sub> = 2,82·10⁻¹³ см. Плазма — плоский шар 0 &lt; x &lt; 2a з профілем n(x) = n₀(1 − s²)<sup>p</sup>, s = (x − a)/a; зіткнень і магнітного поля немає.</p>
+
+   <h4>Інтерферометр</h4>
+   <p>Якщо ω ≫ ω<sub>p</sub>, хвиля проходить крізь плазму з додатковою фазою</p>
+   <div class="eq">Δφ = (ω/c)∫(1 − N) dl ≈ r<sub>e</sub>·λ·∫n<sub>e</sub> dl.</div>
+   <p>Під час розряду інтенсивність на детекторі змінюється як 1 + cos Δφ(t): кожна смуга — це 2π. Лічильник відновлює фазу, склеюючи її без стрибків (квадратурний детектор). Із Δφ на плато знаходять лінійну середню концентрацію n̄ = Δφ/(r<sub>e</sub>λL), L = 2a — це <b>не</b> n<sub>0</sub>: профіль впливає на співвідношення між n̄ і n₀.</p>
+   <div class="warn"><b>Пастки інтерферометра.</b> (1) Перескок смуги: якщо між двома відліками фаза змінилась більше ніж на π, лічильник помиляється на ціле число 2π — підвищуйте частоту вибірки або беріть коротшу λ. (2) Вібрації дзеркал додають δφ = 2πδl/λ; для λ = 10,6 мкм вони більші за сигнал, тому їх компенсують. (3) Для довгих хвиль n<sub>e</sub> наближається до n<sub>кр</sub>: формула з r<sub>e</sub>λ дає похибку, а за n<sub>0</sub> ≥ n<sub>кр</sub> промінь відсікається.</div>
+
+   <h4>Рефлектометр</h4>
+   <p>Зондувальна хвиля частоти f відбивається в шарі x<sub>c</sub>, де n<sub>e</sub>(x<sub>c</sub>) = n<sub>кр</sub>(f), тобто f = f<sub>p</sub>(x<sub>c</sub>) ≈ 8979·√n<sub>e</sub> Гц. Вимірюють групову затримку</p>
+   <div class="eq">τ(f) = (2/c)∫<sub>0</sub><sup>x<sub>c</sub></sup> dx/N(x),</div>
+   <p>а профіль відновлюють оберненням Абеля: x<sub>c</sub>(F) = (c/π)∫<sub>0</sub><sup>F</sup> τ(f) df/√(F² − f²) = (c/π)∫<sub>0</sub><sup>π/2</sup> τ(F sin θ) dθ. Приймач бачить лише шари до f<sub>p</sub>(n₀): глибше за максимум густини профіль недоступний.</p>
+   <div class="warn"><b>Пастки рефлектометра.</b> (1) Розгортка починається від f<sub>1</sub> &gt; 0: ділянку 0…f<sub>1</sub> (край плазми) не видно, її внесок у x<sub>c</sub> треба екстраполювати, інакше профіль зсувається. (2) Шум τ підсилюється оберненням Абеля. (3) Профіль має зростати монотонно, інакше шар відбиття не визначений.</div>
+
+   <h4>Хід роботи</h4>
+   <ol>
+    <li><b>Інтерферометр.</b> Оберніть λ так, щоб n<sub>кр</sub> помітно перевищувала густину плазми, але сигнал давав хоча б кілька смуг. Подивіться на сигнал детектора, порівняйте відновлений лічильником набіг фази з еталоном і знайдіть n̄ за формулою.</li>
+    <li>Змінюйте частоту вибірки й амплітуду вібрацій: коли лічильник «губить» смугу? Що дає компенсація?</li>
+    <li><b>Рефлектометр.</b> Зніміть τ(f) вручну або розгорткою, подивіться на відновлений профіль, знайдіть положення шару заданої густини. Змініть f<sub>1</sub> і спосіб екстраполяції.</li>
+   </ol>
+  </details>
+
+  <details class="card c-stand" open>
+   <summary>Схема стенда і прилади</summary>
+   <div class="row">
+    <div class="schem-wrap"><canvas id="cSch" class="sch"></canvas></div>
+    <div class="panel">
+     <div class="plate"><b>ДІАГНОСТИКА</b><span id="plateSub">шум і похибка</span></div>
+
+     <div id="pInt">
+      <div class="disp"><i>лічильник<br>смуг N</i><div class="led"><b id="dN">0,00</b><u>смуг</u></div></div>
+      <div class="disp"><i>набіг фази<br>Δφ</i><div class="led"><b id="dPhi">0,0</b><u>рад</u></div></div>
+      <div class="rh"><i>час розряду t, мс</i>
+        <input type="range" id="tcur" min="0" max="20" step="0.05" value="0" aria-label="Час розряду">
+        <div class="vrow"><button class="btn-sov" id="play">⏸ Пауза</button><button class="btn-sov" id="shot">Новий розряд</button></div>
+      </div>
+      <div class="hint">Лічильник і Δφ — на плато розряду (7–13 мс). Анімація на схемі показує розряд у часі; червона лінія на графіках — той самий момент.</div>
+     </div>
+
+     <div id="pRef" hidden>
+      <div class="disp"><i>частота<br>зонда f</i><div class="led"><b id="dF">10,00</b><u>ГГц</u></div></div>
+      <div class="disp"><i>затримка<br>τ</i><div class="led"><b id="dT">0,000</b><u>нс</u></div></div>
+      <div class="rh"><i>частота генератора</i>
+        <input type="range" id="fs0" min="1" max="60" step="0.1" value="10" aria-label="Частота">
+        <div class="vrow">
+          <button class="btn-sov" data-df="-1">−1</button><button class="btn-sov" data-df="-0.1">−0,1</button>
+          <input type="number" id="fn" step="0.1" value="10" aria-label="Частота, ГГц">
+          <button class="btn-sov" data-df="0.1">+0,1</button><button class="btn-sov" data-df="1">+1</button>
+        </div>
+      </div>
+      <div class="sovbtns">
+        <button class="btn-sov" id="take">Зняти точку</button>
+        <button class="btn-sov" id="undo">Видалити останню</button>
+        <button class="btn-sov" id="clear">Очистити</button>
+      </div>
+      <div class="sweepbox">
+        <label>від, ГГц<input type="number" id="sw0" value="4" step="1"></label>
+        <label>до, ГГц<input type="number" id="sw1" value="40" step="1"></label>
+        <label>точок<input type="number" id="swn" value="60" min="5" max="400" step="1"></label>
+      </div>
+      <div class="sovbtns"><button class="btn-sov" id="sweep">Автоматична розгортка</button></div>
+     </div>
+    </div>
+   </div>
+  </details>
+
+  <details class="card" open>
+   <summary>Графіки</summary>
+   <div class="gbar"><div class="hint" id="gHint"></div></div>
+   <div class="graphs">
+     <div class="g"><canvas id="cG1"></canvas><div class="cur" id="cur1" hidden></div></div>
+     <div class="g"><canvas id="cG2"></canvas><div class="cur" id="cur2" hidden></div></div>
+   </div>
+  </details>
+
+  <details class="card" id="tblCard">
+   <summary>Таблиця вимірювань (рефлектометр)</summary>
+   <div class="tw"><table id="tbl"><thead><tr><th>№</th><th>f, ГГц</th><th>τ, нс</th></tr></thead><tbody></tbody></table></div>
+   <div class="btns"><button class="btn" id="cp">Копіювати таблицю</button><button class="btn" id="csv">Завантажити CSV</button></div>
+  </details>
+ </div>
+</div>
+</main>
+
+<script>
+/*CORE*/
+var RE = 2.818e-13, C = 3e10;                 /* см, см/с */
+function nCrLam(lam) { return Math.PI / (RE * lam * lam); }       /* lam у см → см⁻³ */
+function nCrF(f) { return Math.pow(f / 8979, 2); }                /* f у Гц → см⁻³ */
+function prof(x, P) {
+  if (x <= 0 || x >= 2 * P.a) return 0;
+  var s = (x - P.a) / P.a; return P.n0 * Math.pow(1 - s * s, P.p);
+}
+function intN(P, M) {                                             /* ∫n dl, см⁻² */
+  M = M || 800; var dx = 2 * P.a / M, s = 0;
+  for (var i = 0; i < M; i++) s += prof((i + 0.5) * dx, P) * dx;
+  return s;
+}
+/* точний набіг фази Δφ = (2π/λ)∫(1−N)dl при n = w·n(x); NaN — відсічка */
+function phaseExact(P, lam, w, M) {
+  M = M || 600; var dx = 2 * P.a / M, s = 0, nc = nCrLam(lam);
+  for (var i = 0; i < M; i++) {
+    var r = w * prof((i + 0.5) * dx, P) / nc; if (r >= 1) return NaN;
+    s += (1 - Math.sqrt(1 - r)) * dx;
+  }
+  return 2 * Math.PI / lam * s;
+}
+function wave(t, T) {                                             /* форма розряду, t і T у мс */
+  var u = t / T;
+  if (u < 0.2) { var s = Math.sin(Math.PI * u / 0.4); return s * s; }
+  if (u < 0.7) return 1;
+  if (u < 0.9) { var c = Math.cos(Math.PI * (u - 0.7) / 0.4); return c * c; }
+  return 0;
+}
+function mulberry(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gaussR(rnd) { var u = 0, v = 0; while (!u) u = rnd(); while (!v) v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+/* Цифровий запис розряду. o: {lam, fsK (кГц), dl (мкм), comp, seed}. Повертає масиви t, I, phiM (відновлена), phiT (істинна). */
+function runShot(P, o) {
+  var T = 20, ns = Math.round(o.fsK * T), nc = nCrLam(o.lam);
+  if (P.n0 >= nc) return { cut: true };
+  var tab = [], K = 100, k;
+  for (k = 0; k <= K; k++) tab.push(phaseExact(P, o.lam, k / K, 400));
+  var rnd = mulberry(o.seed), A = 2 * Math.PI * o.dl * 1e-4 / o.lam, ph0 = 2 * Math.PI * rnd();
+  var R = { t: [], I: [], phiM: [], phiT: [], ns: ns, T: T, ph00: ph0 }, prev = null, acc = 0;
+  for (k = 0; k < ns; k++) {
+    var t = k / ns * T, w = wave(t, T), x = w * K, i0 = Math.min(K - 1, Math.floor(x));
+    var pt = tab[i0] + (tab[i0 + 1] - tab[i0]) * (x - i0);
+    var vib = A * (0.7 * Math.sin(2 * Math.PI * 0.4 * t + 1) + 0.3 * Math.sin(2 * Math.PI * 1.3 * t));
+    var ph = pt + vib + ph0, sn = 0.04;
+    var Ic = Math.cos(ph) + sn * gaussR(rnd), Qs = Math.sin(ph) + sn * gaussR(rnd);
+    var a = Math.atan2(Qs, Ic);
+    if (prev === null) acc = a; else { var d = a - prev; while (d > Math.PI) d -= 2 * Math.PI; while (d <= -Math.PI) d += 2 * Math.PI; acc += d; }
+    prev = a;
+    R.t.push(t); R.I.push(1 + Ic); R.phiT.push(pt);
+    R.phiM.push(acc - (o.comp ? 0.97 : 0) * vib);
+  }
+  var off = R.phiM[0] - R.phiT[0]; for (k = 0; k < ns; k++) R.phiM[k] -= off;   /* нуль у момент t = 0 (до розряду) */
+  return R;
+}
+
+/* Рефлектометр */
+function xcOf(nc, P) {
+  if (nc >= P.n0) return NaN;
+  var a = 0, b = P.a, i;
+  for (i = 0; i < 80; i++) { var m = (a + b) / 2; if (prof(m, P) < nc) a = m; else b = m; }
+  return (a + b) / 2;
+}
+function tauTrue(f, P) {                                          /* f у Гц, повертає секунди */
+  var nc = nCrF(f), xc = xcOf(nc, P); if (isNaN(xc)) return NaN;
+  var W = Math.sqrt(xc), M = 300, s = 0;
+  for (var k = 0; k < M; k++) {
+    var w = (k + 0.5) / M * W, x = xc - w * w, N = Math.sqrt(Math.max(1e-12, 1 - prof(x, P) / nc));
+    s += 2 * w / N * (W / M);
+  }
+  return 2 / C * s;
+}
+/* Обернення Абеля: x_c(F) = (c/π)∫₀^{π/2} τ(F sinθ)dθ. pts — [{f, tau}] (Гц, с); ext — 'zero' | 'quad' */
+function abel(pts, F, ext) {
+  var a = pts.slice().sort(function (p, q) { return p.f - q.f; });
+  var f0 = a[0].f, t0 = a[0].tau, n = a.length;
+  function tauAt(f) {
+    if (f <= f0) return ext === 'quad' ? t0 * Math.pow(f / f0, 2) : 0;
+    for (var i = 1; i < n; i++) if (f <= a[i].f) { var u = (f - a[i - 1].f) / (a[i].f - a[i - 1].f); return a[i - 1].tau + u * (a[i].tau - a[i - 1].tau); }
+    return a[n - 1].tau;
+  }
+  var M = 300, s = 0;
+  for (var k = 0; k < M; k++) s += tauAt(F * Math.sin((k + 0.5) / M * Math.PI / 2)) * (Math.PI / 2 / M);
+  return C / Math.PI * s;
+}
+/*ENDCORE*/
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var Q = new URLSearchParams(location.search), teacher = Q.has('teacher');
+  var P = { n0: 1e13, a: 25, p: 1 }, box = { on: true, shown: false, task: null };
+  var anim = { t: 0, clock: 0, playing: true, last: 0 };
+  var shot = null, seed = 1, pts = [], rec = null, lastF = 10, lastTau = 0;
+
+  function fmtc(v, d) { return v.toFixed(d).replace('.', ','); }
+  function sig(v, k) { if (!isFinite(v)) return '—'; if (v === 0) return '0'; var d = Math.max(0, k - 1 - Math.floor(Math.log10(Math.abs(v)))); return v.toFixed(Math.min(d, 8)).replace('.', ','); }
+  function sci(v) { if (!isFinite(v) || v <= 0) return '—'; var e = Math.floor(Math.log10(v)), m = v / Math.pow(10, e); return sig(m, 2) + '·10<sup>' + e + '</sup>'; }
+  function parseNum(s) { return parseFloat(String(s).replace(',', '.').replace(/\s/g, '')); }
+  function logU(a, b) { return Math.pow(10, a + (b - a) * Math.random()); }
+  function method() { return $('method').value; }
+  function showTruth() { return !box.on || teacher || $('showTrue').checked || box.shown; }
+  function showTr() { return !box.on ? true : (teacher || box.shown || $('showTrue').checked); }
+  function span(t, c) { return c ? '<span class="' + c + '">' + t + '</span>' : t; }
+
+  /* ---------- плазма ---------- */
+  function readStudy() { P.n0 = Math.pow(10, +$('n0').value); P.a = +$('a').value; P.p = +$('p').value; }
+  function randomBox() {
+    P.n0 = logU(11.7, 13.7); P.a = Math.round(15 + 30 * Math.random()); P.p = Math.round((1 + 1.5 * Math.random()) * 10) / 10;
+    box.shown = false; $('ans').value = ''; $('boxMsg').textContent = ''; $('showAns').hidden = true;
+    var fpm = 8979 * Math.sqrt(P.n0) / 1e9;
+    box.task = { Ft: Math.max(2, Math.round(fpm * (0.4 + 0.3 * Math.random()))) };
+    seed = 1 + Math.floor(Math.random() * 1e6);
+  }
+  function labels() {
+    $('ln').textContent = fmtc(+$('n0').value, 2); $('la').textContent = fmtc(+$('a').value, 0) + ' см'; $('lp').textContent = fmtc(+$('p').value, 1);
+    $('ldl').textContent = $('dl').value + ' мкм'; $('lst').textContent = $('st').value + ' пс';
+  }
+  function setMethodUI() {
+    var I = method() === 'int';
+    $('optInt').hidden = !I; $('optRef').hidden = I; $('pInt').hidden = !I; $('pRef').hidden = I; $('tblCard').hidden = I;
+    $('known').hidden = box.on;
+    if (!I) { $('cur1').hidden = true; $('cur2').hidden = true; }
+    $('boxAns').hidden = !box.on;
+    if (I) $('boxTask').innerHTML = 'Параметри плазми невідомі й випадкові. Хорда проходить крізь усю плазму завширшки L = 2a. Знайдіть <b>лінійний інтеграл</b> ∫n dl = Δφ/(r<sub>e</sub>λ) і введіть його в см⁻² (напр. 3e14). Підказка: коректний результат дає лише довжина хвилі, для якої n<sub>кр</sub> ≫ n і немає перескоків смуг.';
+    else $('boxTask').innerHTML = 'Зніміть τ(f) і відновіть профіль; знайдіть положення шару відбиття для заданої частоти зонда.';
+    $('ansLab').innerHTML = I ? '∫n dl, см⁻² (напр. 3e14)' : 'x шару для f = ' + (box.task ? box.task.Ft : '…') + ' ГГц, см від краю';
+    $('plateSub').textContent = I ? 'інтерферометр' : 'рефлектометр';
+    $('gHint').textContent = I ? 'Зліва — сигнал детектора: кожна смуга = 2π. Справа — відновлене лічильником число смуг (фаза без стрибків) і еталон.'
+                               : 'Зліва — групова затримка τ(f). Справа — профіль n(x), відновлений оберненням Абеля.';
+  }
+  function applyAll(resetPts) {
+    box.on = $('mode').value === 'box';
+    if (!box.on) readStudy();
+    setMethodUI();
+    if (resetPts) pts = [];
+    labels(); refresh(true);
+  }
+
+  /* ---------- інтерферометр ---------- */
+  function lam() { return +$('lam').value; }
+  function doShot() {
+    shot = runShot(P, { lam: lam(), fsK: +$('fs').value, dl: +$('dl').value, comp: $('comp').checked, seed: seed });
+    if (shot.cut) { rec = null; return; }
+    var s = 0, c = 0, sT = 0;
+    for (var k = 0; k < shot.t.length; k++) if (shot.t[k] >= 7 && shot.t[k] <= 13) { s += shot.phiM[k]; sT += shot.phiT[k]; c++; }
+    rec = { dphi: s / c, dphiT: sT / c };
+  }
+  function updateResultInt() {
+    var el = $('fr'), hint = $('chk'), h = [], tr = showTr();
+    if (shot && shot.cut) { el.innerHTML = '—'; hint.textContent = 'n₀ ≥ n_кр(λ) = ' + sci(nCrLam(lam())).replace(/<\/?sup>/g, '') + ' см⁻³: хвиля відбивається, до детектора не доходить. Візьміть коротшу λ.'; $('dN').textContent = '—'; $('dPhi').textContent = '—'; return; }
+    var nl = rec.dphi / (RE * lam()), N = rec.dphi / (2 * Math.PI);
+    $('dN').textContent = fmtc(N, 2); $('dPhi').textContent = fmtc(rec.dphi, 1);
+    h.push('Δφ = ' + sig(rec.dphi, 4) + ' рад = ' + sig(N, 3) + ' смуг');
+    h.push('∫n dl = Δφ/(r<sub>e</sub>λ) = ' + sci(nl) + ' см⁻²');
+    var warns = [];
+    if (tr) {
+      var ex = intN(P), good = Math.abs(nl / ex - 1) < 0.1;
+      h.push('<small>істинне: Δφ = ' + sig(rec.dphiT, 4) + ' рад; ∫n dl = ' + sci(ex) + ' см⁻²; n̄ = ' + sci(ex / (2 * P.a)) + ' см⁻³; n₀ = ' + sci(P.n0) + ' см⁻³; n₀/n_кр = ' + sig(P.n0 / nCrLam(lam()), 2) + '</small>');
+      if (!good) warns.push('відновлене ∫n dl відрізняється від істинного більше ніж на 10 %: можливий перескок смуги, вібрації чи наближення n ≪ n_кр');
+    }
+    el.innerHTML = h.join('<br>');
+    hint.textContent = warns.join('; ');
+  }
+
+  /* ---------- рефлектометр ---------- */
+  function measure(f) {                                           /* f у ГГц → {f, tau} (с) */
+    var t = tauTrue(f * 1e9, P);
+    if (isNaN(t)) return { f: f, tau: NaN };
+    return { f: f, tau: Math.max(0, t + gaussR(Math.random) * +$('st').value * 1e-12) };
+  }
+  function showF() {
+    var f = +$('fs0').value; lastF = f;
+    var m = measure(f); lastTau = m.tau;
+    $('dF').textContent = fmtc(f, 2);
+    $('dT').textContent = isNaN(m.tau) ? '—' : fmtc(m.tau * 1e9, 3);
+  }
+  function takeRef() { if (!isNaN(lastTau)) { pts.push({ f: lastF, tau: lastTau }); refresh(false); } }
+  function sweepRef() {
+    var a = +$('sw0').value, b = +$('sw1').value, n = Math.max(5, Math.min(400, Math.round(+$('swn').value)));
+    for (var i = 0; i < n; i++) { var m = measure(a + (b - a) * i / (n - 1)); if (!isNaN(m.tau)) pts.push(m); }
+    refresh(false);
+  }
+  function doRec() {
+    rec = null;
+    if (pts.length < 4) return;
+    var a = pts.map(function (p) { return { f: p.f * 1e9, tau: p.tau }; });
+    var fs = a.map(function (p) { return p.f; }).sort(function (x, y) { return x - y; });
+    var prof_ = [], ext = $('ext').value;
+    fs.forEach(function (F) { if (F > fs[0] * 1.001) prof_.push({ f: F, x: abel(a, F, ext), n: nCrF(F) }); });
+    rec = { prof: prof_, pts: a };
+  }
+  /* положення шару для заданої f з відновленого профілю (інтерполяція) */
+  function xAtFreq(Fg) {
+    if (!rec) return NaN; var pr = rec.prof, F = Fg * 1e9, i;
+    for (i = 1; i < pr.length; i++) if (F <= pr[i].f && F >= pr[i - 1].f) { var u = (F - pr[i - 1].f) / (pr[i].f - pr[i - 1].f); return pr[i - 1].x + u * (pr[i].x - pr[i - 1].x); }
+    return NaN;
+  }
+  function updateResultRef() {
+    var el = $('fr'), hint = $('chk'), h = [], tr = showTr();
+    if (!rec) { el.innerHTML = '—'; hint.textContent = pts.length + ' точок; потрібно щонайменше 4 (зніміть τ у різних f)'; return; }
+    var last = rec.prof[rec.prof.length - 1];
+    if (!last) { el.innerHTML = '—'; hint.textContent = 'розширте діапазон частот'; return; }
+    h.push('f<sub>max</sub> = ' + sig(rec.pts[rec.pts.length - 1].f / 1e9, 3) + ' ГГц → n = ' + sci(last.n) + ' см⁻³');
+    h.push('x(f<sub>max</sub>) = ' + sig(last.x, 3) + ' см');
+    if (box.on && box.task) h.push('x(' + box.task.Ft + ' ГГц) = ' + sig(xAtFreq(box.task.Ft), 3) + ' см');
+    if (tr) {
+      h.push('<small>істинне: n₀ = ' + sci(P.n0) + ' см⁻³ (f<sub>p</sub> = ' + sig(8979 * Math.sqrt(P.n0) / 1e9, 3) + ' ГГц); x(f<sub>max</sub>) = ' + sig(xcOf(last.n, P), 3) + ' см</small>');
+      if (box.task) h.push('<small>істинне x(' + box.task.Ft + ' ГГц) = ' + sig(xcOf(nCrF(box.task.Ft * 1e9), P), 3) + ' см</small>');
+    }
+    el.innerHTML = h.join('<br>');
+    var f1 = rec.pts.reduce(function (m, p) { return Math.min(m, p.f); }, 1e15) / 1e9, w = [];
+    if (f1 > 2 && $('ext').value === 'zero') w.push('ділянку 0…' + sig(f1, 2) + ' ГГц не враховано: профіль зсунуто в глибину');
+    hint.textContent = w.join('; ') + (w.length ? '. ' : '') + 'Точок: ' + rec.pts.length + '.';
+  }
+
+  function checkAnswer() {
+    var v = parseNum($('ans').value), m = [];
+    if (!isFinite(v)) { $('boxMsg').innerHTML = '<span class="bad">Введіть число.</span>'; return; }
+    if (method() === 'int') {
+      var ex = intN(P), ok = Math.abs(v / ex - 1) < 0.1;
+      m.push(span('∫n dl: ' + (ok ? 'вірно' : 'невірно') + ' (допуск 10 %)', ok ? 'good' : 'bad'));
+    } else {
+      var xt = xcOf(nCrF(box.task.Ft * 1e9), P), ok2 = Math.abs(v - xt) < Math.max(0.5, 0.08 * xt);
+      m.push(span('x: ' + (ok2 ? 'вірно' : 'невірно') + ' (допуск 8 % або 0,5 см)', ok2 ? 'good' : 'bad'));
+    }
+    $('boxMsg').innerHTML = m.join('<br>'); $('showAns').hidden = false;
+  }
+
+  /* ---------- графіки ---------- */
+  var COL = {};
+  function colors() {
+    var s = getComputedStyle(document.documentElement), v = function (n) { return s.getPropertyValue(n).trim(); };
+    COL = { bg: v('--card'), ink: v('--fg'), ax: v('--axis'), gr: v('--grid'), u: v('--cu'), i: v('--ci'), p: v('--cp'), tr: v('--true'), acc: v('--accent'), ion: v('--ion'), ele: v('--ele'), plasma: v('--plasma'), wire: v('--wire'), muted: v('--muted') };
+  }
+  function setup(cv) {
+    var d = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+    if (cv.width !== Math.round(w * d) || cv.height !== Math.round(h * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); }
+    var g = cv.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, w, h);
+    g.font = '13px system-ui,"Segoe UI",sans-serif';
+    return { g: g, w: w, h: h };
+  }
+  function niceStep(r) { var p = Math.pow(10, Math.floor(Math.log10(r))), m = [1, 2, 2.5, 5, 10]; for (var i = 0; i < m.length; i++) if (m[i] * p >= r) return m[i] * p; return 10 * p; }
+  function frame(g, w, h, o) {
+    var x0 = 58, x1 = w - 14, y0 = h - 34, y1 = 34;
+    var X = function (v) { return x0 + (v - o.xmin) / (o.xmax - o.xmin) * (x1 - x0); };
+    var Y = function (v) { return y0 - (v - o.ymin) / (o.ymax - o.ymin) * (y0 - y1); };
+    g.textBaseline = 'alphabetic'; g.fillStyle = COL.ink; g.textAlign = 'left'; g.fillText(o.title, 6, 16);
+    g.strokeStyle = COL.gr; g.lineWidth = 1;
+    var st = niceStep((o.xmax - o.xmin) / 7), v;
+    for (v = Math.ceil(o.xmin / st) * st; v <= o.xmax + 1e-9; v += st) {
+      g.beginPath(); g.moveTo(X(v), y1); g.lineTo(X(v), y0); g.stroke();
+      g.fillStyle = COL.ax; g.textAlign = 'center'; g.fillText(String(+v.toFixed(6)).replace('.', ','), X(v), y0 + 15);
+    }
+    var sy = niceStep((o.ymax - o.ymin) / 6);
+    for (v = Math.ceil(o.ymin / sy) * sy; v <= o.ymax + 1e-9; v += sy) {
+      g.strokeStyle = COL.gr; g.beginPath(); g.moveTo(x0, Y(v)); g.lineTo(x1, Y(v)); g.stroke();
+      g.fillStyle = COL.ax; g.textAlign = 'right'; g.fillText(String(+v.toPrecision(6)).replace('.', ','), x0 - 6, Y(v) + 4);
+    }
+    g.strokeStyle = COL.ax; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x0, y1); g.lineTo(x0, y0); g.lineTo(x1, y0); g.stroke();
+    g.fillStyle = COL.ink; g.textAlign = 'right'; g.fillText(o.xlab, x1, y0 + 28);
+    g.textAlign = 'left'; g.fillText(o.ylab, x0 + 4, y1 - 8);
+    return { X: X, Y: Y, x0: x0, x1: x1, y0: y0, y1: y1 };
+  }
+  function clip(g, A) { g.save(); g.beginPath(); g.rect(A.x0, A.y1, A.x1 - A.x0, A.y0 - A.y1); g.clip(); }
+  function line(g, A, xs, ys, col, w, dash) {
+    g.strokeStyle = col; g.lineWidth = w; g.setLineDash(dash || []); g.beginPath();
+    var st = false;
+    for (var i = 0; i < xs.length; i++) { if (!isFinite(ys[i])) { st = false; continue; } if (st) g.lineTo(A.X(xs[i]), A.Y(ys[i])); else { g.moveTo(A.X(xs[i]), A.Y(ys[i])); st = true; } }
+    g.stroke(); g.setLineDash([]);
+  }
+  function marker(g, x, y, col, hollow, r) {
+    g.beginPath(); g.arc(x, y, r || 3.4, 0, 2 * Math.PI);
+    if (hollow) { g.fillStyle = COL.bg; g.fill(); g.strokeStyle = col; g.lineWidth = 1.5; g.stroke(); } else { g.fillStyle = col; g.fill(); }
+  }
+  function legend(g, A, items) {
+    items.forEach(function (it, k) {
+      var y = A.y1 + 12 + k * 17, x = A.x1 - 8;
+      g.strokeStyle = it.col; g.lineWidth = 2; g.setLineDash(it.dash || []); g.beginPath(); g.moveTo(x - 24, y); g.lineTo(x, y); g.stroke(); g.setLineDash([]);
+      g.fillStyle = COL.ink; g.textAlign = 'right'; g.fillText(it.t, x - 30, y + 4);
+    });
+  }
+  function msg(g, A, txt) { g.fillStyle = COL.muted; g.textAlign = 'center'; g.fillText(txt, (A.x0 + A.x1) / 2, (A.y0 + A.y1) / 2); }
+
+  function drawG() { colors(); if (method() === 'int') drawInt(); else drawRef(); }
+  function drawInt() {
+    var s1 = setup($('cG1')), g = s1.g, A, k;
+    A = frame(g, s1.w, s1.h, { xmin: 0, xmax: 20, ymin: 0, ymax: 2.2, title: 'Сигнал детектора', xlab: 't, мс', ylab: 'I, відн. од.' });
+    if (!shot || shot.cut) { msg(g, A, 'хвиля не проходить крізь плазму (відсічка)'); var s2c = setup($('cG2')); var A2c = frame(s2c.g, s2c.w, s2c.h, { xmin: 0, xmax: 20, ymin: -1, ymax: 1, title: 'Відновлене число смуг', xlab: 't, мс', ylab: 'N' }); msg(s2c.g, A2c, '—'); return; }
+    clip(g, A);
+    g.fillStyle = COL.plasma; g.fillRect(A.X(7), A.y1, A.X(13) - A.X(7), A.y0 - A.y1);
+    line(g, A, shot.t, shot.I, COL.u, 1.2);
+    g.restore();
+    var s2 = setup($('cG2')), g2 = s2.g, Nm = shot.phiM.map(function (v) { return v / (2 * Math.PI); }), Nt = shot.phiT.map(function (v) { return v / (2 * Math.PI); });
+    var mx = 1, mn = 0; Nm.concat(showTr() ? Nt : []).forEach(function (v) { mx = Math.max(mx, v); mn = Math.min(mn, v); });
+    var pad = 0.1 * (mx - mn);
+    var A2 = frame(g2, s2.w, s2.h, { xmin: 0, xmax: 20, ymin: mn - pad, ymax: mx + pad, title: 'Відновлене число смуг N = Δφ/2π', xlab: 't, мс', ylab: 'N' });
+    clip(g2, A2);
+    g2.fillStyle = COL.plasma; g2.fillRect(A2.X(7), A2.y1, A2.X(13) - A2.X(7), A2.y0 - A2.y1);
+    if (showTr()) line(g2, A2, shot.t, Nt, COL.tr, 1.8, [6, 4]);
+    line(g2, A2, shot.t, Nm, COL.acc, 1.6);
+    g2.restore();
+    legend(g2, A2, [{ t: 'лічильник смуг', col: COL.acc }].concat(showTr() ? [{ t: 'еталон', col: COL.tr, dash: [6, 4] }] : []));
+  }
+  function drawRef() {
+    var s1 = setup($('cG1')), g = s1.g, A, i;
+    var fmaxTrue = 8979 * Math.sqrt(P.n0) / 1e9, fmx = Math.max(+$('f2').value, 10);
+    var ymaxs = 1e-12; for (i = 0; i < pts.length; i++) ymaxs = Math.max(ymaxs, pts[i].tau);
+    var tx = [], ty = [];
+    if (showTr()) { for (i = 0; i <= 200; i++) { var f = fmx * i / 200; tx.push(f); ty.push(tauTrue(f * 1e9, P)); } ty.forEach(function (v) { if (isFinite(v)) ymaxs = Math.max(ymaxs, v); }); }
+    if (!pts.length && !showTr()) ymaxs = 5e-9;
+    A = frame(g, s1.w, s1.h, { xmin: 0, xmax: fmx, ymin: 0, ymax: ymaxs * 1e9 * 1.15, title: 'Групова затримка τ(f)', xlab: 'f, ГГц', ylab: 'τ, нс' });
+    clip(g, A);
+    if (showTr()) line(g, A, tx, ty.map(function (v) { return v * 1e9; }), COL.tr, 1.8, [6, 4]);
+    pts.forEach(function (p) { marker(g, A.X(p.f), A.Y(p.tau * 1e9), COL.u, false); });
+    marker(g, A.X(lastF), A.Y(isNaN(lastTau) ? 0 : lastTau * 1e9), COL.p, false, 5);
+    g.restore();
+    legend(g, A, [{ t: 'виміряні точки', col: COL.u }].concat(showTr() ? [{ t: 'еталон', col: COL.tr, dash: [6, 4] }] : []));
+
+    var s2 = setup($('cG2')), g2 = s2.g;
+    var xmx = 2 * P.a, nmx = P.n0 / 1e12;
+    if (box.on && !showTr()) { xmx = 60; nmx = 0; if (rec) rec.prof.forEach(function (q) { xmx = Math.max(xmx, q.x * 1.1); nmx = Math.max(nmx, q.n / 1e12); }); if (!nmx) nmx = 30; }
+    var A2 = frame(g2, s2.w, s2.h, { xmin: 0, xmax: showTr() ? 2 * P.a : xmx, ymin: 0, ymax: Math.max(nmx, 0.1) * 1.1, title: 'Профіль концентрації n(x)', xlab: 'x, см', ylab: 'n, 10¹² см⁻³' });
+    clip(g2, A2);
+    if (showTr()) { var px = [], py = []; for (i = 0; i <= 300; i++) { var xx = 2 * P.a * i / 300; px.push(xx); py.push(prof(xx, P) / 1e12); } line(g2, A2, px, py, COL.tr, 1.8, [6, 4]); }
+    if (rec && rec.prof.length) { line(g2, A2, rec.prof.map(function (q) { return q.x; }), rec.prof.map(function (q) { return q.n / 1e12; }), COL.acc, 2); rec.prof.forEach(function (q, j) { if (j % Math.max(1, Math.floor(rec.prof.length / 25)) === 0) marker(g2, A2.X(q.x), A2.Y(q.n / 1e12), COL.acc, true, 3); }); }
+    if (box.on && box.task) { var nt = nCrF(box.task.Ft * 1e9) / 1e12; g2.strokeStyle = COL.p; g2.lineWidth = 1.1; g2.setLineDash([3, 4]); g2.beginPath(); g2.moveTo(A2.x0, A2.Y(nt)); g2.lineTo(A2.x1, A2.Y(nt)); g2.stroke(); g2.setLineDash([]); g2.fillStyle = COL.p; g2.textAlign = 'left'; g2.fillText('f_p = ' + box.task.Ft + ' ГГц', A2.x0 + 6, A2.Y(nt) - 4); }
+    g2.restore();
+    legend(g2, A2, [{ t: 'відновлено (Абель)', col: COL.acc }].concat(showTr() ? [{ t: 'істинний профіль', col: COL.tr, dash: [6, 4] }] : []));
+  }
+
+  /* ---------- схема ---------- */
+  function drawSch() {
+    var s = setup($('cSch')), g = s.g, w = s.w, h = s.h; colors();
+    var I = method() === 'int', i;
+    var px0 = 0.3 * w, px1 = 0.62 * w, py0 = 0.12 * h, py1 = 0.55 * h;
+    /* плазма із градієнтом густини (колір — густина) */
+    if (I) {
+      var yb = (py0 + py1) / 2, ry = 0.86 * h, sx = 0.07 * w, x1 = 0.2 * w, x2 = 0.74 * w, dx = 0.93 * w;
+      var T = 20, ph0 = 0, lag = 0, wnow = 0, Nnow = 0, k0 = 0;
+      if (shot && !shot.cut) { k0 = Math.max(0, Math.min(shot.t.length - 1, Math.round(anim.t / T * shot.t.length))); ph0 = shot.phiM[k0]; wnow = wave(anim.t, T); Nnow = ph0 / (2 * Math.PI); }
+      var cut = shot && shot.cut;
+      /* плазма: густина змінюється в часі (прозорість ∝ w(t)) */
+      var al = cut ? 0.55 : 0.08 + 0.5 * wnow, grad = g.createLinearGradient(px0, 0, px1, 0);
+      grad.addColorStop(0, 'rgba(120,70,190,' + (al * 0.1) + ')'); grad.addColorStop(0.5, 'rgba(120,70,190,' + al + ')'); grad.addColorStop(1, 'rgba(120,70,190,' + (al * 0.1) + ')');
+      g.fillStyle = grad; g.fillRect(px0, py0, px1 - px0, py1 - py0);
+      g.strokeStyle = COL.muted; g.lineWidth = 1; g.strokeRect(px0, py0, px1 - px0, py1 - py0);
+      g.fillStyle = COL.muted; g.font = '12px system-ui'; g.textAlign = 'center'; g.fillText('плазма (хорда L = 2a)', (px0 + px1) / 2, py0 + 14);
+      /* оптика */
+      g.strokeStyle = COL.wire; g.lineWidth = 1; g.setLineDash([2, 3]);
+      g.beginPath(); g.moveTo(x1, yb); g.lineTo(x1, ry); g.lineTo(x2, ry); g.lineTo(x2, yb); g.stroke(); g.setLineDash([]);
+      function bsp(x, y) { g.fillStyle = COL.bg; g.strokeStyle = COL.ink; g.lineWidth = 1.5; g.beginPath(); g.rect(x - 9, y - 9, 18, 18); g.fill(); g.stroke(); g.beginPath(); g.moveTo(x - 9, y + 9); g.lineTo(x + 9, y - 9); g.stroke(); }
+      function mir(x, y) { g.strokeStyle = COL.ink; g.lineWidth = 4; g.beginPath(); g.moveTo(x - 9, y + 9); g.lineTo(x + 9, y - 9); g.stroke(); }
+      bsp(x1, yb); bsp(x2, yb); mir(x1, ry); mir(x2, ry);
+      g.fillStyle = COL.ink; g.fillRect(sx - 12, yb - 12, 24, 24);
+      g.fillStyle = COL.muted; g.font = '12px system-ui'; g.textAlign = 'center';
+      g.fillText('джерело', sx, yb - 18); g.fillText('дзеркало', x1, ry + 22); g.fillText('дзеркало', x2, ry + 22);
+      g.fillText('світлоподільник', x1, yb - 16); g.fillText('світлоподільник', x2 + 10, yb - 16);
+      /* хвилі: фаза = 2π·nw·u − ωt, вздовж плеча */
+      var wt = anim.clock * 2 * Math.PI * 0.8, nw = 7, kk = 2 * Math.PI * nw;
+      function pol(path) { var L = 0, seg = []; for (var q = 1; q < path.length; q++) { var d = Math.hypot(path[q][0] - path[q - 1][0], path[q][1] - path[q - 1][1]); seg.push(d); L += d; } return { p: path, seg: seg, L: L }; }
+      function at(pl, u) { var s0 = u * pl.L, q = 0; while (q < pl.seg.length - 1 && s0 > pl.seg[q]) { s0 -= pl.seg[q]; q++; } var t = pl.seg[q] ? s0 / pl.seg[q] : 0, a = pl.p[q], b = pl.p[q + 1], dxx = b[0] - a[0], dyy = b[1] - a[1], d = Math.hypot(dxx, dyy) || 1; return [a[0] + t * dxx, a[1] + t * dyy, -dyy / d, dxx / d]; }
+      var pin = pol([[sx + 12, yb], [x1 - 9, yb]]), pup = pol([[x1 + 9, yb], [x2 - 9, yb]]), plo = pol([[x1, yb + 9], [x1, ry], [x2, ry], [x2, yb + 9]]), pout = pol([[x2 + 9, yb], [dx - 14, yb]]);
+      /* набіг фази на плазмі накопичується вздовж верхнього плеча пропорційно інтегралу n(x) */
+      var cumF = function (u) {
+        var xa = (px0 - (x1 + 9)) / (pup.L), xb = (px1 - (x1 + 9)) / (pup.L);
+        if (u <= xa) return 0; if (u >= xb) return 1;
+        var v = (u - xa) / (xb - xa), P2 = { n0: 1, a: 0.5, p: P.p }, S = 0, M = 40, tot = 0, i2;
+        for (i2 = 0; i2 < M; i2++) { var xx = (i2 + 0.5) / M; var ss = (xx - 0.5) / 0.5, vv = Math.pow(Math.max(0, 1 - ss * ss), P.p); tot += vv; if (xx <= v) S += vv; }
+        return S / tot;
+      };
+      var phS = cut ? 0 : ph0 + shot.ph00, lagA = phS - 2 * Math.PI * Math.floor(phS / (2 * Math.PI));   /* Δφ mod 2π */
+      var phU = function (u) { return kk * u - wt - lagA * cumF(u); }, phL = function (u) { return kk * u - wt; };
+      function drawWave(pl, phf, amp, col, w0, u0, u1) {
+        g.strokeStyle = col; g.lineWidth = w0; g.beginPath();
+        for (var q = 0; q <= 140; q++) { var u = u0 + (u1 - u0) * q / 140, c = at(pl, u), a = amp * Math.sin(phf(u)); var X = c[0] + a * c[2], Y = c[1] + a * c[3]; if (q) g.lineTo(X, Y); else g.moveTo(X, Y); }
+        g.stroke();
+      }
+      drawWave(pin, function (u) { return 2 * Math.PI * 2 * u - wt; }, 7, COL.ink, 1.6, 0, 1);
+      var cutU = cut ? (px0 - (x1 + 9)) / pup.L : 1;
+      drawWave(pup, phU, 7, COL.u, 2, 0, cutU);
+      if (!cut) drawWave(plo, phL, 7, COL.i, 2, 0, 1);
+      else { drawWave(plo, phL, 7, COL.i, 2, 0, 1); }
+      /* вихід: сума двох хвиль (інтерференція) */
+      if (!cut) {
+        var thU = phU(1), thL = phL(1);
+        g.strokeStyle = COL.acc; g.lineWidth = 2.2; g.beginPath();
+        for (var q2 = 0; q2 <= 80; q2++) { var u2 = q2 / 80, c2 = at(pout, u2), th = 2 * Math.PI * 1.5 * u2; var a2 = 7 * (Math.sin(thU + th) + Math.sin(thL + th)); if (q2) g.lineTo(c2[0], c2[1] + a2); else g.moveTo(c2[0], c2[1] + a2); }
+        g.stroke();
+      }
+      var Iint = cut ? 0 : (1 + Math.cos(phS)) / 2;
+      g.fillStyle = 'rgba(255,200,60,' + (0.1 + 0.9 * Iint) + ')'; g.strokeStyle = COL.ink; g.lineWidth = 1.5;
+      g.beginPath(); g.arc(dx, yb, 13, 0, 2 * Math.PI); g.fill(); g.stroke();
+      g.fillStyle = COL.muted; g.textAlign = 'center'; g.fillText('детектор', dx, yb + 30);
+      g.fillStyle = COL.ink; g.fillText('I = ' + fmtc(Iint, 2), dx, yb - 22);
+      g.fillStyle = COL.u; g.textAlign = 'center'; g.fillText('зондувальна хвиля (крізь плазму)', (px0 + px1) / 2, yb - 26 - 12);
+      g.fillStyle = COL.i; g.fillText('опорна хвиля (в обхід)', (x1 + x2) / 2, ry - 12);
+      g.strokeStyle = COL.ax; g.lineWidth = 1; g.beginPath(); g.moveTo(px0, py1 + 14); g.lineTo(px1, py1 + 14); g.moveTo(px0, py1 + 8); g.lineTo(px0, py1 + 20); g.moveTo(px1, py1 + 8); g.lineTo(px1, py1 + 20); g.stroke();
+      g.fillStyle = COL.ink; g.fillText('хорда', (px0 + px1) / 2, py1 + 30);
+      g.fillStyle = COL.muted; g.textAlign = 'left';
+      g.fillText(cut ? 'відсічка: n₀ ≥ n_кр, зондувальна хвиля відбивається' : 't = ' + fmtc(anim.t, 1) + ' мс;  n/n₀ = ' + fmtc(wnow, 2) + ';  Δφ = ' + fmtc(ph0, 1) + ' рад;  смуг N = ' + fmtc(Nnow, 2) + '  (на схемі показано Δφ mod 2π)', 8, h - 8);
+      var cx = [$('cur1'), $('cur2')];
+      cx.forEach(function (d, ii) { var cvv = ii ? $('cG2') : $('cG1'); d.hidden = !(shot && !shot.cut); if (d.hidden) return; d.style.left = (cvv.offsetLeft + 58 + anim.t / T * (cvv.clientWidth - 14 - 58) - 1) + 'px'; });
+    } else {
+      var bx0 = 0.2 * w, bx1 = 0.95 * w, by0 = 0.15 * h, by1 = 0.75 * h;
+      var gr2 = g.createLinearGradient(bx0, 0, bx1, 0);
+      gr2.addColorStop(0, 'rgba(120,70,190,0)'); gr2.addColorStop(1, 'rgba(120,70,190,0.5)');
+      g.fillStyle = gr2; g.fillRect(bx0, by0, bx1 - bx0, by1 - by0);
+      g.strokeStyle = COL.muted; g.strokeRect(bx0, by0, bx1 - bx0, by1 - by0);
+      g.fillStyle = COL.muted; g.font = '12px system-ui'; g.textAlign = 'right'; g.fillText('густина зростає вглиб →', bx1 - 6, by0 + 14);
+      var yc = (by0 + by1) / 2;
+      g.fillStyle = COL.ink; g.fillRect(0.06 * w, yc - 14, 22, 28); g.fillStyle = COL.muted; g.textAlign = 'center'; g.fillText('антена', 0.06 * w + 11, yc + 30);
+      var nc = nCrF(lastF * 1e9), xc = xcOf(nc, P), fr = isNaN(xc) ? 1.0 : Math.min(1, xc / P.a);
+      var layerX = bx0 + fr * (bx1 - bx0) * 0.95;
+      if (!isNaN(xc)) {
+        g.strokeStyle = COL.p; g.lineWidth = 2; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(layerX, by0); g.lineTo(layerX, by1); g.stroke(); g.setLineDash([]);
+        g.fillStyle = COL.p; g.textAlign = 'center'; g.fillText('шар відбиття n = n_кр(f)', layerX, by0 - 4);
+      }
+      g.strokeStyle = COL.u; g.lineWidth = 2;
+      var xe = isNaN(xc) ? bx1 : layerX, ph = (Date.now() / 400) % (2 * Math.PI);
+      g.beginPath(); for (i = 0; i <= 120; i++) { var xx = 0.06 * w + 24 + (xe - 0.06 * w - 24) * i / 120; var yy = yc - 7 + 4 * Math.sin(i * 0.5 - ph); if (i) g.lineTo(xx, yy); else g.moveTo(xx, yy); } g.stroke();
+      g.strokeStyle = COL.i; g.beginPath(); for (i = 0; i <= 120; i++) { var x2 = 0.06 * w + 24 + (xe - 0.06 * w - 24) * i / 120; var y2 = yc + 9 + 4 * Math.sin(i * 0.5 + ph); if (i) g.lineTo(x2, y2); else g.moveTo(x2, y2); } g.stroke();
+      g.fillStyle = COL.muted; g.textAlign = 'left';
+      g.fillText(isNaN(xc) ? 'f > f_p(n₀): хвиля проходить, відбиття немає' : 'f = ' + fmtc(lastF, 2) + ' ГГц; затримка τ = ' + fmtc(lastTau * 1e9, 3) + ' нс', 8, h - 8);
+      if (showTr() && !isNaN(xc)) g.fillText('істинне x_c = ' + fmtc(xc, 1) + ' см', 8, h - 24);
+    }
+  }
+  function tick(ts) {
+    var dt = Math.min(0.1, ((ts || 0) - anim.last) / 1000 || 0); anim.last = ts || 0; anim.clock += dt;
+    if (anim.playing && method() === 'int') { anim.t += dt * 2.0; if (anim.t > 20) anim.t = 0; $('tcur').value = anim.t; }
+    drawSch(); requestAnimationFrame(tick);
+  }
+
+  /* ---------- таблиця, експорт ---------- */
+  function updateTable() {
+    var rows = pts.map(function (p, i) { return '<tr><td>' + (i + 1) + '</td><td>' + fmtc(p.f, 2) + '</td><td>' + fmtc(p.tau * 1e9, 3) + '</td></tr>'; });
+    $('tbl').tBodies[0].innerHTML = rows.join('');
+  }
+  function tableText(sep) { var o = ['f, ГГц' + sep + 'tau, нс']; pts.forEach(function (p) { o.push(p.f.toFixed(2) + sep + (p.tau * 1e9).toFixed(3)); }); return o.join('\n'); }
+
+  function refresh(newReading) {
+    if (method() === 'int') { doShot(); updateResultInt(); }
+    else { if (newReading) showF(); doRec(); updateResultRef(); updateTable(); }
+    drawG();
+  }
+
+  /* ---------- події ---------- */
+  ['mode', 'method', 'n0', 'a', 'p'].forEach(function (id) {
+    $(id).addEventListener('input', function () {
+      if ((id === 'mode' && $('mode').value === 'box') || (id === 'method' && box.on)) randomBox();
+      applyAll(true);
+    });
+  });
+  ['lam', 'fs', 'dl', 'comp', 'st', 'ext', 'f1', 'f2'].forEach(function (id) {
+    $(id).addEventListener('input', function () {
+      if (id === 'f1') $('sw0').value = $('f1').value;
+      if (id === 'f2') { $('sw1').value = $('f2').value; $('fs0').max = Math.max(5, +$('f2').value * 1.2); }
+      if (id === 'st') pts = [];
+      labels(); refresh(id === 'st' || id === 'f1' || id === 'f2');
+    });
+  });
+  $('showTrue').addEventListener('input', function () { drawG(); refresh(false); });
+  $('tcur').addEventListener('input', function () { anim.t = +$('tcur').value; anim.playing = false; $('play').textContent = '▶ Пуск'; });
+  $('play').addEventListener('click', function () { anim.playing = !anim.playing; $('play').textContent = anim.playing ? '⏸ Пауза' : '▶ Пуск'; });
+  $('shot').addEventListener('click', function () { seed = 1 + Math.floor(Math.random() * 1e6); anim.t = 0; anim.playing = true; $('play').textContent = '⏸ Пауза'; $('tcur').value = 0; refresh(false); });
+  $('fs0').addEventListener('input', function () { $('fn').value = Math.round(+$('fs0').value * 100) / 100; refresh(true); });
+  $('fn').addEventListener('input', function () { var v = parseFloat($('fn').value); if (!isFinite(v)) return; $('fs0').value = v; refresh(true); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-df]'), function (b) {
+    b.addEventListener('click', function () { var v = Math.max(0.5, +$('fs0').value + parseFloat(b.dataset.df)); $('fs0').value = v; $('fn').value = Math.round(v * 100) / 100; refresh(true); });
+  });
+  $('take').addEventListener('click', takeRef);
+  $('undo').addEventListener('click', function () { pts.pop(); refresh(false); });
+  $('clear').addEventListener('click', function () { pts = []; refresh(false); });
+  $('sweep').addEventListener('click', sweepRef);
+  $('chkAns').addEventListener('click', checkAnswer);
+  $('newBox').addEventListener('click', function () { randomBox(); applyAll(true); });
+  $('showAns').addEventListener('click', function () {
+    box.shown = true;
+    $('boxMsg').innerHTML += '<br>Еталон: ' + (method() === 'int' ? '∫n dl = ' + sci(intN(P)) + ' см⁻², n̄ = ' + sci(intN(P) / (2 * P.a)) + ' см⁻³ (L = ' + sig(2 * P.a, 3) + ' см)' : 'x = ' + sig(xcOf(nCrF(box.task.Ft * 1e9), P), 3) + ' см') + '.';
+    refresh(false);
+  });
+  $('cp').addEventListener('click', function () { var t = tableText('\t'); if (navigator.clipboard) navigator.clipboard.writeText(t).catch(function () {}); });
+  $('csv').addEventListener('click', function () {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([tableText(';')], { type: 'text/csv' })); a.download = 'reflectometer.csv'; a.click();
+  });
+  window.addEventListener('resize', drawG);
+  window.addEventListener('themechange', drawG);
+  setInterval(function () { if (!document.hidden && method() === 'ref') { showF(); } }, 900);
+
+  if (Q.get('method') === 'ref') $('method').value = 'ref';
+  if (Q.get('mode') === 'study') $('mode').value = 'study';
+  if ($('mode').value === 'box') randomBox();
+  applyAll(true);
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
