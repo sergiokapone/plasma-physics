@@ -276,6 +276,21 @@
 
 % \emphx{текст} — виділення терміна малиновим курсивом (означення, важливий термін)
 \NewDocumentCommand{\emphx}{m}{\emph{\textcolor{malina}{#1}}}
+% \emphx сам до покажчика НЕ додає: записи ставляться явно, \index{...} одразу після терміна,
+% і лише для того, що читач шукатиме (закони, ефекти, прилади, означення ключових величин).
+% Форма записів: іменні -- з прізвища (\index{Бома критерій}), решта -- з іменника
+% (\index{Довжина!дебаївська}). Сторінку з означенням виділяють жирним: \index{Дебая довжина|textbf}.
+
+% indextools + upmendex: предметний покажчик з українським сортуванням (index-uk.ist, latexmkrc).
+\RequirePackage[]{indextools}
+\makeindex[
+  program=upmendex,
+  options=-s index-uk.ist,
+  intoc,
+  title={Предметний покажчик},
+  noautomatic=false
+]
+\indexsetup{toclevel=part}
 
 %===============================================================================
 %
@@ -710,6 +725,7 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % своя нумерація таблиць/формул у межах секції, окремий колонтитул "appendix".
 \renewcommand\appendix{\par
 	\appendixtrue
+	\renewcommand{\sectionsign}{}% у додатках літери без «§»
 	\gdef\thesection{\@Alph\c@section}
 	\@addtoreset{table}{section}
 	\renewcommand\thetable%
@@ -733,6 +749,7 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % відповідями до задач: своя нумерація секцій/формул, свій колонтитул "answers".
 \newcommand\answers{\par
 	\answerstrue
+	\renewcommand{\sectionsign}{}%
 	\setcounter{chapter}{0}%
 	\setcounter{section}{0}%
 	\renewcommand{\thesection}{\arabic{section}}
@@ -800,8 +817,10 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 		\rule{\dimexpr\textwidth-\chapnumb\relax}{0.4pt}}}
 
 % Заголовок секції: "N. Назва" жирним
+% Знак § перед номером підрозділу (у додатках і відповідях вимкнено: \sectionsign = порожньо)
+\newcommand{\sectionsign}{\S\,}
 \titleformat{\section}
-{\normalsize\bfseries}{\thesection.}{1em}{#1}
+{\normalsize\bfseries}{\sectionsign\thesection.}{1em}{#1}
 
 % Заголовок підсекції: у підбір з текстом ("runin"), закінчується крапкою
 \titleformat{\subsection}[runin]
@@ -822,8 +841,10 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % спеціальних стилів для Відповідей/Додатків/Бібліографії, де замість назви
 % глави друкується фіксований текст). Номер сторінки — завжди знизу по центру.
 \gdef\hdrnum{}\gdef\hdrtitle{}
+% Парні сторінки: «N. Назва розділу» (ліворуч). Непарні: «§ N.M. Назва підрозділу» (праворуч),
+% а якщо на сторінці ще немає підрозділу (вступ розділу) -- назва розділу.
 \newpagestyle{main}{\headrule%
-	\sethead{\ifodd\thepage\relax\else\itshape\small\hdrnum\hdrtitle\fi}{}{\ifodd\thepage\itshape\small\hdrnum\hdrtitle\else\relax\fi}
+	\sethead{\ifodd\thepage\relax\else\itshape\small\hdrnum\hdrtitle\fi}{}{\ifodd\thepage\itshape\small\ifthesection{\S\,\thesection.\ \sectiontitle}{\hdrnum\hdrtitle}\else\relax\fi}
 	\setfoot{}{\small\thepage}{}}
 
 \newpagestyle{answers}{\headrule%
@@ -832,6 +853,10 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 
 \newpagestyle{appendix}{\headrule%
 	\sethead{\ifodd\thepage\relax\else\itshape\small Додатки\fi}{}{\ifodd\thepage\itshape\small Додатки\else\relax\fi}
+	\setfoot{}{\small\thepage}{}}
+
+\newpagestyle{index}{\headrule%
+	\sethead{\ifodd\thepage\relax\else\itshape\small Предметний покажчик\fi}{}{\ifodd\thepage\itshape\small Предметний покажчик\else\relax\fi}
 	\setfoot{}{\small\thepage}{}}
 
 \newpagestyle{bibliography}{\headrule%
@@ -1054,6 +1079,37 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 	#1
 }
 
+% Estimate — зелена врізка «Числова оцінка»: підстановка типових чисел у щойно виведену
+% формулу (порядок величини, а не точний розрахунок). Та сама мова, що й у Historical/Simulation
+% (смуга з іконкою ліворуч, загнутий куток), але власний зелений колір estmain і іконка калькулятора.
+% Використання:  \begin{Estimate} Для $B=5$~Тл маємо $\omega_{ce}\approx8{,}8\times10^{11}$~с$^{-1}$. \end{Estimate}
+% Необов'язковий аргумент — інший заголовок:  \begin{Estimate}[Числова оцінка для токамака] ...
+\definecolor{estmain}{RGB}{27,110,70}
+\newtcolorbox{Estimate}[1][Числова оцінка]{
+	enhanced,
+	breakable,
+	title={#1},
+	attach title to upper={.\ },
+	fonttitle=\sffamily\bfseries,
+	coltitle=estmain,
+	before skip=2mm, after skip=3mm,
+	before upper app={\parindent0pt},
+	boxrule=0.4pt,
+	left=8mm, right=2mm, top=1.5mm, bottom=1.5mm,
+	colback=estmain!6!white,
+	colframe=estmain,
+	fontupper=\small,
+	parbox=false,
+	sharp corners, rounded corners=southeast, arc is angular, arc=3mm,
+	underlay={%
+		\path[fill=tcbcolback!80!black] ([yshift=3mm]interior.south east)--++(-0.4,-0.1)--++(0.1,-0.2);
+		\path[draw=tcbcolframe,shorten <=-0.05mm,shorten >=-0.05mm] ([yshift=3mm]interior.south east)--++(-0.4,-0.1)--++(0.1,-0.2);
+		\path[fill=tcbcolframe,draw=none] (interior.south west) rectangle ([xshift=6mm]interior.north west);
+		\node[text=white] at ([xshift=3mm]interior.west) {\large\faCalculator};
+	},
+	drop fuzzy shadow,
+}
+
 % Questions — блок «Контрольні питання» для самоперевірки в кінці глави/параграфа.
 % Палітра: спокійний бірюзовий (titlebgdark), що відрізняється від синьої теорії,
 % жовтого попередження й клітинки прикладів; світло-бірюзовий фон не втомлює очі
@@ -1215,6 +1271,12 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 
 \newtheorem{problem}{}[chapter]                       % задачі нумеруються в межах глави
 \DeclareAssociatedCounters{problem}{totalproblems}    % ...і водночас рахуються наскрізно всією книгою
+
+% \lvl{N} — складність задачі зірочками (N=1..3), ставиться одразу після \label у \begin{problem}:
+%   ★ — пряма підстановка у формулу чи оцінка; ★★ — кілька кроків або оцінка з поясненням;
+%   ★★★ — виведення, аналітична чи чисельна задача.
+\newcommand{\lvl}[1]{\leavevmode{\color{themecolorlight}\small
+	\ifcase#1\or\faStar\faStar[regular]\faStar[regular]\or\faStar\faStar\faStar[regular]\or\faStar\faStar\faStar\fi}\enspace}
 
 %\tcbset{
 %	answersolutionstyle/.style={

@@ -12,7 +12,7 @@
 
 
 \Opensolutionfile{answer}[\currfilebase/\currfilebase-Answers]
-\Writetofile{answer}{\protect\section*{\nameref*{sec:mhd-waves}}}
+\Writetofile{answer}{\protect\section*{Розділ~\ref*{sec:mhd-waves}. \nameref*{sec:mhd-waves}}}
 \chapter{МГД-хвилі та хвилі в~замагніченій плазмі}
 \label{sec:mhd-waves}\hypertarget{mhd-waves}{}
 %% --------------------------------------------------------
@@ -78,7 +78,7 @@ p_B=\frac{B^2}{8\pi}.
 
 
 %% ========================================================
-\section{Звукова хвиля}
+\section{Звукова хвиля}\index{Звукова хвиля|textbf}
 %% ========================================================
 
 
@@ -124,7 +124,7 @@ c_s^2=\left(\frac{\partial p}{\partial\rho_m}\right)_S=\frac{\gamma\,(p_e+p_i)}{
 
 
 %% ========================================================
-\section{Лінеаризована МГД і~загальне дисперсійне рівняння}\label{sec:linear-mhd}
+\section{Лінеаризована МГД і~загальне дисперсійне рівняння}\index{Магнітна гідродинаміка (МГД)!лінеаризована}\label{sec:linear-mhd}
 %% ========================================================
 
 
@@ -161,7 +161,7 @@ $\delta\vect B=[\vect B_0(\vect k\cdot\vect v)-\vect v(\vect k\cdot\vect B_0)]/\
 	  \omega^4-k^2(c_s^2+v_A^2)\,\omega^2+k^4c_s^2v_A^2\cos^2\theta=0,
 	  \end{equation}
 	  де $\theta$~--- кут між $\vect k$ та $\vect B_0$. Вона дає дві магнітозвукові моди,
-	  \emphx{швидку} і~\emphx{повільну}.
+	  \emphx{швидку}\index{Магнітозвукові хвилі!швидка} і~\emphx{повільну}\index{Магнітозвукові хвилі!повільна}.
 \end{itemize}
 Покажемо кроки. Нехай $\vect k=k(\sin\theta,0,\cos\theta)$, $\vect v_A=v_A\hat{\vect z}$, так що
 $\vect k\cdot\vect v_A=kv_A\cos\theta$. Розпишемо \eqref{eq:mhd-dispersion-vector} за компонентами.
@@ -180,7 +180,7 @@ $\omega^4-\omega^2k^2(v_A^2+c_s^2)+k^4\bigl[(v_A^2+c_s^2\sin^2\theta)c_s^2\cos^2
 
 
 %% ========================================================
-\section{Альвенівська хвиля}
+\section{Альвенівська хвиля}\index{Альвена хвиля}
 %% ========================================================
 
 
@@ -247,7 +247,7 @@ $\vect j\times\vect B/c=-\nabla(B^2/8\pi)+(\vect B\cdot\nabla)\vect B/4\pi$.
 
 
 %% ========================================================
-\section{Магнітозвукові хвилі}
+\section{Магнітозвукові хвилі}\index{Магнітозвукові хвилі|textbf}
 %% ========================================================
 
 
@@ -355,7 +355,7 @@ $c_s\sim10^8$~см/с), і~швидка мода практично збігає
 
 
 %% ========================================================
-\section{Хвилі в~холодній замагніченій плазмі}\label{sec:cold-magnetized}
+\section{Хвилі в~холодній замагніченій плазмі}\index{Хвилі в замагніченій плазмі|textbf}\label{sec:cold-magnetized}
 %% ========================================================
 
 
@@ -445,10 +445,10 @@ $N^2=R$ (права, обертання в~той самий бік, що й~е�
 в~X-моді рух еліптичний, з'являється складова $E_x\parallel\vect k$ (хвиля частково поздовжня). Верхній гібридний резонанс $\omega_{UH}^2=\omega_{pe}^2+\omega_{ce}^2$
 зрозумілий як сума двох відновлювальних сил (поле розділення зарядів і~сила Лоренца), як дві пружини; для нижнього гібридного резонансу так само, але з~участю іонів.
 \begin{itemize}
-	\item \emphx{Звичайна (O) мода}, $\vect E\parallel\vect B_0$: поле не змушує електрони обертатися,
+	\item \emphx{Звичайна (O) мода}\index{Звичайна хвиля (O-мода)|textbf}, $\vect E\parallel\vect B_0$: поле не змушує електрони обертатися,
 	  тому $N^2=P=1-\omega_{pe}^2/\omega^2$ (відсікання на $\omega=\omega_{pe}$, як без поля).
 	  Цю моду використовують для зондування густини у~токамаках.
-	\item \emphx{Незвичайна (X) мода}, $\vect E\perp\vect B_0$: поляризація змішана (поздовжня +
+	\item \emphx{Незвичайна (X) мода}\index{Незвичайна хвиля (X-мода)|textbf}, $\vect E\perp\vect B_0$: поляризація змішана (поздовжня +
 	  поперечна), $N^2=RL/S$. Резонанс $S=0$ дає \emph{верхній гібридний} резонанс
 	  \begin{equation}\label{eq:upper-hybrid}
 	  	\omega_{UH}^2=\omega_{pe}^2+\omega_{ce}^2,
@@ -467,7 +467,7 @@ $\omega_{pe}<\omega$. Альтернатива~--- $X$-мода другої г�
 діаграму Клеммова--Малея--Ендрюса (CMA), яка показує, куди хвиля може дійти за заданих $n$ і~$B$, ми
 опускаємо; її можна знайти в~монографії Стікса та в~курсі Чена (§4.18).
 
-\subsection*{Як це вимірюють: обертання Фарадея}\label{sec:faraday-diagnostics}
+\subsection*{Як це вимірюють: обертання Фарадея}\index{Діагностика плазми!поляриметрія}\index{Фарадея обертання|textbf}\label{sec:faraday-diagnostics}
 Лінійно поляризована хвиля, що йде вздовж $\vect B_0$, є сумою $R$- і~$L$-хвиль, які мають різні
 показники заломлення $N_R\neq N_L$. Через набіг різниці фаз вони повертають площину поляризації.
 Для $\omega\gg\omega_{pe},\omega_{ce}$ з~\eqref{eq:stix-RLP}
@@ -486,7 +486,7 @@ $\int B_\parallel\,dl$, тобто інформацію про поле \emph{в
 
 
 %% ========================================================
-\section{Іонно-звукова хвиля}\label{sec:ion-acoustic}
+\section{Іонно-звукова хвиля}\index{Іонно-звукова хвиля|textbf}\label{sec:ion-acoustic}
 %% ========================================================
 
 
@@ -607,7 +607,7 @@ edge={->, thick, draw=black!60},
 \section*{Задачі}
 %% --------------------------------------------------------
 
-\begin{problem}\label{prb:AlfvenSpeed}
+\begin{problem}\label{prb:AlfvenSpeed}\lvl{1}
 	Для дейтерієвої плазми токамака ($n_i=10^{14}$~см$^{-3}$, $B=5\times10^4$~Гс,
 	$T_e=T_i=10$~кеВ) знайдіть $v_A$, $c_s$ (з~формули для іонного звуку) і~час
 	проходу альвенівської хвилі вздовж малого радіуса $a=2$~м. Порівняйте $v_A$ з~$v_{Ti}$.
@@ -616,7 +616,7 @@ edge={->, thick, draw=black!60},
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:MhdModes}
+\begin{problem}\label{prb:MhdModes}\lvl{3}
 	Покажіть, що рівняння~\eqref{eq:mhd-dispersion-vector} для $\vect k\perp\vect B_0$ і~$\vect v\parallel\vect k$ дає
 	$\omega^2=k^2(c_s^2+v_A^2)$. Знайдіть границі швидкостей швидкої й~повільної мод при $\theta\to0$ для
 	$v_A>c_s$ та $v_A<c_s$.
@@ -626,7 +626,7 @@ edge={->, thick, draw=black!60},
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:Whistler}
+\begin{problem}\label{prb:Whistler}\lvl{2}
 	Вістлерний імпульс від блискавки проходить уздовж силової лінії довжиною
 	$L\approx10^{10}$~см. Для $f_{ce}=1$~МГц, $f_{pe}=5$~МГц знайдіть групову швидкість на частотах
 	$0{,}1\,f_{ce}$ і~$0{,}2\,f_{ce}$ і~різницю часів приходу. Порівняйте з~реальним свистом
@@ -637,7 +637,7 @@ edge={->, thick, draw=black!60},
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:HybridResonances}
+\begin{problem}\label{prb:HybridResonances}\lvl{2}
 	Для $n_e=5\times10^{13}$~см$^{-3}$, $B=3\times10^4$~Гс (водень) знайдіть $f_{pe}$, $f_{ce}$, $f_{UH}$
 	і~$f_{LH}$. Чи може $X$-мода з~частотою $f_{ce}$ потрапити в~центр плазми?
 	\begin{solution}
@@ -647,7 +647,7 @@ edge={->, thick, draw=black!60},
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:AlfvenAstro}
+\begin{problem}\label{prb:AlfvenAstro}\lvl{1}
 	Знайдіть альвенівську швидкість для: іоносфери (O$^+$, $n\sim10^{5}~\text{см}^{-3}$, $B\sim0{,}3$~Гс),
 	сонячної корони (H$^+$, $n\sim10^{8}~\text{см}^{-3}$, $B\sim1$~Гс) і~міжзоряного середовища
 	($n\sim1~\text{см}^{-3}$, $B\sim3\times10^{-6}$~Гс).
@@ -656,7 +656,7 @@ edge={->, thick, draw=black!60},
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:AlfvenDamping}
+\begin{problem}\label{prb:AlfvenDamping}\lvl{3}
 	Врахувавши скінченну провідність ($\omega^2=k^2v_A^2-i\omega k^2\nu_m$, $\nu_m=c^2/4\pi\sigma$),
 	покажіть, що слабке просторове загасання альвенівської хвилі $\operatorname{Im}k=\omega^2\nu_m/(2v_A^3)$.
 	Чому така хвиля в~короні Сонця дисипує вкрай повільно?
@@ -667,7 +667,7 @@ edge={->, thick, draw=black!60},
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:FaradayRotation}
+\begin{problem}\label{prb:FaradayRotation}\lvl{2}
 	Оцініть кут фарадеївського обертання площини поляризації електромагнітної хвилі з~$\lambda=0{,}02$~см
 	(200~мкм, $f=1{,}5$~ТГц) у~токамаку ($n=10^{14}~\text{см}^{-3}$, полоїдальне поле вздовж хорди
 	$B_\parallel=0{,}5$~Тл, шлях 1~м). Використайте
@@ -678,7 +678,7 @@ edge={->, thick, draw=black!60},
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:ECRHRadius}
+\begin{problem}\label{prb:ECRHRadius}\lvl{2}
 	Поле токамака $B(R)=B_0R_0/R$, $B_0=6$~Тл при $R_0=3$~м. На якому радіусі поглинається
 	потужність гіротрона 140~ГГц на основній гармоніці електронного циклотронного резонансу
 	($f_{ce}=28\,B[\text{Тл}]$~ГГц)?
@@ -687,7 +687,7 @@ edge={->, thick, draw=black!60},
 	\end{solution}
 \end{problem}
 
-\begin{problem}\label{prb:IonAcoustic}
+\begin{problem}\label{prb:IonAcoustic}\lvl{2}
 	Знайдіть швидкість іонного звуку в~водневій плазмі з~$T_e=10$~еВ, $T_i\ll T_e$. При якому $k\lambda_{De}$
 	частота іонного звуку відрізняється від $kc_s$ на 10~\%?
 	\begin{solution}
