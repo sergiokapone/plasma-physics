@@ -1,0 +1,460 @@
+<title>МГД-хвилі</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="shared/theme.js"></script>
+<link rel="stylesheet" href="shared/sim.css">
+<script src="shared/sim.js"></script>
+<script src="shared/physics.js"></script>
+<style>
+  #stage.mhd { grid-template-columns: 3fr 2fr; grid-template-rows: 3fr 2fr; }
+  @media (max-width: 860px) { #stage.mhd > #v-graphs { height: 780px; } #stage.mhd > #v-polar { height: 60vh; } }
+</style>
+<header class="top">
+  <h1>МГД-хвилі: альвенівська, швидка та повільна магнітозвукові</h1>
+  <span class="ref">Розд. 6, §6.3, рис. 6.3–6.5, ф-ли (6.6)–(6.10)</span>
+  <span id="theme-slot"></span>
+</header>
+<div id="app">
+  <div id="panel">
+    <section id="s-loop"></section>
+    <details class="observe" id="d-what" open><summary><h2>Що показує симуляція</h2></summary>
+      <p><b>Ліворуч угорі — переріз плазми.</b> Однорідна плазма з полем <i class="m">B<sub>0</sub></i> уздовж осі <i class="m">x</i>; хвиля біжить під кутом <i class="m">θ</i> до поля. Чорні лінії — силові лінії (вмерзлі в плазму), крапки — частинки плазми, які зміщуються з положень рівноваги. Колір — збурення густини (або <i class="m">|B|</i>, або повного тиску): червоне — стиск, синє — розрідження. Оранжеві стрілки — збурення поля <i class="m">δB</i>, сірі — швидкість <i class="m">v</i>. Кільце з крапкою — зонд (частинка, за якою стежать графіки); його можна перетягнути мишею.</p>
+      <p><b>Праворуч угорі — 3D-вид</b> пучка з 12 силових ліній: потягніть мишею, щоб повернути. Саме тут видно, що альвенівське зміщення виходить із площини <i class="m">(k, B<sub>0</sub>)</i>, а магнітозвукові — лежать у ній.</p>
+      <p><b>Внизу ліворуч — три графіки в точці зонда</b> за останні періоди: зміщення <i class="m">kξ</i>, густина разом із компонентами <i class="m">δB/B<sub>0</sub></i> та збурення тисків (газовий, магнітний, їх сума). <b>Внизу праворуч — діаграма Фрідріхса</b> <i class="m">v<sub>ф</sub>(θ)</i> з поточним кутом (пунктирний промінь) і літерами A, F, S на трьох гілках.</p>
+    </details>
+    <section><h2>Режими</h2><div id="s-pre"></div></section>
+    <section><h2>Параметри</h2><div id="s-ctl"></div></section>
+    <section><h2>Відображення</h2><div id="s-view"></div></section>
+    <section><h2>Величини</h2><div id="s-out"></div></section>
+    <details class="observe" id="d-obs" open><summary><h2>Що спостерігати</h2></summary>
+      <ol>
+        <li><b>Альвенівська</b> (увімкніть лише її, <i class="m">θ</i> = 0°): силові лінії коливаються, як натягнута струна, перпендикулярно до <i class="m">B<sub>0</sub></i>; колір на перерізі порожній, бо <i class="m">δρ = 0</i> і <i class="m">|B|</i> не змінюється. Перемкніть переріз на <i class="m">(x, z)</i> — на ньому видно саме поперечне зміщення, на перерізі <i class="m">(x, y)</i> воно виходить із площини (змінюється розмір крапок). Збільшуйте <i class="m">θ</i>: <i class="m">v<sub>ф</sub> = v<sub>A</sub> cos θ</i> падає, при 90° хвиля стоїть.</li>
+        <li><b>Швидка магнітозвукова</b> (<i class="m">θ</i> = 90°): стискаючись, плазма тягне за собою силові лінії; на графіку густина й <i class="m">δB<sub>x</sub></i> йдуть <b>у фазі</b>, обидва тиски додаються, сума максимальна. Швидкість <i class="m">√(v<sub>A</sub>² + c<sub>s</sub>²)</i>.</li>
+        <li><b>Повільна магнітозвукова</b> (<i class="m">β</i> ≪ 1, <i class="m">θ</i> мале): частинки рухаються майже вздовж <i class="m">B<sub>0</sub></i> і майже не гнуть силових ліній. Густина і <i class="m">δB<sub>x</sub></i> — у <b>протифазі</b>, газовий і магнітний тиски гасять один одного, сума мала.</li>
+        <li>Змінюйте <i class="m">c<sub>s</sub>/v<sub>A</sub></i> (тобто <i class="m">β</i>): на діаграмі Фрідріхса швидка гілка при <i class="m">θ</i> = 0 дорівнює більшій із двох швидкостей, повільна — меншій. При <i class="m">c<sub>s</sub> = v<sub>A</sub></i> і <i class="m">θ</i> = 0 швидка й повільна збігаються (виродження).</li>
+        <li>Увімкніть усі три («Усі три разом»): хвилі мають один <i class="m">k</i>, але різні <i class="m">ω</i>, тому зсув фаз між ними росте з часом, і картина зміщень ускладнюється — це суперпозиція незалежних мод.</li>
+        <li>Слід зонда на перерізі і в 3D — траєкторія частинки: еліпс у площині для магнітозвукових мод, відрізок уздовж <i class="m">z</i> для альвенівської. Порівняйте нахил осі еліпса до <i class="m">B<sub>0</sub></i> для швидкої й повільної: осі взаємно перпендикулярні.</li>
+      </ol>
+    </details>
+    <details class="note" id="d-model"><summary><h2>Модель і формули</h2></summary>
+      <p>Ідеальна МГД, лінеаризація над однорідним станом <i class="m">ρ<sub>0</sub>, p<sub>0</sub>, B<sub>0</sub>x̂</i>. Одиниці: <i class="m">v<sub>A</sub> = 1</i>, довжина хвилі <i class="m">λ = 1</i>, час у <i class="m">λ/v<sub>A</sub></i>; <i class="m">c<sub>s</sub><sup>2</sup> = γp<sub>0</sub>/ρ<sub>0</sub></i>, <i class="m">γ = 5/3</i>, <i class="m">β = (2/γ)(c<sub>s</sub>/v<sub>A</sub>)²</i>.</p>
+      <p>Для <i class="m">k = k(cos θ, sin θ, 0)</i> швидкість плазми задовольняє <i class="m">ω²ξ = M ξ</i> з матрицею в площині <i class="m">(x, y)</i>: <i class="m">M/k² = [[c<sub>s</sub>²cos²θ, c<sub>s</sub>²cos θ sin θ], [c<sub>s</sub>²cos θ sin θ, c<sub>s</sub>²sin²θ + v<sub>A</sub>²]]</i>. Її власні значення дають швидку й повільну гілки <i class="m">v<sub>±</sub>² = ½[(v<sub>A</sub>²+c<sub>s</sub>²) ± √((v<sub>A</sub>²+c<sub>s</sub>²)² − 4v<sub>A</sub>²c<sub>s</sub>²cos²θ)]</i>, власні вектори — напрямки зміщення. Альвенівська мода: <i class="m">ξ ∥ z</i>, <i class="m">ω = k v<sub>A</sub> cos θ</i>.</p>
+      <p>Зміщення <i class="m">ξ = (A/k) e cos(k·r − ωt)</i>, де <i class="m">A = kξ</i> — амплітуда з повзунка (при кількох модах кожній дається <i class="m">A/√n</i>). Тоді <i class="m">δρ/ρ = −∇·ξ = A (k̂·e) sin φ</i>, <i class="m">δB/B<sub>0</sub> = ∇×(ξ×x̂) = A sin φ [(k̂·e) x̂ − cos θ · e]</i>, <i class="m">v = ∂ξ/∂t</i>. Газовий тиск <i class="m">δp = c<sub>s</sub>² δρ/ρ</i>, магнітний — <i class="m">v<sub>A</sub>² δB<sub>x</sub>/B<sub>0</sub></i> (у одиницях <i class="m">ρ<sub>0</sub>v<sub>A</sub>²</i>). Точки й силові лінії — лагранжеві: це справжні положення елементів плазми, зміщених на <i class="m">ξ</i>; колір і стрілки — лінійне поле в початковій точці. При <i class="m">kξ</i> ≳ 0,5 лінійна теорія вже неточна; такі амплітуди — лише для наочності.</p>
+    </details>
+  </div>
+  <div id="stage" class="mhd">
+    <div class="view" id="v-plane" title="Клік або перетягування — перемістити зонд"></div>
+    <div class="view" id="v-3d" title="Потягніть, щоб повернути; подвійний клік — скинути"></div>
+    <div class="view" id="v-graphs"></div>
+    <div class="view" id="v-polar"></div>
+  </div>
+</div>
+<script>
+/* МГД-хвилі: плоска хвиля в однорідній ідеальній плазмі, три гілки (A, F, S).
+   Одиниці: v_A = 1, λ = 1, k = 2π, час у λ/v_A. B0 ∥ x, k у площині (x, y), γ = 5/3.
+   Зміщення ξ = (A/k) e cos φ, φ = k·r − ωt; δρ/ρ = A (k̂·e) sin φ; δB/B0 = A sin φ [(k̂·e) x̂ − cos θ e]. */
+(function () {
+  var C = PSim.C, fmt = PSim.fmt;
+  var K = 2 * Math.PI, TAU = K, GAMMA = 5 / 3;
+  var P = { theta: 35, csr: 1, A: 0.5, spd: 0.4, alf: false, fast: true, slow: false,
+            plane: 'xy', color: 'rho', heat: true, lines: true, dots: true, bArr: true, vArr: false, trail: true };
+  var S = { t: 0, probe: { u: 1.5, v: 0 }, yaw: -0.75, pitch: 0.42 };
+  var MODEKEY = ['alf', 'fast', 'slow'];
+
+  /* ---------- фізика ---------- */
+  function modeColor(key) { return key === 'alf' ? C.c3 : key === 'fast' ? C.c2 : C.c1; }
+  function buildModes() {
+    var th = P.theta * Math.PI / 180, c = Math.cos(th), s = Math.sin(th), cs = P.csr;
+    var M11 = cs * cs * c * c, M12 = cs * cs * c * s, M22 = cs * cs * s * s + 1;
+    var tr = (M11 + M22) / 2, d = Math.hypot((M11 - M22) / 2, M12);
+    var lf = tr + d, ls = Math.max(0, tr - d), phi = 0.5 * Math.atan2(2 * M12, M11 - M22);
+    var defs = [
+      { key: 'alf', name: 'Альвенівська', short: 'A', vph: Math.abs(c), e: [0, 0, 1] },
+      { key: 'fast', name: 'Швидка', short: 'F', vph: Math.sqrt(lf), e: [Math.cos(phi), Math.sin(phi), 0] },
+      { key: 'slow', name: 'Повільна', short: 'S', vph: Math.sqrt(ls), e: [-Math.sin(phi), Math.cos(phi), 0] }];
+    var n = (P.alf ? 1 : 0) + (P.fast ? 1 : 0) + (P.slow ? 1 : 0), Aeff = P.A / Math.sqrt(Math.max(n, 1));
+    for (var i = 0; i < 3; i++) {
+      var m = defs[i];
+      m.on = P[m.key]; m.w = K * m.vph; m.kx = K * c; m.ky = K * s;
+      m.kne = c * m.e[0] + s * m.e[1];
+      m.bc = [m.kne - c * m.e[0], -c * m.e[1], -c * m.e[2]];
+      m.amp = m.on ? Aeff : P.A; m.col = modeColor(m.key);
+    }
+    defs.Aeff = Aeff; defs.c = c; defs.s = s; defs.th = th;
+    return defs;
+  }
+  function evalF(ms, x, y, z, t, o) {
+    var xx = 0, xy = 0, xz = 0, r = 0, bx = 0, by = 0, bz = 0, vx = 0, vy = 0, vz = 0;
+    for (var i = 0; i < 3; i++) {
+      var m = ms[i]; if (!m.on) continue;
+      var ph = m.kx * x + m.ky * y - m.w * t, sn = Math.sin(ph), cn = Math.cos(ph), a = m.amp, xi = a / K * cn, vv = a * m.vph * sn;
+      xx += xi * m.e[0]; xy += xi * m.e[1]; xz += xi * m.e[2];
+      r += a * m.kne * sn; bx += a * m.bc[0] * sn; by += a * m.bc[1] * sn; bz += a * m.bc[2] * sn;
+      vx += vv * m.e[0]; vy += vv * m.e[1]; vz += vv * m.e[2];
+    }
+    o.xx = xx; o.xy = xy; o.xz = xz; o.rho = r; o.bx = bx; o.by = by; o.bz = bz; o.vx = vx; o.vy = vy; o.vz = vz;
+    return o;
+  }
+  function speedsAt(th) {
+    var c = Math.cos(th), cs = P.csr, a = cs * cs + 1, disc = Math.sqrt(Math.max(0, a * a - 4 * cs * cs * c * c));
+    return [Math.abs(c), Math.sqrt((a + disc) / 2), Math.sqrt(Math.max(0, (a - disc) / 2))];
+  }
+  function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+  function rgb(h) { h = h.replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+  function niceCeil(x) { var p = Math.pow(10, Math.floor(Math.log10(x))), f = x / p; return (f <= 1 ? 1 : f <= 1.5 ? 1.5 : f <= 2 ? 2 : f <= 3 ? 3 : f <= 5 ? 5 : 10) * p; }
+  function fs(w) { return w > 700 ? 13 : 12; }
+  function arrow(ctx, x, y, dx, dy, col, lw) {
+    var L = Math.hypot(dx, dy); if (L < 2) return;
+    var ux = dx / L, uy = dy / L, hs = Math.min(6, L * 0.5);
+    ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + dx - ux * hs * 0.6, y + dy - uy * hs * 0.6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + dx, y + dy);
+    ctx.lineTo(x + dx - ux * hs - uy * hs * 0.5, y + dy - uy * hs + ux * hs * 0.5);
+    ctx.lineTo(x + dx - ux * hs + uy * hs * 0.5, y + dy - uy * hs - ux * hs * 0.5);
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  function trailW(ms) {
+    var mx = 0; for (var i = 0; i < 3; i++) if (ms[i].on && ms[i].vph > 0.02) mx = Math.max(mx, 1 / ms[i].vph);
+    return mx > 0 ? mx : 2;
+  }
+  function windowW(ms) { return clamp(2.4 * trailW(ms), 2.4, 14); }
+  function slicePt() { var pl = P.plane === 'xy'; return { pl: pl, y: pl ? S.probe.v : 0, z: pl ? 0 : S.probe.v }; }
+
+  /* ---------- переріз ---------- */
+  var HW = 120, HH = 72, off = document.createElement('canvas'); off.width = HW; off.height = HH;
+  var octx = off.getContext('2d'), img = octx.createImageData(HW, HH);
+  var geo = { ox: 0, oy: 0, sc: 1 }, t1 = {}, t2 = {};
+  function heatVal(o) { return P.color === 'rho' ? o.rho : P.color === 'B' ? o.bx : P.csr * P.csr * o.rho + o.bx; }
+
+  function drawPlane(ctx, w, h) {
+    var ms = buildModes(), pl = P.plane === 'xy', f = fs(w), t = S.t, o = t1, i, j;
+    var pad = 14, sc = Math.min((w - 2 * pad) / 3, (h - 2 * pad - 18) / 1.8), ox = (w - 3 * sc) / 2, oy = h / 2 + 8;
+    geo = { ox: ox, oy: oy, sc: sc };
+    function X(u) { return ox + u * sc; } function Y(v) { return oy - v * sc; }
+    PSim.label(ctx, 'Переріз ' + (pl ? '(x, y): B₀ вздовж x' : '(x, z): вид збоку') + ' · колір: ' + (P.color === 'rho' ? 'δρ/ρ' : P.color === 'B' ? 'δ|B|/B₀' : 'δ(p + B²/2μ₀)'),
+      X(0), Y(0.9) - 10, { size: f, bold: true, base: 'bottom' });
+    if (P.heat) {
+      var scale = Math.max(P.color === 'p' ? ms.Aeff * Math.max(1, P.csr * P.csr) : ms.Aeff, 1e-6), d = img.data, pr = rgb(C.warn), nr = rgb(C.c1);
+      for (j = 0; j < HH; j++) {
+        var v = 0.9 - (j + 0.5) / HH * 1.8;
+        for (i = 0; i < HW; i++) {
+          var u = (i + 0.5) / HW * 3; evalF(ms, u, pl ? v : 0, pl ? 0 : v, t, o);
+          var q = clamp(heatVal(o) / scale, -1, 1), cc = q > 0 ? pr : nr, k = (j * HW + i) * 4;
+          d[k] = cc[0]; d[k + 1] = cc[1]; d[k + 2] = cc[2]; d[k + 3] = Math.pow(Math.abs(q), 0.85) * 0.78 * 255;
+        }
+      }
+      octx.putImageData(img, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(off, X(0), Y(0.9), 3 * sc, 1.8 * sc);
+    }
+    ctx.strokeStyle = C.ax; ctx.lineWidth = 1; ctx.strokeRect(X(0), Y(0.9), 3 * sc, 1.8 * sc);
+    ctx.save(); ctx.beginPath(); ctx.rect(X(0), Y(0.9), 3 * sc, 1.8 * sc); ctx.clip();
+    var rows = 12, NX = 160;
+    if (P.lines) {
+      ctx.strokeStyle = PSim.alpha(C.fg, 0.62); ctx.lineWidth = 1.25; ctx.lineJoin = 'round';
+      for (j = 0; j < rows; j++) {
+        var v0 = -0.9 + 0.15 * (j + 0.5); ctx.beginPath();
+        for (i = 0; i <= NX; i++) {
+          var u0 = i / NX * 3; evalF(ms, u0, pl ? v0 : 0, pl ? 0 : v0, t, o);
+          var px = X(u0 + o.xx), py = Y(v0 + (pl ? o.xy : o.xz)); if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+    }
+    var aS = Math.max(ms.Aeff, 0.05);
+    if (P.dots) {
+      ctx.fillStyle = PSim.alpha(C.fg, 0.9);
+      for (j = 0; j < rows; j++) {
+        var v1 = -0.9 + 0.15 * (j + 0.5);
+        for (i = 0; i < 24; i++) {
+          var u1 = (i + 0.5) / 24 * 3; evalF(ms, u1, pl ? v1 : 0, pl ? 0 : v1, t, o);
+          var dep = (pl ? o.xz : o.xy) * K / aS, r = 2.3 * (1 + 0.55 * clamp(dep, -1.2, 1.2));
+          ctx.beginPath(); ctx.arc(X(u1 + o.xx), Y(v1 + (pl ? o.xy : o.xz)), Math.max(r, 0.8), 0, TAU); ctx.fill();
+        }
+      }
+    }
+    for (var pass = 0; pass < 2; pass++) {
+      if (pass === 0 && !P.bArr) continue; if (pass === 1 && !P.vArr) continue;
+      for (j = 0; j < 6; j++) {
+        var v2 = -0.75 + 0.3 * j;
+        for (i = 0; i < 12; i++) {
+          var u2 = (i + 0.5) * 0.25; evalF(ms, u2, pl ? v2 : 0, pl ? 0 : v2, t, o);
+          var sx = X(u2 + o.xx), sy = Y(v2 + (pl ? o.xy : o.xz));
+          if (pass === 0) arrow(ctx, sx, sy, o.bx * sc * 0.3, -(pl ? o.by : o.bz) * sc * 0.3, C.c2, 1.7);
+          else arrow(ctx, sx, sy, o.vx * sc * 0.22, -(pl ? o.vy : o.vz) * sc * 0.22, C.muted, 1.5);
+        }
+      }
+    }
+    var sp = slicePt(), pu = S.probe.u, pv = S.probe.v;
+    if (P.trail) {
+      var Wt = Math.min(trailW(ms), 6), NS = 60, lx = null, ly = null; ctx.lineWidth = 2; ctx.lineCap = 'round';
+      for (i = 0; i <= NS; i++) {
+        evalF(ms, pu, sp.y, sp.z, t - Wt * (1 - i / NS), t2);
+        var tx = X(pu + t2.xx), ty = Y(pv + (pl ? t2.xy : t2.xz));
+        if (lx !== null) { ctx.strokeStyle = PSim.alpha(C.warn, 0.15 + 0.85 * i / NS); ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(tx, ty); ctx.stroke(); }
+        lx = tx; ly = ty;
+      }
+    }
+    evalF(ms, pu, sp.y, sp.z, t, o);
+    var qx = X(pu + o.xx), qy = Y(pv + (pl ? o.xy : o.xz));
+    ctx.fillStyle = C.bg; ctx.beginPath(); ctx.arc(qx, qy, 7.5, 0, TAU); ctx.fill();
+    ctx.strokeStyle = C.fg; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(qx, qy, 7.5, 0, TAU); ctx.stroke();
+    ctx.fillStyle = C.warn; ctx.beginPath(); ctx.arc(qx, qy, 3.6, 0, TAU); ctx.fill();
+    ctx.restore();
+    // напрямки B0 і k
+    var bx0 = X(0) + 10, by0 = Y(0.9) + 10;
+    ctx.fillStyle = PSim.alpha(C.bg, 0.85); ctx.fillRect(bx0, by0, 92, 50); ctx.strokeStyle = C.line; ctx.strokeRect(bx0, by0, 92, 50);
+    var ocx = bx0 + 14, ocy = by0 + 34;
+    arrow(ctx, ocx, ocy, 44, 0, C.fg, 2); arrow(ctx, ocx, ocy, ms.c * 34, -(pl ? ms.s : 0) * 34, C.warn, 2);
+    PSim.label(ctx, 'B₀', ocx + 48, ocy + 1, { size: f, color: C.fg });
+    PSim.label(ctx, 'k', ocx + ms.c * 34 + 4, ocy - (pl ? ms.s : 0) * 34 - 6, { size: f, color: C.warn, bold: true });
+    PSim.label(ctx, 'розмір крапки — зміщення ' + (pl ? 'вздовж z' : 'вздовж y') + ' (більша — ближче до глядача)', X(0), Y(-0.9) + 6, { size: f - 1, color: C.muted, base: 'top' });
+  }
+
+  /* ---------- 3D ---------- */
+  var t3 = {};
+  function proj(x, y, z, w, h) {
+    x -= 1.5; var cy = Math.cos(S.yaw), sy = Math.sin(S.yaw), cp = Math.cos(S.pitch), sp = Math.sin(S.pitch);
+    var x1 = x * cy - y * sy, y1 = x * sy + y * cy, y2 = y1 * cp - z * sp, z2 = y1 * sp + z * cp;
+    var sc = Math.min(w * 0.265, h * 0.5), fz = 1 / (1 + y2 * 0.16);
+    return [w / 2 + x1 * fz * sc, h / 2 - z2 * fz * sc, y2];
+  }
+  function draw3D(ctx, w, h) {
+    var ms = buildModes(), t = S.t, o = t3, i, j, k, f = fs(w);
+    PSim.label(ctx, '3D-вид: 12 силових ліній, крапки за густиною', 10, 12, { size: f, bold: true, base: 'top' });
+    var xs = [0, 3], ys = [-0.6, 0.6], zs = [-0.45, 0.45], pts = {}, a, b, c;
+    for (a = 0; a < 2; a++) for (b = 0; b < 2; b++) for (c = 0; c < 2; c++) pts[a + '' + b + c] = proj(xs[a], ys[b], zs[c], w, h);
+    ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.beginPath();
+    var keys = Object.keys(pts);
+    for (var p = 0; p < keys.length; p++) for (var q = p + 1; q < keys.length; q++) {
+      var a1 = keys[p], b1 = keys[q], dd = 0; for (var z = 0; z < 3; z++) if (a1[z] !== b1[z]) dd++;
+      if (dd === 1) { ctx.moveTo(pts[a1][0], pts[a1][1]); ctx.lineTo(pts[b1][0], pts[b1][1]); }
+    }
+    ctx.stroke();
+    var yl = [-0.45, -0.15, 0.15, 0.45], zl = [-0.3, 0, 0.3], NX = 90, items = [];
+    for (j = 0; j < yl.length; j++) for (k = 0; k < zl.length; k++) {
+      var line = [];
+      for (i = 0; i <= NX; i++) {
+        var u = i / NX * 3; evalF(ms, u, yl[j], zl[k], t, o);
+        line.push({ p: proj(u + o.xx, yl[j] + o.xy, zl[k] + o.xz, w, h), rho: o.rho });
+      }
+      items.push(line);
+    }
+    var sc = Math.max(ms.Aeff, 1e-6), pr = rgb(C.warn), nr = rgb(C.c1);
+    ctx.lineWidth = 1.3; ctx.lineJoin = 'round';
+    for (j = 0; j < items.length; j++) {
+      var ln = items[j]; ctx.strokeStyle = PSim.alpha(C.fg, 0.5); ctx.beginPath();
+      for (i = 0; i < ln.length; i++) { if (i === 0) ctx.moveTo(ln[i].p[0], ln[i].p[1]); else ctx.lineTo(ln[i].p[0], ln[i].p[1]); }
+      ctx.stroke();
+      for (i = 2; i < ln.length; i += 5) {
+        var qv = clamp(ln[i].rho / sc, -1, 1), cc = qv > 0 ? pr : nr;
+        ctx.fillStyle = 'rgba(' + cc[0] + ',' + cc[1] + ',' + cc[2] + ',' + (0.35 + 0.65 * Math.abs(qv)) + ')';
+        ctx.beginPath(); ctx.arc(ln[i].p[0], ln[i].p[1], 2.6 + 1.2 * Math.abs(qv), 0, TAU); ctx.fill();
+      }
+    }
+    var sp = slicePt(), pu = S.probe.u;
+    if (P.trail) {
+      var Wt = Math.min(trailW(ms), 6), NS = 60, last = null; ctx.lineWidth = 2; ctx.lineCap = 'round';
+      for (i = 0; i <= NS; i++) {
+        evalF(ms, pu, sp.y, sp.z, t - Wt * (1 - i / NS), o);
+        var pp = proj(pu + o.xx, sp.y + o.xy, sp.z + o.xz, w, h);
+        if (last) { ctx.strokeStyle = PSim.alpha(C.warn, 0.15 + 0.85 * i / NS); ctx.beginPath(); ctx.moveTo(last[0], last[1]); ctx.lineTo(pp[0], pp[1]); ctx.stroke(); }
+        last = pp;
+      }
+    }
+    evalF(ms, pu, sp.y, sp.z, t, o);
+    var pc = proj(pu + o.xx, sp.y + o.xy, sp.z + o.xz, w, h);
+    ctx.fillStyle = C.bg; ctx.beginPath(); ctx.arc(pc[0], pc[1], 7, 0, TAU); ctx.fill();
+    ctx.strokeStyle = C.fg; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(pc[0], pc[1], 7, 0, TAU); ctx.stroke();
+    ctx.fillStyle = C.warn; ctx.beginPath(); ctx.arc(pc[0], pc[1], 3.4, 0, TAU); ctx.fill();
+    var cy = Math.cos(S.yaw), sy = Math.sin(S.yaw), cp = Math.cos(S.pitch), spp = Math.sin(S.pitch);
+    function dir(x, y, z) { var x1 = x * cy - y * sy, y1 = x * sy + y * cy, y2 = y1 * cp - z * spp, z2 = y1 * spp + z * cp; return [x1, -z2]; }
+    var ox = 34, oy = h - 30, L = 30, dv;
+    dv = dir(1, 0, 0); arrow(ctx, ox, oy, dv[0] * L, dv[1] * L, C.c5, 2); PSim.label(ctx, 'x ∥ B₀', ox + dv[0] * L + 5, oy + dv[1] * L, { size: f - 1, color: C.muted });
+    dv = dir(0, 1, 0); arrow(ctx, ox, oy, dv[0] * L, dv[1] * L, C.c4, 2); PSim.label(ctx, 'y', ox + dv[0] * L + 4, oy + dv[1] * L, { size: f - 1, color: C.muted });
+    dv = dir(0, 0, 1); arrow(ctx, ox, oy, dv[0] * L, dv[1] * L, C.fg, 2); PSim.label(ctx, 'z', ox + dv[0] * L + 4, oy + dv[1] * L, { size: f - 1, color: C.muted });
+    dv = dir(ms.c, ms.s, 0); arrow(ctx, ox, oy, dv[0] * L * 1.25, dv[1] * L * 1.25, C.warn, 2); PSim.label(ctx, 'k', ox + dv[0] * L * 1.25 + 4, oy + dv[1] * L * 1.25 - 4, { size: f, color: C.warn, bold: true });
+  }
+
+  /* ---------- графіки зонда ---------- */
+  var N = 200;
+  function legend(ctx, m, items, f) {
+    items.forEach(function (it, i) {
+      var y = m.t + 8 + i * (f + 5), x = m.r - 6;
+      ctx.save(); ctx.strokeStyle = it.c; ctx.lineWidth = it.lw || 2; ctx.setLineDash(it.d || []);
+      ctx.beginPath(); ctx.moveTo(x - 22, y + f / 2); ctx.lineTo(x, y + f / 2); ctx.stroke(); ctx.restore();
+      PSim.label(ctx, it.t, x - 27, y + f / 2, { size: f - 1, align: 'right' });
+    });
+  }
+  function drawGraphs(ctx, w, h) {
+    var ms = buildModes(), f = fs(w) - (w < 700 ? 1 : 0), Wd = windowW(ms), sp = slicePt(), o = t1, cs2 = P.csr * P.csr, i, g;
+    var xs = new Array(N), D = [[], [], [], [], [], [], [], [], []];
+    for (g = 0; g < 9; g++) D[g] = new Array(N);
+    for (i = 0; i < N; i++) {
+      var tt = S.t - Wd * (1 - i / (N - 1)); xs[i] = -Wd * (1 - i / (N - 1));
+      evalF(ms, S.probe.u, sp.y, sp.z, tt, o);
+      D[0][i] = o.xx * K; D[1][i] = o.xy * K; D[2][i] = o.xz * K; D[3][i] = o.rho; D[4][i] = o.bx; D[5][i] = o.by; D[6][i] = o.bz;
+      D[7][i] = cs2 * o.rho; D[8][i] = o.bx;
+    }
+    var tot = D[7].map(function (v, k) { return v + D[8][k]; });
+    var vert = w < 560, pw = vert ? w : w / 3, ph = vert ? h / 3 : h;
+    var specs = [
+      { title: 'Зміщення частинки kξ', ylabel: 'kξ', s: [
+        { t: 'ξ вздовж B₀ (x)', c: C.c5, y: D[0] }, { t: 'ξ ⊥ B₀ (y)', c: C.c4, y: D[1] }, { t: 'ξ ⊥ B₀ (z)', c: C.fg, y: D[2], d: [6, 3] }] },
+      { title: 'Густина і δB/B₀', ylabel: '', s: [
+        { t: 'δρ/ρ', c: C.warn, y: D[3], lw: 2.6 }, { t: 'δBx/B₀', c: C.c5, y: D[4] }, { t: 'δBy/B₀', c: C.c4, y: D[5] }, { t: 'δBz/B₀', c: C.fg, y: D[6], d: [6, 3] }] },
+      { title: 'Тиски δp/(ρ₀v_A²)', ylabel: '', s: [
+        { t: 'газовий', c: C.warn, y: D[7] }, { t: 'магнітний', c: C.c5, y: D[8] }, { t: 'сума', c: C.fg, y: tot, lw: 2.8 }] }];
+    specs.forEach(function (sp2, n) {
+      var ym = 0.05; sp2.s.forEach(function (s) { for (var k = 0; k < N; k++) ym = Math.max(ym, Math.abs(s.y[k])); });
+      ym = niceCeil(ym * 1.1);
+      var box = vert ? { x: 0, y: n * ph, w: pw, h: ph } : { x: n * pw, y: 0, w: pw, h: ph };
+      var m = PSim.frame(ctx, box, { x0: -Wd, x1: 0, y0: -ym, y1: ym, font: f - 1, title: sp2.title, ylabel: sp2.ylabel,
+        xlabel: 't, λ/v_A', padL: 40, padR: 8, padB: 34, nx: 3, ny: 4 });
+      PSim.clip(ctx, m);
+      PSim.curve(ctx, m, [-Wd, 0], [0, 0], { color: C.muted, width: 1 });
+      sp2.s.forEach(function (s) { PSim.curve(ctx, m, xs, s.y, { color: s.c, width: s.lw || 2, dash: s.d }); });
+      ctx.restore();
+      legend(ctx, m, sp2.s.map(function (s) { return { t: s.t, c: s.c, d: s.d, lw: s.lw }; }), f);
+    });
+  }
+
+  /* ---------- діаграма Фрідріхса ---------- */
+  function drawPolar(ctx, w, h) {
+    var ms = buildModes(), f = fs(w), cx = w / 2, cy = h / 2 + 8, R = Math.min(w, h - 20) / 2 - 34, vmax = Math.sqrt(P.csr * P.csr + 1) * 1.02;
+    function r(v) { return v / vmax * R; }
+    PSim.label(ctx, 'Фазові швидкості v_ф(θ)/v_A', 10, 12, { size: f, bold: true, base: 'top' });
+    ctx.lineWidth = 1;
+    [[1, 'v_A'], [P.csr, 'c_s']].forEach(function (q, idx) {
+      ctx.setLineDash(idx ? [2, 3] : []); ctx.strokeStyle = idx ? C.muted : C.line; ctx.beginPath(); ctx.arc(cx, cy, r(q[0]), 0, TAU); ctx.stroke();
+    });
+    ctx.setLineDash([]); ctx.strokeStyle = C.line;
+    ctx.beginPath(); ctx.moveTo(cx - R - 8, cy); ctx.lineTo(cx + R + 8, cy); ctx.moveTo(cx, cy - R - 8); ctx.lineTo(cx, cy + R + 8); ctx.stroke();
+    PSim.label(ctx, 'v_A', cx + r(1) * 0.707 + 3, cy - r(1) * 0.707 - 4, { size: f - 1, color: C.muted });
+    PSim.label(ctx, 'c_s', cx + r(P.csr) * 0.707 + 3, cy + r(P.csr) * 0.707 + 6, { size: f - 1, color: C.muted });
+    PSim.label(ctx, 'B₀', cx + R + 6, cy - 8, { size: f - 1, color: C.muted });
+    PSim.label(ctx, '⊥ B₀', cx + 6, cy - R - 10, { size: f - 1, color: C.muted });
+    for (var m = 0; m < 3; m++) {
+      ctx.strokeStyle = ms[m].col; ctx.lineWidth = ms[m].on ? 2.6 : 1.2; ctx.globalAlpha = ms[m].on ? 1 : 0.45; ctx.beginPath();
+      for (var a = 0; a <= 360; a += 2) {
+        var th = a * Math.PI / 180, v = speedsAt(th)[m], px = cx + r(v) * Math.cos(th), py = cy - r(v) * Math.sin(th);
+        if (a === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    var th0 = ms.th, spd = speedsAt(th0);
+    ctx.strokeStyle = C.ax; ctx.lineWidth = 1; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * Math.cos(th0), cy - R * Math.sin(th0)); ctx.stroke(); ctx.setLineDash([]);
+    for (m = 0; m < 3; m++) {
+      var px2 = cx + r(spd[m]) * Math.cos(th0), py2 = cy - r(spd[m]) * Math.sin(th0);
+      ctx.fillStyle = ms[m].col; ctx.beginPath(); ctx.arc(px2, py2, 8, 0, TAU); ctx.fill();
+      ctx.fillStyle = C.bg; ctx.font = '600 11px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ms[m].short, px2, py2 + 0.5);
+    }
+    var lg = [['A — альвенівська', C.c3], ['F — швидка', C.c2], ['S — повільна', C.c1]];
+    lg.forEach(function (q, i) {
+      var y = h - 12 - (2 - i) * (f + 4);
+      ctx.strokeStyle = q[1]; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(10, y); ctx.lineTo(28, y); ctx.stroke();
+      PSim.label(ctx, q[0], 34, y, { size: f - 1 });
+    });
+  }
+
+  /* ---------- величини ---------- */
+  var set = PSim.readout('#s-out', [
+    ['beta', 'β = (2/γ)(c<sub>s</sub>/v<sub>A</sub>)²'],
+    ['vA', 'A: v<sub>ф</sub>/v<sub>A</sub> = cos θ'], ['vF', 'F: v<sub>ф</sub>/v<sub>A</sub>'], ['vS', 'S: v<sub>ф</sub>/v<sub>A</sub>'],
+    ['eA', 'A: зміщення'], ['eF', 'F: зміщення'], ['eS', 'S: зміщення'],
+    ['rF', 'F: ρ і |B|'], ['rS', 'S: ρ і |B|'],
+    ['rho', 'зонд: δρ/ρ'], ['bx', 'зонд: δB<sub>x</sub>/B<sub>0</sub>'], ['bp', 'зонд: δB<sub>⊥</sub>/B<sub>0</sub>'], ['pt', 'зонд: δp<sub>газ</sub> + δp<sub>магн</sub>']
+  ]);
+  function relText(m) {
+    var a = m.amp, eps = 1e-3 * a + 1e-9, rho = Math.abs(m.kne), bx = Math.abs(m.bc[0]);
+    if (rho * a < eps && bx * a < eps) return 'обидві сталі';
+    if (rho * a < eps) return 'ρ стала, |B| змінне';
+    if (bx * a < eps) return '|B| стале, ρ змінна';
+    return m.kne * m.bc[0] > 0 ? 'у фазі' : 'у протифазі';
+  }
+  function eText(m) {
+    if (m.key === 'alf') return '⊥ площини (k, B₀)';
+    var ex2 = m.e[0] * m.e[0];
+    return fmt(100 * ex2, 2) + '% ∥ B₀';
+  }
+  function updateOut() {
+    var ms = buildModes(), sp = slicePt(), o = t2, cs2 = P.csr * P.csr;
+    set('beta', fmt(2 / GAMMA * cs2, 3));
+    set('vA', fmt(ms[0].vph, 3)); set('vF', fmt(ms[1].vph, 3)); set('vS', fmt(ms[2].vph, 3));
+    set('eA', eText(ms[0])); set('eF', eText(ms[1])); set('eS', eText(ms[2]));
+    set('rF', relText(ms[1])); set('rS', relText(ms[2]));
+    evalF(ms, S.probe.u, sp.y, sp.z, S.t, o);
+    set('rho', fmt(o.rho, 3)); set('bx', fmt(o.bx, 3)); set('bp', fmt(Math.hypot(o.by, o.bz), 3));
+    set('pt', fmt(cs2 * o.rho + o.bx, 3));
+  }
+
+  /* ---------- збирання ---------- */
+  var views = [PSim.canvas('#v-plane', drawPlane), PSim.canvas('#v-3d', draw3D), PSim.canvas('#v-graphs', drawGraphs), PSim.canvas('#v-polar', drawPolar)];
+  function draw() { views.forEach(function (v) { v.redraw(); }); updateOut(); }
+  var loop = PSim.loop('#s-loop', {
+    step: function (n) { S.t += n * P.spd / 60; }, draw: draw,
+    reset: function () { S.t = 0; }, steps: function () { return 1; }, autostart: true });
+
+  // зонд
+  var pc = views[0].cv, down = false;
+  function setProbe(e) {
+    var r = pc.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    S.probe.u = clamp((mx - geo.ox) / geo.sc, 0.05, 2.95); S.probe.v = clamp((geo.oy - my) / geo.sc, -0.85, 0.85); draw();
+  }
+  pc.addEventListener('pointerdown', function (e) { down = true; pc.setPointerCapture(e.pointerId); setProbe(e); });
+  pc.addEventListener('pointermove', function (e) { if (down) setProbe(e); });
+  pc.addEventListener('pointerup', function () { down = false; }); pc.addEventListener('pointercancel', function () { down = false; });
+  pc.style.cursor = 'crosshair';
+  // 3D: обертання
+  var c3 = views[1].cv, drag = null;
+  c3.style.cursor = 'grab';
+  c3.addEventListener('pointerdown', function (e) { drag = { x: e.clientX, y: e.clientY }; c3.setPointerCapture(e.pointerId); });
+  c3.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    S.yaw += (e.clientX - drag.x) * 0.008; S.pitch = clamp(S.pitch + (e.clientY - drag.y) * 0.008, -1.4, 1.4);
+    drag = { x: e.clientX, y: e.clientY }; draw();
+  });
+  c3.addEventListener('pointerup', function () { drag = null; }); c3.addEventListener('pointercancel', function () { drag = null; });
+  c3.addEventListener('dblclick', function () { S.yaw = -0.75; S.pitch = 0.42; draw(); });
+
+  var DOT = function (c) { return '<span style="color:var(' + c + ')">●</span> '; };
+  var pre = PSim.presets('#s-pre', [
+    { name: 'Швидка, ⊥ B₀', values: { alf: false, fast: true, slow: false, theta: 90, csr: 1, A: 0.5 }, note: 'v = √(v_A² + c_s²), ρ і |B| у фазі' },
+    { name: 'Повільна, β ≪ 1', values: { alf: false, fast: false, slow: true, theta: 20, csr: 0.3, A: 0.5 }, note: 'рух майже вздовж B₀, ρ і |B| у протифазі' },
+    { name: 'Альвенівська «струна»', values: { alf: true, fast: false, slow: false, theta: 0, csr: 1, A: 0.5, plane: 'xz' }, note: 'поперечна нестислива хвиля вздовж B₀' },
+    { name: 'Альвенівська, косо', values: { alf: true, fast: false, slow: false, theta: 50, csr: 1, A: 0.5, plane: 'xy' }, note: 'v_ф = v_A cos θ, зміщення ⊥ площини (k, B₀)' },
+    { name: 'Усі три, θ = 45°', values: { alf: true, fast: true, slow: true, theta: 45, csr: 0.9, A: 0.6, plane: 'xy' }, note: 'суперпозиція трьох мод одного k' }
+  ], function (vals) { Object.assign(P, vals); ctl.sync(); draw(); });
+
+  function onCh(key) {
+    if (MODEKEY.indexOf(key) >= 0 && !P.alf && !P.fast && !P.slow) { P[key] = true; ctl.sync(); }
+    if (key !== 'spd' && key !== 'plane' && key !== 'color' && MODEKEY.indexOf(key) < 0 && ['theta', 'csr', 'A'].indexOf(key) < 0) { draw(); return; }
+    pre.mark(-1); draw();
+  }
+  var ctl = PSim.controls('#s-ctl', [
+    { key: 'theta', label: 'Кут <i class="m">θ</i> між <i class="m">k</i> і <i class="m">B<sub>0</sub></i>', min: 0, max: 90, step: 1, fmt: function (v) { return Math.round(v) + '°'; } },
+    { key: 'csr', label: '<i class="m">c<sub>s</sub>/v<sub>A</sub></i>', min: 0.15, max: 3, step: 0.05, fmt: function (v) { return fmt(v, 3) + ' (β ≈ ' + fmt(2 / GAMMA * v * v, 2) + ')'; } },
+    { key: 'A', label: 'Амплітуда <i class="m">kξ</i>', min: 0.05, max: 0.9, step: 0.01, hint: 'Лінійна теорія; при kξ &gt; 0,5 — лише для наочності.' },
+    { key: 'spd', label: 'Швидкість показу', min: 0.05, max: 1.5, step: 0.05, fmt: function (v) { return '×' + fmt(v, 2); } },
+    { key: 'alf', label: DOT('--c3') + 'Альвенівська', type: 'check' },
+    { key: 'fast', label: DOT('--c2') + 'Швидка магнітозвукова', type: 'check' },
+    { key: 'slow', label: DOT('--c1') + 'Повільна магнітозвукова', type: 'check' }
+  ], P, onCh);
+  var ctl2 = PSim.controls('#s-view', [
+    { key: 'plane', label: 'Площина перерізу', type: 'select', options: [['xy', '(x, y): площина k і B₀'], ['xz', '(x, z): вид збоку']] },
+    { key: 'color', label: 'Колір поля', type: 'select', options: [['rho', 'густина δρ/ρ'], ['B', 'модуль поля δ|B|/B₀'], ['p', 'повний тиск δ(p + B²/2μ₀)']] },
+    { key: 'heat', label: 'колірне поле', type: 'check' },
+    { key: 'lines', label: 'силові лінії', type: 'check' },
+    { key: 'dots', label: 'частинки', type: 'check' },
+    { key: 'bArr', label: 'стрілки <i class="m">δB</i>', type: 'check' },
+    { key: 'vArr', label: 'стрілки швидкості <i class="m">v</i>', type: 'check' },
+    { key: 'trail', label: 'слід зонда', type: 'check' }
+  ], P, function () { draw(); });
+  var ctlAll = { sync: function () { ctl.sync(); ctl2.sync(); } };
+  ctl.sync = (function (orig) { return function () { orig(); ctl2.sync(); }; })(ctl.sync);
+
+  Array.prototype.forEach.call(document.querySelectorAll('#panel details[id]'), function (d) {
+    var key = 'waves_mhd:' + d.id;
+    try { var v = localStorage.getItem(key); if (v !== null) d.open = v === '1'; } catch (e) {}
+    d.addEventListener('toggle', function () { try { localStorage.setItem(key, d.open ? '1' : '0'); } catch (e) {} });
+  });
+  draw();
+})();
+</script>
