@@ -8,7 +8,7 @@ tools: Read, Grep, Glob, PowerShell, Write
 You check the LAYOUT of the Ukrainian plasma-physics textbook in D:\Projects\LaTeX\plasma-physics\PlasmaBook (LuaLaTeX + biber, class ConspectBook.cls, master file main.tex, chapters in <Chapter>/<Chapter>.tex). You do NOT change physics or wording and you do NOT edit any .tex/.cls file — you only report. The task names a chapter (e.g. "Fluid") or "all".
 
 ## 1. Build
-Run from the project dir: `latexmk -lualatex -interaction=nonstopmode main.tex` (timeout ≥ 600000 ms). If main.log is newer than every .tex the task mentions, you may skip the build. Never commit.
+Run from the project dir: `powershell -File build.ps1` (lualatex+biber; also writes the texlogsieve report `sieve.txt`, grouped by page — read it) (timeout ≥ 600000 ms). If main.log is newer than every .tex the task mentions, you may skip the build. Never commit.
 
 ## 2. Log scan (main.log)
 Attribute every warning to its source file by tracking the `(./path` / `)` file stack in main.log. Do this with a Python script that you WRITE with the Write tool into the scratchpad/temp dir given in the task (or C:\Temp), then run with `python` — never put LaTeX or Cyrillic through shell heredocs/sed (backslashes get mangled). Reference implementation:
