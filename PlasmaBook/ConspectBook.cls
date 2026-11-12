@@ -782,14 +782,30 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % Другий аргумент ({}) навмисно порожній: сюди потрапляють і "Додатки" та
 % "Література" (без номера частини), тому автоматичний префікс "Частина ~"
 % тут не потрібен.
+% Записи «Додатки», «Словник термінів», «Література», «Предметний покажчик»: той самий
+% вигляд (жирний, з крапками), що й у записів глав без номера
 \titlecontents{part}%
-[0pt]{\sffamily\bfseries\large\protect\addvspace{25pt}\addvspace{1.5ex}}
+[0pt]{\bfseries\protect\addvspace{1em plus 1pt}}
 {}{}
-{\hfill\contentspage}%
-[\addvspace{0.7ex}\addvspace{10pt}]%
+{\nobreak\titlerule*[6pt]{.}\contentspage}%
+[]%
 
-% ширший слот під номер секції у змісті (10.10, 11.9 --- без накладання на назву)
-\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3.3em}}
+% Зміст: «Розділ N.» перед назвою глави й «§ N.M» перед назвою підрозділу.
+% Знак § ставимо лише коли номер починається з цифри (літери додатків і порожні номери --- без нього):
+% \ifcat 0#1 істинне для цифри (catcode 12) і хибне для літери (catcode 11)
+\def\toc@sign#1{\toc@sign@a#1\relax\relax}
+\def\toc@sign@a#1#2\relax{\ifcat 0\noexpand#1\S\,\fi}
+% праве поле --- стандартне (номери сторінок усіх рівнів на одній вертикалі)
+\titlecontents{chapter}[5.3em]
+{\addvspace{1em plus 1pt}\bfseries\hyphenpenalty=10000 \advance\rightskip by 0pt plus 6em\relax }
+{\contentslabel[\small\mdseries Розділ~\thecontentslabel.]{5.3em}}
+{\hspace*{-5.3em}}
+{\nobreak\hskip .5em\titlerule*[6pt]{.}\contentspage}
+\titlecontents{section}[5.5em]
+{}
+{\contentslabel[\expandafter\toc@sign\expandafter{\thecontentslabel}\thecontentslabel]{4.0em}}
+{}
+{\nobreak\hskip .4em\titlerule*[6pt]{.}\contentspage}
 
 \titleclass{\part}{top}         % частина завжди починається "з верху" нової сторінки
 \newcommand\partbreak{\clearpage} % ручний розрив перед частиною (за потреби у тексті)
