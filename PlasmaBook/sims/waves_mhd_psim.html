@@ -213,7 +213,7 @@
   function proj(x, y, z, w, h) {
     x -= 1.5; var cy = Math.cos(S.yaw), sy = Math.sin(S.yaw), cp = Math.cos(S.pitch), sp = Math.sin(S.pitch);
     var x1 = x * cy - y * sy, y1 = x * sy + y * cy, y2 = y1 * cp - z * sp, z2 = y1 * sp + z * cp;
-    var sc = Math.min(w * 0.265, h * 0.5), fz = 1 / (1 + y2 * 0.16);
+    var sc = Math.min(w * 0.3, h * 0.55), fz = 1 / (1 + y2 * 0.16);
     return [w / 2 + x1 * fz * sc, h / 2 - z2 * fz * sc, y2];
   }
   function draw3D(ctx, w, h) {
@@ -306,7 +306,7 @@
       var ym = 0.05; sp2.s.forEach(function (s) { for (var k = 0; k < N; k++) ym = Math.max(ym, Math.abs(s.y[k])); });
       ym = niceCeil(ym * 1.1);
       var box = vert ? { x: 0, y: n * ph, w: pw, h: ph } : { x: n * pw, y: 0, w: pw, h: ph };
-      var m = PSim.frame(ctx, box, { x0: -Wd, x1: 0, y0: -ym, y1: ym, font: f - 1, title: sp2.title, ylabel: sp2.ylabel,
+      var m = PSim.frame(ctx, box, { x0: -Wd, x1: 0, y0: -ym, y1: ym * (1 + 0.42 * sp2.s.length), font: f - 1, title: sp2.title, ylabel: sp2.ylabel,
         xlabel: 't, λ/v_A', padL: 40, padR: 8, padB: 34, nx: 3, ny: 4 });
       PSim.clip(ctx, m);
       PSim.curve(ctx, m, [-Wd, 0], [0, 0], { color: C.muted, width: 1 });
