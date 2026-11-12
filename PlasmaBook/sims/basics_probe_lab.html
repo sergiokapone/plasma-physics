@@ -157,6 +157,7 @@ textarea{width:100%;margin-top:8px;font:12px ui-monospace,Consolas,monospace;bac
       <label class="f">T<sub>e</sub>, еВ <span id="lTe" style="color:var(--muted)"></span><input type="range" id="Te" min="1" max="10" step="0.1" value="3"></label>
       <label class="f">lg n, n в см⁻³ <span id="ln" style="color:var(--muted)"></span><input type="range" id="n" min="8" max="13" step="0.1" value="10"></label>
       <label class="f">V<sub>p</sub> відносно стінки, В <span id="lVp" style="color:var(--muted)"></span><input type="range" id="Vp" min="2" max="60" step="0.5" value="15"></label>
+      <label class="f" id="sigW">Подвійний зонд: S<sub>2</sub>/S<sub>1</sub> <span id="lSig" style="color:var(--muted)"></span><input type="range" id="sig" min="-0.6" max="0.6" step="0.05" value="0"></label>
       <label class="chk"><input type="checkbox" id="hot"><span>Гарячий хвіст: 5 % електронів із T<sub>h</sub> = 4T<sub>e</sub></span></label>
       <div class="hint">Зміна параметрів скидає виміряні точки.</div>
     </div>
@@ -166,6 +167,7 @@ textarea{width:100%;margin-top:8px;font:12px ui-monospace,Consolas,monospace;bac
     <div class="hint">Параметри плазми невідомі й випадкові. Виміряйте ВАХ, обробіть її й введіть відповідь.</div>
     <label class="f"><span>T<sub>e</sub>, еВ</span><input type="text" id="ansTe" inputmode="decimal" autocomplete="off"></label>
     <label class="f"><span>n, см⁻³ (напр. 3e10)</span><input type="text" id="ansN" inputmode="decimal" autocomplete="off"></label>
+    <label class="f" id="ansSigW"><span>S<sub>2</sub>/S<sub>1</sub> (площі електродів)</span><input type="text" id="ansSig" inputmode="decimal" autocomplete="off"></label>
     <label class="f" id="ansVpW"><span>V<sub>p</sub> відносно стінки, В</span><input type="text" id="ansVp" inputmode="decimal" autocomplete="off"></label>
     <div class="btns"><button class="btn primary" id="chkAns">Перевірити</button><button class="btn" id="newBox">Нова плазма</button><button class="btn" id="showAns" hidden>Показати еталон</button></div>
     <div class="hint" id="boxMsg"></div>
@@ -217,13 +219,16 @@ textarea{width:100%;margin-top:8px;font:12px ui-monospace,Consolas,monospace;bac
    <p>Два однакових електроди, між якими прикладено напругу V; усе коло плаває й стінка в ньому не бере участі. Струм не перевищує ±I<sub>is</sub>, тому плазма майже не збурюється:</p>
    <div class="eq">I = I<sub>is</sub>·th(eV / 2T<sub>e</sub>),  T<sub>e</sub> = e·I<sub>is</sub> / [2·(dI/dV)<sub>V=0</sub>].</div>
    <p>Лінеаризація: ln[(I<sub>is</sub> + I)/(I<sub>is</sub> − I)] = eV/T<sub>e</sub> — пряма з нахилом 1/T<sub>e</sub>. V<sub>p</sub> подвійним зондом не знайти.</p>
+   <p><b>Різні площі електродів.</b> Якщо S<sub>2</sub> = σS<sub>1</sub>, плато стають несиметричними (−I<sub>is</sub> і +σI<sub>is</sub>), а характеристика зсувається:</p>
+   <div class="eq">I = (u·I<sub>2</sub> − I<sub>is</sub>)/(1 + u),  u = e<sup>eV/T<sub>e</sub></sup>/σ,  I<sub>2</sub> = σI<sub>is</sub>;  ln[(I<sub>is</sub> + I)/(I<sub>2</sub> − I)] = eV/T<sub>e</sub> − ln σ.</div>
+   <p>Нахил лінеаризації й тут дає 1/T<sub>e</sub>, а відношення плато (або зсув прямої) — σ. Якщо цього не врахувати й обробляти ВАХ як симетричну, T<sub>e</sub> виходить спотвореною. Діапазон V для подвійного зонда обирайте з запасом: щонайменше ±(4–6)·T<sub>e</sub>/e, інакше плато не досягнуто.</p>
 
    <h4>Пастки</h4>
    <div class="warn"><b>Гарячий хвіст.</b> Якщо є швидкі електрони, лінія ln I(V) вигинається, а T<sub>e</sub> залежить від вікна фіту й виходить завищеною. Поекспериментуйте з вікном і прапорцем «гарячий хвіст». Ще: у реальності струм насичення слабко росте (розширення шару), а ln-пряма має злам не різкий; у стенді цього немає.</div>
 
    <h4>Хід роботи</h4>
    <ol>
-    <li>Оберіть режим «чорний ящик», тип зонда і газ.</li>
+    <li>Оберіть режим «чорний ящик», тип зонда і газ. Для подвійного зонда в режимі «чорний ящик» площі електродів можуть відрізнятися: S<sub>2</sub>/S<sub>1</sub> теж треба знайти.</li>
     <li>Рухайте напругу V від глибоко від’ємної до додатної. У гальмівній області беріть точки частіше (там струм змінюється на порядки), на плато — достатньо кількох.</li>
     <li>Для швидкості можна скористатися автоматичною розгорткою, а потім доповнити точки біля зламу.</li>
     <li>Обробіть ВАХ, знайдіть T<sub>e</sub>, V<sub>p</sub>, n; перевірте, що n(I<sub>is</sub>) ≈ n(I<sub>es</sub>), введіть відповідь.</li>
@@ -266,7 +271,7 @@ textarea{width:100%;margin-top:8px;font:12px ui-monospace,Consolas,monospace;bac
    <summary>Графіки</summary>
    <div class="gbar">
      <div class="hint">Лівий графік — ВАХ, правий — лінеаризація для визначення T<sub>e</sub>. Виділені точки — у вікні фіту.</div>
-     <label class="chk"><input type="checkbox" id="zoom"><span>збільшити область іонного струму</span></label>
+     <label class="chk" id="zoomW"><input type="checkbox" id="zoom"><span>збільшити область іонного струму</span></label>
    </div>
    <div class="graphs">
      <div class="g"><canvas id="cIV"></canvas></div>
@@ -287,7 +292,7 @@ textarea{width:100%;margin-top:8px;font:12px ui-monospace,Consolas,monospace;bac
 /*CORE*/
 var E = 1.602e-19, ME = 9.109e-31;
 /* Плазма (SI всередині, але Te в еВ, n в см⁻³, S в мм², Vp у В відносно стінки) */
-var T = { Te: 3, n: 1e10, mu: 1836, S: 4, Vp: 15, hot: false, probe: 'single' };
+var T = { Te: 3, n: 1e10, mu: 1836, S: 4, Vp: 15, hot: false, probe: 'single', sigma: 1 };
 
 function vbar(Te) { return Math.sqrt(8 * Te * E / (Math.PI * ME)); }
 function cur() {
@@ -317,7 +322,7 @@ function bisect(f, a, b, tol) {
 /* подвійний зонд: I(φ1) + I(φ1 − V) = 0, I = струм першого електрода */
 function dbl(V, c) {
   var A = Math.abs(V);
-  var p1 = bisect(function (p) { return Iof(p, c) + Iof(p - V, c); }, -80 * T.Te - A, A + 20 * T.Te, 1e-10);
+  var p1 = bisect(function (p) { return Iof(p, c) + T.sigma * Iof(p - V, c); }, -80 * T.Te - A, A + 20 * T.Te, 1e-10);
   return Iof(p1, c);
 }
 function trueI(V, c) { return T.probe === 'single' ? Iof(V - T.Vp, c) : dbl(V, c); }
@@ -328,7 +333,7 @@ function gauss() { var u = 0, v = 0; while (!u) u = Math.random(); while (!v) v 
 function niceCeil(x) { var p = Math.pow(10, Math.floor(Math.log10(x))), m = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]; for (var i = 0; i < m.length; i++) if (m[i] * p >= x) return m[i] * p; return 10 * p; }
 /* межа амперметра, одиниця і розрядність */
 function inst(c) {
-  var Imax = T.probe === 'single' ? niceCeil(1.1 * (c.Iec + c.Ieh)) : niceCeil(1.3 * c.Iis);
+  var Imax = T.probe === 'single' ? niceCeil(1.1 * (c.Iec + c.Ieh)) : niceCeil(1.3 * c.Iis * Math.max(1, T.sigma));
   var u = Imax < 1e-3 ? { n: 'мкА', k: 1e-6 } : Imax < 1 ? { n: 'мА', k: 1e-3 } : { n: 'А', k: 1 };
   var d = Math.max(0, 3 - Math.floor(Math.log10(Imax / u.k) + 1e-9));
   return { Imax: Imax, unit: u.n, k: u.k, dec: d, res: Math.pow(10, -d) * u.k };
@@ -367,7 +372,7 @@ function fitSingle(pts, opt) {
   for (var i = 1; i < n; i++) if (a[i - 1].I < 0 && a[i].I >= 0) { R.vf = a[i - 1].V + (a[i].V - a[i - 1].V) * (-a[i - 1].I) / (a[i].I - a[i - 1].I); break; }
   var xs = [], ys = [], inw = [];
   for (i = 0; i < n; i++) {
-    var y = a[i].I + Iis, ok = y >= opt.lo * Ies && y <= opt.hi * Ies && i < n - 3 + 0 * 1;
+    var y = a[i].I + Iis, ok = y >= opt.lo * Ies && y <= opt.hi * Ies && i < n - 3;
     inw.push(ok ? 1 : 0);
     if (ok) { xs.push(a[i].V); ys.push(Math.log(y)); }
   }
@@ -383,22 +388,38 @@ function fitSingle(pts, opt) {
 function fitDouble(pts, opt) {
   var a = pts.slice().sort(function (x, y) { return x.V - y.V; }), n = a.length;
   if (n < 6) return { err: 'потрібно щонайменше 6 точок (зараз ' + n + ')' };
-  var low = a.slice(0, 3).map(function (p) { return p.I; }), top = a.slice(n - 3).map(function (p) { return p.I; });
-  var Iis = 0.5 * (mean(top) - mean(low)), R = { Iis: Iis, warn: [] };
-  if (Iis <= 0) return { err: 'струм має зростати з V: перевірте, що точки охоплюють і від’ємні, і додатні V' };
-  var i, xs = [], ys = [], xl = [], yl = [], inw = [];
-  for (i = 0; i < n; i++) {
-    var q = a[i].I / Iis, ok = Math.abs(q) < opt.hid;
-    inw.push(ok ? 1 : 0);
-    if (ok) { xs.push(a[i].V); ys.push(Math.log((1 + q) / (1 - q))); }
-    if (Math.abs(q) < 0.25) { xl.push(a[i].V); yl.push(a[i].I); }
+  var lowP = a.slice(0, 3), topP = a.slice(n - 3);
+  var Il = mean(lowP.map(function (p) { return p.I; })), It = mean(topP.map(function (p) { return p.I; }));
+  var Vl = mean(lowP.map(function (p) { return p.V; })), Vt = mean(topP.map(function (p) { return p.V; }));
+  var Im = -Il, Ip = It, R = { warn: [] };
+  if (Im <= 0 || Ip <= 0) return { err: 'струм має змінювати знак: точки мають охоплювати і від’ємні, і додатні V до плато' };
+  var i, it, xs, ys, xl, yl, inw, L = null;
+  /* I = (u·I₂ − I₁)/(1+u), u = exp(V/T_e + c); I₁ — від’ємне плато, I₂ — додатне (I₂ = σI₁, σ = S₂/S₁).
+     Якщо на краях діапазону плато ще не досягнуто, I₁ і I₂ уточнюються ітераціями. */
+  for (it = 0; it < 8; it++) {
+    xs = []; ys = []; xl = []; yl = []; inw = [];
+    for (i = 0; i < n; i++) {
+      var q = 2 * (a[i].I + Im) / (Im + Ip) - 1, ok = Math.abs(q) < opt.hid && a[i].I > -Im && a[i].I < Ip;
+      inw.push(ok ? 1 : 0);
+      if (ok) { xs.push(a[i].V); ys.push(Math.log((Im + a[i].I) / (Ip - a[i].I))); }
+      if (Math.abs(a[i].I) < 0.2 * Math.min(Im, Ip)) { xl.push(a[i].V); yl.push(a[i].I); }
+    }
+    L = linreg(xs, ys);
+    if (!L || L.s <= 0) break;
+    var ut = Math.exp(L.s * Vt + L.c), ul = Math.exp(L.s * Vl + L.c);
+    var I2n = (It * (1 + ut) - Il * (1 + ul)) / (ut - ul), I1n = ut * I2n - It * (1 + ut);
+    if (!(I1n > 0 && I2n > 0)) break;
+    var done = Math.abs(I1n / Im - 1) < 1e-4 && Math.abs(I2n / Ip - 1) < 1e-4;
+    Im = I1n; Ip = I2n;
+    if (done) break;
   }
-  R.nwin = xs.length; R.sorted = a; R.inw = inw;
-  var L = linreg(xs, ys);
-  if (!L || L.s <= 0) { R.err = 'у вікні фіту менше 3 точок: додайте точки біля V = 0'; return R; }
-  R.Te = 1 / L.s; R.dTe = R.Te * L.ds / L.s; R.c = L.c; R.s = L.s;
-  var K = linreg(xl, yl); if (K && K.s > 0) R.Te0 = Iis / (2 * K.s);
-  R.nis = nFromIis(Iis, R.Te);
+  R.Iis = Im; R.Ip = Ip; R.nwin = xs.length; R.sorted = a; R.inw = inw;
+  if (!L || L.s <= 0) { R.err = 'у вікні фіту менше 3 точок: додайте точки біля I = 0'; return R; }
+  R.Te = 1 / L.s; R.dTe = R.Te * L.ds / L.s; R.c = L.c; R.s = L.s; R.sigma = Ip / Im;
+  var ue = Math.exp(L.s * Vt + L.c), ud = Math.exp(L.s * Vl + L.c);
+  if (ue / (1 + ue) < 0.97 || 1 / (1 + ud) < 0.97) R.warn.push('плато ±I_is не досягнуто на краях діапазону (I_is уточнено екстраполяцією): розширте діапазон V');
+  var K = linreg(xl, yl); if (K && K.s > 0) R.Te0 = Im * Ip / ((Im + Ip) * K.s);
+  R.nis = nFromIis(Im, R.Te);
   R.cs = Math.sqrt(R.Te * E / (T.mu * ME));
   return R;
 }
@@ -408,7 +429,7 @@ function fitDouble(pts, opt) {
   var $ = function (id) { return document.getElementById(id); };
   var P = new URLSearchParams(location.search), teacher = P.has('teacher');
   var c, ins, pts = [], F = null, last = { V: 0, I: 0 }, box = { on: true, shown: false };
-  var Vrange = { single: [-80, 80], double: [-40, 40] };
+  var Vrange = { single: [-80, 80], double: [-60, 60] };
 
   function fmtc(v, d) { return v.toFixed(d).replace('.', ','); }
   function sig(v, k) {
@@ -428,34 +449,39 @@ function fitDouble(pts, opt) {
   /* ---------- стан плазми ---------- */
   function readStudy() {
     T.Te = +$('Te').value; T.n = Math.pow(10, +$('n').value); T.Vp = +$('Vp').value; T.hot = $('hot').checked;
+    T.sigma = T.probe === 'double' ? Math.round(Math.pow(10, +$('sig').value) * 100) / 100 : 1;
   }
   function randomBox() {
     T.Te = Math.round(logUniform(Math.log10(1.5), Math.log10(8)) * 10) / 10;
     T.n = logUniform(8.5, 12.5);
     T.Vp = Math.round((T.Te * (3.5 + 2 * Math.random())) * 2) / 2;
     T.hot = false; box.shown = false;
-    $('ansTe').value = ''; $('ansN').value = ''; $('ansVp').value = ''; $('boxMsg').textContent = ''; $('showAns').hidden = true;
+    T.sigma = $('probe').value === 'double' && Math.random() < 0.6 ? Math.round(logUniform(Math.log10(0.4), Math.log10(2.5)) * 20) / 20 : 1;
+    $('ansSig').value = ''; $('ansTe').value = ''; $('ansN').value = ''; $('ansVp').value = ''; $('boxMsg').textContent = ''; $('showAns').hidden = true;
   }
   function labels() {
     $('lS').textContent = fmtc(T.S, 1) + ' мм²';
     $('lTe').textContent = fmtc(+$('Te').value, 1); $('ln').textContent = fmtc(+$('n').value, 1); $('lVp').textContent = fmtc(+$('Vp').value, 1);
     $('lLo').textContent = Math.round(100 * +$('lo').value) + ' %'; $('lHi').textContent = Math.round(100 * +$('hi').value) + ' %';
+    $('lSig').textContent = fmtc(Math.pow(10, +$('sig').value), 2);
     $('lHd').textContent = fmtc(+$('hid').value, 2);
   }
   function applyAll(resetPts) {
     T.mu = +$('gas').value; T.S = +$('S').value; T.probe = $('probe').value;
+    if (T.probe === 'single') T.sigma = 1;
     box.on = $('mode').value === 'box';
     if (!box.on) readStudy();
     $('known').hidden = box.on; $('boxAns').hidden = !box.on;
-    $('ansVpW').hidden = T.probe === 'double';
+    $('ansVpW').hidden = T.probe === 'double'; $('ansSigW').hidden = T.probe !== 'double'; $('sigW').hidden = T.probe !== 'double';
     $('winSingle').hidden = T.probe === 'double'; $('winDouble').hidden = T.probe !== 'double';
     c = cur(); ins = inst(c);
     var r = Vrange[T.probe]; $('vs').min = r[0]; $('vs').max = r[1];
-    $('sw0').value = T.probe === 'single' ? -60 : -30; $('sw1').value = T.probe === 'single' ? 40 : 30;
+    $('sw0').value = T.probe === 'single' ? -60 : -40; $('sw1').value = T.probe === 'single' ? 40 : 40;
+    $('zoomW').hidden = T.probe === 'double';
     setV(Math.max(r[0], Math.min(r[1], +$('vs').value)));
     if (resetPts) { pts = []; }
     $('dIu').textContent = ins.unit; $('thI').textContent = 'I, ' + ins.unit;
-    $('thL').innerHTML = T.probe === 'single' ? 'ln(I + I<sub>is</sub>)' : 'ln[(I<sub>is</sub>+I)/(I<sub>is</sub>−I)]';
+    $('thL').innerHTML = T.probe === 'single' ? 'ln(I + I<sub>is</sub>)' : 'ln[(I<sub>is</sub>+I)/(I<sub>2</sub>−I)]';
     labels(); refresh(true);
   }
   function setV(v) { $('vs').value = v; $('vn').value = Math.round(v * 10) / 10; }
@@ -503,7 +529,8 @@ function fitDouble(pts, opt) {
       if (r < 0.85 || r > 1.18) F.warn.push('n(I_is) і n(I_es) розходяться: перевірте T_e (вікно фіту) і плато');
     } else {
       if (F.Te0) h.push('T<sub>e</sub> з (dI/dV)<sub>0</sub> = ' + sig(F.Te0, 3) + ' еВ');
-      h.push('I<sub>is</sub> = ' + sig(F.Iis / ins.k, 3) + ' ' + ins.unit);
+      h.push('I<sub>is</sub> (від’ємне плато) = ' + sig(F.Iis / ins.k, 3) + ' ' + ins.unit + ',  I<sub>2</sub> = ' + sig(F.Ip / ins.k, 3) + ' ' + ins.unit);
+      h.push('S<sub>2</sub>/S<sub>1</sub> = I<sub>2</sub>/I<sub>is</sub> = ' + sig(F.sigma, 3) + (tr ? ' <small>(задано ' + sig(T.sigma, 3) + ')</small>' : ''));
       h.push('n(I<sub>is</sub>) = ' + sci(F.nis) + ' см⁻³');
       if (tr) h.push('<small>задано n = ' + sci(T.n) + ' см⁻³</small>');
     }
@@ -512,10 +539,11 @@ function fitDouble(pts, opt) {
   }
 
   function checkAnswer() {
-    var te = parseNum($('ansTe').value), n = parseNum($('ansN').value), vp = parseNum($('ansVp').value), m = [], ok = true;
-    if (!isFinite(te) || !isFinite(n) || (T.probe === 'single' && !isFinite(vp))) { $('boxMsg').innerHTML = '<span class="bad">Заповніть усі поля числами.</span>'; return; }
+    var te = parseNum($('ansTe').value), n = parseNum($('ansN').value), vp = parseNum($('ansVp').value), sg = parseNum($('ansSig').value), m = [], ok = true;
+    if (!isFinite(te) || !isFinite(n) || (T.probe === 'single' && !isFinite(vp)) || (T.probe === 'double' && !isFinite(sg))) { $('boxMsg').innerHTML = '<span class="bad">Заповніть усі поля числами.</span>'; return; }
     var okT = Math.abs(te / T.Te - 1) < 0.1, okN = Math.abs(n / T.n - 1) < 0.25, okV = T.probe === 'double' || Math.abs(vp - T.Vp) < 0.4 * T.Te + 0.5;
     m.push(span('T_e: ' + (okT ? 'вірно' : 'невірно') + ' (допуск 10 %)', okT ? 'good' : 'bad'));
+    if (T.probe === 'double') { var okS = Math.abs(sg / T.sigma - 1) < 0.15; m.push(span('S_2/S_1: ' + (okS ? 'вірно' : 'невірно') + ' (допуск 15 %)', okS ? 'good' : 'bad')); }
     m.push(span('n: ' + (okN ? 'вірно' : 'невірно') + ' (допуск 25 %)', okN ? 'good' : 'bad'));
     if (T.probe === 'single') m.push(span('V_p: ' + (okV ? 'вірно' : 'невірно') + ' (допуск 0,4·T_e + 0,5 В)', okV ? 'good' : 'bad'));
     $('boxMsg').innerHTML = m.join('<br>');
@@ -602,7 +630,7 @@ function fitDouble(pts, opt) {
   function drawIV() {
     var s = setup($('cIV')), g = s.g, r = Vrange[T.probe], k = ins.k, i;
     var ymax = ins.Imax, ymin = -0.12 * ins.Imax;
-    if (T.probe === 'double') { ymax = 1.15 * ins.Imax / 1.3 * 1.3 * 0.8; ymin = -ymax; }
+    if (T.probe === 'double') { ymax = 0.92 * ins.Imax; ymin = -ymax; if (T.sigma > 1) ymin = -ymax / T.sigma; else ymax = ymax * T.sigma; ymax *= 1.15; ymin *= 1.15; }
     if ($('zoom').checked) {
       var lo = 0, hi = 0; pts.forEach(function (p) { lo = Math.min(lo, p.I); hi = Math.max(hi, p.I); });
       if (T.probe === 'single') { var m = Math.max(-lo, 1e-12); ymin = -1.6 * m; ymax = 5 * m; if (!pts.length) { ymin = -0.12 * ins.Imax; ymax = 0.3 * ins.Imax; } }
@@ -621,9 +649,9 @@ function fitDouble(pts, opt) {
         vline(g, A, F.vp, COL.i, [2, 3], 'V_p');
       } else {
         var xd = [], yd = [];
-        for (i = 0; i <= 200; i++) { var Vd = r[0] + (r[1] - r[0]) * i / 200; xd.push(Vd); yd.push(F.Iis * Math.tanh(F.s * Vd / 2) / k); }
+        for (i = 0; i <= 200; i++) { var Vd = r[0] + (r[1] - r[0]) * i / 200; xd.push(Vd); var uu = Math.exp(Math.min(50, F.s * Vd + F.c)); yd.push((uu * F.Ip - F.Iis) / (1 + uu) / k); }
         line(g, A, xd, yd, COL.acc, 2, [7, 4]);
-        hline(g, A, F.Iis / k, COL.p, 'I_is'); hline(g, A, -F.Iis / k, COL.p, '−I_is');
+        hline(g, A, F.Ip / k, COL.p, Math.abs(F.sigma - 1) < 0.03 ? 'I_is' : 'I_2'); hline(g, A, -F.Iis / k, COL.p, '−I_is');
       }
     }
     var inw = {};
@@ -671,16 +699,16 @@ function fitDouble(pts, opt) {
       g.restore();
       legend(g, A, [{ t: 'у вікні фіту', col: COL.u }, { t: 'фіт → T_e, V_p', col: COL.acc, dash: [7, 4] }].concat(showTruth() ? [{ t: 'еталон', col: COL.tr, dash: [6, 4] }] : []));
     } else {
-      var Id = F && F.Iis > 0 ? F.Iis : null;
-      var Y = 1.1 * (r[1]) / T.Te; if (box.on && !showTruth()) Y = 6;
-      A = frame(g, s.w, s.h, { xmin: r[0], xmax: r[1], ymin: -Y, ymax: Y, title: 'Лінеаризація: нахил = 1/T_e', xlab: 'V, В', ylab: 'ln[(I_is+I)/(I_is−I)]' });
+      var Id = F && F.Iis > 0 ? F : null;
+      var Y = 1.1 * (r[1]) / T.Te + Math.abs(Math.log(T.sigma)); if (box.on && !showTruth()) Y = 6;
+      A = frame(g, s.w, s.h, { xmin: r[0], xmax: r[1], ymin: -Y, ymax: Y, title: 'Лінеаризація: нахил = 1/T_e', xlab: 'V, В', ylab: 'ln[(I_is+I)/(I_2−I)]' });
       if (!Id) { g.fillStyle = COL.muted; g.textAlign = 'center'; g.fillText('потрібні точки на плато ±I_is', (A.x0 + A.x1) / 2, (A.y0 + A.y1) / 2); return; }
       clip(g, A);
       g.strokeStyle = COL.muted; g.beginPath(); g.moveTo(A.x0, A.Y(0)); g.lineTo(A.x1, A.Y(0)); g.stroke();
-      if (showTruth()) line(g, A, [r[0], r[1]], [r[0] / T.Te, r[1] / T.Te], COL.tr, 1.5, [6, 4]);
+      if (showTruth()) line(g, A, [r[0], r[1]], [r[0] / T.Te - Math.log(T.sigma), r[1] / T.Te - Math.log(T.sigma)], COL.tr, 1.5, [6, 4]);
       if (!F.err) line(g, A, [r[0], r[1]], [F.c + F.s * r[0], F.c + F.s * r[1]], COL.acc, 2, [7, 4]);
       var wm = {}; if (F.sorted) F.sorted.forEach(function (p, j) { if (F.inw[j]) wm[p.V + '|' + p.I] = 1; });
-      pts.forEach(function (p) { var q = p.I / Id; if (Math.abs(q) < 0.97) marker(g, A.X(p.V), A.Y(Math.log((1 + q) / (1 - q))), COL.u, !wm[p.V + '|' + p.I]); });
+      pts.forEach(function (p) { if (p.I > -Id.Iis && p.I < Id.Ip && Math.abs(2 * (p.I + Id.Iis) / (Id.Iis + Id.Ip) - 1) < 0.97) marker(g, A.X(p.V), A.Y(Math.log((Id.Iis + p.I) / (Id.Ip - p.I))), COL.u, !wm[p.V + '|' + p.I]); });
       g.restore();
       legend(g, A, [{ t: 'у вікні фіту', col: COL.u }, { t: 'фіт', col: COL.acc, dash: [7, 4] }].concat(showTruth() ? [{ t: 'еталон', col: COL.tr, dash: [6, 4] }] : []));
     }
@@ -726,11 +754,12 @@ function fitDouble(pts, opt) {
     var probes = dbl_ ? [0.56 * w, 0.88 * w] : [0.78 * w];
     probes.forEach(function (px, k) {
       g.fillStyle = '#8a8f99'; g.fillRect(px - 4, ty, 8, (0.66 - 0.16) * h);
-      g.fillStyle = '#d9a441'; g.fillRect(px - 3, 0.66 * h, 6, 0.1 * h);
+      var tw = dbl_ && k === 1 ? Math.max(3, Math.min(18, 6 * T.sigma)) : 6;
+      g.fillStyle = '#d9a441'; g.fillRect(px - tw / 2, 0.66 * h, tw, 0.1 * h);
       g.strokeStyle = COL.ink; g.lineWidth = 1; g.strokeRect(px - 4, ty, 8, 0.5 * h); g.setLineDash([3, 3]);
       g.strokeStyle = COL.acc; g.strokeRect(px - 18, 0.64 * h, 36, 0.16 * h); g.setLineDash([]);
       g.fillStyle = COL.ink; g.textAlign = 'center';
-      g.fillText(dbl_ ? 'зонд ' + (k + 1) : 'зонд', px, 0.84 * h + 14);
+      g.fillText(dbl_ ? 'зонд ' + (k + 1) + (k === 1 && Math.abs(T.sigma - 1) > 0.03 && showTruth() && !box.on ? ' (S\u2082/S\u2081 = ' + fmtc(T.sigma, 2) + ')' : '') : 'зонд', px, 0.84 * h + 14);
     });
     g.fillStyle = COL.acc; g.textAlign = 'center'; g.fillText('шар', probes[0] + (dbl_ ? 0 : 0), 0.62 * h);
     /* дроти */
@@ -750,10 +779,6 @@ function fitDouble(pts, opt) {
     g.fillStyle = COL.u; g.fillText('V = ' + fmtc(last.V, 1) + ' В', sx, ty - 24);
     g.fillStyle = COL.muted; g.fillText(dbl_ ? 'джерело між електродами' : 'джерело зміщення', sx, ty + 30);
     /* заземлення біля стінки (одиночний) */
-    if (!dbl_) {
-      var gx = 0.44 * w, gy = 0.82 * h;
-      g.strokeStyle = COL.wire; g.lineWidth = 2; g.fillStyle = COL.ink;
-    }
     /* електрони у дроті */
     var L = polyLen(p), I = last.I, sgn = I > 0 ? 1 : I < 0 ? -1 : 0, N = Math.max(8, Math.round(L / 28));
     if (sgn) {
@@ -785,7 +810,7 @@ function fitDouble(pts, opt) {
       var l = '—';
       if (Iis) {
         if (T.probe === 'single') { var y = p.I + Iis; l = y > 0 ? fmtc(Math.log(y / ins.k), 3) : '—'; }
-        else { var q = p.I / Iis; l = Math.abs(q) < 1 ? fmtc(Math.log((1 + q) / (1 - q)), 3) : '—'; }
+        else { l = p.I > -Iis && p.I < F.Ip ? fmtc(Math.log((Iis + p.I) / (F.Ip - p.I)), 3) : '—'; }
       }
       rows.push('<tr><td>' + (i + 1) + '</td><td>' + fmtc(p.V, 1) + '</td><td>' + fmtc(p.I / ins.k, ins.dec) + '</td><td>' + l + '</td><td>' + (wmap[p.V + '|' + p.I] ? '●' : '') + '</td></tr>');
     });
@@ -803,7 +828,7 @@ function fitDouble(pts, opt) {
   }
 
   /* ---------- події ---------- */
-  ['mode', 'probe', 'gas', 'S', 'Te', 'n', 'Vp', 'hot'].forEach(function (id) {
+  ['mode', 'probe', 'gas', 'S', 'Te', 'n', 'Vp', 'hot', 'sig'].forEach(function (id) {
     $(id).addEventListener('input', function () {
       if (id === 'mode' && $('mode').value === 'box') randomBox();
       else if (id === 'probe' && box.on) randomBox();
@@ -827,7 +852,7 @@ function fitDouble(pts, opt) {
   $('newBox').addEventListener('click', function () { randomBox(); applyAll(true); });
   $('showAns').addEventListener('click', function () {
     box.shown = true;
-    $('boxMsg').innerHTML += '<br>Еталон: T<sub>e</sub> = ' + sig(T.Te, 3) + ' еВ, n = ' + sci(T.n) + ' см⁻³' + (T.probe === 'single' ? ', V<sub>p</sub> = ' + sig(T.Vp, 3) + ' В' : '') + '.';
+    $('boxMsg').innerHTML += '<br>Еталон: T<sub>e</sub> = ' + sig(T.Te, 3) + ' еВ, n = ' + sci(T.n) + ' см⁻³' + (T.probe === 'single' ? ', V<sub>p</sub> = ' + sig(T.Vp, 3) + ' В' : ', S<sub>2</sub>/S<sub>1</sub> = ' + sig(T.sigma, 3)) + '.';
     refresh(false);
   });
   $('cp').addEventListener('click', function () { var t = tableText('\t'); if (navigator.clipboard) navigator.clipboard.writeText(t).catch(function () {}); });
