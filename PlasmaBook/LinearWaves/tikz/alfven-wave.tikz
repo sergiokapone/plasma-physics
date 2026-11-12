@@ -1,8 +1,14 @@
 \begin{tikzpicture}[>=latex']
 	% силові лінії, що коливаються поперек B0
 	\foreach \y in {0.0, 0.45, 0.9, 1.35, 1.8} {
-		\draw[blue!60!black, thick, domain=0:6.2, samples=80, variable=\x]
+		\draw[blue!50, thick, domain=0:6.2, samples=80, variable=\x]
 			plot ({\x},{\y + 0.28*sin(\x*90)});
+	}
+	% частинки плазми: вморожені в лінії, тож зміщуються разом із ними (вздовж z розташовані рівномірно: хвиля нестислива)
+	\foreach \y in {0.0, 0.45, 0.9, 1.35, 1.8} {
+		\foreach \x in {0.1,0.4,...,6.1} {
+			\fill[black!80] ({\x},{\y + 0.28*sin(\x*90)}) circle (1.6pt);
+		}
 	}
 	% B0
 	\draw[->, very thick, blue!70!black] (-1.0,0.9) -- (-0.2,0.9) node[midway, above, font=\footnotesize] {$\vect B_0$};
