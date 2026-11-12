@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Лабораторна: зонд Ленгмюра</title>
+<script src="shared/theme.js"></script>
+<style>
+:root{
+  --bg:#f4f5f7; --card:#ffffff; --fg:#1b2130; --muted:#5a6375; --line:#dde1e8; --grid:#0000001a; --axis:#555;
+  --accent:#1f5fd6; --valbg:#eef3fd;
+  --cu:#1f6fb5; --ci:#2e8b57; --cp:#c0392b; --true:#888; --wire:#2a3242; --ion:#c2410c; --ele:#1f5fbf; --plasma:#6a1b9a14;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0e1117; --card:#161a22; --fg:#e4e8ef; --muted:#9aa3b3; --line:#283040; --grid:#ffffff1a; --axis:#aaa;
+  --accent:#6ea2ff; --valbg:#18233a;
+  --cu:#6ea2ff; --ci:#4fd18b; --cp:#ff7a6e; --true:#9aa3b3; --wire:#cfd6e2; --ion:#ff9a5c; --ele:#6ea8ff; --plasma:#ce93d822;
+  color-scheme:dark;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="dark"]){
+  --bg:#0e1117; --card:#161a22; --fg:#e4e8ef; --muted:#9aa3b3; --line:#283040; --grid:#ffffff1a; --axis:#aaa;
+  --accent:#6ea2ff; --valbg:#18233a;
+  --cu:#6ea2ff; --ci:#4fd18b; --cp:#ff7a6e; --true:#9aa3b3; --wire:#cfd6e2; --ion:#ff9a5c; --ele:#6ea8ff; --plasma:#ce93d822;
+  color-scheme:dark;}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--fg);-webkit-text-size-adjust:100%}
+header.top{position:sticky;top:0;z-index:30;background:var(--card);border-bottom:1px solid var(--line);padding:8px 16px;display:flex;align-items:center;gap:12px}
+header h1{font-size:15px;margin:0;font-weight:650;line-height:1.25;flex:1}
+header h1 small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.theme-btn{font-size:16px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:7px;cursor:pointer;padding:2px 9px}
+main{padding:14px;max-width:1560px;margin:0 auto}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;align-items:start}
+aside.params{position:sticky;top:62px;max-height:calc(100vh - 74px);overflow:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.card>h3,.card>summary{font-size:15px;font-weight:650;margin:0 0 8px}
+.card>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:0}
+.card>summary::-webkit-details-marker{display:none}
+.card>summary::before{content:"▸";transition:transform .2s;color:var(--muted)}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{margin-bottom:8px}
+.hint{font-size:12.5px;color:var(--muted);margin:6px 0}
+label.f{display:block;margin-top:10px;font-size:13px}
+select,input[type=text],input[type=number]{width:100%;margin:3px 0 0;font:inherit;font-size:13px;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+option{background:var(--card);color:var(--fg)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.pgroup{border-top:1px solid var(--line);margin-top:12px;padding-top:6px}
+.pgroup b{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600}
+.btn{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--bg);color:var(--fg);padding:5px 10px;border-radius:7px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.val{font:12.5px/1.6 ui-monospace,Consolas,monospace;background:var(--valbg);border-left:3px solid var(--accent);padding:5px 9px;margin:6px 0;border-radius:0 5px 5px 0}
+.good{color:#1b7f3b}.bad{color:var(--cp)}
+.chk{display:flex;align-items:flex-start;gap:6px;font-size:13px;margin-top:8px;cursor:pointer}
+.chk input{margin-top:3px}
+[hidden]{display:none !important}
+
+/* стенд */
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.schem-wrap{flex:1 1 520px;min-width:0}
+.schem-wrap canvas{display:block;width:100%;height:330px}
+.panel{flex:0 1 330px;background:linear-gradient(180deg,#d6d8d2 0%,#c2c5be 45%,#b1b4ac 100%);border:1px solid #858881;border-radius:6px;
+  box-shadow:inset 0 1px 0 #f1f2ee, inset 0 -3px 6px rgba(0,0,0,.16), 0 3px 8px rgba(0,0,0,.28);
+  padding:12px 16px;color:#1d1d1b;position:relative;font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif;max-width:100%;min-width:260px}
+:root[data-theme="dark"] .panel{filter:brightness(.86)}
+.plate{display:flex;justify-content:space-between;align-items:baseline;gap:14px;border-bottom:1px solid #8b8e87;margin:0 10px 8px;padding-bottom:3px}
+.plate b{font-size:16px;letter-spacing:1.5px}
+.plate span{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:#3a3a36}
+.disp{display:flex;align-items:center;gap:10px;margin:8px 0}
+.disp i{font:normal 10px Arial,sans-serif;text-transform:uppercase;letter-spacing:.5px;width:78px;color:#26261f;line-height:1.15}
+.led{flex:1;background:#140606;padding:6px 12px 4px;border-radius:4px;box-shadow:inset 0 0 10px #000;display:flex;align-items:baseline;justify-content:flex-end;gap:8px}
+.led b{font:bold 28px ui-monospace,Consolas,monospace;color:#ff5236;text-shadow:0 0 6px #ff3a1a;letter-spacing:2px}
+.led u{text-decoration:none;font:bold 14px Arial;color:#ff5236;text-shadow:0 0 6px #ff3a1a}
+.rh{margin-top:12px;border:1px solid #8b8e87;border-radius:5px;padding:9px 9px 6px;position:relative}
+.rh>i{position:absolute;top:-7px;left:8px;background:#c4c6bf;padding:0 4px;font:normal 9.5px Arial,sans-serif;text-transform:uppercase;letter-spacing:.6px;color:#2b2b26}
+.rh input[type=range]{accent-color:#3c3c36;margin:2px 0}
+.rh .vrow{display:flex;gap:6px;align-items:center;justify-content:center;margin-top:4px}
+.rh .vrow input[type=number]{width:90px;margin:0;text-align:center;background:#e8e9e4;color:#111;border-color:#8b8e87}
+.btn-sov{background:linear-gradient(#f4f4f0,#c8c9c3);border:1px solid #6f716b;border-radius:3px;font:10.5px Arial,sans-serif;padding:5px 8px;cursor:pointer;color:#111;
+  box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(0,0,0,.35);text-transform:uppercase;letter-spacing:.3px}
+.btn-sov:active{box-shadow:inset 0 2px 3px rgba(0,0,0,.45)}
+.sovbtns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center}
+.panel .hint{color:#3b3b36;font-size:10.5px;margin:8px 0 0}
+.sweepbox{margin-top:10px;font-size:11px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;text-transform:uppercase;letter-spacing:.3px}
+.sweepbox label{display:block}
+.sweepbox input{width:100%;margin:2px 0 0;font-size:12px;padding:2px 4px;background:#e8e9e4;color:#111;border:1px solid #8b8e87;border-radius:3px}
+
+/* графіки */
+.graphs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(440px,100%),1fr));gap:12px}
+.g{border:1px solid var(--line);border-radius:8px;padding:4px;min-width:0}
+.g canvas{display:block;width:100%;height:360px}
+.gbar{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;justify-content:space-between;margin:0 0 6px}
+.gbar .hint,.gbar .chk{margin:0}
+.th{font-size:14.5px}
+.th h4{margin:16px 0 4px;font-size:14.5px;color:var(--accent)}
+.th p{margin:6px 0}
+.th ol,.th ul{margin:6px 0;padding-left:22px}
+.th .eq{margin:6px 0 6px 12px;font-family:"Cambria Math",Cambria,"Times New Roman",serif;font-size:16px}
+.th table{margin:8px 0;font-size:13px}
+.th .warn{border-left:3px solid #c27100;background:rgba(194,113,0,.12);padding:7px 10px;margin:10px 0;border-radius:0 6px 6px 0;font-size:14px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid var(--line);padding:2px 7px;text-align:center}
+th{background:var(--valbg)}
+.tw{max-height:300px;overflow:auto}
+textarea{width:100%;margin-top:8px;font:12px ui-monospace,Consolas,monospace;background:transparent;color:inherit;border:1px solid var(--line);border-radius:4px}
+
+@media (max-width:920px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .content{display:contents}
+  .c-th{order:1}.c-stand{order:2}
+  aside.params{order:3;position:static;max-height:none}
+  .content>details:not(.c-th):not(.c-stand){order:4}
+  header.top{position:static}
+  .panel{flex:1 1 100%}
+}
+@media (max-width:520px){main{padding:8px}.card{padding:10px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Фізика плазми. Розд. 1: «Шар біля стінки і зонд Ленгмюра»<small>Віртуальний практикум · лабораторна «Зонд Ленгмюра: що він вимірює»</small></h1>
+  <span id="theme-slot"></span>
+</header>
+
+<main>
+<div class="layout">
+ <aside class="params card">
+  <h3>Параметри</h3>
+  <label class="f">Режим
+    <select id="mode">
+      <option value="box" selected>Чорний ящик (знайти T<sub>e</sub>, n, V<sub>p</sub>)</option>
+      <option value="study">Навчальний (плазма відома)</option>
+    </select>
+  </label>
+  <label class="f">Тип зонда
+    <select id="probe">
+      <option value="single">Одиночний (опорний електрод — стінка)</option>
+      <option value="double">Подвійний (система плаває)</option>
+    </select>
+  </label>
+  <label class="f">Газ (іони)
+    <select id="gas">
+      <option value="1836">H (m<sub>i</sub>/m<sub>e</sub> = 1836)</option>
+      <option value="3671">D (3671)</option>
+      <option value="7294">He (7294)</option>
+      <option value="73440">Ar (73 440)</option>
+    </select>
+  </label>
+  <label class="f">Площа зонда S, мм² <span id="lS" style="color:var(--muted)"></span>
+    <input type="range" id="S" min="0.5" max="20" step="0.5" value="4">
+  </label>
+
+  <div id="known" hidden>
+    <div class="pgroup"><b>Плазма (задана)</b>
+      <label class="f">T<sub>e</sub>, еВ <span id="lTe" style="color:var(--muted)"></span><input type="range" id="Te" min="1" max="10" step="0.1" value="3"></label>
+      <label class="f">lg n, n в см⁻³ <span id="ln" style="color:var(--muted)"></span><input type="range" id="n" min="8" max="13" step="0.1" value="10"></label>
+      <label class="f">V<sub>p</sub> відносно стінки, В <span id="lVp" style="color:var(--muted)"></span><input type="range" id="Vp" min="2" max="60" step="0.5" value="15"></label>
+      <label class="chk"><input type="checkbox" id="hot"><span>Гарячий хвіст: 5 % електронів із T<sub>h</sub> = 4T<sub>e</sub></span></label>
+      <div class="hint">Зміна параметрів скидає виміряні точки.</div>
+    </div>
+  </div>
+
+  <div id="boxAns" class="pgroup"><b>Ваша відповідь</b>
+    <div class="hint">Параметри плазми невідомі й випадкові. Виміряйте ВАХ, обробіть її й введіть відповідь.</div>
+    <label class="f"><span>T<sub>e</sub>, еВ</span><input type="text" id="ansTe" inputmode="decimal" autocomplete="off"></label>
+    <label class="f"><span>n, см⁻³ (напр. 3e10)</span><input type="text" id="ansN" inputmode="decimal" autocomplete="off"></label>
+    <label class="f" id="ansVpW"><span>V<sub>p</sub> відносно стінки, В</span><input type="text" id="ansVp" inputmode="decimal" autocomplete="off"></label>
+    <div class="btns"><button class="btn primary" id="chkAns">Перевірити</button><button class="btn" id="newBox">Нова плазма</button><button class="btn" id="showAns" hidden>Показати еталон</button></div>
+    <div class="hint" id="boxMsg"></div>
+  </div>
+
+  <div class="pgroup"><b>Обробка ВАХ</b>
+    <div id="winSingle">
+      <label class="f">Вікно фіту: від <span id="lLo" style="color:var(--muted)"></span> від I<sub>es</sub><input type="range" id="lo" min="0.01" max="0.5" step="0.01" value="0.05"></label>
+      <label class="f">до <span id="lHi" style="color:var(--muted)"></span> від I<sub>es</sub><input type="range" id="hi" min="0.1" max="1" step="0.01" value="0.5"></label>
+    </div>
+    <div id="winDouble" hidden>
+      <label class="f">Вікно фіту: |I| &lt; <span id="lHd" style="color:var(--muted)"></span>·I<sub>is</sub><input type="range" id="hid" min="0.3" max="0.95" step="0.01" value="0.8"></label>
+    </div>
+    <div class="val" id="fr"></div>
+    <div class="hint" id="chk"></div>
+    <label class="chk"><input type="checkbox" id="showTrue"><span>показати істинну характеристику (еталон)</span></label>
+  </div>
+  <div class="hint">Адреса для викладача: <code>?teacher=1</code> — еталонна крива показується завжди.</div>
+ </aside>
+
+ <div class="content">
+  <details class="card th c-th">
+   <summary>Теорія: що вимірює зонд Ленгмюра</summary>
+   <p class="hint">Позначення як у розд. 1: V — потенціал зонда відносно стінки, V<sub>p</sub> — потенціал плазми, V<sub>f</sub> — плаваючий потенціал, I — струм у колі зонда (електронний додатний, іонний від’ємний). У стенді ідеалізована модель: плоский зонд, тонкий шар, відсутні зіткнення й магнітне поле.</p>
+
+   <h4>Що відбувається в колі</h4>
+   <p>На зонд з плазми потрапляють і електрони, і іони, але <b>по дроту й через амперметр течуть лише електрони</b>. Електрон, що досяг зонда, іде далі по дроту. Іон, що досяг зонда, забирає з його поверхні електрон і нейтралізується, тож у дроті це потік електронів у протилежний бік. Амперметр показує різницю двох потоків, а на схемі стенда бігають точки — електрони в дроті; напрям їхнього руху змінюється разом зі знаком струму.</p>
+
+   <h4>Три ділянки ВАХ (одиночний зонд)</h4>
+   <table>
+    <thead><tr><th>ділянка</th><th>що відбувається</th><th>що дає</th></tr></thead>
+    <tbody>
+     <tr><td>V ≪ V<sub>f</sub> — іонне насичення</td><td>електрони відштовхнуті, до зонда йдуть лише іони: I<sub>is</sub> ≈ 0,6·e·n·c<sub>s</sub>·S, c<sub>s</sub> = √(T<sub>e</sub>/m<sub>i</sub>) (критерій Бома)</td><td>n, якщо відоме T<sub>e</sub></td></tr>
+     <tr><td>V<sub>f</sub> &lt; V &lt; V<sub>p</sub> — гальмівна область</td><td>долітають електрони з енергією більшою за e(V<sub>p</sub> − V): I<sub>e</sub> ∝ exp[e(V − V<sub>p</sub>)/T<sub>e</sub>]</td><td>T<sub>e</sub> з нахилу ln(I + I<sub>is</sub>)</td></tr>
+     <tr><td>V ≥ V<sub>p</sub> — електронне насичення</td><td>зонд збирає весь тепловий потік електронів: I<sub>es</sub> = ¼·e·n·v̄<sub>e</sub>·S</td><td>V<sub>p</sub> (злам), друга оцінка n</td></tr>
+    </tbody>
+   </table>
+   <p>Плаваючий потенціал V<sub>f</sub> — точка, де I = 0 (електронний і іонний потоки врівноважені); V<sub>f</sub> − V<sub>p</sub> ≈ −3,3 T<sub>e</sub>/e для водню.</p>
+
+   <h4>Порядок обробки</h4>
+   <ol>
+    <li>Зніміть I<sub>is</sub> — середнє від’ємного плато при найнижчих V; ln(I + I<sub>is</sub>) прибирає іонну складову.</li>
+    <li>За точками гальмівної області підігнати пряму ln(I + I<sub>is</sub>) = c + V/T<sub>e</sub>: нахил дає 1/T<sub>e</sub>.</li>
+    <li>Перетин прямої з рівнем ln I<sub>es</sub> — потенціал плазми V<sub>p</sub>.</li>
+    <li>Знаючи T<sub>e</sub>, обчисліть c<sub>s</sub> і з I<sub>is</sub> знайдіть n; I<sub>es</sub> дає незалежну перевірку.</li>
+   </ol>
+
+   <h4>Подвійний зонд</h4>
+   <p>Два однакових електроди, між якими прикладено напругу V; усе коло плаває й стінка в ньому не бере участі. Струм не перевищує ±I<sub>is</sub>, тому плазма майже не збурюється:</p>
+   <div class="eq">I = I<sub>is</sub>·th(eV / 2T<sub>e</sub>),  T<sub>e</sub> = e·I<sub>is</sub> / [2·(dI/dV)<sub>V=0</sub>].</div>
+   <p>Лінеаризація: ln[(I<sub>is</sub> + I)/(I<sub>is</sub> − I)] = eV/T<sub>e</sub> — пряма з нахилом 1/T<sub>e</sub>. V<sub>p</sub> подвійним зондом не знайти.</p>
+
+   <h4>Пастки</h4>
+   <div class="warn"><b>Гарячий хвіст.</b> Якщо є швидкі електрони, лінія ln I(V) вигинається, а T<sub>e</sub> залежить від вікна фіту й виходить завищеною. Поекспериментуйте з вікном і прапорцем «гарячий хвіст». Ще: у реальності струм насичення слабко росте (розширення шару), а ln-пряма має злам не різкий; у стенді цього немає.</div>
+
+   <h4>Хід роботи</h4>
+   <ol>
+    <li>Оберіть режим «чорний ящик», тип зонда і газ.</li>
+    <li>Рухайте напругу V від глибоко від’ємної до додатної. У гальмівній області беріть точки частіше (там струм змінюється на порядки), на плато — достатньо кількох.</li>
+    <li>Для швидкості можна скористатися автоматичною розгорткою, а потім доповнити точки біля зламу.</li>
+    <li>Обробіть ВАХ, знайдіть T<sub>e</sub>, V<sub>p</sub>, n; перевірте, що n(I<sub>is</sub>) ≈ n(I<sub>es</sub>), введіть відповідь.</li>
+   </ol>
+  </details>
+
+  <details class="card c-stand" open>
+   <summary>Схема стенда і прилади</summary>
+   <div class="row">
+    <div class="schem-wrap"><canvas id="cCirc"></canvas></div>
+    <div class="panel">
+     <div class="plate"><b>ЗОНД</b><span>3½ розряди, шум і похибка</span></div>
+     <div class="disp"><i>амперметр<br>струм I</i><div class="led"><b id="dI">0,000</b><u id="dIu">мА</u></div></div>
+     <div class="disp"><i>вольтметр<br>напруга V</i><div class="led"><b id="dU">0,0</b><u>В</u></div></div>
+     <div class="rh"><i>напруга зміщення</i>
+       <input type="range" id="vs" min="-80" max="80" step="0.1" value="-40" aria-label="Напруга на зонді">
+       <div class="vrow">
+         <button class="btn-sov" data-dv="-1">−1</button><button class="btn-sov" data-dv="-0.1">−0,1</button>
+         <input type="number" id="vn" step="0.1" value="-40" aria-label="Напруга, В">
+         <button class="btn-sov" data-dv="0.1">+0,1</button><button class="btn-sov" data-dv="1">+1</button>
+       </div>
+     </div>
+     <div class="sovbtns">
+       <button class="btn-sov" id="take">Зняти точку</button>
+       <button class="btn-sov" id="undo">Видалити останню</button>
+       <button class="btn-sov" id="clear">Очистити</button>
+     </div>
+     <div class="sweepbox">
+       <label>від, В<input type="number" id="sw0" value="-60" step="1"></label>
+       <label>до, В<input type="number" id="sw1" value="40" step="1"></label>
+       <label>точок<input type="number" id="swn" value="40" min="5" max="200" step="1"></label>
+     </div>
+     <div class="sovbtns"><button class="btn-sov" id="sweep">Автоматична розгортка</button></div>
+     <div class="hint">Потенціал показано відносно стінки камери (заземленої). Для подвійного зонда V — напруга між електродами.</div>
+    </div>
+   </div>
+  </details>
+
+  <details class="card" open>
+   <summary>Графіки</summary>
+   <div class="gbar">
+     <div class="hint">Лівий графік — ВАХ, правий — лінеаризація для визначення T<sub>e</sub>. Виділені точки — у вікні фіту.</div>
+     <label class="chk"><input type="checkbox" id="zoom"><span>збільшити область іонного струму</span></label>
+   </div>
+   <div class="graphs">
+     <div class="g"><canvas id="cIV"></canvas></div>
+     <div class="g"><canvas id="cLog"></canvas></div>
+   </div>
+  </details>
+
+  <details class="card">
+   <summary>Таблиця вимірювань</summary>
+   <div class="tw"><table id="tbl"><thead><tr><th>№</th><th>V, В</th><th id="thI">I, мА</th><th id="thL">I + I<sub>is</sub></th><th>у вікні</th></tr></thead><tbody></tbody></table></div>
+   <div class="btns"><button class="btn" id="cp">Копіювати таблицю</button><button class="btn" id="csv">Завантажити CSV</button></div>
+  </details>
+ </div>
+</div>
+</main>
+
+<script>
+/*CORE*/
+var E = 1.602e-19, ME = 9.109e-31;
+/* Плазма (SI всередині, але Te в еВ, n в см⁻³, S в мм², Vp у В відносно стінки) */
+var T = { Te: 3, n: 1e10, mu: 1836, S: 4, Vp: 15, hot: false, probe: 'single' };
+
+function vbar(Te) { return Math.sqrt(8 * Te * E / (Math.PI * ME)); }
+function cur() {
+  var n = T.n * 1e6, S = T.S * 1e-6, Te = T.Te, mi = T.mu * ME, f = T.hot ? 0.05 : 0, Th = 4 * Te;
+  return {
+    Iis: Math.exp(-0.5) * E * n * Math.sqrt(Te * E / mi) * S,
+    Iec: 0.25 * E * n * (1 - f) * vbar(Te) * S,
+    Ieh: 0.25 * E * n * f * vbar(Th) * S,
+    Th: Th, Ti: 0.1 * Te
+  };
+}
+/* струм зонда при потенціалі phi відносно плазми (електронний — додатний) */
+function Iof(phi, c) {
+  var v = Math.min(phi, 0);
+  var e = c.Iec * Math.exp(v / T.Te) + c.Ieh * Math.exp(v / c.Th);
+  return e - (phi < 0 ? c.Iis : c.Iis * Math.exp(-phi / c.Ti));
+}
+function bisect(f, a, b, tol) {
+  var fa = f(a), m, fm;
+  for (var i = 0; i < 200; i++) {
+    m = (a + b) / 2; fm = f(m);
+    if (fm === 0 || (b - a) / 2 < tol) return m;
+    if ((fa < 0) === (fm < 0)) { a = m; fa = fm; } else b = m;
+  }
+  return (a + b) / 2;
+}
+/* подвійний зонд: I(φ1) + I(φ1 − V) = 0, I = струм першого електрода */
+function dbl(V, c) {
+  var A = Math.abs(V);
+  var p1 = bisect(function (p) { return Iof(p, c) + Iof(p - V, c); }, -80 * T.Te - A, A + 20 * T.Te, 1e-10);
+  return Iof(p1, c);
+}
+function trueI(V, c) { return T.probe === 'single' ? Iof(V - T.Vp, c) : dbl(V, c); }
+function vfTrue(c) { return bisect(function (V) { return Iof(V - T.Vp, c); }, T.Vp - 60 * T.Te, T.Vp, 1e-10); }
+function vfBook() { return T.Vp - 0.5 * T.Te * (Math.log(T.mu / (2 * Math.PI)) + 1); }
+function gauss() { var u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+function niceCeil(x) { var p = Math.pow(10, Math.floor(Math.log10(x))), m = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]; for (var i = 0; i < m.length; i++) if (m[i] * p >= x) return m[i] * p; return 10 * p; }
+/* межа амперметра, одиниця і розрядність */
+function inst(c) {
+  var Imax = T.probe === 'single' ? niceCeil(1.1 * (c.Iec + c.Ieh)) : niceCeil(1.3 * c.Iis);
+  var u = Imax < 1e-3 ? { n: 'мкА', k: 1e-6 } : Imax < 1 ? { n: 'мА', k: 1e-3 } : { n: 'А', k: 1 };
+  var d = Math.max(0, 3 - Math.floor(Math.log10(Imax / u.k) + 1e-9));
+  return { Imax: Imax, unit: u.n, k: u.k, dec: d, res: Math.pow(10, -d) * u.k };
+}
+function reading(V, c, ins) {
+  var I = trueI(V, c);
+  var Im = Math.round((I + gauss() * (0.0006 * ins.Imax + 0.004 * Math.abs(I))) / ins.res) * ins.res;
+  var Vm = Math.round((V + gauss() * 0.03) * 10) / 10;
+  return { V: Vm, I: Im };
+}
+
+function linreg(xs, ys) {
+  var n = xs.length, sx = 0, sy = 0, sxx = 0, sxy = 0, i;
+  for (i = 0; i < n; i++) { sx += xs[i]; sy += ys[i]; sxx += xs[i] * xs[i]; sxy += xs[i] * ys[i]; }
+  var d = n * sxx - sx * sx; if (n < 3 || Math.abs(d) < 1e-30) return null;
+  var s = (n * sxy - sx * sy) / d, c = (sy - s * sx) / n, r = 0;
+  for (i = 0; i < n; i++) { var e = ys[i] - c - s * xs[i]; r += e * e; }
+  var sd = n > 2 ? Math.sqrt(r / (n - 2) / (sxx - sx * sx / n)) : 0;
+  return { s: s, c: c, ds: sd };
+}
+function mean(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return s / a.length; }
+function nFromIis(Iis, Te) { return Iis / (Math.exp(-0.5) * E * Math.sqrt(Te * E / (T.mu * ME)) * T.S * 1e-6) / 1e6; }
+function nFromIes(Ies, Te) { return 4 * Ies / (E * vbar(Te) * T.S * 1e-6) / 1e6; }
+
+/* Обробка. pts — масив {V,I} в амперах/вольтах; opt — {lo,hi,hid}. Повертає {err} або результат. */
+function fitSingle(pts, opt) {
+  var a = pts.slice().sort(function (x, y) { return x.V - y.V; }), n = a.length;
+  if (n < 6) return { err: 'потрібно щонайменше 6 точок (зараз ' + n + ')' };
+  var low = a.slice(0, 3).map(function (p) { return p.I; }), top = a.slice(n - 3).map(function (p) { return p.I; });
+  var Iis = -mean(low), Ies = mean(top), R = { Iis: Iis, Ies: Ies, warn: [] };
+  if (Iis <= 0) return { err: 'найнижчі за V точки мають струм ≥ 0: опустіться глибше в іонне насичення' };
+  if (Ies <= 0) return { err: 'найвищі за V точки ще не дають додатного струму: піднімайтеся до електронного насичення' };
+  if (Math.max.apply(null, low) - Math.min.apply(null, low) > 0.25 * Iis + 0.004 * Ies) R.warn.push('три нижні точки ще не на плато іонного струму');
+  if (Math.max.apply(null, top) - Math.min.apply(null, top) > 0.25 * Ies) R.warn.push('три верхні точки ще не на плато електронного струму');
+  R.vf = NaN;
+  for (var i = 1; i < n; i++) if (a[i - 1].I < 0 && a[i].I >= 0) { R.vf = a[i - 1].V + (a[i].V - a[i - 1].V) * (-a[i - 1].I) / (a[i].I - a[i - 1].I); break; }
+  var xs = [], ys = [], inw = [];
+  for (i = 0; i < n; i++) {
+    var y = a[i].I + Iis, ok = y >= opt.lo * Ies && y <= opt.hi * Ies && i < n - 3 + 0 * 1;
+    inw.push(ok ? 1 : 0);
+    if (ok) { xs.push(a[i].V); ys.push(Math.log(y)); }
+  }
+  R.nwin = xs.length; R.sorted = a; R.inw = inw;
+  var L = linreg(xs, ys);
+  if (!L || L.s <= 0) { R.err = 'у вікні фіту менше 3 точок (або нахил не додатний): змініть вікно чи додайте точки в гальмівній області'; return R; }
+  R.Te = 1 / L.s; R.dTe = R.Te * L.ds / L.s; R.c = L.c; R.s = L.s;
+  R.vp = (Math.log(Ies) - L.c) / L.s;
+  R.nis = nFromIis(Iis, R.Te); R.nes = nFromIes(Ies, R.Te);
+  R.cs = Math.sqrt(R.Te * E / (T.mu * ME));
+  return R;
+}
+function fitDouble(pts, opt) {
+  var a = pts.slice().sort(function (x, y) { return x.V - y.V; }), n = a.length;
+  if (n < 6) return { err: 'потрібно щонайменше 6 точок (зараз ' + n + ')' };
+  var low = a.slice(0, 3).map(function (p) { return p.I; }), top = a.slice(n - 3).map(function (p) { return p.I; });
+  var Iis = 0.5 * (mean(top) - mean(low)), R = { Iis: Iis, warn: [] };
+  if (Iis <= 0) return { err: 'струм має зростати з V: перевірте, що точки охоплюють і від’ємні, і додатні V' };
+  var i, xs = [], ys = [], xl = [], yl = [], inw = [];
+  for (i = 0; i < n; i++) {
+    var q = a[i].I / Iis, ok = Math.abs(q) < opt.hid;
+    inw.push(ok ? 1 : 0);
+    if (ok) { xs.push(a[i].V); ys.push(Math.log((1 + q) / (1 - q))); }
+    if (Math.abs(q) < 0.25) { xl.push(a[i].V); yl.push(a[i].I); }
+  }
+  R.nwin = xs.length; R.sorted = a; R.inw = inw;
+  var L = linreg(xs, ys);
+  if (!L || L.s <= 0) { R.err = 'у вікні фіту менше 3 точок: додайте точки біля V = 0'; return R; }
+  R.Te = 1 / L.s; R.dTe = R.Te * L.ds / L.s; R.c = L.c; R.s = L.s;
+  var K = linreg(xl, yl); if (K && K.s > 0) R.Te0 = Iis / (2 * K.s);
+  R.nis = nFromIis(Iis, R.Te);
+  R.cs = Math.sqrt(R.Te * E / (T.mu * ME));
+  return R;
+}
+/*ENDCORE*/
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var P = new URLSearchParams(location.search), teacher = P.has('teacher');
+  var c, ins, pts = [], F = null, last = { V: 0, I: 0 }, box = { on: true, shown: false };
+  var Vrange = { single: [-80, 80], double: [-40, 40] };
+
+  function fmtc(v, d) { return v.toFixed(d).replace('.', ','); }
+  function sig(v, k) {
+    if (!isFinite(v)) return '—';
+    if (v === 0) return '0';
+    var d = Math.max(0, k - 1 - Math.floor(Math.log10(Math.abs(v))));
+    return v.toFixed(Math.min(d, 8)).replace('.', ',');
+  }
+  function sci(v) {
+    if (!isFinite(v) || v <= 0) return '—';
+    var e = Math.floor(Math.log10(v)), m = v / Math.pow(10, e);
+    return sig(m, 2) + '·10<sup>' + e + '</sup>';
+  }
+  function parseNum(s) { return parseFloat(String(s).replace(',', '.').replace(/\s/g, '')); }
+  function logUniform(a, b) { return Math.pow(10, a + (b - a) * Math.random()); }
+
+  /* ---------- стан плазми ---------- */
+  function readStudy() {
+    T.Te = +$('Te').value; T.n = Math.pow(10, +$('n').value); T.Vp = +$('Vp').value; T.hot = $('hot').checked;
+  }
+  function randomBox() {
+    T.Te = Math.round(logUniform(Math.log10(1.5), Math.log10(8)) * 10) / 10;
+    T.n = logUniform(8.5, 12.5);
+    T.Vp = Math.round((T.Te * (3.5 + 2 * Math.random())) * 2) / 2;
+    T.hot = false; box.shown = false;
+    $('ansTe').value = ''; $('ansN').value = ''; $('ansVp').value = ''; $('boxMsg').textContent = ''; $('showAns').hidden = true;
+  }
+  function labels() {
+    $('lS').textContent = fmtc(T.S, 1) + ' мм²';
+    $('lTe').textContent = fmtc(+$('Te').value, 1); $('ln').textContent = fmtc(+$('n').value, 1); $('lVp').textContent = fmtc(+$('Vp').value, 1);
+    $('lLo').textContent = Math.round(100 * +$('lo').value) + ' %'; $('lHi').textContent = Math.round(100 * +$('hi').value) + ' %';
+    $('lHd').textContent = fmtc(+$('hid').value, 2);
+  }
+  function applyAll(resetPts) {
+    T.mu = +$('gas').value; T.S = +$('S').value; T.probe = $('probe').value;
+    box.on = $('mode').value === 'box';
+    if (!box.on) readStudy();
+    $('known').hidden = box.on; $('boxAns').hidden = !box.on;
+    $('ansVpW').hidden = T.probe === 'double';
+    $('winSingle').hidden = T.probe === 'double'; $('winDouble').hidden = T.probe !== 'double';
+    c = cur(); ins = inst(c);
+    var r = Vrange[T.probe]; $('vs').min = r[0]; $('vs').max = r[1];
+    $('sw0').value = T.probe === 'single' ? -60 : -30; $('sw1').value = T.probe === 'single' ? 40 : 30;
+    setV(Math.max(r[0], Math.min(r[1], +$('vs').value)));
+    if (resetPts) { pts = []; }
+    $('dIu').textContent = ins.unit; $('thI').textContent = 'I, ' + ins.unit;
+    $('thL').innerHTML = T.probe === 'single' ? 'ln(I + I<sub>is</sub>)' : 'ln[(I<sub>is</sub>+I)/(I<sub>is</sub>−I)]';
+    labels(); refresh(true);
+  }
+  function setV(v) { $('vs').value = v; $('vn').value = Math.round(v * 10) / 10; }
+
+  /* ---------- вимірювання ---------- */
+  function showReading() {
+    last = reading(+$('vs').value, c, ins);
+    $('dI').textContent = fmtc(last.I / ins.k, ins.dec);
+    $('dU').textContent = fmtc(last.V, 1);
+  }
+  function take() { pts.push({ V: last.V, I: last.I }); refresh(false); }
+  function sweep() {
+    var a = +$('sw0').value, b = +$('sw1').value, n = Math.max(5, Math.min(200, Math.round(+$('swn').value)));
+    var r = Vrange[T.probe];
+    for (var i = 0; i < n; i++) {
+      var V = Math.max(r[0], Math.min(r[1], a + (b - a) * i / (n - 1)));
+      var m = reading(V, c, ins); pts.push({ V: m.V, I: m.I });
+    }
+    refresh(false);
+  }
+
+  function opts() { return { lo: +$('lo').value, hi: +$('hi').value, hid: +$('hid').value }; }
+  function doFit() {
+    F = pts.length >= 3 ? (T.probe === 'single' ? fitSingle(pts, opts()) : fitDouble(pts, opts())) : null;
+    if (pts.length < 3) F = { err: 'потрібно щонайменше 6 точок (зараз ' + pts.length + ')' };
+  }
+
+  /* ---------- підсумок ---------- */
+  function cmp(v, t, tol) { return Math.abs(v / t - 1) < tol ? 'good' : 'bad'; }
+  function span(txt, cls) { return cls ? '<span class="' + cls + '">' + txt + '</span>' : txt; }
+  function showTruth() { return !box.on || teacher || $('showTrue').checked || box.shown; }
+  function updateResult() {
+    var el = $('fr'), hint = $('chk'), h = [], tr = !box.on || teacher || box.shown;
+    if (!F || F.err) { el.innerHTML = '—'; hint.textContent = F && F.err ? F.err : ''; return; }
+    var cs = tr ? function (txt, t, tol, v) { return span(txt, cmp(v, t, tol)); } : function (txt) { return txt; };
+    h.push('T<sub>e</sub> = ' + cs(sig(F.Te, 3) + ' ± ' + sig(F.dTe, 1) + ' еВ', T.Te, 0.1, F.Te) + (tr ? ' <small>(задано ' + sig(T.Te, 3) + ')</small>' : ''));
+    if (T.probe === 'single') {
+      h.push('V<sub>p</sub> = ' + sig(F.vp, 3) + ' В' + (tr ? ' <small>(задано ' + sig(T.Vp, 3) + ')</small>' : ''));
+      h.push('V<sub>f</sub> = ' + (isFinite(F.vf) ? sig(F.vf, 3) + ' В' : '—') + (tr ? ' <small>(ф-ла (1.12): ' + sig(vfBook(), 3) + ')</small>' : ''));
+      h.push('I<sub>is</sub> = ' + sig(F.Iis / ins.k, 3) + ' ' + ins.unit + ',  I<sub>es</sub> = ' + sig(F.Ies / ins.k, 3) + ' ' + ins.unit);
+      h.push('n(I<sub>is</sub>) = ' + sci(F.nis) + ' см⁻³');
+      h.push('n(I<sub>es</sub>) = ' + sci(F.nes) + ' см⁻³');
+      if (tr) h.push('<small>задано n = ' + sci(T.n) + ' см⁻³</small>');
+      var r = F.nis / F.nes;
+      if (r < 0.85 || r > 1.18) F.warn.push('n(I_is) і n(I_es) розходяться: перевірте T_e (вікно фіту) і плато');
+    } else {
+      if (F.Te0) h.push('T<sub>e</sub> з (dI/dV)<sub>0</sub> = ' + sig(F.Te0, 3) + ' еВ');
+      h.push('I<sub>is</sub> = ' + sig(F.Iis / ins.k, 3) + ' ' + ins.unit);
+      h.push('n(I<sub>is</sub>) = ' + sci(F.nis) + ' см⁻³');
+      if (tr) h.push('<small>задано n = ' + sci(T.n) + ' см⁻³</small>');
+    }
+    el.innerHTML = h.join('<br>');
+    hint.textContent = (F.warn || []).join('; ') + (F.warn && F.warn.length ? '.' : '') + ' Точок у вікні: ' + F.nwin + '.';
+  }
+
+  function checkAnswer() {
+    var te = parseNum($('ansTe').value), n = parseNum($('ansN').value), vp = parseNum($('ansVp').value), m = [], ok = true;
+    if (!isFinite(te) || !isFinite(n) || (T.probe === 'single' && !isFinite(vp))) { $('boxMsg').innerHTML = '<span class="bad">Заповніть усі поля числами.</span>'; return; }
+    var okT = Math.abs(te / T.Te - 1) < 0.1, okN = Math.abs(n / T.n - 1) < 0.25, okV = T.probe === 'double' || Math.abs(vp - T.Vp) < 0.4 * T.Te + 0.5;
+    m.push(span('T_e: ' + (okT ? 'вірно' : 'невірно') + ' (допуск 10 %)', okT ? 'good' : 'bad'));
+    m.push(span('n: ' + (okN ? 'вірно' : 'невірно') + ' (допуск 25 %)', okN ? 'good' : 'bad'));
+    if (T.probe === 'single') m.push(span('V_p: ' + (okV ? 'вірно' : 'невірно') + ' (допуск 0,4·T_e + 0,5 В)', okV ? 'good' : 'bad'));
+    $('boxMsg').innerHTML = m.join('<br>');
+    $('showAns').hidden = false;
+  }
+
+  /* ---------- графіки ---------- */
+  var COL = {};
+  function colors() {
+    var s = getComputedStyle(document.documentElement), v = function (n) { return s.getPropertyValue(n).trim(); };
+    COL = { bg: v('--card'), ink: v('--fg'), ax: v('--axis'), gr: v('--grid'), u: v('--cu'), i: v('--ci'), p: v('--cp'), tr: v('--true'), acc: v('--accent'), ion: v('--ion'), ele: v('--ele'), plasma: v('--plasma'), wire: v('--wire'), muted: v('--muted') };
+  }
+  function setup(cv) {
+    var d = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+    if (cv.width !== Math.round(w * d) || cv.height !== Math.round(h * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); }
+    var g = cv.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, w, h);
+    g.font = '13px system-ui,"Segoe UI",sans-serif';
+    return { g: g, w: w, h: h };
+  }
+  function niceStep(r) { var p = Math.pow(10, Math.floor(Math.log10(r))), m = [1, 2, 2.5, 5, 10]; for (var i = 0; i < m.length; i++) if (m[i] * p >= r) return m[i] * p; return 10 * p; }
+  function frame(g, w, h, o) {
+    var x0 = 58, x1 = w - 14, y0 = h - 34, y1 = 34;
+    var X = function (v) { return x0 + (v - o.xmin) / (o.xmax - o.xmin) * (x1 - x0); };
+    var Y = o.logy ? function (v) { return y0 - (Math.log10(v) - o.ymin) / (o.ymax - o.ymin) * (y0 - y1); }
+                   : function (v) { return y0 - (v - o.ymin) / (o.ymax - o.ymin) * (y0 - y1); };
+    g.textBaseline = 'alphabetic'; g.fillStyle = COL.ink; g.textAlign = 'left'; g.fillText(o.title, 6, 16);
+    g.strokeStyle = COL.gr; g.lineWidth = 1;
+    var st = niceStep((o.xmax - o.xmin) / 7), v, k;
+    for (v = Math.ceil(o.xmin / st) * st; v <= o.xmax + 1e-9; v += st) {
+      g.beginPath(); g.moveTo(X(v), y1); g.lineTo(X(v), y0); g.stroke();
+      g.fillStyle = COL.ax; g.textAlign = 'center'; g.fillText(String(+v.toFixed(6)).replace('.', ','), X(v), y0 + 15);
+    }
+    if (o.logy) {
+      for (k = Math.ceil(o.ymin); k <= o.ymax + 1e-9; k++) {
+        g.strokeStyle = COL.gr; g.beginPath(); g.moveTo(x0, Y(Math.pow(10, k))); g.lineTo(x1, Y(Math.pow(10, k))); g.stroke();
+        g.fillStyle = COL.ax; g.textAlign = 'right'; g.fillText(String(+Math.pow(10, k).toPrecision(6)).replace('.', ','), x0 - 6, Y(Math.pow(10, k)) + 4);
+      }
+      g.strokeStyle = COL.gr; g.globalAlpha = .45;
+      for (k = Math.floor(o.ymin); k < o.ymax; k++) for (var q = 2; q < 10; q++) { var yy = Math.pow(10, k) * q; if (Math.log10(yy) > o.ymin && Math.log10(yy) < o.ymax) { g.beginPath(); g.moveTo(x0, Y(yy)); g.lineTo(x1, Y(yy)); g.stroke(); } }
+      g.globalAlpha = 1;
+    } else {
+      var sy = niceStep((o.ymax - o.ymin) / 6);
+      for (v = Math.ceil(o.ymin / sy) * sy; v <= o.ymax + 1e-9; v += sy) {
+        g.strokeStyle = COL.gr; g.beginPath(); g.moveTo(x0, Y(v)); g.lineTo(x1, Y(v)); g.stroke();
+        g.fillStyle = COL.ax; g.textAlign = 'right'; g.fillText(String(+v.toPrecision(6)).replace('.', ','), x0 - 6, Y(v) + 4);
+      }
+    }
+    g.strokeStyle = COL.ax; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x0, y1); g.lineTo(x0, y0); g.lineTo(x1, y0); g.stroke();
+    g.fillStyle = COL.ink; g.textAlign = 'right'; g.fillText(o.xlab, x1, y0 + 28);
+    g.textAlign = 'left'; g.fillText(o.ylab, x0 + 4, y1 - 8);
+    return { X: X, Y: Y, x0: x0, x1: x1, y0: y0, y1: y1 };
+  }
+  function clip(g, A) { g.save(); g.beginPath(); g.rect(A.x0, A.y1, A.x1 - A.x0, A.y0 - A.y1); g.clip(); }
+  function line(g, A, xs, ys, col, w, dash) {
+    g.strokeStyle = col; g.lineWidth = w; g.setLineDash(dash || []); g.beginPath();
+    for (var i = 0; i < xs.length; i++) { if (i) g.lineTo(A.X(xs[i]), A.Y(ys[i])); else g.moveTo(A.X(xs[i]), A.Y(ys[i])); }
+    g.stroke(); g.setLineDash([]);
+  }
+  function vline(g, A, x, col, dash, label) {
+    g.strokeStyle = col; g.lineWidth = 1.3; g.setLineDash(dash); g.beginPath(); g.moveTo(A.X(x), A.y1); g.lineTo(A.X(x), A.y0); g.stroke(); g.setLineDash([]);
+    if (label) { g.fillStyle = col; g.textAlign = 'left'; g.fillText(label, A.X(x) + 4, A.y0 - 6); }
+  }
+  function hline(g, A, y, col, label) {
+    g.strokeStyle = col; g.lineWidth = 1.1; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(A.x0, A.Y(y)); g.lineTo(A.x1, A.Y(y)); g.stroke(); g.setLineDash([]);
+    if (label) { g.fillStyle = col; g.textAlign = 'left'; g.font = '12px system-ui,"Segoe UI",sans-serif'; g.fillText(label, A.x0 + 6, A.Y(y) - 4); g.font = '13px system-ui,"Segoe UI",sans-serif'; }
+  }
+  function marker(g, x, y, col, hollow, r) {
+    g.beginPath(); g.arc(x, y, r || 3.6, 0, 2 * Math.PI);
+    if (hollow) { g.fillStyle = COL.bg; g.fill(); g.strokeStyle = col; g.lineWidth = 1.6; g.stroke(); } else { g.fillStyle = col; g.fill(); }
+  }
+  function legend(g, A, items) {
+    items.forEach(function (it, k) {
+      var y = A.y1 + 12 + k * 17, x = A.x1 - 8;
+      g.strokeStyle = it.col; g.lineWidth = 2; g.setLineDash(it.dash || []); g.beginPath(); g.moveTo(x - 24, y); g.lineTo(x, y); g.stroke(); g.setLineDash([]);
+      g.fillStyle = COL.ink; g.textAlign = 'right'; g.fillText(it.t, x - 30, y + 4);
+    });
+  }
+  function trueCurve(a, b, n) {
+    var xs = [], ys = [];
+    for (var i = 0; i <= n; i++) { var V = a + (b - a) * i / n; xs.push(V); ys.push(trueI(V, c)); }
+    return { xs: xs, ys: ys };
+  }
+
+  function drawIV() {
+    var s = setup($('cIV')), g = s.g, r = Vrange[T.probe], k = ins.k, i;
+    var ymax = ins.Imax, ymin = -0.12 * ins.Imax;
+    if (T.probe === 'double') { ymax = 1.15 * ins.Imax / 1.3 * 1.3 * 0.8; ymin = -ymax; }
+    if ($('zoom').checked) {
+      var lo = 0, hi = 0; pts.forEach(function (p) { lo = Math.min(lo, p.I); hi = Math.max(hi, p.I); });
+      if (T.probe === 'single') { var m = Math.max(-lo, 1e-12); ymin = -1.6 * m; ymax = 5 * m; if (!pts.length) { ymin = -0.12 * ins.Imax; ymax = 0.3 * ins.Imax; } }
+    }
+    colors();
+    var A = frame(g, s.w, s.h, { xmin: r[0], xmax: r[1], ymin: ymin / k, ymax: ymax / k, title: T.probe === 'single' ? 'ВАХ одиночного зонда' : 'ВАХ подвійного зонда', xlab: 'V, В', ylab: 'I, ' + ins.unit });
+    clip(g, A);
+    g.strokeStyle = COL.muted; g.lineWidth = 1; g.beginPath(); g.moveTo(A.x0, A.Y(0)); g.lineTo(A.x1, A.Y(0)); g.stroke();
+    if (showTruth()) { var tc = trueCurve(r[0], r[1], 400); line(g, A, tc.xs, tc.ys.map(function (v) { return v / k; }), COL.tr, 1.6, [6, 4]); }
+    if (F && !F.err) {
+      if (T.probe === 'single') {
+        var xs = [], ys = [];
+        for (i = 0; i <= 300; i++) { var V = r[0] + (r[1] - r[0]) * i / 300; xs.push(V); ys.push((Math.min(F.Ies, Math.exp(F.c + F.s * V)) - F.Iis) / k); }
+        line(g, A, xs, ys, COL.acc, 2, [7, 4]);
+        if (isFinite(F.vf)) vline(g, A, F.vf, COL.p, [6, 4], 'V_f');
+        vline(g, A, F.vp, COL.i, [2, 3], 'V_p');
+      } else {
+        var xd = [], yd = [];
+        for (i = 0; i <= 200; i++) { var Vd = r[0] + (r[1] - r[0]) * i / 200; xd.push(Vd); yd.push(F.Iis * Math.tanh(F.s * Vd / 2) / k); }
+        line(g, A, xd, yd, COL.acc, 2, [7, 4]);
+        hline(g, A, F.Iis / k, COL.p, 'I_is'); hline(g, A, -F.Iis / k, COL.p, '−I_is');
+      }
+    }
+    var inw = {};
+    if (F && F.sorted) F.sorted.forEach(function (p, j) { if (F.inw[j]) inw[p.V + '|' + p.I] = 1; });
+    pts.forEach(function (p) { marker(g, A.X(p.V), A.Y(p.I / k), COL.u, !inw[p.V + '|' + p.I]); });
+    marker(g, A.X(last.V), A.Y(last.I / k), COL.p, false, 5);
+    g.restore();
+    var items = [{ t: 'виміряні точки', col: COL.u }];
+    if (F && !F.err) items.push({ t: 'фіт', col: COL.acc, dash: [7, 4] });
+    if (showTruth()) items.push({ t: 'еталон', col: COL.tr, dash: [6, 4] });
+    legend(g, A, items);
+  }
+
+  function drawLog() {
+    var s = setup($('cLog')), g = s.g, k = ins.k, r = Vrange[T.probe], A, i;
+    colors();
+    if (T.probe === 'single') {
+      var Iis = F && F.Iis > 0 ? F.Iis : null;
+      if (!Iis) {
+        A = frame(g, s.w, s.h, { xmin: r[0], xmax: r[1], ymin: -2, ymax: 1, logy: true, title: 'Напівлог: ln(I + I_is)', xlab: 'V, В', ylab: 'I + I_is, ' + ins.unit });
+        g.fillStyle = COL.muted; g.textAlign = 'center'; g.fillText('потрібні точки на плато іонного й електронного струму', (A.x0 + A.x1) / 2, (A.y0 + A.y1) / 2);
+        return;
+      }
+      var vals = [], ymx = -1e9, ymn = 1e9;
+      pts.forEach(function (p) { var y = (p.I + Iis) / k; if (y > 0) { vals.push([p.V, y, p.I]); ymx = Math.max(ymx, Math.log10(y)); ymn = Math.min(ymn, Math.log10(y)); } });
+      if (!vals.length) { ymn = -2; ymx = 1; }
+      ymx = Math.max(ymx, Math.log10(F.Ies / k)) + 0.3; ymn = Math.floor(Math.max(ymn, ymx - 5)) - 0.1;
+      A = frame(g, s.w, s.h, { xmin: r[0], xmax: r[1], ymin: ymn, ymax: ymx, logy: true, title: 'Напівлог: нахил ln(I + I_is) = 1/T_e', xlab: 'V, В', ylab: 'I + I_is, ' + ins.unit });
+      clip(g, A);
+      if (showTruth()) {
+        var tx = [], ty = [];
+        for (i = 0; i <= 300; i++) { var V = r[0] + (r[1] - r[0]) * i / 300; tx.push(V); ty.push((Iof(V - T.Vp, c) + c.Iis) / k); }
+        var seg = []; for (i = 0; i < tx.length; i++) if (ty[i] > 0) seg.push(i);
+        line(g, A, seg.map(function (j) { return tx[j]; }), seg.map(function (j) { return ty[j]; }), COL.tr, 1.5, [6, 4]);
+      }
+      if (!F.err) {
+        var xf = [], yf = [];
+        for (i = 0; i <= 100; i++) { var Vf = r[0] + (Math.min(r[1], F.vp + T.Te) - r[0]) * i / 100; xf.push(Vf); yf.push(Math.exp(F.c + F.s * Vf) / k); }
+        line(g, A, xf, yf, COL.acc, 2, [7, 4]);
+        vline(g, A, F.vp, COL.i, [2, 3], 'V_p');
+      }
+      hline(g, A, F.Ies / k, COL.muted, 'I_es');
+      var wmap = {}; if (F.sorted) F.sorted.forEach(function (p, j) { if (F.inw[j]) wmap[p.V + '|' + p.I] = 1; });
+      vals.forEach(function (v) { marker(g, A.X(v[0]), A.Y(v[1]), COL.u, !wmap[v[0] + '|' + v[2]]); });
+      g.restore();
+      legend(g, A, [{ t: 'у вікні фіту', col: COL.u }, { t: 'фіт → T_e, V_p', col: COL.acc, dash: [7, 4] }].concat(showTruth() ? [{ t: 'еталон', col: COL.tr, dash: [6, 4] }] : []));
+    } else {
+      var Id = F && F.Iis > 0 ? F.Iis : null;
+      var Y = 1.1 * (r[1]) / T.Te; if (box.on && !showTruth()) Y = 6;
+      A = frame(g, s.w, s.h, { xmin: r[0], xmax: r[1], ymin: -Y, ymax: Y, title: 'Лінеаризація: нахил = 1/T_e', xlab: 'V, В', ylab: 'ln[(I_is+I)/(I_is−I)]' });
+      if (!Id) { g.fillStyle = COL.muted; g.textAlign = 'center'; g.fillText('потрібні точки на плато ±I_is', (A.x0 + A.x1) / 2, (A.y0 + A.y1) / 2); return; }
+      clip(g, A);
+      g.strokeStyle = COL.muted; g.beginPath(); g.moveTo(A.x0, A.Y(0)); g.lineTo(A.x1, A.Y(0)); g.stroke();
+      if (showTruth()) line(g, A, [r[0], r[1]], [r[0] / T.Te, r[1] / T.Te], COL.tr, 1.5, [6, 4]);
+      if (!F.err) line(g, A, [r[0], r[1]], [F.c + F.s * r[0], F.c + F.s * r[1]], COL.acc, 2, [7, 4]);
+      var wm = {}; if (F.sorted) F.sorted.forEach(function (p, j) { if (F.inw[j]) wm[p.V + '|' + p.I] = 1; });
+      pts.forEach(function (p) { var q = p.I / Id; if (Math.abs(q) < 0.97) marker(g, A.X(p.V), A.Y(Math.log((1 + q) / (1 - q))), COL.u, !wm[p.V + '|' + p.I]); });
+      g.restore();
+      legend(g, A, [{ t: 'у вікні фіту', col: COL.u }, { t: 'фіт', col: COL.acc, dash: [7, 4] }].concat(showTruth() ? [{ t: 'еталон', col: COL.tr, dash: [6, 4] }] : []));
+    }
+  }
+
+  /* ---------- схема стенда (з рухомими електронами в дроті) ---------- */
+  var phase = 0, seedP = [];
+  (function () { var s = 12345; function r() { s = (s * 16807) % 2147483647; return s / 2147483647; } for (var i = 0; i < 46; i++) seedP.push({ x: r(), y: r(), ion: i % 2 === 0 }); })();
+  function pathPts(w, h) {
+    var ty = 0.16 * h;
+    if (T.probe === 'single') {
+      var px = 0.78 * w, wx = 0.44 * w, gy = 0.82 * h;
+      return [[px, ty], [0.09 * w, ty], [0.09 * w, gy], [wx, gy]];
+    }
+    return [[0.56 * w, ty], [0.88 * w, ty]];
+  }
+  function polyLen(p) { var L = 0; for (var i = 1; i < p.length; i++) L += Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]); return L; }
+  function polyAt(p, s) {
+    for (var i = 1; i < p.length; i++) {
+      var d = Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]);
+      if (s <= d) { var t = d ? s / d : 0; return [p[i - 1][0] + t * (p[i][0] - p[i - 1][0]), p[i - 1][1] + t * (p[i][1] - p[i - 1][1])]; }
+      s -= d;
+    }
+    return p[p.length - 1];
+  }
+  function drawCirc() {
+    var s = setup($('cCirc')), g = s.g, w = s.w, h = s.h, f = '12px system-ui,"Segoe UI",sans-serif';
+    colors(); g.font = f;
+    var dbl_ = T.probe === 'double', ty = 0.16 * h, bx0 = 0.44 * w, bx1 = 0.97 * w, by0 = 0.5 * h, by1 = 0.93 * h, i;
+    /* плазма */
+    g.fillStyle = COL.plasma; g.fillRect(bx0, by0, bx1 - bx0, by1 - by0);
+    for (i = 0; i < seedP.length; i++) {
+      var q = seedP[i], x = bx0 + 8 + q.x * (bx1 - bx0 - 16), y = by0 + 8 + q.y * (by1 - by0 - 16);
+      g.strokeStyle = q.ion ? COL.ion : COL.ele; g.lineWidth = 1.2; g.beginPath();
+      g.moveTo(x - 3, y); g.lineTo(x + 3, y); if (q.ion) { g.moveTo(x, y - 3); g.lineTo(x, y + 3); } g.stroke();
+    }
+    g.fillStyle = COL.muted; g.textAlign = 'right'; g.fillText('плазма (T_e, n невідомі' + (showTruth() && !box.on ? ': ' + sig(T.Te, 2) + ' еВ, ' + sci(T.n).replace(/<\/?sup>/g, function (m) { return m === '<sup>' ? '^' : ''; }) + ' см⁻³' : '') + ')', bx1 - 6, by1 - 6);
+    /* стінка */
+    g.strokeStyle = COL.ink; g.lineWidth = dbl_ ? 2 : 5; g.setLineDash(dbl_ ? [5, 4] : []); g.beginPath(); g.moveTo(bx0, by0); g.lineTo(bx0, by1); g.stroke(); g.setLineDash([]);
+    g.fillStyle = COL.ink; g.textAlign = 'left';
+    g.fillText(dbl_ ? 'стінка (не в колі)' : 'стінка = опорний електрод', bx0 + 6, by1 - 6 - 14 * 0 - 0);
+    /* зонд(и) */
+    var probes = dbl_ ? [0.56 * w, 0.88 * w] : [0.78 * w];
+    probes.forEach(function (px, k) {
+      g.fillStyle = '#8a8f99'; g.fillRect(px - 4, ty, 8, (0.66 - 0.16) * h);
+      g.fillStyle = '#d9a441'; g.fillRect(px - 3, 0.66 * h, 6, 0.1 * h);
+      g.strokeStyle = COL.ink; g.lineWidth = 1; g.strokeRect(px - 4, ty, 8, 0.5 * h); g.setLineDash([3, 3]);
+      g.strokeStyle = COL.acc; g.strokeRect(px - 18, 0.64 * h, 36, 0.16 * h); g.setLineDash([]);
+      g.fillStyle = COL.ink; g.textAlign = 'center';
+      g.fillText(dbl_ ? 'зонд ' + (k + 1) : 'зонд', px, 0.84 * h + 14);
+    });
+    g.fillStyle = COL.acc; g.textAlign = 'center'; g.fillText('шар', probes[0] + (dbl_ ? 0 : 0), 0.62 * h);
+    /* дроти */
+    var p = pathPts(w, h);
+    g.strokeStyle = COL.wire; g.lineWidth = 2; g.lineJoin = 'round'; g.beginPath();
+    p.forEach(function (q, j) { if (j) g.lineTo(q[0], q[1]); else g.moveTo(q[0], q[1]); });
+    g.stroke();
+    /* амперметр і джерело */
+    var ax = dbl_ ? 0.67 * w : 0.62 * w, sx = dbl_ ? 0.79 * w : 0.34 * w;
+    g.fillStyle = COL.bg; g.beginPath(); g.arc(ax, ty, 16, 0, 2 * Math.PI); g.fill();
+    g.strokeStyle = COL.i; g.lineWidth = 2; g.beginPath(); g.arc(ax, ty, 16, 0, 2 * Math.PI); g.stroke();
+    g.fillStyle = COL.i; g.font = 'bold 14px system-ui'; g.textAlign = 'center'; g.fillText('A', ax, ty + 5); g.font = f;
+    g.fillText('I = ' + fmtc(last.I / ins.k, ins.dec) + ' ' + ins.unit, ax, ty - 24);
+    g.fillStyle = COL.bg; g.fillRect(sx - 10, ty - 14, 20, 28);
+    g.strokeStyle = COL.u; g.lineWidth = 2.5; g.beginPath(); g.moveTo(sx - 4, ty - 12); g.lineTo(sx - 4, ty + 12); g.stroke();
+    g.lineWidth = 2; g.beginPath(); g.moveTo(sx + 5, ty - 7); g.lineTo(sx + 5, ty + 7); g.stroke();
+    g.fillStyle = COL.u; g.fillText('V = ' + fmtc(last.V, 1) + ' В', sx, ty - 24);
+    g.fillStyle = COL.muted; g.fillText(dbl_ ? 'джерело між електродами' : 'джерело зміщення', sx, ty + 30);
+    /* заземлення біля стінки (одиночний) */
+    if (!dbl_) {
+      var gx = 0.44 * w, gy = 0.82 * h;
+      g.strokeStyle = COL.wire; g.lineWidth = 2; g.fillStyle = COL.ink;
+    }
+    /* електрони у дроті */
+    var L = polyLen(p), I = last.I, sgn = I > 0 ? 1 : I < 0 ? -1 : 0, N = Math.max(8, Math.round(L / 28));
+    if (sgn) {
+      for (i = 0; i < N; i++) {
+        var u = (((i / N + sgn * phase) % 1) + 1) % 1, pos = polyAt(p, u * L);
+        g.fillStyle = COL.ele; g.beginPath(); g.arc(pos[0], pos[1], 3.2, 0, 2 * Math.PI); g.fill();
+        g.fillStyle = COL.bg; g.fillRect(pos[0] - 1.6, pos[1] - 0.5, 3.2, 1);
+      }
+    }
+    g.fillStyle = COL.ink; g.textAlign = 'left';
+    var msg = sgn > 0 ? 'в дроті електрони течуть від зонда: у колі переважає електронний струм' : sgn < 0 ? 'в дроті електрони течуть до зонда: у колі переважає іонний струм (іони забирають електрони)' : 'I = 0: потоки електронів та іонів врівноважені';
+    if (dbl_) msg = sgn ? 'електрони в дроті течуть ' + (sgn > 0 ? 'від зонда 1 до зонда 2' : 'від зонда 2 до зонда 1') + '; система не заземлена' : 'I = 0: система симетрична';
+    g.fillStyle = COL.muted; g.fillText(msg, 8, h - 6);
+  }
+  var lastT = 0;
+  function tick(t) {
+    var dt = Math.min(0.1, (t - lastT) / 1000 || 0); lastT = t;
+    var I = Math.abs(last.I) / (ins ? ins.Imax : 1);
+    phase += dt * 0.08 * (0.3 + Math.min(1, I * 4)) * (last.I ? 1 : 0);
+    drawCirc();
+    requestAnimationFrame(tick);
+  }
+
+  /* ---------- таблиця й експорт ---------- */
+  function updateTable() {
+    var body = $('tbl').tBodies[0], rows = [], Iis = F && F.Iis ? F.Iis : null;
+    var wmap = {}; if (F && F.sorted) F.sorted.forEach(function (p, j) { if (F.inw[j]) wmap[p.V + '|' + p.I] = 1; });
+    pts.forEach(function (p, i) {
+      var l = '—';
+      if (Iis) {
+        if (T.probe === 'single') { var y = p.I + Iis; l = y > 0 ? fmtc(Math.log(y / ins.k), 3) : '—'; }
+        else { var q = p.I / Iis; l = Math.abs(q) < 1 ? fmtc(Math.log((1 + q) / (1 - q)), 3) : '—'; }
+      }
+      rows.push('<tr><td>' + (i + 1) + '</td><td>' + fmtc(p.V, 1) + '</td><td>' + fmtc(p.I / ins.k, ins.dec) + '</td><td>' + l + '</td><td>' + (wmap[p.V + '|' + p.I] ? '●' : '') + '</td></tr>');
+    });
+    body.innerHTML = rows.join('');
+  }
+  function tableText(sep) {
+    var out = ['V, В' + sep + 'I, ' + ins.unit];
+    pts.forEach(function (p) { out.push(p.V.toFixed(1) + sep + (p.I / ins.k).toFixed(ins.dec)); });
+    return out.join('\n');
+  }
+
+  function refresh(newReading) {
+    if (newReading) showReading();
+    doFit(); updateResult(); updateTable(); drawIV(); drawLog();
+  }
+
+  /* ---------- події ---------- */
+  ['mode', 'probe', 'gas', 'S', 'Te', 'n', 'Vp', 'hot'].forEach(function (id) {
+    $(id).addEventListener('input', function () {
+      if (id === 'mode' && $('mode').value === 'box') randomBox();
+      else if (id === 'probe' && box.on) randomBox();
+      applyAll(true);
+    });
+  });
+  ['lo', 'hi', 'hid', 'zoom', 'showTrue'].forEach(function (id) { $(id).addEventListener('input', function () { labels(); refresh(false); }); });
+  $('vs').addEventListener('input', function () { $('vn').value = Math.round(+$('vs').value * 10) / 10; refresh(true); });
+  $('vn').addEventListener('input', function () {
+    var v = parseFloat($('vn').value); if (!isFinite(v)) return;
+    var r = Vrange[T.probe]; v = Math.max(r[0], Math.min(r[1], v)); $('vs').value = v; refresh(true);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-dv]'), function (b) {
+    b.addEventListener('click', function () { var r = Vrange[T.probe]; setV(Math.max(r[0], Math.min(r[1], +$('vs').value + parseFloat(b.dataset.dv)))); refresh(true); });
+  });
+  $('take').addEventListener('click', take);
+  $('undo').addEventListener('click', function () { pts.pop(); refresh(false); });
+  $('clear').addEventListener('click', function () { pts = []; refresh(false); });
+  $('sweep').addEventListener('click', sweep);
+  $('chkAns').addEventListener('click', checkAnswer);
+  $('newBox').addEventListener('click', function () { randomBox(); applyAll(true); });
+  $('showAns').addEventListener('click', function () {
+    box.shown = true;
+    $('boxMsg').innerHTML += '<br>Еталон: T<sub>e</sub> = ' + sig(T.Te, 3) + ' еВ, n = ' + sci(T.n) + ' см⁻³' + (T.probe === 'single' ? ', V<sub>p</sub> = ' + sig(T.Vp, 3) + ' В' : '') + '.';
+    refresh(false);
+  });
+  $('cp').addEventListener('click', function () { var t = tableText('\t'); if (navigator.clipboard) navigator.clipboard.writeText(t).catch(function () {}); });
+  $('csv').addEventListener('click', function () {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([tableText(';')], { type: 'text/csv' })); a.download = 'langmuir_probe.csv'; a.click();
+  });
+  window.addEventListener('resize', function () { drawIV(); drawLog(); });
+  window.addEventListener('themechange', function () { drawIV(); drawLog(); });
+  setInterval(function () { if (!document.hidden) { showReading(); } }, 900);
+
+  if (P.get('probe') === 'double') $('probe').value = 'double';
+  if (P.get('mode') === 'study') $('mode').value = 'study';
+  if ($('mode').value === 'box') randomBox();
+  applyAll(true);
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
