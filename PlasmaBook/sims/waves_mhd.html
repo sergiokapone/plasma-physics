@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>МГД-хвилі у плазмі</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: control bar on top; plane view + 3D view side by side; probe graphs and phase-speed polar below. */
+:root{
+  --bg:#f2f4f7; --panel:#ffffff; --ink:#151b26; --ink2:#4a5468; --muted:#6f798d; --line:#d9dee7; --grid:#e8ebf1;
+  --alf:#2c9a58; --fast:#df5a1f; --slow:#2f6fdb;
+  --rho:#d6336c; --axx:#c28800; --axy:#8a52d6; --axz:#0f9fb5;
+  --pos:#d6336c; --neg:#2f6fdb; --focus:#2f6fdb;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e121a; --panel:#151a24; --ink:#e8ebf1; --ink2:#a9b2c3; --muted:#8791a4; --line:#262d3b; --grid:#202737;
+  --alf:#4fd08a; --fast:#ff8f5e; --slow:#6f9fff; --rho:#ff7aa8; --axx:#f0bc30; --axy:#b693ff; --axz:#3fd0e0;
+  --pos:#ff6fa3; --neg:#5a96ff; --focus:#6f9fff; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0e121a; --panel:#151a24; --ink:#e8ebf1; --ink2:#a9b2c3; --muted:#8791a4; --line:#262d3b; --grid:#202737;
+  --alf:#4fd08a; --fast:#ff8f5e; --slow:#6f9fff; --rho:#ff7aa8; --axx:#f0bc30; --axy:#b693ff; --axz:#3fd0e0;
+  --pos:#ff6fa3; --neg:#5a96ff; --focus:#6f9fff; color-scheme:dark;}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.45;
+  padding-block:20px 36px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0}
+.sub{color:var(--ink2);margin:2px 0 0;max-width:80ch}
+h2{font-size:13px;font-weight:600;margin:0 0 6px;color:var(--ink);letter-spacing:.01em}
+h2 small{font-weight:400;color:var(--muted);margin-left:6px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.controls{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.lbl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+button,select,input{font-family:inherit;font-size:13px;color:var(--ink)}
+button.chip,button.btn,select{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:6px 11px;cursor:pointer;min-height:32px}
+button:hover,select:hover{border-color:var(--muted)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+button.chip{display:inline-flex;align-items:center;gap:7px;font-weight:500}
+button.chip i{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block}
+button.chip[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--c);border-color:var(--c)}
+button.chip[aria-pressed="false"]{color:var(--ink2)}
+button.chip[aria-pressed="false"] i{opacity:.45}
+button.tog[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button.tog{padding:4px 9px;min-height:28px;font-size:12px;border-radius:6px;background:var(--panel);border:1px solid var(--line);cursor:pointer}
+.sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 22px}
+.sl{display:flex;flex-direction:column;gap:3px;min-width:0}
+.sl .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sl output{font-family:var(--mono);font-size:12px;color:var(--ink)}
+.sl .pre{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.sl .pre button{padding:2px 8px;min-height:24px;font-size:11px;border-radius:5px;background:var(--panel);border:1px solid var(--line);color:var(--ink2);cursor:pointer}
+input[type=range]{width:100%;accent-color:var(--ink);min-height:24px}
+.stage-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px}
+.stage-grid>.panel{min-width:0}
+canvas{display:block;width:100%;touch-action:none}
+#stage{aspect-ratio:5/3;cursor:crosshair}
+#c3d{aspect-ratio:1.15;cursor:grab}
+#c3d:active{cursor:grabbing}
+.cap{color:var(--muted);font-size:12px;margin:6px 0 0}
+.cbar{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11px;color:var(--ink2)}
+.cbar .bar{flex:0 1 160px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--neg),var(--panel) 50%,var(--pos));border:1px solid var(--line)}
+.graphs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.graphs canvas{aspect-ratio:16/11}
+#polar{aspect-ratio:1/1;max-height:380px;margin:0 auto}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:left;padding:5px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums;vertical-align:top}
+td.n{font-family:var(--mono);font-size:12px;white-space:nowrap}
+tr.off td{opacity:.45}
+td .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;background:var(--c)}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.note{border-top:3px solid var(--c);padding-top:8px}
+.note h3{margin:0 0 4px;font-size:14px;font-weight:600}
+.note p{margin:0;color:var(--ink2);font-size:13px}
+@media (max-width:900px){.stage-grid{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>МГД-хвилі у плазмі</h1>
+    <p class="sub">Плоска хвиля в однорідній ідеально провідній плазмі з магнітним полем B₀ вздовж осі x. Три моди — альвенівська, швидка та повільна магнітозвукові — розраховані за лінійною МГД. Крутіть кут θ між хвильовим вектором k і B₀, змінюйте β, дивіться, як рухаються частинки й силові лінії.</p>
+  </header>
+
+  <section class="panel controls" aria-label="Керування">
+    <div class="row">
+      <span class="lbl">Моди</span>
+      <button class="chip" id="m-alf" style="--c:var(--alf)" aria-pressed="false"><i></i>Альвенівська</button>
+      <button class="chip" id="m-fast" style="--c:var(--fast)" aria-pressed="true"><i></i>Швидка магнітозвукова</button>
+      <button class="chip" id="m-slow" style="--c:var(--slow)" aria-pressed="false"><i></i>Повільна магнітозвукова</button>
+      <button class="btn" id="m-all">Усі три разом</button>
+      <span style="flex:1"></span>
+      <button class="btn" id="play" aria-pressed="true">Пауза</button>
+    </div>
+    <div class="sliders">
+      <div class="sl"><div class="top"><label class="lbl" for="th">Кут θ між k і B₀</label><output id="th-o"></output></div>
+        <input type="range" id="th" min="0" max="90" step="1" value="35">
+        <div class="pre"><button data-th="0">вздовж B₀ (0°)</button><button data-th="45">45°</button><button data-th="90">впоперек B₀ (90°)</button></div></div>
+      <div class="sl"><div class="top"><label class="lbl" for="cs">Швидкість звуку c_s / v_A</label><output id="cs-o"></output></div>
+        <input type="range" id="cs" min="0.15" max="3" step="0.05" value="1">
+        <div class="pre"><button data-cs="0.3">β ≪ 1 (корона)</button><button data-cs="0.9">β ≈ 1</button><button data-cs="2.5">β ≫ 1</button></div></div>
+      <div class="sl"><div class="top"><label class="lbl" for="amp">Амплітуда kξ</label><output id="amp-o"></output></div>
+        <input type="range" id="amp" min="0.05" max="0.9" step="0.01" value="0.5">
+        <div class="cap" style="margin:0">Лінійна теорія; при kξ &gt; 0,5 — лише для наочності.</div></div>
+      <div class="sl"><div class="top"><label class="lbl" for="spd">Швидкість показу</label><output id="spd-o"></output></div>
+        <input type="range" id="spd" min="0.05" max="1.5" step="0.05" value="0.4"></div>
+    </div>
+    <div class="row">
+      <span class="lbl">Переріз</span>
+      <select id="plane" aria-label="Площина перерізу"><option value="xy">(x, y): площина k і B₀</option><option value="xz">(x, z): вид збоку</option></select>
+      <span class="lbl">Колір поля</span>
+      <select id="color" aria-label="Що показувати кольором"><option value="rho">густина δρ/ρ</option><option value="B">модуль поля δ|B|/B₀</option><option value="p">повний тиск δ(p+B²/2μ₀)</option></select>
+      <span class="lbl">Шари</span>
+      <button class="tog" data-layer="heat" aria-pressed="true">колір</button>
+      <button class="tog" data-layer="lines" aria-pressed="true">силові лінії</button>
+      <button class="tog" data-layer="dots" aria-pressed="true">частинки</button>
+      <button class="tog" data-layer="bArr" aria-pressed="true">стрілки δB</button>
+      <button class="tog" data-layer="vArr" aria-pressed="false">стрілки v</button>
+      <button class="tog" data-layer="trail" aria-pressed="true">слід зонда</button>
+    </div>
+  </section>
+
+  <div class="stage-grid">
+    <section class="panel">
+      <h2>Переріз плазми <small id="plane-cap"></small></h2>
+      <canvas id="stage" role="img" aria-label="Переріз плазми: силові лінії, частинки, стрілки збурення магнітного поля та швидкості"></canvas>
+      <div class="cbar"><span id="cb-l"></span><span class="bar"></span><span id="cb-r"></span></div>
+      <p class="cap">Клікніть або проведіть по полю, щоб перемістити зонд (кільце). Розмір точки показує зміщення вздовж осі, якої немає в перерізі: більша точка ближче до глядача.</p>
+    </section>
+    <section class="panel">
+      <h2>3D-вид <small>потягніть, щоб повернути; подвійний клік скидає</small></h2>
+      <canvas id="c3d" role="img" aria-label="Тривимірний вид пучка силових ліній"></canvas>
+      <p class="cap">12 силових ліній, точки пофарбовані за густиною. Лінія з білим кільцем і слід показують рух зонда.</p>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Що відбувається в точці зонда <small>вісь часу: останні періоди; наведіть курсор для значень</small></h2>
+    <div class="graphs">
+      <div><h2>Зміщення частинки <small>kξ</small></h2><canvas id="g1"></canvas></div>
+      <div><h2>Густина і магнітне поле <small>δρ/ρ, δB/B₀</small></h2><canvas id="g2"></canvas></div>
+      <div><h2>Збурення тисків <small>у одиницях ρ₀v_A²</small></h2><canvas id="g3"></canvas></div>
+      <div><h2>Фазові швидкості v_ф(θ) <small>діаграма Фрідріхса</small></h2><canvas id="polar"></canvas></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Властивості мод при поточних θ і β</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Мода</th><th>v_ф / v_A</th><th>Період, λ/v_A</th><th>Зміщення ξ</th><th>|δρ/ρ|</th><th>|δB∥|/B₀</th><th>|δB⊥|/B₀</th><th>Густина й |B|</th></tr></thead>
+      <tbody id="tb"></tbody>
+    </table></div>
+  </section>
+
+  <section class="notes">
+    <div class="note" style="--c:var(--alf)"><h3>Альвенівська</h3><p>Поперечна хвиля, як коливання натягнутої струни: силові лінії зміщуються перпендикулярно до площини (k, B₀). Густина і |B| незмінні, v_ф = v_A cos θ. Впоперек B₀ не поширюється.</p></div>
+    <div class="note" style="--c:var(--fast)"><h3>Швидка магнітозвукова</h3><p>Газовий і магнітний тиск змінюються в фазі: стиск плазми супроводжується посиленням поля. Найшвидша мода; впоперек B₀ швидкість √(v_A² + c_s²).</p></div>
+    <div class="note" style="--c:var(--slow)"><h3>Повільна магнітозвукова</h3><p>Тиски в протифазі: де густина росте, |B| слабшає. При β ≲ 1 частинки рухаються майже вздовж B₀, як звук у каналі; швидкість не перевищує min(v_A, c_s).</p></div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+var TAU=Math.PI*2, K=TAU, GAMMA=5/3;
+function $(id){return document.getElementById(id);}
+var S={modes:{alf:false,fast:true,slow:false},theta:35*Math.PI/180,csr:1,A:0.5,speed:0.4,t:0,playing:true,
+  probe:{u:1.5,v:0},plane:"xy",color:"rho",
+  layers:{heat:true,lines:true,dots:true,bArr:true,vArr:false,trail:true},yaw:-0.75,pitch:0.42};
+try{if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){S.playing=false;}}catch(e){}
+var FONT='12px "IBM Plex Sans",system-ui,sans-serif', MONO='11px "IBM Plex Mono",ui-monospace,Consolas,monospace';
+var C={};
+
+/* ---------- theme ---------- */
+function hexRGB(h){h=h.replace("#","");if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function rgba(h,a){var c=hexRGB(h);return "rgba("+c[0]+","+c[1]+","+c[2]+","+a+")";}
+function readTheme(){
+  var cs=getComputedStyle(document.documentElement);
+  function g(n){return cs.getPropertyValue(n).trim();}
+  C={panel:g("--panel"),ink:g("--ink"),ink2:g("--ink2"),muted:g("--muted"),line:g("--line"),grid:g("--grid"),
+     alf:g("--alf"),fast:g("--fast"),slow:g("--slow"),rho:g("--rho"),ax:[g("--axx"),g("--axy"),g("--axz")],pos:g("--pos"),neg:g("--neg")};
+  C.posRGB=hexRGB(C.pos);C.negRGB=hexRGB(C.neg);
+}
+
+/* ---------- physics ---------- */
+function buildModes(){
+  var th=S.theta,c=Math.cos(th),s=Math.sin(th),cs=S.csr;
+  var M11=cs*cs*c*c,M12=cs*cs*c*s,M22=cs*cs*s*s+1;
+  var tr=(M11+M22)/2,d=Math.hypot((M11-M22)/2,M12);
+  var lf=tr+d,ls=Math.max(0,tr-d),phi=0.5*Math.atan2(2*M12,M11-M22);
+  var defs=[
+    {key:"alf",name:"Альвенівська",short:"A",vph:Math.abs(c),e:[0,0,1]},
+    {key:"fast",name:"Швидка магнітозвукова",short:"F",vph:Math.sqrt(lf),e:[Math.cos(phi),Math.sin(phi),0]},
+    {key:"slow",name:"Повільна магнітозвукова",short:"S",vph:Math.sqrt(ls),e:[-Math.sin(phi),Math.cos(phi),0]}];
+  var n=(S.modes.alf?1:0)+(S.modes.fast?1:0)+(S.modes.slow?1:0);
+  var Aeff=S.A/Math.sqrt(Math.max(n,1));
+  for(var i=0;i<3;i++){var m=defs[i];
+    m.on=S.modes[m.key];m.w=K*m.vph;m.kx=K*c;m.ky=K*s;
+    m.kne=c*m.e[0]+s*m.e[1];
+    m.bc=[m.kne-c*m.e[0],-c*m.e[1],-c*m.e[2]];
+    m.amp=m.on?Aeff:S.A;m.col=C[m.key];}
+  defs.Aeff=Aeff;defs.n=n;defs.c=c;defs.s=s;
+  return defs;
+}
+/* Lagrangian displacement xi=(A/k)e cos(phase); drho/rho=-div xi; b=dB/B0=curl(xi x x^)  */
+function evalF(ms,x,y,z,t,o){
+  var xx=0,xy=0,xz=0,r=0,bx=0,by=0,bz=0,vx=0,vy=0,vz=0;
+  for(var i=0;i<3;i++){var m=ms[i];if(!m.on)continue;
+    var ph=m.kx*x+m.ky*y-m.w*t,sn=Math.sin(ph),cn=Math.cos(ph),a=m.amp,xi=a/K*cn,vv=a*m.vph*sn;
+    xx+=xi*m.e[0];xy+=xi*m.e[1];xz+=xi*m.e[2];
+    r+=a*m.kne*sn;bx+=a*m.bc[0]*sn;by+=a*m.bc[1]*sn;bz+=a*m.bc[2]*sn;
+    vx+=vv*m.e[0];vy+=vv*m.e[1];vz+=vv*m.e[2];}
+  o.xx=xx;o.xy=xy;o.xz=xz;o.rho=r;o.bx=bx;o.by=by;o.bz=bz;o.vx=vx;o.vy=vy;o.vz=vz;return o;
+}
+function speedsAt(th){
+  var c=Math.cos(th),s=Math.sin(th),cs=S.csr,a=cs*cs+1,disc=Math.sqrt(Math.max(0,a*a-4*cs*cs*c*c));
+  return [Math.abs(c),Math.sqrt((a+disc)/2),Math.sqrt(Math.max(0,(a-disc)/2))];
+}
+
+/* ---------- canvas helpers ---------- */
+function prep(cv){
+  var r=cv.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);
+  var w=Math.max(10,Math.round(r.width*d)),h=Math.max(10,Math.round(r.height*d));
+  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}
+  var ctx=cv.getContext("2d");ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,r.width,r.height);
+  ctx.font=FONT;return {ctx:ctx,w:r.width,h:r.height};
+}
+function arrow(ctx,x,y,dx,dy,col,lw){
+  var L=Math.hypot(dx,dy);if(L<2)return;
+  var ux=dx/L,uy=dy/L,hs=Math.min(5.5,L*0.5);
+  ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=lw;ctx.lineCap="round";
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx-ux*hs*0.6,y+dy-uy*hs*0.6);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x+dx,y+dy);ctx.lineTo(x+dx-ux*hs-uy*hs*0.5,y+dy-uy*hs+ux*hs*0.5);ctx.lineTo(x+dx-ux*hs+uy*hs*0.5,y+dy-uy*hs-ux*hs*0.5);ctx.closePath();ctx.fill();
+}
+function clamp(x,a,b){return Math.max(a,Math.min(b,x));}
+function niceCeil(x){var p=Math.pow(10,Math.floor(Math.log10(x))),f=x/p;var n=f<=1?1:f<=1.5?1.5:f<=2?2:f<=3?3:f<=5?5:10;return n*p;}
+
+/* ---------- main plane view ---------- */
+var HW=120,HH=72,off=document.createElement("canvas");off.width=HW;off.height=HH;
+var octx=off.getContext("2d"),img=octx.createImageData(HW,HH);
+var stageGeo={ox:0,oy:0,sc:1};
+var tmp={},tmp2={};
+function heatVal(o){
+  if(S.color==="rho")return o.rho;
+  if(S.color==="B")return o.bx;
+  return S.csr*S.csr*o.rho+o.bx;
+}
+function heatScale(ms){var a=ms.Aeff;return S.color==="p"?a*Math.max(1,S.csr*S.csr):a;}
+function drawStage(ms){
+  var cv=$("stage"),P=prep(cv),ctx=P.ctx,w=P.w,h=P.h,pl=S.plane==="xy";
+  var pad=12,sc=Math.min((w-2*pad)/3,(h-2*pad)/1.8),ox=(w-3*sc)/2,oy=h/2;
+  stageGeo={ox:ox,oy:oy,sc:sc};
+  function X(u){return ox+u*sc;}function Y(v){return oy-v*sc;}
+  var t=S.t,i,j,o=tmp;
+  if(S.layers.heat){
+    var scale=Math.max(heatScale(ms),1e-6),d=img.data;
+    for(j=0;j<HH;j++){var v=0.9-(j+0.5)/HH*1.8;
+      for(i=0;i<HW;i++){var u=(i+0.5)/HW*3;
+        evalF(ms,u,pl?v:0,pl?0:v,t,o);
+        var q=clamp(heatVal(o)/scale,-1,1),rgb=q>0?C.posRGB:C.negRGB,k=(j*HW+i)*4;
+        d[k]=rgb[0];d[k+1]=rgb[1];d[k+2]=rgb[2];d[k+3]=Math.pow(Math.abs(q),0.85)*0.78*255;}}
+    octx.putImageData(img,0,0);ctx.imageSmoothingEnabled=true;ctx.drawImage(off,X(0),Y(0.9),3*sc,1.8*sc);
+  }
+  ctx.strokeStyle=C.line;ctx.lineWidth=1;ctx.strokeRect(X(0),Y(0.9),3*sc,1.8*sc);
+  ctx.save();ctx.beginPath();ctx.rect(X(0),Y(0.9),3*sc,1.8*sc);ctx.clip();
+  var rows=12,NX=160;
+  if(S.layers.lines){
+    ctx.strokeStyle=rgba(C.ink,0.62);ctx.lineWidth=1.25;ctx.lineJoin="round";
+    for(j=0;j<rows;j++){var v0=-0.9+0.15*(j+0.5);ctx.beginPath();
+      for(i=0;i<=NX;i++){var u0=i/NX*3;evalF(ms,u0,pl?v0:0,pl?0:v0,t,o);
+        var px=X(u0+o.xx),py=Y(v0+(pl?o.xy:o.xz));if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+      ctx.stroke();}
+  }
+  var aS=Math.max(ms.Aeff,0.05);
+  if(S.layers.dots){
+    ctx.fillStyle=rgba(C.ink,0.9);
+    for(j=0;j<rows;j++){var v1=-0.9+0.15*(j+0.5);
+      for(i=0;i<24;i++){var u1=(i+0.5)/24*3;evalF(ms,u1,pl?v1:0,pl?0:v1,t,o);
+        var dep=(pl?o.xz:o.xy)*K/aS,r=2.3*(1+0.55*clamp(dep,-1.2,1.2));
+        ctx.beginPath();ctx.arc(X(u1+o.xx),Y(v1+(pl?o.xy:o.xz)),Math.max(r,0.8),0,TAU);ctx.fill();}}
+  }
+  for(var pass=0;pass<2;pass++){
+    if(pass===0&&!S.layers.bArr)continue;if(pass===1&&!S.layers.vArr)continue;
+    for(j=0;j<6;j++){var v2=-0.9+0.15+0.3*j;
+      for(i=0;i<12;i++){var u2=(i+0.5)*0.25;evalF(ms,u2,pl?v2:0,pl?0:v2,t,o);
+        var sx=X(u2+o.xx),sy=Y(v2+(pl?o.xy:o.xz));
+        if(pass===0)arrow(ctx,sx,sy,o.bx*sc*0.3,-(pl?o.by:o.bz)*sc*0.3,C.ax[0],1.6);
+        else arrow(ctx,sx,sy,o.vx*sc*0.22,-(pl?o.vy:o.vz)*sc*0.22,C.ink2,1.4);}}
+  }
+  var pu=S.probe.u,pv=S.probe.v,py0=pl?pv:0,pz0=pl?0:pv;
+  if(S.layers.trail){
+    var Wt=Math.min(trailW(ms),6),NS=60;ctx.lineWidth=2;ctx.lineCap="round";
+    var lx=null,ly=null;
+    for(i=0;i<=NS;i++){evalF(ms,pu,py0,pz0,t-Wt*(1-i/NS),tmp2);
+      var tx=X(pu+tmp2.xx),ty=Y(pv+(pl?tmp2.xy:tmp2.xz));
+      if(lx!==null){ctx.strokeStyle=rgba(C.rho,0.15+0.85*i/NS);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(tx,ty);ctx.stroke();}
+      lx=tx;ly=ty;}
+  }
+  evalF(ms,pu,py0,pz0,t,o);
+  var qx=X(pu+o.xx),qy=Y(pv+(pl?o.xy:o.xz));
+  ctx.fillStyle=C.panel;ctx.beginPath();ctx.arc(qx,qy,7.5,0,TAU);ctx.fill();
+  ctx.strokeStyle=C.ink;ctx.lineWidth=2;ctx.beginPath();ctx.arc(qx,qy,7.5,0,TAU);ctx.stroke();
+  ctx.fillStyle=C.rho;ctx.beginPath();ctx.arc(qx,qy,3.6,0,TAU);ctx.fill();
+  ctx.restore();
+  // direction badge
+  var bx0=X(0)+10,by0=Y(0.9)+10;
+  ctx.fillStyle=rgba(C.panel,0.88);ctx.fillRect(bx0,by0,92,50);ctx.strokeStyle=C.line;ctx.strokeRect(bx0,by0,92,50);
+  var ocx=bx0+14,ocy=by0+34;
+  arrow(ctx,ocx,ocy,44,0,C.ink,2);
+  arrow(ctx,ocx,ocy,ms.c*34,-(pl?ms.s:0)*34,C.rho,2);
+  ctx.fillStyle=C.ink2;ctx.fillText("B₀",ocx+48,ocy+4);
+  ctx.fillStyle=C.rho;ctx.fillText("k",ocx+ms.c*34+4,ocy-(pl?ms.s:0)*34-3);
+}
+function trailW(ms){
+  var mx=0;for(var i=0;i<3;i++)if(ms[i].on&&ms[i].vph>0.02)mx=Math.max(mx,1/ms[i].vph);
+  return mx>0?mx:2;
+}
+function windowW(ms){return clamp(2.4*trailW(ms),2.4,14);}
+
+/* ---------- 3D view ---------- */
+var tmp3={},o3=[0,0,0];
+function proj(x,y,z,w,h){
+  x-=1.5;var cy=Math.cos(S.yaw),sy=Math.sin(S.yaw),cp=Math.cos(S.pitch),sp=Math.sin(S.pitch);
+  var x1=x*cy-y*sy,y1=x*sy+y*cy,y2=y1*cp-z*sp,z2=y1*sp+z*cp;
+  var sc=Math.min(w*0.265,h*0.5),f=1/(1+y2*0.16);
+  return [w/2+x1*f*sc,h/2-z2*f*sc,y2];
+}
+function draw3D(ms){
+  var cv=$("c3d"),P=prep(cv),ctx=P.ctx,w=P.w,h=P.h,t=S.t,o=tmp3,i,j,k;
+  var ex=[0,0.6,-0.45],corners=[];
+  function box(){
+    var xs=[0,3],ys=[-0.6,0.6],zs=[-0.45,0.45],pts={};
+    for(var a=0;a<2;a++)for(var b=0;b<2;b++)for(var c=0;c<2;c++)pts[a+""+b+c]=proj(xs[a],ys[b],zs[c],w,h);
+    ctx.strokeStyle=C.line;ctx.lineWidth=1;ctx.beginPath();
+    var keys=Object.keys(pts);
+    for(var p=0;p<keys.length;p++)for(var q=p+1;q<keys.length;q++){
+      var a1=keys[p],b1=keys[q],diff=0;for(var z=0;z<3;z++)if(a1[z]!==b1[z])diff++;
+      if(diff===1){ctx.moveTo(pts[a1][0],pts[a1][1]);ctx.lineTo(pts[b1][0],pts[b1][1]);}}
+    ctx.stroke();
+  }
+  box();
+  var ys=[-0.45,-0.15,0.15,0.45],zs=[-0.3,0,0.3],NX=90;
+  var items=[];
+  for(j=0;j<ys.length;j++)for(k=0;k<zs.length;k++){
+    var pts=[];
+    for(i=0;i<=NX;i++){var u=i/NX*3;evalF(ms,u,ys[j],zs[k],t,o);
+      var pp=proj(u+o.xx,ys[j]+o.xy,zs[k]+o.xz,w,h);pts.push({p:pp,rho:o.rho});}
+    items.push(pts);}
+  ctx.lineWidth=1.3;ctx.lineJoin="round";
+  var sc=Math.max(ms.Aeff,1e-6);
+  for(j=0;j<items.length;j++){var pts2=items[j];
+    ctx.strokeStyle=rgba(C.ink,0.5);ctx.beginPath();
+    for(i=0;i<pts2.length;i++){if(i===0)ctx.moveTo(pts2[i].p[0],pts2[i].p[1]);else ctx.lineTo(pts2[i].p[0],pts2[i].p[1]);}
+    ctx.stroke();
+    for(i=2;i<pts2.length;i+=5){
+      var q=clamp(pts2[i].rho/sc,-1,1),rgb=q>0?C.posRGB:C.negRGB,al=0.35+0.65*Math.abs(q);
+      ctx.fillStyle="rgba("+rgb[0]+","+rgb[1]+","+rgb[2]+","+al+")";
+      ctx.beginPath();ctx.arc(pts2[i].p[0],pts2[i].p[1],2.6+1.2*Math.abs(q),0,TAU);ctx.fill();}
+  }
+  var pl=S.plane==="xy",pu=S.probe.u,py0=pl?S.probe.v:0,pz0=pl?0:S.probe.v;
+  if(S.layers.trail){
+    var Wt=Math.min(trailW(ms),6),NS=60,last=null;ctx.lineWidth=2;ctx.lineCap="round";
+    for(i=0;i<=NS;i++){evalF(ms,pu,py0,pz0,t-Wt*(1-i/NS),o);
+      var pp2=proj(pu+o.xx,py0+o.xy,pz0+o.xz,w,h);
+      if(last){ctx.strokeStyle=rgba(C.rho,0.15+0.85*i/NS);ctx.beginPath();ctx.moveTo(last[0],last[1]);ctx.lineTo(pp2[0],pp2[1]);ctx.stroke();}
+      last=pp2;}
+  }
+  evalF(ms,pu,py0,pz0,t,o);var pc=proj(pu+o.xx,py0+o.xy,pz0+o.xz,w,h);
+  ctx.fillStyle=C.panel;ctx.beginPath();ctx.arc(pc[0],pc[1],7,0,TAU);ctx.fill();
+  ctx.strokeStyle=C.ink;ctx.lineWidth=2;ctx.beginPath();ctx.arc(pc[0],pc[1],7,0,TAU);ctx.stroke();
+  ctx.fillStyle=C.rho;ctx.beginPath();ctx.arc(pc[0],pc[1],3.4,0,TAU);ctx.fill();
+  // triad
+  var cy=Math.cos(S.yaw),sy=Math.sin(S.yaw),cp=Math.cos(S.pitch),sp=Math.sin(S.pitch);
+  function dir(x,y,z){var x1=x*cy-y*sy,y1=x*sy+y*cy,y2=y1*cp-z*sp,z2=y1*sp+z*cp;return [x1,-z2];}
+  var ox=34,oy=h-30,L=30,d;
+  d=dir(1,0,0);arrow(ctx,ox,oy,d[0]*L,d[1]*L,C.ax[0],2);ctx.fillStyle=C.ink2;ctx.fillText("x ∥ B₀",ox+d[0]*L+5,oy+d[1]*L+4);
+  d=dir(0,1,0);arrow(ctx,ox,oy,d[0]*L,d[1]*L,C.ax[1],2);ctx.fillText("y",ox+d[0]*L+4,oy+d[1]*L+4);
+  d=dir(0,0,1);arrow(ctx,ox,oy,d[0]*L,d[1]*L,C.ax[2],2);ctx.fillText("z",ox+d[0]*L+4,oy+d[1]*L+4);
+  d=dir(ms.c,ms.s,0);arrow(ctx,ox,oy,d[0]*L*1.25,d[1]*L*1.25,C.rho,2);ctx.fillStyle=C.rho;ctx.fillText("k",ox+d[0]*L*1.25+4,oy+d[1]*L*1.25-3);
+}
+
+/* ---------- graphs ---------- */
+var N=260,hov={};
+function timeGraph(id,series,unit,Wd){
+  var cv=$(id),P=prep(cv),ctx=P.ctx,w=P.w,h=P.h;
+  var L=44,R=88,T=18,B=26,pw=w-L-R,ph=h-T-B,i,s;
+  var ym=0.05;for(s=0;s<series.length;s++)for(i=0;i<N;i++)ym=Math.max(ym,Math.abs(series[s].v[i]));
+  ym=niceCeil(ym*1.1);
+  function X(i){return L+pw*i/(N-1);}function Y(v){return T+ph/2-v/ym*ph/2;}
+  ctx.lineWidth=1;ctx.font=MONO;ctx.textBaseline="middle";
+  var yt=[-ym,-ym/2,0,ym/2,ym];
+  for(i=0;i<yt.length;i++){ctx.strokeStyle=yt[i]===0?C.muted:C.grid;ctx.beginPath();ctx.moveTo(L,Y(yt[i]));ctx.lineTo(L+pw,Y(yt[i]));ctx.stroke();
+    ctx.fillStyle=C.muted;ctx.textAlign="right";ctx.fillText(yt[i].toFixed(ym<0.5?2:1),L-6,Y(yt[i]));}
+  var step=[0.5,1,2,5,10].filter(function(x){return Wd/x<=6;})[0]||10;
+  ctx.textAlign="center";ctx.textBaseline="alphabetic";
+  for(var tt=0;tt<=Wd+1e-9;tt+=step){var xx=L+pw*(1-tt/Wd);
+    ctx.strokeStyle=C.grid;ctx.beginPath();ctx.moveTo(xx,T);ctx.lineTo(xx,T+ph);ctx.stroke();
+    ctx.fillStyle=C.muted;ctx.fillText(tt===0?"0":"−"+tt,xx,h-8);}
+  ctx.textAlign="left";ctx.fillStyle=C.muted;ctx.fillText(unit,L,11);
+  ctx.textAlign="right";ctx.fillText("t, λ/v_A",w-R+54,h-8);
+  ctx.save();ctx.beginPath();ctx.rect(L,T-2,pw,ph+4);ctx.clip();ctx.lineJoin="round";
+  for(s=0;s<series.length;s++){var se=series[s];ctx.strokeStyle=se.color;ctx.lineWidth=se.lw||2;ctx.setLineDash(se.dash||[]);
+    ctx.beginPath();for(i=0;i<N;i++){if(i===0)ctx.moveTo(X(i),Y(se.v[i]));else ctx.lineTo(X(i),Y(se.v[i]));}ctx.stroke();}
+  ctx.setLineDash([]);ctx.restore();
+  // direct labels
+  var lab=series.map(function(se){return {y:Y(se.v[N-1]),se:se};}).sort(function(a,b){return a.y-b.y;});
+  for(i=1;i<lab.length;i++)if(lab[i].y-lab[i-1].y<13)lab[i].y=lab[i-1].y+13;
+  ctx.font=FONT;ctx.textBaseline="middle";ctx.textAlign="left";
+  for(i=0;i<lab.length;i++){var se2=lab[i].se;
+    ctx.strokeStyle=se2.color;ctx.lineWidth=3;ctx.setLineDash(se2.dash||[]);ctx.beginPath();ctx.moveTo(L+pw+8,lab[i].y);ctx.lineTo(L+pw+22,lab[i].y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=C.ink2;ctx.fillText(se2.name,L+pw+26,lab[i].y);}
+  // hover
+  var hx=hov[id];
+  if(hx!==undefined&&hx>=L&&hx<=L+pw){
+    var idx=Math.round((hx-L)/pw*(N-1)),xx2=X(idx);
+    ctx.strokeStyle=C.ink2;ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(xx2,T);ctx.lineTo(xx2,T+ph);ctx.stroke();ctx.setLineDash([]);
+    for(s=0;s<series.length;s++){ctx.fillStyle=series[s].color;ctx.beginPath();ctx.arc(xx2,Y(series[s].v[idx]),3.5,0,TAU);ctx.fill();}
+    var bw=128,bh=16+series.length*15,bx=xx2+10>w-bw-4?xx2-bw-10:xx2+10;
+    ctx.fillStyle=C.panel;ctx.fillRect(bx,T+4,bw,bh);ctx.strokeStyle=C.line;ctx.strokeRect(bx,T+4,bw,bh);
+    ctx.font=MONO;ctx.textBaseline="middle";ctx.textAlign="left";ctx.fillStyle=C.muted;
+    ctx.fillText("t = "+(-Wd*(1-idx/(N-1))).toFixed(2),bx+8,T+14);
+    for(s=0;s<series.length;s++){ctx.fillStyle=series[s].color;ctx.fillRect(bx+8,T+26+s*15,8,3);
+      ctx.fillStyle=C.ink;ctx.fillText(series[s].name+" "+series[s].v[idx].toFixed(3),bx+21,T+28+s*15);}
+  }
+  ctx.textBaseline="alphabetic";ctx.font=FONT;
+}
+function drawGraphs(ms){
+  var Wd=windowW(ms),pu=S.probe.u,pl=S.plane==="xy",y0=pl?S.probe.v:0,z0=pl?0:S.probe.v;
+  var a=[new Float32Array(N),new Float32Array(N),new Float32Array(N),new Float32Array(N),new Float32Array(N),new Float32Array(N),new Float32Array(N),new Float32Array(N),new Float32Array(N)];
+  var o=tmp,cs2=S.csr*S.csr;
+  for(var i=0;i<N;i++){evalF(ms,pu,y0,z0,S.t-Wd*(1-i/(N-1)),o);
+    a[0][i]=o.xx*K;a[1][i]=o.xy*K;a[2][i]=o.xz*K;a[3][i]=o.rho;a[4][i]=o.bx;a[5][i]=o.by;a[6][i]=o.bz;
+    a[7][i]=cs2*o.rho;a[8][i]=o.bx;}
+  var tot=new Float32Array(N);for(i=0;i<N;i++)tot[i]=a[7][i]+a[8][i];
+  timeGraph("g1",[{name:"ξx",color:C.ax[0],v:a[0]},{name:"ξy",color:C.ax[1],v:a[1]},{name:"ξz",color:C.ax[2],v:a[2],dash:[6,3]}],"kξ",Wd);
+  timeGraph("g2",[{name:"δρ/ρ",color:C.rho,v:a[3],lw:2.4},{name:"δBx/B₀",color:C.ax[0],v:a[4]},{name:"δBy/B₀",color:C.ax[1],v:a[5]},{name:"δBz/B₀",color:C.ax[2],v:a[6],dash:[6,3]}],"",Wd);
+  timeGraph("g3",[{name:"газ",color:C.rho,v:a[7]},{name:"магнітний",color:C.ax[0],v:a[8]},{name:"сума",color:C.ink,v:tot,lw:2.6}],"δp",Wd);
+}
+function drawPolar(ms){
+  var cv=$("polar"),P=prep(cv),ctx=P.ctx,w=P.w,h=P.h,cx=w/2,cy=h/2,R=Math.min(w,h)/2-30,vmax=Math.sqrt(S.csr*S.csr+1)*1.02;
+  function r(v){return v/vmax*R;}
+  ctx.lineWidth=1;ctx.strokeStyle=C.grid;
+  [[1,"v_A"],[S.csr,"c_s"]].forEach(function(q,idx){ctx.setLineDash(idx?[2,3]:[]);ctx.strokeStyle=idx?C.muted:C.line;ctx.beginPath();ctx.arc(cx,cy,r(q[0]),0,TAU);ctx.stroke();});
+  ctx.setLineDash([]);ctx.strokeStyle=C.line;ctx.beginPath();ctx.moveTo(cx-R-8,cy);ctx.lineTo(cx+R+8,cy);ctx.moveTo(cx,cy-R-8);ctx.lineTo(cx,cy+R+8);ctx.stroke();
+  ctx.fillStyle=C.muted;ctx.font=MONO;ctx.textAlign="left";
+  ctx.fillText("v_A",cx+r(1)*0.707+3,cy-r(1)*0.707-2);ctx.fillText("c_s",cx+r(S.csr)*0.707+3,cy+r(S.csr)*0.707+10);
+  ctx.fillText("B₀",cx+R+2,cy-6);ctx.textAlign="center";ctx.fillText("⊥B₀",cx,cy-R-12);
+  ctx.font=FONT;
+  for(var m=0;m<3;m++){
+    ctx.strokeStyle=ms[m].col;ctx.lineWidth=ms[m].on?2.6:1.2;ctx.globalAlpha=ms[m].on?1:0.45;ctx.beginPath();
+    for(var a=0;a<=360;a+=2){var th=a*Math.PI/180,v=speedsAt(th)[m],px=cx+r(v)*Math.cos(th),py=cy-r(v)*Math.sin(th);if(a===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+    ctx.stroke();ctx.globalAlpha=1;}
+  var th0=S.theta,sp=speedsAt(th0);
+  ctx.strokeStyle=C.ink2;ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(th0),cy-R*Math.sin(th0));ctx.stroke();ctx.setLineDash([]);
+  ctx.textAlign="center";ctx.textBaseline="middle";
+  for(m=0;m<3;m++){var px2=cx+r(sp[m])*Math.cos(th0),py2=cy-r(sp[m])*Math.sin(th0);
+    ctx.fillStyle=ms[m].col;ctx.beginPath();ctx.arc(px2,py2,8,0,TAU);ctx.fill();
+    ctx.fillStyle=C.panel;ctx.font="600 11px "+'"IBM Plex Sans",system-ui,sans-serif';ctx.fillText(ms[m].short,px2,py2+0.5);}
+  ctx.textBaseline="alphabetic";ctx.font=FONT;ctx.textAlign="left";ctx.fillStyle=C.muted;
+  ctx.fillText("A, F, S — альвенівська, швидка, повільна",8,h-8);
+}
+
+/* ---------- table ---------- */
+function fmt(x,n){return x.toFixed(n===undefined?2:n);}
+function updateTable(ms){
+  var rows="";
+  for(var i=0;i<3;i++){var m=ms[i],a=m.amp,ex2=m.e[0]*m.e[0],per=1-ex2;
+    var rho=a*Math.abs(m.kne),bp=a*Math.abs(m.bc[0]),bt=a*Math.hypot(m.bc[1],m.bc[2]);
+    var rel;
+    if(rho<1e-3*a+1e-9||bp<1e-3*a+1e-9)rel=(rho<1e-3*a+1e-9&&bp<1e-3*a+1e-9)?"обидві сталі: хвиля нестискувана":(rho<1e-3*a+1e-9?"ρ стала, |B| змінюється":"|B| стале, ρ змінюється");
+    else rel=(m.kne*m.bc[0]>0)?"у фазі: стиск і посилення B":"у протифазі: стиск і послаблення B";
+    var dir=m.key==="alf"?"поперечне, вздовж z":(fmt(ex2*100,0)+"% ∥ B₀, "+fmt(per*100,0)+"% ⊥ B₀ (в площині)");
+    rows+='<tr class="'+(m.on?"":"off")+'"><td><span class="dot" style="--c:var(--'+m.key+')"></span>'+m.name+'</td><td class="n">'+fmt(m.vph)+'</td><td class="n">'+(m.vph>0.005?fmt(1/m.vph):"∞ (стоїть)")+'</td><td>'+dir+'</td><td class="n">'+fmt(rho,3)+'</td><td class="n">'+fmt(bp,3)+'</td><td class="n">'+fmt(bt,3)+'</td><td>'+rel+'</td></tr>';
+  }
+  $("tb").innerHTML=rows;
+}
+
+/* ---------- UI ---------- */
+function sync(){
+  $("th-o").textContent=Math.round(S.theta*180/Math.PI)+"°";
+  $("cs-o").textContent=fmt(S.csr)+"  (β ≈ "+fmt(2/GAMMA*S.csr*S.csr)+")";
+  $("amp-o").textContent=fmt(S.A);
+  $("spd-o").textContent="×"+fmt(S.speed);
+  ["alf","fast","slow"].forEach(function(k){$("m-"+k).setAttribute("aria-pressed",S.modes[k]?"true":"false");});
+  $("play").textContent=S.playing?"Пауза":"Пуск";
+  $("plane-cap").textContent=S.plane==="xy"?"площина (x, y): B₀ вздовж x, k лежить у цій площині":"площина (x, z): вид збоку, на альвенівській хвилі видно поперечне зміщення";
+  var cb={rho:["розрідження","стиск"],B:["поле слабшає","поле сильнішає"],p:["тиск нижчий","тиск вищий"]}[S.color];
+  $("cb-l").textContent=cb[0];$("cb-r").textContent=cb[1];
+  document.querySelectorAll("[data-layer]").forEach(function(b){b.setAttribute("aria-pressed",S.layers[b.dataset.layer]?"true":"false");});
+}
+function bind(){
+  ["alf","fast","slow"].forEach(function(k){$("m-"+k).addEventListener("click",function(){S.modes[k]=!S.modes[k];if(!S.modes.alf&&!S.modes.fast&&!S.modes.slow)S.modes[k]=true;sync();});});
+  $("m-all").addEventListener("click",function(){S.modes.alf=S.modes.fast=S.modes.slow=true;sync();});
+  $("th").addEventListener("input",function(e){S.theta=e.target.value*Math.PI/180;sync();});
+  $("cs").addEventListener("input",function(e){S.csr=+e.target.value;sync();});
+  $("amp").addEventListener("input",function(e){S.A=+e.target.value;sync();});
+  $("spd").addEventListener("input",function(e){S.speed=+e.target.value;sync();});
+  $("play").addEventListener("click",function(){S.playing=!S.playing;sync();});
+  $("plane").addEventListener("change",function(e){S.plane=e.target.value;sync();});
+  $("color").addEventListener("change",function(e){S.color=e.target.value;sync();});
+  document.querySelectorAll("[data-th]").forEach(function(b){b.addEventListener("click",function(){S.theta=+b.dataset.th*Math.PI/180;$("th").value=b.dataset.th;sync();});});
+  document.querySelectorAll("[data-cs]").forEach(function(b){b.addEventListener("click",function(){S.csr=+b.dataset.cs;$("cs").value=b.dataset.cs;sync();});});
+  document.querySelectorAll("[data-layer]").forEach(function(b){b.addEventListener("click",function(){S.layers[b.dataset.layer]=!S.layers[b.dataset.layer];sync();});});
+  // probe
+  var st=$("stage"),down=false;
+  function setProbe(e){var r=st.getBoundingClientRect(),g=stageGeo,mx=e.clientX-r.left,my=e.clientY-r.top;
+    S.probe.u=clamp((mx-g.ox)/g.sc,0.05,2.95);S.probe.v=clamp((g.oy-my)/g.sc,-0.85,0.85);}
+  st.addEventListener("pointerdown",function(e){down=true;st.setPointerCapture(e.pointerId);setProbe(e);});
+  st.addEventListener("pointermove",function(e){if(down)setProbe(e);});
+  st.addEventListener("pointerup",function(){down=false;});st.addEventListener("pointercancel",function(){down=false;});
+  // 3D rotate
+  var c3=$("c3d"),drag=null;
+  c3.addEventListener("pointerdown",function(e){drag={x:e.clientX,y:e.clientY};c3.setPointerCapture(e.pointerId);});
+  c3.addEventListener("pointermove",function(e){if(!drag)return;S.yaw+=(e.clientX-drag.x)*0.008;S.pitch=clamp(S.pitch+(e.clientY-drag.y)*0.008,-1.4,1.4);drag={x:e.clientX,y:e.clientY};});
+  c3.addEventListener("pointerup",function(){drag=null;});c3.addEventListener("pointercancel",function(){drag=null;});
+  c3.addEventListener("dblclick",function(){S.yaw=-0.75;S.pitch=0.42;});
+  // graph hover
+  ["g1","g2","g3"].forEach(function(id){var cv=$(id);
+    cv.addEventListener("pointermove",function(e){hov[id]=e.clientX-cv.getBoundingClientRect().left;});
+    cv.addEventListener("pointerleave",function(){delete hov[id];});});
+}
+
+var last=performance.now(),tAcc=0;
+function frame(now){
+  var dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(S.playing)S.t+=dt*S.speed;
+  readTheme();
+  var ms=buildModes();
+  drawStage(ms);draw3D(ms);drawGraphs(ms);drawPolar(ms);
+  tAcc+=dt;if(tAcc>0.25){tAcc=0;updateTable(ms);}
+  requestAnimationFrame(frame);
+}
+bind();sync();readTheme();updateTable(buildModes());
+requestAnimationFrame(frame);
+})();
+</script>
+
+</html>
