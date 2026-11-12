@@ -322,20 +322,23 @@
 %   \end{table}
 \NewTblrEnviron{platbl}
 \SetTblrInner[platbl]{
-	row{odd}={gray!10},
-	row{1}={c,m,fg=white,bg=themecolorlight,font=\bfseries},
-	hlines, vlines,
+	row{1}={c,m,bg=themecolorlight!12,font=\bfseries},
+	hlines={0.3pt,gray!50},
+	hline{1,Z}={0.8pt,black},
+	hline{2}={0.5pt,black},
 }
 % Довгі таблиці (що не вміщуються на сторінці): longtblr із тим самим стилем, шапка повторюється.
 \DefTblrTemplate{contfoot-text}{default}{Продовження на наступній сторінці}
 \DefTblrTemplate{conthead-text}{default}{(Продовження)}
 \DefTblrTemplate{caption-sep}{default}{.\enskip}% «Таблиця 5.2. …», як у звичайних таблицях
 \SetTblrInner[longtblr]{
-	row{odd}={gray!10},
-	row{1}={c,m,fg=white,bg=themecolorlight,font=\bfseries},
-	hlines, vlines, rowhead=1,
+	row{1}={c,m,bg=themecolorlight!12,font=\bfseries},
+	hlines={0.3pt,gray!50},
+	hline{1,Z}={0.8pt,black},
+	hline{2}={0.5pt,black},
+	rowhead=1,
 }
-\setlength\arrayrulewidth{1pt}
+\setlength\arrayrulewidth{0.4pt}
 \RequirePackage{booktabs}         % \toprule/\midrule/\bottomrule для класичних tabular
 \setlength{\aboverulesep}{0pt}
 \setlength{\belowrulesep}{0pt}
@@ -868,6 +871,10 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 	\sethead{\ifodd\thepage\relax\else\itshape\small Словник термінів\fi}{}{\ifodd\thepage\itshape\small Словник термінів\else\relax\fi}
 	\setfoot{}{\small\thepage}{}}
 
+\newpagestyle{contents}{\headrule%
+	\sethead{\ifodd\thepage\relax\else\itshape\small Зміст\fi}{}{\ifodd\thepage\itshape\small Зміст\else\relax\fi}
+	\setfoot{}{\small\thepage}{}}
+
 \newpagestyle{index}{\headrule%
 	\sethead{\ifodd\thepage\relax\else\itshape\small Предметний покажчик\fi}{}{\ifodd\thepage\itshape\small Предметний покажчик\else\relax\fi}
 	\setfoot{}{\small\thepage}{}}
@@ -1172,7 +1179,7 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 \newcommand{\quizbadge}[2][]{%
 	\tikz[baseline=(qb.base)]\node[circle,fill=quizmain,text=white,inner sep=0pt,minimum size=1.5em,font=\sffamily\bfseries\small,#1](qb){#2};}
 \newlist{quizlist}{enumerate}{1}
-\setlist[quizlist]{label=\quizbadge{\arabic*},leftmargin=2.4em,labelsep=0.6em,itemsep=0.9ex,topsep=0.3ex,parsep=0pt,partopsep=0pt}
+\setlist[quizlist]{label=\textbf{\arabic*.},leftmargin=2em,labelsep=0.5em,itemsep=0.9ex,topsep=0.3ex,parsep=0pt,partopsep=0pt}
 % Summary — блок «Головне в розділі»: стислий підсумок наприкінці розділу (перед «Задачі»).
 % Синя смуга зліва й дуже світлий фон відрізняють його від бірюзового блоку питань.
 \newtcolorbox{Summary}[1][Головне в розділі]{%
@@ -1188,18 +1195,18 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 	fontupper=\small,before upper={\parindent0pt\setlist[itemize]{topsep=0.3ex,itemsep=0.5ex,parsep=0pt,partopsep=0pt,leftmargin=1.4em}},
 }
 
+% \tocunnum{Назва} — запис без номера в змісті (рівень section) і закладка PDF; ставиться перед \section*.
+\newcommand{\tocunnum}[1]{\phantomsection\addcontentsline{toc}{section}{\protect\numberline{}#1}}
+% Без рамки й заливки: заголовок оформлено як у «Задачі» (\section*, \normalsize\bfseries),
+% пункти — звичайна жирна нумерація; блок не виділяється кольором.
 \newtcolorbox{Questions}[1][Контрольні питання]{%
-    sharp corners,
 	enhanced,breakable,
-	before skip=4mm,after skip=3mm,
-	arc=2mm,outer arc=2mm,
-	colback=quizlight,colframe=quizmain,boxrule=0.6pt,
-	colbacktitle=quizmain,coltitle=white,
-	fonttitle=\sffamily\bfseries,
-	title={\quizbadge[fill=white,text=quizmain]{?}\hspace{0.7em}#1},
-	toptitle=1mm,bottomtitle=1mm,
-	left=3mm,right=3mm,top=2.5mm,bottom=2mm,
-	fontupper=\small,before upper={\parindent0pt},
+	before skip=8mm,after skip=3mm,
+	before={\Needspace{7\baselineskip}\tocunnum{#1}},
+	sharp corners,frame hidden,interior hidden,boxrule=0pt,
+	left=0pt,right=0pt,top=0pt,bottom=0pt,boxsep=0pt,
+	coltitle=black,fonttitle=\normalsize\bfseries,
+	title={#1},attach title to upper={\par\vspace{0.8ex}},
 }
 
 % ---- Допоміжна графіка для "пергаментного" боксу tornpage нижче ----
@@ -1326,8 +1333,8 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % \lvl{N} — складність задачі зірочками (N=1..3), ставиться одразу після \label у \begin{problem}:
 %   ★ — пряма підстановка у формулу чи оцінка; ★★ — кілька кроків або оцінка з поясненням;
 %   ★★★ — виведення, аналітична чи чисельна задача.
-\newcommand{\lvl}[1]{\leavevmode{\color{themecolorlight}\small
-	\ifcase#1\or\faStar\faStar[regular]\faStar[regular]\or\faStar\faStar\faStar[regular]\or\faStar\faStar\faStar\fi}\enspace}
+\newcommand{\lvl}[1]{\leavevmode{\color{themecolorlight}\scriptsize\setlength{\fboxsep}{0pt}%
+	\ifcase#1\or\faStar\,\faStar[regular]\,\faStar[regular]\or\faStar\,\faStar\,\faStar[regular]\or\faStar\,\faStar\,\faStar\fi}\enspace}
 
 %\tcbset{
 %	answersolutionstyle/.style={
