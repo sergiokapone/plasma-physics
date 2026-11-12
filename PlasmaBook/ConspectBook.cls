@@ -855,6 +855,19 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 	\sethead{\ifodd\thepage\relax\else\itshape\small Додатки\fi}{}{\ifodd\thepage\itshape\small Додатки\else\relax\fi}
 	\setfoot{}{\small\thepage}{}}
 
+% Рубрикатор літери: темно-синій квадратик із білою літерою + лінія до правого поля
+% (словник термінів і предметний покажчик).
+\newcommand{\glossbadge}[1]{%
+	\par\addvspace{1.6ex}%
+	\hbox to\linewidth{%
+		{\color{themecolordark}\sffamily\bfseries#1}%
+		\enspace{\color{themecolordark!35}\leaders\hrule height 0.4pt depth 0pt\hfill\kern0pt}}\par
+	\nopagebreak[4]\vspace{0.4ex}\nopagebreak[4]}
+
+\newpagestyle{glossary}{\headrule%
+	\sethead{\ifodd\thepage\relax\else\itshape\small Словник термінів\fi}{}{\ifodd\thepage\itshape\small Словник термінів\else\relax\fi}
+	\setfoot{}{\small\thepage}{}}
+
 \newpagestyle{index}{\headrule%
 	\sethead{\ifodd\thepage\relax\else\itshape\small Предметний покажчик\fi}{}{\ifodd\thepage\itshape\small Предметний покажчик\else\relax\fi}
 	\setfoot{}{\small\thepage}{}}

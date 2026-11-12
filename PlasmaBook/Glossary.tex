@@ -7,21 +7,16 @@
 %% Додаток: словник термінів (поки що розд. 1 і 2)
 %% --------------------------------------------------------
 
-\section{Словник термінів}\label{sec:glossary}
+\chapter*{Словник термінів}\phantomsection\label{sec:glossary}
+\addcontentsline{toc}{part}{Словник термінів}
 
 Нижче зібрано терміни фізики плазми, які вживаються в~розд.~\ref{sec:plasma-basics} і~\ref{sec:plasma-waves}
 і~не є звичними із~загальної фізики. Кожен термін коротко пояснено й~вказано місце, де його означено докладно;
 нових означень тут нема. Терміни розташовано за~абеткою.
 
-% Рубрикатор літери: темно-синій квадратик із білою літерою + лінія до правого поля.
+% Рубрикатор літери \glossbadge визначено в ConspectBook.cls (спільний зі словником і предметним покажчиком).
 % \glossletter стоїть між двома списками (закриває попередній і відкриває новий), тому
 % плашка лежить рівно по лівому краю тексту; не відривається від наступного терміна.
-\newcommand{\glossbadge}[1]{%
-	\par\addvspace{1.6ex}%
-	\hbox to\linewidth{%
-		\setlength{\fboxsep}{0pt}\colorbox{themecolordark}{\makebox[1.8em][c]{\rule[-0.6em]{0pt}{1.8em}\color{white}\sffamily\bfseries\large#1}}%
-		\enspace{\color{themecolordark!60}\leaders\hrule height 0.8pt depth 0pt\hfill\kern0pt}}\par
-	\nopagebreak[4]\vspace{0.4ex}\nopagebreak[4]}
 \newcommand{\glossletterfirst}[1]{\glossbadge{#1}\begin{itemize}[topsep=0pt]}
 \newcommand{\glossletter}[1]{\end{itemize}\glossbadge{#1}\begin{itemize}[topsep=0pt]}
 
