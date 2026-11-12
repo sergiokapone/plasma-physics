@@ -4,8 +4,8 @@ icu_locale "uk"
 
 % літера-заголовок перед кожною групою записів
 headings_flag 1
-heading_prefix "\\par\\pagebreak[2]\\textbf{\\large "
-heading_suffix "}\\par\\nopagebreak\n"
+heading_prefix "\\glossbadge{"
+heading_suffix "}\n"
 symhead_positive "Символи"
 numhead_positive "Числа"
 
