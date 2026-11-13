@@ -1,0 +1,20 @@
+% Від дворідинного опису до ідеальної МГД (forest, дерево зліва направо)
+\begin{forest}
+for tree={
+  draw, rounded corners, align=center,
+  grow=east, l sep=7mm, s sep=4mm,
+  inner xsep=3pt, inner ysep=3pt,
+  font=\small, thick,
+  edge={->, thick, draw=black!60},
+}
+[Дворідинний\\опис, draw=themecolordark, fill=themecolordark!18, font=\small\bfseries
+  [електронне\\рівняння\\($m_e\to0$), for tree={draw=themecolorlight, fill=themecolorlight!12}
+    [узагальнений\\закон Ома, fill=themecolorlight!22
+      [ідеальна МГД:\\{$\vect E+\vect v\times\vect B/c=0$}, draw=teal!80!black, fill=teal!15, font=\small\bfseries]
+    ]
+  ]
+  [сума рівнянь\\двох компонент, for tree={draw=themecolorlight, fill=themecolorlight!12}
+    [рівняння руху\\однієї рідини, fill=themecolorlight!22]
+  ]
+]
+\end{forest}

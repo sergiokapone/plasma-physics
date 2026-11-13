@@ -1,0 +1,71 @@
+% Рівновага: (а) переріз вкладених поверхонь p=const, (б) тор, лінії B і j лежать на поверхні p=const
+\tdplotsetmaincoords{64}{-25}
+\begin{tikzpicture}[>=latex', font=\footnotesize]
+  % ---------- (а) переріз: вкладені магнітні поверхні ----------
+  \begin{scope}
+    \foreach \rad/\sh/\fil in {1.7/0/12, 1.3/0.10/24, 0.9/0.19/38, 0.5/0.27/55} {
+      \filldraw[draw=black!55, thick, fill=red!\fil!white] (\sh,0) circle (\rad);
+    }
+    \fill (0.27,0) circle (1.3pt);
+    \node[anchor=west, font=\scriptsize, inner sep=1pt] at (0.35,-0.18) {вісь};
+    % ∇p: тиск зростає до осі
+    \draw[->, very thick] ({1.7*cos(50)},{1.7*sin(50)}) -- ({0.62*cos(50)+0.18},{0.62*sin(50)});
+    \node[anchor=south west, inner sep=1pt] at ({1.7*cos(50)},{1.7*sin(50)}) {$\nabla p$};
+    \node[anchor=west, font=\scriptsize] at (1.95,0.95) {$p=\mathrm{const}$};
+    \draw[black!55, thin] (1.95,0.95) -- (1.52,0.55);
+    \node[anchor=north, font=\scriptsize] at (0.3,-1.85) {$p_0>p_1>p_2>p_3$};
+    \node[align=center] at (0.3,-2.7) {(а) переріз};
+  \end{scope}
+
+  % ---------- (б) тор: B і j на одній поверхні p = const ----------
+  \begin{scope}[xshift=6.6cm, tdplot_main_coords]
+    \pgfmathsetmacro{\Rt}{2.0}
+    \pgfmathsetmacro{\rt}{0.95}
+    % вектор погляду в координатах тора
+    \pgfmathsetmacro{\vx}{sin(\tdplotmaintheta)*sin(\tdplotmainphi)}
+    \pgfmathsetmacro{\vy}{sin(\tdplotmaintheta)*cos(\tdplotmainphi)}
+    \pgfmathsetmacro{\vz}{cos(\tdplotmaintheta)}
+    \def\torusxyz#1#2{({(\Rt+\rt*cos(#2))*cos(#1)},{(\Rt+\rt*cos(#2))*sin(#1)},{\rt*sin(#2)})}
+    % корпус поверхні: меридіанні кола від дальніх до ближніх (белі заливки закривають приховане)
+    \pgfmathsetmacro{\pfar}{atan2(-\vx,\vy)}% напрям найдальшого меридіана
+    \foreach \k in {0,1,...,30} {
+      \foreach \sgn in {1,-1} {
+        \pgfmathsetmacro{\pp}{\pfar+\sgn*\k*6}
+        \filldraw[draw=black!50, very thin, fill=white]
+          plot[domain=0:360, samples=37, variable=\t]
+          ({(\Rt+\rt*cos(\t))*cos(\pp)},{(\Rt+\rt*cos(\t))*sin(\pp)},{\rt*sin(\t)}) -- cycle;
+      }
+    }
+    % лінія поля B: гвинтова, q=2; малюємо лише видимі ділянки
+    \foreach \s in {0,3,...,717} {
+      \pgfmathsetmacro{\pa}{\s/2}
+      \pgfmathsetmacro{\pb}{(\s+3)/2}
+      \pgfmathsetmacro{\ta}{2*\pa+25}
+      \pgfmathsetmacro{\tb}{2*\pb+25}
+      \pgfmathsetmacro{\vis}{(cos(\ta)*(cos(\pa)*\vx+sin(\pa)*\vy)+sin(\ta)*\vz)>0.05 ? 1 : 0}
+      \ifnum\vis=1
+        \draw[blue, very thick] \torusxyz{\pa}{\ta} -- \torusxyz{\pb}{\tb};
+      \fi
+    }
+    % лінія струму j: переважно вздовж тора, менший полоїдальний крок
+    \foreach \s in {0,3,...,357} {
+      \pgfmathsetmacro{\pa}{\s}
+      \pgfmathsetmacro{\pb}{\s+3}
+      \pgfmathsetmacro{\ta}{0.5*\pa-40}
+      \pgfmathsetmacro{\tb}{0.5*\pb-40}
+      \pgfmathsetmacro{\vis}{(cos(\ta)*(cos(\pa)*\vx+sin(\pa)*\vy)+sin(\ta)*\vz)>0.05 ? 1 : 0}
+      \ifnum\vis=1
+        \draw[teal!80!black, very thick] \torusxyz{\pa}{\ta} -- \torusxyz{\pb}{\tb};
+      \fi
+    }
+    % ∇p: нормаль до поверхні на зовнішньому екваторі, всередину (до осі)
+    \pgfmathsetmacro{\pn}{atan2(-\vx,\vy)+180+90+20}
+    \draw[->, very thick] ({(\Rt+\rt+0.55)*cos(\pn)},{(\Rt+\rt+0.55)*sin(\pn)},0)
+      -- ({(\Rt+\rt-0.1)*cos(\pn)},{(\Rt+\rt-0.1)*sin(\pn)},0);
+    \node[anchor=south, inner sep=1pt] at ({(\Rt+\rt+0.6)*cos(\pn)},{(\Rt+\rt+0.6)*sin(\pn)},0) {$\nabla p$};
+  \end{scope}
+  % легенда й підпис (б)
+  \draw[blue, very thick] (5.1,-2.7) -- ++(0.5,0) node[right, black] {$\vect B$};
+  \draw[teal!80!black, very thick] (6.1,-2.7) -- ++(0.5,0) node[right, black] {$\vect j$};
+  \node[anchor=west] at (7.0,-2.7) {(б) лінії на~поверхні $p=\mathrm{const}$};
+\end{tikzpicture}
