@@ -1,0 +1,31 @@
+% !TeX program = lualatex
+% HTML (lwarp) variant of main.tex. Sources of the HTML pipeline live in html/; html/build-html.ps1 copies this file
+% to the project root for the build and removes it (and everything lwarp makes) afterwards.
+\documentclass{ConspectBookHTML}
+\addbibresource{./bibliography/bibliography.bib}
+
+\title{Елементи фізики плазми}
+\author{С.~М.~Пономаренко}
+\begin{document}
+\maketitle
+\tableofcontents
+% preface and the closing text of main.tex (cut out by prepare_html.py) are pages of their own
+\ForceHTMLPage
+\htmlinput{preface}
+\multiinclude{Basics,Waves,Motion,Collisions,Fluid,LinearWaves,Kinetics,Instability,Confinement,Fusion,Discharge,Scales}[]
+\ForceHTMLPage
+\htmlinput{summary}
+% answers to the problems (written by the chapters, as in main.tex)
+\answers
+\multiinclude{Basics,Waves,Motion,Collisions,Fluid,LinearWaves,Kinetics,Instability,Confinement,Fusion,Discharge,Scales}[-Answers]
+% appendices (as in main.tex)
+\appendix
+\htmlinput{Notation}
+\htmlinput{SGStoSI}
+\htmlinput{cheatsheet}
+\ForceHTMLPage
+\htmlinput{Glossary}
+% bibliography: all entries, as in main.tex
+\nocite{*}
+\printbibliographies
+\end{document}

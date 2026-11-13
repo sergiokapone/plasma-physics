@@ -5,6 +5,8 @@ description: Перевірка зібраного HTML-варіанту кни�
 
 # Перевірка HTML-версії
 
+**Шляхи PlasmaBook (2026-11-13):** сторінки в `D:\Projects\LaTeX\plasma-physics\online\` (`ch1.html`…`ch18.html`, `index.html`), інструменти в `PlasmaBook\html\tools\`, журнали останньої збірки в `PlasmaBook\html\logs\`. Скрізь нижче `docs/` читати як `online/`, `tools/` як `html/tools/`. Приклади скриптів, що спрацювали: перевірка локальних посилань і якорів (усі `href/src` у `online/*.html`, `id=`/`<a name=>`; результат 4148 посилань, 0 битих); Playwright (python): `python -m http.server` з кореня репозиторію, сторінки `http://127.0.0.1:PORT/online/chN.html`, 3,5 с на MathJax, `scrollWidth - innerWidth` для всіх `ch1..ch18` на 390 і 1100 px (запускати `python -X utf8 -I`, інакше cp1251 ламає вивід). Горизонтальний overflow, що знайшовся: широкі таблиці (`table{display:block;overflow-x:auto}` на телефоні) і формули, яких `book.js` не розбив (`clamp()` дає абзацу прокрутку); слід перевіряти після кожної зміни CSS/JS.
+
 Виконувати після `build-html` і публікації. Звітує без правок; виправлення — через скіл `html-class`/агента `html-typesetter`.
 
 ## 1. Збірка чиста
@@ -27,7 +29,10 @@ node tools/check-mathjax-html.js docs/ch*.html
 - Усі `src=`/`href=` у `docs/*.html` ведуть на наявні файли (`publish_html.py` сам копіює потрібні; перевірити скриптом: пройти атрибути, `os.path.exists`, порівняння регістру імен: GitHub Pages чутливий до регістру, Windows ні).
 - Картинки: SVG відкриваються й не порожні; розмір (великі SVG > 5 МБ — кандидати на PNG).
 - Посилання «задача ↔ відповідь», `\ref` між розділами (різні сторінки: `ch3.html#…`).
-- `index.html` (лендінг) і HTML-книга: кнопка «Читати онлайн» веде в наявну сторінку (`main-html.html`/`docs/…`).
+- `../index.html` (лендінг) і HTML-книга: кнопка «Читати онлайн» веде на `online/` (там `index.html` = копія `main-html.html`). Посилання «Про посібник» і «PDF» у бічній панелі — `../index.html`, `../PlasmaBook/main.pdf`.
+- Рисунки: у `online/main-html-images/` не повинно бути SVG > 3 МБ (їх замінює PNG); знаки `�` у сторінках (U+FFFD) означають гліф, якого немає в шрифті (було з ★☆).
+- alt: `grep -c "tikz-" online/*.html` по `alt="` має бути 0 (усі зображення lateximage мають підпис рисунка або «Рисунок N»); порожніх `alt=""` у рисунках немає.
+- Після збірки корінь `PlasmaBook` має бути чистим: `git status` показує лише `html/`, `online/` і задумані правки.
 
 ## 4. Вигляд (Playwright, не headless chrome `--window-size`)
 

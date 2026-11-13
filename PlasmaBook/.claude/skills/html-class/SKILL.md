@@ -5,7 +5,7 @@ description: Як вести ConspectBookHTML.cls і prepare_html.py — від�
 
 # HTML-клас і відповідність друку
 
-Принцип ElMag: **друкований клас `ConspectBook.cls` не чіпаємо, розділи не чіпаємо.** Усе, що HTML потрібне інакше, — у `ConspectBookHTML.cls`, `prepare_html.py` (копії розділів у `_html/`) і CSS. (Стан: класу ще немає в PlasmaBook, див. скіл `html-build`, розділ «План портування».)
+Принцип ElMag: **друкований клас `ConspectBook.cls` не чіпаємо, розділи не чіпаємо.** Усе, що HTML потрібне інакше, — у `html/ConspectBookHTML.cls`, `html/tools/prepare_html.py` (копії розділів у `_html/`) і `html/assets/conspect.css`. Клас, `main-html.tex` і CSS уже портовано (2026-11-13); збірка й розкладка тек — скіл `html-build`. Усі шляхи нижче відносно `PlasmaBook/html/`.
 
 ## Правило синхронності
 
@@ -16,7 +16,7 @@ description: Як вести ConspectBookHTML.cls і prepare_html.py — від�
 | Частина | Якір у друкованому класі |
 |---|---|
 | кольори | банер «Кольори…» |
-| tikz, pgfplots, circuitikz і всі стилі малюнків | банер «Рисунки: TikZ, PGFPlots, CircuiTikz» (у PlasmaBook; в ElMag «Рисування…») |
+| tikz, pgfplots, circuitikz і всі стилі малюнків | банер «Рисування: TikZ, PGFPlots, CircuiTikz» (код шукає за префіксом `Рисування`; так само в ElMag) |
 | математичні макроси | від `\RequirePackage{emf}` до кінця наступного `\AtBeginDocument{…}` |
 | `\emphx` | активне `\NewDocumentCommand{\emphx}` |
 | biblatex | гілка `\ifbiblatex … \else` |
@@ -30,9 +30,14 @@ description: Як вести ConspectBookHTML.cls і prepare_html.py — від�
 | Друк | HTML |
 |---|---|
 | `Theory`, `Attention`, `Example`, `Historical`, `Simulation`, `Questions`, `pict`, `tornpage`, `answerbox` (tcolorbox) | `\newenvironment{…}{\begin{BlockClass}{cb-…}…}{\end{BlockClass}}`; стилі `cb-*` у `conspect.css` |
-| **`Estimate`, `Summary`** (є лише в PlasmaBook) | додати `cb-estimate`, `cb-summary` і правила в CSS (спершу перевірити, чи не з'явились інші нові середовища: `grep -n "newtcolorbox" ConspectBook.cls`) |
-| `problem`, `Solution` | ntheorem + `answers`; задача має `\hypertarget{problem:N}`, відповідь — `\hyperlink`; посилання «[відповідь]» і назад |
-| `\lvl{N}` | текстові зірочки (FontAwesome у lateximage дорогий) |
+| **`Estimate`, `Summary`** (є лише в PlasmaBook) | **зроблено**: `cb-estimate` (зелена), `cb-summary` (синя смуга) у класі й `conspect.css`. Нове tcolorbox-середовище в друці → додати так само (`grep -n "newtcolorbox" ConspectBook.cls`) |
+| `problem`, `Solution` | ntheorem + `answers`; задача має `\hypertarget{problem:N}`, відповідь — `\hyperlink`; посилання «[відповідь]» і назад (перевірено: 0 битих якорів) |
+| `\lvl{N}` | **зроблено**: ★☆ текстом шрифтом `DejaVu Sans` (`\lvlfont`); у книжному шрифті гліфів нема, lwarp читає текст із PDF → U+FFFD |
+| `\glossbadge` (Словник) | **зроблено**: простий заголовок літери (у друці визначено в класі) |
+| `\FloatBarrier` | порожній `\providecommand` |
+| alt рисунків (lateximage) | не в класі: `fix_alt` у `publish_html.py` (підпис або «Рисунок N») |
+| `\texorpdfstring{A}{B}` | у копіях розділів B із `_ ^ \ < >` стає порожнім (`strip_texorpdf` у prepare_html.py) |
+| `(с.~\pageref{…})` | вирізається в копіях (Словник, Позначення) |
 | `wrapstuff` | звичайний `figure` |
 | `\Needspace`, `\tcbset` | порожні (`\providecommand`) |
 | `\tcbhighmath` | `\boxed` у LaTeX; для MathJax — у `ALWAYS` |
@@ -50,7 +55,8 @@ description: Як вести ConspectBookHTML.cls і prepare_html.py — від�
 - Нове формульне визначення в друкованому класі: після `build-html` запустити `check-mathjax-html.js` — він покаже невизначені макроси.
 - Макрос, який MathJax має знати завжди, або який генератор губить, — у словник `ALWAYS` у `mathjax2lwarp.py`; макрос, що в MathJax виглядає інакше, ніж у друці, — в `OVERRIDES`.
 - Шрифти й `\mathcal`: `\emf` у друці — BOONDOX-cal, у MathJax `\mathcal{E}` (близько, не ідентично); на сторінці символ U+2130 малюється веб-шрифтом STIX Two Math (`fix_emf` у `publish_html.py`).
-- У PlasmaBook використовуються `\mitomega`, `\mittheta` (unicode-math): при потраплянні в `.aux`/заголовки вони повертаються як `\mit…`; додати відповідники в `ALWAYS` (`\mitlambda → \lambda` уже є в ElMag, аналогічно `\mitomega → \omega`, `\mittheta → \theta`).
+- У PlasmaBook немає окремого `mathjax-macros.tex`: `mathjax2lwarp.py` читає `_html/shared-mathmacros.tex` (шматок `ConspectBook.cls`), приводить `\def`/`\let` до `\newcommand`, `\symbf` → `\mathbf`. `\mitomega`, `\mittheta`, `\mitphi`, `\mitlambda` додано в `ALWAYS`. Перевірка: `check-mathjax-html.js` — 13755 формул, 0 помилок.
+- Нове формульне визначення в друці автоматично потрапляє в MathJax, якщо стоїть між `\RequirePackage{emf}` і першим `\AtBeginDocument{…}` класу; інакше додати в `ALWAYS`.
 
 ## Що робити, коли HTML виглядає інакше, ніж PDF
 
