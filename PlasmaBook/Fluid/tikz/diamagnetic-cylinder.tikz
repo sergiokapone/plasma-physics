@@ -1,0 +1,90 @@
+\begin{tikzpicture}[>={Stealth[length=6pt,width=5pt]}, line cap=round, scale=0.85]
+	% параметри: радіус торця й вектор осі (коса проєкція)
+	\def\R{2.0}
+	\def\dx{4.6}
+	\def\dy{2.4}
+	\def\sh{0.28}          % «товщина» зрізу вздовж осі
+	\def\kk{0.8}           % стиснення торця вздовж осі (еліпс: пів-осі kk*R і R)
+	\def\NS{26}            % кількість смуг циліндричного затінення
+	\pgfmathsetmacro{\L}{sqrt(\dx*\dx+\dy*\dy)}
+	\pgfmathsetmacro{\phi}{atan2(\dy,\dx)}
+	\pgfmathsetmacro{\h}{2*\R/\NS}
+	\colorlet{Bcol}{blue!65!cyan!90!black}   % силові лінії B (світліші за електрони)
+
+	% точка торця за «круговими» полярними координатами (кут t, радіус r), стиснута вздовж осі;
+	% використовувати лише в scope[rotate=\phi]
+	\def\E#1#2{({\kk*(#2)*cos((#1)-\phi)},{(#2)*sin((#1)-\phi)})}
+
+	% нерегулярний обрив у повернутій системі (x вздовж осі, y поперек); \xo — зсув усередину
+	\def\xo{0}
+	\def\tear{-- plot[smooth, tension=0.55] coordinates {(\L+\xo-0.1,\R) (\L+\xo-0.45,1.7) (\L+\xo-0.15,1.35)
+		(\L+\xo-0.5,1.0) (\L+\xo-0.3,0.65) (\L+\xo-0.7,0.3) (\L+\xo-0.45,-0.05) (\L+\xo-0.2,-0.4)
+		(\L+\xo-0.55,-0.75) (\L+\xo-0.45,-1.1) (\L+\xo-0.85,-1.5) (\L+\xo-0.9,-\R)}}
+
+	% м'яка тінь під циліндром (кілька зсунутих напівпрозорих копій)
+	\foreach \k in {1,...,12} {
+		\begin{scope}[shift={({0.02*\k},{-0.03*\k-0.05})}, rotate=\phi]
+			\fill[black, opacity=0.018] (0,\R) \tear -- (0,-\R) -- cycle;
+		\end{scope}
+		\begin{scope}[shift={({0.02*\k},{-0.03*\k-0.05})}, rotate=\phi]
+			\fill[black, opacity=0.018] (0,0) ellipse ({\kk*\R} and \R);
+		\end{scope}
+	}
+
+	\begin{scope}[rotate=\phi]
+		% внутрішня поверхня (видимий «зріз»): світла смуга уздовж обриву
+		\fill[blue!6] (0,\R) \tear -- (0,-\R) -- cycle;
+		% тіло: циліндричне затінення смугами, світліше зверху, темніше знизу й по краях
+		\begin{scope}
+			\def\xo{-\sh}
+			\clip (0,\R) \tear -- (0,-\R) -- cycle;
+			\foreach \i in {0,...,\the\numexpr\NS-1\relax} {
+				\pgfmathsetmacro{\u}{-1+(\i+0.5)*2/\NS}
+				\pgfmathsetmacro{\c}{12+12*(1-\u)+14*abs(\u)^8}
+				\pgfmathsetmacro{\cf}{0.4*\c}
+				\shade[shading=axis, left color=blue!\c, right color=blue!\cf, shading angle=90]
+					(0,{-\R+\i*\h-0.005}) rectangle (\L+1,{-\R+\i*\h+\h+0.005});
+			}
+			% блік уздовж верхньої твірної
+			\shade[shading=axis, left color=white, right color=white!0, shading angle=90, opacity=0.55]
+				(0,0.62*\R) rectangle (\L+1,0.78*\R);
+			% силові лінії B: ближчі (нижчі) яскравіші й товстіші, дальні блідіші
+			\foreach \s/\e/\o/\w in {0.7/-1.3/0.45/0.3, 0.35/-1.4/0.6/0.4, 0/-1.5/0.75/0.5,
+					-0.35/-1.5/0.9/0.6, -0.7/-1.5/1/0.7} {
+				\draw[Bcol, opacity=\o, line width=\w pt, decoration={markings, mark=at position 0.6 with {\arrow[line width=0.5pt]{Stealth[length=6pt,width=5pt]}}}, postaction={decorate}]
+					(0,{\s*\R}) -- ({\L+\e},{\s*\R});
+			}
+		\end{scope}
+		% контури: твірні, рваний обрив і тонка лінія товщини зрізу
+		\draw[thick] (0,\R) -- (\L-0.1,\R);
+		\draw[thick] (0,-\R) -- (\L-0.9,-\R);
+		\draw[thick, line join=round] (\L+\xo-0.1,\R) \tear;
+		\begin{scope}
+			\def\xo{-\sh}
+			\draw[blue!55, thin, line join=round] (\L+\xo-0.1,\R) \tear;
+		\end{scope}
+	\end{scope}
+
+	% торець (еліпс: нахилений до читача): профіль тиску з максимумом на осі, легкий обід
+	\begin{scope}[rotate=\phi]
+		\begin{scope}[xscale=\kk]
+			\shade[inner color=blue!45, outer color=blue!8] (0,0) circle (\R);
+		\end{scope}
+		\draw[thick] (0,0) ellipse ({\kk*\R} and \R);
+		\draw[blue!40, thin] (0,0) ellipse ({\kk*(\R-0.1)} and {\R-0.1});
+		% градієнт тиску (до осі)
+		\draw[->, thick] \E{90}{1.65} -- \E{90}{0.55};
+		\node[font=\footnotesize, left=1pt] at \E{90}{1.1} {$\nabla p$};
+		% іони: за годинниковою стрілкою; електрони: проти (еліптичні траєкторії)
+		\draw[->, very thick, red!70!black] \E{55}{1.3}
+			arc[start angle={55-\phi}, end angle={-30-\phi}, x radius={\kk*1.3}, y radius=1.3];
+		\node[red!70!black, font=\footnotesize] at \E{-5}{0.78} {$\vect v_{*i}$};
+		\draw[->, very thick, blue!70!black] \E{205}{1.3}
+			arc[start angle={205-\phi}, end angle={285-\phi}, x radius={\kk*1.3}, y radius=1.3];
+		\node[blue!70!black, font=\footnotesize] at \E{238}{0.85} {$\vect v_{*e}$};
+	\end{scope}
+
+	% магнітне поле: до спостерігача, вздовж осі
+	\draw[->, very thick, Bcol] ({\dx+1.0},{-0.75}) -- ++({-2.0*cos(\phi)},{-2.0*sin(\phi)})
+		node[pos=0.55, below right=1pt, Bcol] {$\vect B$};
+\end{tikzpicture}
