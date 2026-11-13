@@ -133,9 +133,61 @@ c_s^2=\left(\frac{\partial p}{\partial\rho_m}\right)_S=\frac{\gamma\,(p_e+p_i)}{
 електрон багато разів пробігає її довжину, встигає перерозподілитися в~потенціалі $\varphi$
 і~має густину $n_0e^{e\varphi/T_e}$ (рівновага в~полі). Навпаки, у~ленгмюрівській хвилі $\omega\gg kv_{Te}$:
 електрони \enquote{не встигають} вийти з~області стискання (адіабатичне стискання, §\,\ref{sec:langmuir-waves}).
-Лінеаризуємо: електрони $n_{e1}/n_0=e\varphi/T_e$; холодні іони
-$-i\omega m_iv=-ik\,e\varphi$, $n_{i1}/n_0=kv/\omega$; рівняння Пуассона $k^2\varphi=4\pi e(n_{i1}-n_{e1})$. Звідси
-$\omega^2=k^2(T_e/m_i)/(1+k^2\lambda_{De}^2)$; урахування тиску іонів і~заряду $Z$ дає загальний вигляд
+Спершу розглянемо найпростіший випадок: холодні іони ($T_i=0$) із~зарядом $Z=1$. Шукаємо збурення
+у~вигляді $\propto e^{i(kx-\omega t)}$, тож $\partial_t\to-i\omega$, $\partial_x\to ik$.
+
+\emph{Електрони.} Больцманівська густина $n_e=n_0e^{e\varphi/T_e}$ після лінеаризації
+($e^{x}\approx1+x$) дає
+\begin{equation*}
+\frac{n_{e1}}{n_0}=\frac{e\varphi}{T_e}.
+\end{equation*}
+
+\emph{Іони.} На~іон діє сила $-e\,\partial_x\varphi$, тому рівняння руху й~неперервності, $\partial_tn_{i1}+n_0\partial_xv=0$, мають вигляд
+\begin{equation*}
+-i\omega m_iv=-ik\,e\varphi,
+\qquad
+-i\omega n_{i1}+ikn_0v=0,
+\end{equation*}
+звідки швидкість іонів і~збурення їхньої густини виражаються через потенціал:
+\begin{equation*}
+v=\frac{k\,e\varphi}{m_i\omega},
+\qquad
+\frac{n_{i1}}{n_0}=\frac{kv}{\omega}=\frac{k^2e\varphi}{m_i\omega^2}.
+\end{equation*}
+
+\emph{Поле.} Потенціал зв'язує густини сортів рівняння Пуассона $\nabla^2\varphi=-4\pi\rho$, тобто
+$k^2\varphi=4\pi e\,(n_{i1}-n_{e1})$. Підставляємо обидві густини й~скорочуємо на~$\varphi$:
+\begin{equation*}
+k^2=4\pi n_0e^2\left[\frac{k^2}{m_i\omega^2}-\frac1{T_e}\right]
+=\frac{\omega_{pi}^2k^2}{\omega^2}-\frac1{\lambda_{De}^2},
+\end{equation*}
+де $4\pi n_0e^2/m_i=\omega_{pi}^2$ і~$4\pi n_0e^2/T_e=1/\lambda_{De}^2$. Отже,
+$k^2+\lambda_{De}^{-2}=\omega_{pi}^2k^2/\omega^2$. Оскільки $\omega_{pi}^2\lambda_{De}^2=T_e/m_i$,
+\begin{equation*}
+\omega^2=\frac{k^2\,T_e/m_i}{1+k^2\lambda_{De}^2}.
+\end{equation*}
+Знаменник має ясний зміст: електрони, що перерозподілилися за~Больцманом, екранують поле,
+яке тягне іони, і~тим послаблюють повертальну силу.
+
+Тепер урахуємо заряд іона $Z$ та~скінченну температуру іонів. По-перше, сила на~іон стає
+$-Ze\,\partial_x\varphi$, а~через квазінейтральність $n_{e0}=Zn_{i0}$ і~в~рівнянні Пуассона
+$\rho=e(Zn_{i1}-n_{e1})$. По-друге, до~рівняння руху додається градієнт тиску іонів
+$p_{i1}=\gamma_iT_in_{i1}$ з~$\gamma_i=3$ (адіабата одновимірного стискання):
+\begin{equation*}
+-i\omega m_iv=-ik\,Ze\varphi-ik\cdot3T_i\,\frac{n_{i1}}{n_{i0}},
+\qquad
+\frac{n_{i1}}{n_{i0}}=\frac{kv}{\omega}.
+\end{equation*}
+Виключаючи $v$, знаходимо
+\begin{equation*}
+\frac{n_{i1}}{n_{i0}}=\frac{k^2Ze\varphi}{m_i\,(\omega^2-3k^2T_i/m_i)}.
+\end{equation*}
+Підстановка в~рівняння Пуассона з~$n_{e1}=Zn_{i0}\,e\varphi/T_e$ і~врахування того, що
+$4\pi n_{e0}e^2/T_e=\lambda_{De}^{-2}$, дає
+\begin{equation*}
+1+k^2\lambda_{De}^2=\frac{ZT_e}{m_i}\,\frac{k^2}{\omega^2-3k^2T_i/m_i},
+\end{equation*}
+тобто остаточно дисперсійне рівняння іонно-звукової хвилі
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{equation}\label{eq:ion-acoustic}
 	\tcbhighmath{\omega^2=k^2\biggl[\frac{ZT_e}{m_i\,(1+k^2\lambda_{De}^2)}+\frac{3T_i}{m_i}\biggr]},
