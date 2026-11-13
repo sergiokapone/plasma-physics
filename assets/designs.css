@@ -126,7 +126,7 @@ html:not([data-design="book"]) {
     & .toc-dots { display: none; }
     & .toc-toggle { margin-left: auto; width: 34px; height: 34px; border: 1px solid var(--border); border-radius: var(--radius-pill); color: var(--text); }
     & li.toc-open > .toc-row .toc-toggle { background: var(--gold); border-color: var(--gold); color: var(--btn-fg); }
-    & .sub-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 0 2.2rem; padding: .2rem 0 1.2rem 3.4rem; }
+    & .sub-list { display: block; padding: .2rem 0 1.2rem 3.4rem; }   /* підрозділи в одну колонку, один за одним */
     & .sub-list li { font-style: normal; font-size: .93rem; }
     & .sub-list li::before { display: none; }
     & .sub-list a { display: block; padding: .35rem 0; }

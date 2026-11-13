@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Генерує ../index.html (сторінка підручника для GitHub Pages) зі змісту main.toc.
+"""Генерує ../index.html (сторінка навчального посібника для GitHub Pages) зі змісту main.toc.
 
 Запуск (після збірки книги):  python -I make_site.py
 
@@ -131,13 +131,13 @@ TEMPLATE = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <title>Фізика плазми | Підручник</title>
-    <meta name="description" content="Підручник з фізики плазми для студентів-прикладних фізиків: від іонізації та дебаївського екранування до хвиль, нестійкостей, магнітного утримання й термоядерного синтезу.">
+    <title>Фізика плазми | Навчальний посібник</title>
+    <meta name="description" content="Навчальний посібник з фізики плазми для студентів-прикладних фізиків: від іонізації та дебаївського екранування до хвиль, нестійкостей, магнітного утримання й термоядерного синтезу.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="@SITE@">
 
-    <meta property="og:title" content="Фізика плазми | Підручник">
-    <meta property="og:description" content="Підручник з фізики плазми: 12 розділів, задачі з відповідями, інтерактивні симуляції.">
+    <meta property="og:title" content="Фізика плазми | Навчальний посібник">
+    <meta property="og:description" content="Навчальний посібник з фізики плазми: 12 розділів, задачі з відповідями, інтерактивні симуляції.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="@SITE@">
 
@@ -170,11 +170,14 @@ TEMPLATE = """<!DOCTYPE html>
             <button class="theme-toggle" id="theme-toggle" type="button" title="Перемкнути тему" aria-label="Перемкнути тему">🌙</button>
         </div>
         <h1>Фізика плазми</h1>
-        <div class="subtitle">Підручник</div>
+        <div class="subtitle">Навчальний посібник</div>
         <div class="hero-rule"></div>
         <div class="hero-actions">
             <a href="@PDF@" class="pdf-button pdf-button-primary">
-                <span class="btn-icon">&#8595;</span> Завантажити підручник (PDF)
+                <span class="btn-icon">&#8595;</span> Завантажити посібник (PDF)
+            </a>
+            <a href="simulations.html" class="pdf-button">
+                <span class="btn-icon">&#9657;</span> Інтерактивні симуляції
             </a>
         </div>
         <p class="pdf-note">Повна версія у форматі PDF. Пункти змісту нижче відкривають PDF на потрібному місці.</p>
@@ -201,10 +204,10 @@ TEMPLATE = """<!DOCTYPE html>
             </div>
         </div>
 
-        <!-- Про підручник -->
+        <!-- Про посібник -->
         <div class="preface">
-            <h2>Про підручник</h2>
-            <p>Підручник з курсу <strong>«Фізика плазми»</strong> розрахований на студентів-прикладних фізиків, які вже знають загальну й теоретичну фізику. Він веде від умов, за яких іонізований газ стає плазмою (іонізація, дебаївське екранування, колективність), через хвилі, рух частинок, зіткнення, рідинний і кінетичний опис до нестійкостей, магнітного утримання, термоядерного синтезу й газового розряду.</p>
+            <h2>Про посібник</h2>
+            <p>Навчальний посібник з курсу <strong>«Фізика плазми»</strong> розрахований на студентів-прикладних фізиків, які вже знають загальну й теоретичну фізику. Він веде від умов, за яких іонізований газ стає плазмою (іонізація, дебаївське екранування, колективність), через хвилі, рух частинок, зіткнення, рідинний і кінетичний опис до нестійкостей, магнітного утримання, термоядерного синтезу й газового розряду.</p>
             <p>Викладення спирається на оцінки величин: у розділах є рамки <em>Estimate</em> з числовими прикладами, блоки «Як це вимірюють» про діагностику плазми, задачі з розв'язками й контрольні питання, а також посилання на інтерактивні симуляції. Використано гауссову систему одиниць, температуру подано в енергетичних одиницях ($k_B=1$); у додатку є перехід до СІ.</p>
         </div>
 
@@ -220,7 +223,7 @@ TEMPLATE = """<!DOCTYPE html>
     </div><!-- /content -->
 
     <footer>
-        Фізика плазми &nbsp;|&nbsp; Підручник<br>
+        Фізика плазми &nbsp;|&nbsp; Навчальний посібник<br>
         Кафедра прикладної фізики, КПІ ім. Ігоря Сікорського
     </footer>
 
@@ -244,12 +247,14 @@ def main() -> int:
         return 1
     html = (TEMPLATE.replace("@TOC@", render_toc(chapters, extra))
             .replace("@PDF@", PDF).replace("@SITE@", SITE))
-    # $k_B=1$ у тексті «Про підручник» — без MathJax виглядає як формула у доларах; прибираємо
+    # $k_B=1$ у тексті «Про посібник» — без MathJax виглядає як формула у доларах; прибираємо
     html = html.replace("($k_B=1$)", "(<i>k</i><sub>B</sub> = 1)")
     OUT.write_text(html, encoding="utf-8", newline="\n")
     nsub = sum(len(c["subs"]) for c in chapters)
     print("index.html: %d розділів, %d підрозділів -> %s" % (len(chapters), nsub, OUT))
-    return 0
+    sys.path.insert(0, str(HERE))   # python -I не додає теку скрипта до шляху імпорту
+    import make_sims_page   # сторінка симуляцій (../simulations.html)
+    return make_sims_page.main()
 
 
 if __name__ == "__main__":

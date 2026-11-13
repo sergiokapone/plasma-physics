@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Симуляції | Фізика плазми</title>
+    <meta name="description" content="Інтерактивні симуляції до навчального посібника з фізики плазми: екранування, зонд Ленгмюра, хвилі, магнітне дзеркало, МГД-хвилі.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sergiokapone.github.io/plasma-physics/simulations.html">
+    <meta property="og:title" content="Симуляції | Фізика плазми">
+    <meta property="og:description" content="Інтерактивні симуляції й віртуальні лабораторні до навчального посібника з фізики плазми.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sergiokapone.github.io/plasma-physics/simulations.html">
+
+    <script>(function(){var r=document.documentElement;r.classList.add('js');try{var d=localStorage.getItem('plasma-design');r.setAttribute('data-design',['field','blueprint','book'].indexOf(d)>-1?d:'field');var t=localStorage.getItem('plasma-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){r.classList.add('dark');}}catch(e){r.setAttribute('data-design','field');}})();</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400..600;1,7..72,400..600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="stylesheet" href="assets/designs.css">
+    <link rel="stylesheet" href="assets/sims.css">
+</head>
+<body>
+<div class="container">
+
+    <header class="sims-hero">
+        <div class="hero-tools">
+            <div class="design-switch" role="group" aria-label="Дизайн сторінки">
+                <button type="button" data-design="field" aria-pressed="true">Поле</button>
+                <button type="button" data-design="blueprint" aria-pressed="false">Креслення</button>
+                <button type="button" data-design="book" aria-pressed="false">Книга</button>
+            </div>
+            <button class="theme-toggle" id="theme-toggle" type="button" title="Перемкнути тему" aria-label="Перемкнути тему">🌙</button>
+        </div>
+        <a class="sims-back" href="index.html">← До навчального посібника</a>
+        <h1>Симуляції</h1>
+        <p class="sims-lead">12 інтерактивних моделей до розділів посібника. Кожна показує одну ідею: змінюйте параметри й дивіться, як змінюється картина. Натисніть картку, щоб побачити, що спостерігати, і відкрити симуляцію.</p>
+    </header>
+
+    <div class="sims-bar">
+        <div class="sims-filters" role="group" aria-label="Фільтр за розділом">
+                <button type="button" class="chip" data-filter="all" aria-pressed="true">Усі<span class="n">12</span></button>
+                <button type="button" class="chip" data-filter="1" aria-pressed="false">Розд. 1 · Плазма<span class="n">6</span></button>
+                <button type="button" class="chip" data-filter="2" aria-pressed="false">Розд. 2 · Хвилі<span class="n">4</span></button>
+                <button type="button" class="chip" data-filter="3" aria-pressed="false">Розд. 3 · Рух частинки<span class="n">1</span></button>
+                <button type="button" class="chip" data-filter="6" aria-pressed="false">Розд. 6 · МГД-хвилі<span class="n">1</span></button>
+                <button type="button" class="chip" data-filter="lab" aria-pressed="false">Лабораторні<span class="n">2</span></button>
+        </div>
+        <span class="sims-count" id="sims-count" aria-live="polite"></span>
+    </div>
+
+    <main>
+        <div class="sims-grid" id="sims-grid">
+            <article class="sim" id="basics_debye" data-ch="1" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="basics_debye-body">
+                    <span class="sim-shot"><img src="assets/sims/basics_debye.jpg" alt="Знімок симуляції: Дебаївське екранування пробного заряду" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 1 <span class="sec">§1.5</span></span>
+                        <span class="sim-title">Дебаївське екранування пробного заряду</span>
+                        <span class="sim-lead">Заряд у плазмі обростає хмарою електронів, і його поле гасне на відстані кількох λ<sub>D</sub>.</span>
+                        <span class="sim-foot"><span class="sim-key">λ<sub>De</sub> = √(T / 4πn<sub>0</sub>e²)</span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="basics_debye-body" role="region" aria-label="Знімок симуляції: Дебаївське екранування пробного заряду">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/basics_debye.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/basics_debye.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Збільшуйте T: хмара розпливається. Збільшуйте n<sub>0</sub>: стискається.</li>
+                        <li>Уже на 3λ<sub>D</sub> заряд екрановано приблизно на 95 %, а поле спадає до нуля, тоді як у вакуумі було б сталим.</li>
+                        <li>Режим «сильний заряд» (eφ(0)/T &gt; 1): лінеаризація не працює, профіль іде за кривою Больцмана, а не за експонентою.</li>
+                        <li>Мало частинок на λ<sub>D</sub>: профіль шумить, колективне екранування має сенс лише при n<sub>0</sub>λ<sub>D</sub> ≫ 1.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>λ<sub>De</sub> = √(T / 4πn<sub>0</sub>e²)</code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Одновимірна листова модель: N електронних площин на тлі нерухомих іонів, пробна площина в x = 0. Поле листа точне за теоремою Гаусса, рух за схемою «стрибок жаби», температуру тримає термостат Ланжевена.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/basics_debye.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s1.5">У посібнику, §1.5</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="basics_debye_sphere" data-ch="1" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="basics_debye_sphere-body">
+                    <span class="sim-shot"><img src="assets/sims/basics_debye_sphere.jpg" alt="Знімок симуляції: Сфера Дебая: молекулярна динаміка" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 1 <span class="sec">§1.6</span></span>
+                        <span class="sim-title">Сфера Дебая: молекулярна динаміка</span>
+                        <span class="sim-lead">Тривимірна плазма з кулонівською взаємодією показує, як спадає заряд усередині сфери радіуса r.</span>
+                        <span class="sim-foot"><span class="sim-key">Q(&lt;r) = Q(1 + r/λ<sub>D</sub>)e<sup>−r/λ<sub>D</sub></sup></span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="basics_debye_sphere-body" role="region" aria-label="Знімок симуляції: Сфера Дебая: молекулярна динаміка">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/basics_debye_sphere.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/basics_debye_sphere.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Електрони збираються навколо додатного заряду, іони відступають.</li>
+                        <li>Біля r = λ<sub>D</sub> лишається 74 % заряду, на 3λ<sub>D</sub> лише 20 %.</li>
+                        <li>Знижуйте T до N<sub>D</sub> &lt; 1: у сфері менше однієї частинки, колективного екранування немає, профіль розходиться з теорією.</li>
+                        <li>При Γ ≳ 0,6 електрони й іони утворюють зв'язані пари.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>Q(&lt;r) = Q(1 + r/λ<sub>D</sub>)e<sup>−r/λ<sub>D</sub></sup></code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">3D-плазма в кубі з періодичними межами, показано проєкцію на площину. Сила з усіченням на L/2, м'яка сердцевина усуває колапс пар, температуру тримає термостат Ланжевена.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/basics_debye_sphere.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s1.6">У посібнику, §1.6</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="basics_sheath" data-ch="1" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="basics_sheath-body">
+                    <span class="sim-shot"><img src="assets/sims/basics_sheath.jpg" alt="Знімок симуляції: Пристінний шар: критерій Бома" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 1 <span class="sec">§1.9</span></span>
+                        <span class="sim-title">Пристінний шар: критерій Бома</span>
+                        <span class="sim-lead">Щоб біля стінки існував монотонний шар, іони мусять входити в нього зі швидкістю не меншою за звукову.</span>
+                        <span class="sim-foot"><span class="sim-key">u<sub>0</sub> ≥ c<sub>s</sub></span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="basics_sheath-body" role="region" aria-label="Знімок симуляції: Пристінний шар: критерій Бома">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/basics_sheath.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/basics_sheath.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Зменшуйте число Маха M = u<sub>0</sub>/c<sub>s</sub> нижче 1: потенціал Сагдеєва F(χ) стає від'ємним, шару немає.</li>
+                        <li>У шарі n<sub>i</sub> &gt; n<sub>e</sub> скрізь: іони розганяються полем, електрони йдуть за Больцманом.</li>
+                        <li>До стінки долітає лише частка e<sup>−χ<sub>w</sub></sup> електронів: вона й задає плаваючий потенціал.</li>
+                        <li>Важчий газ (D, Ar) дає глибший плаваючий потенціал.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>u<sub>0</sub> ≥ c<sub>s</sub></code><code>eφ<sub>f</sub>/T<sub>e</sub> ∝ ½ ln(m<sub>i</sub>/m<sub>e</sub>)</code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Стаціонарний 1D-шар: холодні іони без зіткнень і больцманівські електрони. Розв'язується перший інтеграл рівняння Пуассона.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/basics_sheath.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s1.9">У посібнику, §1.9</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="basics_probe" data-ch="1" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="basics_probe-body">
+                    <span class="sim-shot"><img src="assets/sims/basics_probe.jpg" alt="Знімок симуляції: Зонд Ленгмюра: від ВАХ до Te і n" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 1 <span class="sec">§1.9</span></span>
+                        <span class="sim-title">Зонд Ленгмюра: від ВАХ до T<sub>e</sub> і n</span>
+                        <span class="sim-lead">Вольт-амперна характеристика зонда і те, що з неї можна дістати: T<sub>e</sub>, V<sub>f</sub>, V<sub>p</sub>, n.</span>
+                        <span class="sim-foot"><span class="sim-key">I ∝ e<sup>eV/T<sub>e</sub></sup></span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="basics_probe-body" role="region" aria-label="Знімок симуляції: Зонд Ленгмюра: від ВАХ до Te і n">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/basics_probe.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/basics_probe.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Нахил прямої ln(I + I<sub>is</sub>) дає T<sub>e</sub>, злам графіка потенціал плазми.</li>
+                        <li>Для водню V<sub>f</sub> ≈ −3,3 T<sub>e</sub>/e, для аргону глибше. Порівняйте з формулою книги.</li>
+                        <li>Гарячий хвіст розподілу викривлює графік: T<sub>e</sub> залежить від вікна фіту й завищена.</li>
+                        <li>Подвійний зонд плаває як ціле: струм обмежений величиною ±I<sub>is</sub>.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>I ∝ e<sup>eV/T<sub>e</sub></sup></code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Плоский зонд, тонкий шар, B = 0. Іонний струм за потоком Бома, електрони максвеллівські з можливим гарячим хвостом.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/basics_probe.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s1.9">У посібнику, §1.9</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="basics_probe_lab" data-ch="1" data-kind="lab">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="basics_probe_lab-body">
+                    <span class="sim-shot"><img src="assets/sims/basics_probe_lab.jpg" alt="Знімок симуляції: Лабораторна: що вимірює зонд" loading="lazy" width="980" height="612"><span class="sim-kind lab">Лабораторна</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 1 <span class="sec">§1.9</span></span>
+                        <span class="sim-title">Лабораторна: що вимірює зонд</span>
+                        <span class="sim-lead">Віртуальний практикум: чорний ящик із невідомими T<sub>e</sub>, n і V<sub>p</sub>, прилади з шумом.</span>
+                        <span class="sim-foot"><span class="sim-key">n з I<sub>is</sub> і з I<sub>es</sub></span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="basics_probe_lab-body" role="region" aria-label="Знімок симуляції: Лабораторна: що вимірює зонд">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/basics_probe_lab.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/basics_probe_lab.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind lab">Лабораторна</span>
+                            <span class="play">Відкрити лабораторна <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Одиночний або подвійний зонд, ручна й автоматична розгортка.</li>
+                        <li>Обробка: I<sub>is</sub>, V<sub>f</sub>, T<sub>e</sub> з ln(I + I<sub>is</sub>), V<sub>p</sub> зі зламу, n з I<sub>is</sub> і I<sub>es</sub>.</li>
+                        <li>Вікно фіту, перевірка відповіді, таблиця й експорт у CSV.</li>
+                        <li>Навчальний режим із відомими параметрами для самоперевірки.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>n з I<sub>is</sub> і з I<sub>es</sub></code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Схема лабораторної з електронами в дроті. Ядро перевірене на відомих параметрах: T<sub>e</sub> у межах ±1 %.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/basics_probe_lab.html" target="_blank" rel="noopener">Відкрити лабораторна <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s1.9">У посібнику, §1.9</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="waves_plasma_oscillations" data-ch="1" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="waves_plasma_oscillations-body">
+                    <span class="sim-shot"><img src="assets/sims/waves_plasma_oscillations.jpg" alt="Знімок симуляції: Плазмові коливання" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 1 <span class="sec">§1.4</span></span>
+                        <span class="sim-title">Плазмові коливання</span>
+                        <span class="sim-lead">Усі електрони шару зсунуто відносно іонного фону й відпущено: шар коливається з плазмовою частотою.</span>
+                        <span class="sim-foot"><span class="sim-key">ω<sub>p</sub> = √(4πne²/m)</span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="waves_plasma_oscillations-body" role="region" aria-label="Знімок симуляції: Плазмові коливання">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/waves_plasma_oscillations.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/waves_plasma_oscillations.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>На краях, де електрони й іони не перекриваються, виникають смуги заряду ±σ, σ = neξ.</li>
+                        <li>Поле цих смуг повертає електрони назад, тому рух гармонічний.</li>
+                        <li>Фазовий портрет — еліпс, енергія переходить між кінетичною й електричною.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>ω<sub>p</sub> = √(4πne²/m)</code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Одновимірна листова модель: 300 заряджених площин, поле з теореми Гаусса, схема «стрибок жаби».</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/waves_plasma_oscillations.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s1.4">У посібнику, §1.4</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="waves_incident_wave" data-ch="2" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="waves_incident_wave-body">
+                    <span class="sim-shot"><img src="assets/sims/waves_incident_wave.jpg" alt="Знімок симуляції: Хвиля на шарі плазми" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 2 <span class="sec">§2.5</span></span>
+                        <span class="sim-title">Хвиля на шарі плазми</span>
+                        <span class="sim-lead">Електромагнітна хвиля падає з вакууму на шар плазми: за ω &gt; ω<sub>p</sub> проходить, за ω &lt; ω<sub>p</sub> відбивається.</span>
+                        <span class="sim-foot"><span class="sim-key">ε = 1 − ω<sub>p</sub>²/ω²</span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="waves_incident_wave-body" role="region" aria-label="Знімок симуляції: Хвиля на шарі плазми">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/waves_incident_wave.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/waves_incident_wave.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Електрони коливаються проти поля, пари «електрон — іон» дають диполі, звідси ε = 1 − ω<sub>p</sub>²/ω².</li>
+                        <li>При ω &lt; ω<sub>p</sub> поле спадає як e<sup>−κx</sup>, у плазмі енергії немає, відбиття повне.</li>
+                        <li>Тонкий шар при ω &lt; ω<sub>p</sub> пропускає хвилю тунелюванням: з'являється пройдена хвиля, R + T = 1.</li>
+                        <li>Зіткнення ν зменшують зміщення електронів і дають запізнення фази arctg(ν/ω).</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>ε = 1 − ω<sub>p</sub>²/ω²</code><code>κ = √(ω<sub>p</sub>² − ω²)/c</code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Одновимірне числове розв'язання рівнянь Максвелла (FDTD) зі струмом електронів, c/ω<sub>p</sub> = 10 комірок, падаюча хвиля вводиться методом повного й розсіяного поля.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/waves_incident_wave.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s2.5">У посібнику, §2.5</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="waves_thermal_jitter" data-ch="2" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="waves_thermal_jitter-body">
+                    <span class="sim-shot"><img src="assets/sims/waves_thermal_jitter.jpg" alt="Знімок симуляції: Теплове «дрижання» плазми" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span><span class="sim-kind draft">чернетка</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 2 <span class="sec">розд. 2</span></span>
+                        <span class="sim-title">Теплове «дрижання» плазми</span>
+                        <span class="sim-lead">Рівноважна плазма, яку ніхто не збурює, а в ній видно хмару навколо кожної частинки й гул на ω<sub>p</sub>.</span>
+                        <span class="sim-foot"><span class="sim-key">S(k) = k²/(1 + k²)</span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="waves_thermal_jitter-body" role="region" aria-label="Знімок симуляції: Теплове «дрижання» плазми">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/waves_thermal_jitter.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/waves_thermal_jitter.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span><span class="sim-kind draft">чернетка</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Клікніть по частинці, щоб зробити її пробною: навколо неї видно дебаївську хмару.</li>
+                        <li>Просторово-часова карта заряду показує шум, у якому проступає коливання на ω<sub>p</sub>.</li>
+                        <li>Перемикач «без взаємодії» перетворює плазму на газ: хмари й піка у спектрі немає.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>S(k) = k²/(1 + k²)</code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Одновимірна модель заряджених листів у періодичному ящику L = 40λ<sub>D</sub>, N = 40N<sub>D</sub>.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/waves_thermal_jitter.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=ch2">У посібнику, розд. 2</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="waves_thermal_jitter_2d" data-ch="2" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="waves_thermal_jitter_2d-body">
+                    <span class="sim-shot"><img src="assets/sims/waves_thermal_jitter_2d.jpg" alt="Знімок симуляції: Теплове «дрижання» плазми в площині" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span><span class="sim-kind draft">чернетка</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 2 <span class="sec">розд. 2</span></span>
+                        <span class="sim-title">Теплове «дрижання» плазми в площині</span>
+                        <span class="sim-lead">Те саме, але у справжній площині (x, y): зелена пробна частинка й коло Дебая навколо неї.</span>
+                        <span class="sim-foot"><span class="sim-key">N<sub>D</sub> частинок у крузі λ<sub>D</sub></span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="waves_thermal_jitter_2d-body" role="region" aria-label="Знімок симуляції: Теплове «дрижання» плазми в площині">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/waves_thermal_jitter_2d.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/waves_thermal_jitter_2d.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span><span class="sim-kind draft">чернетка</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Риски показують швидкості, фон показує заряд у комірках.</li>
+                        <li>Лічильник частинок у колі дає дисперсію числа частинок, яку можна звірити з теорією.</li>
+                        <li>Мода (m, 0): ряд у часі й спектр із піком Бома — Гросса.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>N<sub>D</sub> частинок у крузі λ<sub>D</sub></code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Двовимірна плазма заряджених ліній у періодичному квадраті L = 24λ<sub>D</sub>. Поле рахується методом частинка — сітка (сітка 64², ШПФ).</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/waves_thermal_jitter_2d.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=ch2">У посібнику, розд. 2</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="waves_interferometry_lab" data-ch="2" data-kind="lab">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="waves_interferometry_lab-body">
+                    <span class="sim-shot"><img src="assets/sims/waves_interferometry_lab.jpg" alt="Знімок симуляції: Лабораторна: інтерферометрія і рефлектометрія" loading="lazy" width="980" height="612"><span class="sim-kind lab">Лабораторна</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 2 <span class="sec">§2.7</span></span>
+                        <span class="sim-title">Лабораторна: інтерферометрія і рефлектометрія</span>
+                        <span class="sim-lead">Мікрохвильова діагностика густини: чорний ящик із шаром плазми, інтерферометр і рефлектометр.</span>
+                        <span class="sim-foot"><span class="sim-key">Δφ = r<sub>e</sub>λ ∫n dl</span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="waves_interferometry_lab-body" role="region" aria-label="Знімок симуляції: Лабораторна: інтерферометрія і рефлектометрія">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/waves_interferometry_lab.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/waves_interferometry_lab.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind lab">Лабораторна</span>
+                            <span class="play">Відкрити лабораторна <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Інтерферометр: вибір довжини хвилі, вібрації дзеркал і їх компенсація, лічильник смуг із перескоками.</li>
+                        <li>Відсічка при n<sub>0</sub> ≥ n<sub>кр</sub>: фаза втрачає зв'язок з густиною.</li>
+                        <li>Рефлектометр: розгортка τ(f), обернення Абеля, екстраполяція ділянки 0…f<sub>1</sub>.</li>
+                        <li>Відновлений профіль порівнюється з еталоном.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>Δφ = r<sub>e</sub>λ ∫n dl</code><code>x<sub>c</sub>(F) = (c/π)∫τ(F sinθ)dθ</code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Плоский шар n = n<sub>0</sub>(1 − s²)<sup>p</sup>. Ядро перевірене: x<sub>c</sub> у межах ±0,5 % при f<sub>1</sub> = 1 ГГц.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/waves_interferometry_lab.html" target="_blank" rel="noopener">Відкрити лабораторна <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s2.7">У посібнику, §2.7</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="motion_mirror" data-ch="3" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="motion_mirror-body">
+                    <span class="sim-shot"><img src="assets/sims/motion_mirror.jpg" alt="Знімок симуляції: Магнітне дзеркало і конус втрат" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 3 <span class="sec">§3.5</span></span>
+                        <span class="sim-title">Магнітне дзеркало і конус втрат</span>
+                        <span class="sim-lead">Заряджена частинка рухається в пробкотроні: одні відбиваються від горловин, інші потрапляють у конус втрат.</span>
+                        <span class="sim-foot"><span class="sim-key">sin²θ<sub>c</sub> = 1/R</span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="motion_mirror-body" role="region" aria-label="Знімок симуляції: Магнітне дзеркало і конус втрат">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/motion_mirror.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/motion_mirror.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Частинка відбивається там, де B = B<sub>0</sub>/sin²θ<sub>0</sub>: виміряне z<sub>m</sub> збігається з теорією.</li>
+                        <li>Більше R звужує конус: частка втрат ізотропного розподілу дорівнює 1 − √(1 − 1/R).</li>
+                        <li>Режим «порушення адіабатичності»: μ стрибає в горловинах, пітч-кут блукає.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>sin²θ<sub>c</sub> = 1/R</code><code>μ = m v<sub>⊥</sub>²/2B</code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Схема Боріса: у статичному B енергія зберігається точно, μ лише адіабатично. Поле параксіальне, div B = 0.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/motion_mirror.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s3.5">У посібнику, §3.5</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sim" id="waves_mhd_psim" data-ch="6" data-kind="sim">
+                <button class="sim-head" type="button" aria-expanded="false" aria-controls="waves_mhd_psim-body">
+                    <span class="sim-shot"><img src="assets/sims/waves_mhd_psim.jpg" alt="Знімок симуляції: МГД-хвилі: альвенівська й магнітозвукові" loading="lazy" width="980" height="612"><span class="sim-kind">Симуляція</span></span>
+                    <span class="sim-meta">
+                        <span class="sim-eyebrow">Розд. 6 <span class="sec">§6.4–6.5</span></span>
+                        <span class="sim-title">МГД-хвилі: альвенівська й магнітозвукові</span>
+                        <span class="sim-lead">Переріз плазми з вмерзлими силовими лініями й 3D-пучок: видно, чим відрізняються три моди.</span>
+                        <span class="sim-foot"><span class="sim-key">v<sub>A</sub> = B/√(4πρ)</span><span class="sim-more"><span class="t-more">Докладніше</span><span class="t-less">Згорнути</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span>
+                    </span>
+                </button>
+                <div class="sim-body" id="waves_mhd_psim-body" role="region" aria-label="Знімок симуляції: МГД-хвилі: альвенівська й магнітозвукові">
+                    <div class="sim-cols">
+                        <a class="sim-big" href="PlasmaBook/sims/waves_mhd_psim.html" target="_blank" rel="noopener">
+                            <img src="assets/sims/waves_mhd_psim.jpg" alt="" loading="lazy" width="980" height="612">
+                            <span class="sim-kind">Симуляція</span>
+                            <span class="play">Відкрити симуляція <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="sim-text">
+                            <h3>Що спостерігати</h3>
+                            <ul>
+                        <li>Колір — збурення густини: червоне стиск, синє розрідження.</li>
+                        <li>Зонд (кільце з крапкою) можна перетягти мишею, 3D-вид повертається.</li>
+                        <li>Альвенівська хвиля: густина й |B| не змінюються, v<sub>ф</sub> = v<sub>A</sub> cosθ.</li>
+                        <li>Швидка й повільна магнітозвукові хвилі відрізняються фазою збурень тиску й поля.</li>
+                            </ul>
+                            <h3>Ключові формули</h3>
+                            <div class="sim-formulas"><code>v<sub>A</sub> = B/√(4πρ)</code><code>c<sub>s</sub>² = γp/ρ</code></div>
+                            <h3>Модель</h3>
+                            <p class="sim-model">Ідеальна МГД, лінеаризація над однорідним станом, γ = 5/3.</p>
+                            <div class="sim-actions">
+                                <a class="sbtn primary" href="PlasmaBook/sims/waves_mhd_psim.html" target="_blank" rel="noopener">Відкрити симуляція <span aria-hidden="true">↗</span></a>
+                                <a class="sbtn" href="PlasmaBook/main.pdf#nameddest=s6.4">У посібнику, §6.4–6.5</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <p class="sims-note">Симуляції працюють у браузері без встановлення й без мережі, окрім шрифтів. Деякі моделі позначено як чернетки: фізика в них перевірена, а вигляд ще шліфується.</p>
+
+    <footer>
+        Фізика плазми &nbsp;|&nbsp; Навчальний посібник<br>
+        Кафедра прикладної фізики, КПІ ім. Ігоря Сікорського
+    </footer>
+
+</div>
+
+<button class="back-to-top" id="back-to-top" type="button" title="Нагору" aria-label="Прогорнути нагору">↑</button>
+
+<script src="assets/script.js"></script>
+<script src="assets/sims.js"></script>
+</body>
+</html>

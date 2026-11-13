@@ -1,0 +1,143 @@
+/* sims.css — сторінка симуляцій (simulations.html). Підключати ПІСЛЯ styles.css і designs.css.
+   Усі кольори й форми — з токенів дизайнів (field / blueprint / book, світла й темна теми). */
+
+.sims-hero {
+    position: relative; padding: 5.2rem 2.5rem 1.6rem; color: var(--heading);
+}
+.sims-hero .hero-tools { top: 16px; right: 16px; }
+.sims-back {
+    display: inline-flex; align-items: center; gap: .45rem; margin-bottom: 1.6rem;
+    font: 500 .85rem/1 var(--font-ui); color: var(--muted); text-decoration: none;
+}
+.sims-back:hover { color: var(--gold); }
+.sims-hero h1 {
+    margin: 0; font-family: var(--font-display); font-weight: var(--h-weight);
+    font-size: clamp(2.2rem, 6vw, 3.8rem); line-height: 1.04; letter-spacing: -.025em; text-wrap: balance;
+}
+.sims-lead {
+    max-width: 62ch; margin: 1rem 0 0; font: 400 1.05rem/1.55 var(--font-body); color: var(--muted);
+}
+
+/* ── Фільтр ── */
+.sims-bar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem;
+    padding: 0 2.5rem; margin: 1.4rem 0 1.2rem;
+}
+.sims-filters { display: flex; flex-wrap: wrap; gap: .45rem; }
+.chip {
+    font: 500 .84rem/1 var(--font-ui); color: var(--text); background: transparent;
+    border: 1px solid var(--rule); border-radius: var(--radius-pill);
+    padding: .6rem .95rem; cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+}
+.chip:hover { border-color: var(--gold); color: var(--gold); }
+.chip[aria-pressed="true"] { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--btn-fg); }
+.chip .n { margin-left: .4rem; opacity: .65; font-variant-numeric: tabular-nums; }
+.sims-count { margin-left: auto; font: 500 .8rem/1 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ── Сітка карток ── */
+.sims-grid {
+    display: grid; gap: 1.1rem; padding: 0 2.5rem 3rem; align-items: start;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+}
+.sim { position: relative; background: var(--page); border: 1px solid var(--border); border-radius: var(--radius); overflow: clip; scroll-margin-top: 1rem; }
+.sim[hidden] { display: none; }
+.sim.is-open { grid-column: 1 / -1; border-color: var(--rule); }
+
+.sim-head {
+    all: unset; box-sizing: border-box; display: block; width: 100%; cursor: pointer;
+}
+.sim-head:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: -2px; }
+.sim-shot {
+    position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden;
+    background: var(--cream); border-bottom: 1px solid var(--border);
+}
+.sim-shot img { width: 100%; height: 100%; object-fit: cover; object-position: left top; display: block; transition: transform .5s ease; }
+.sim-head:hover .sim-shot img { transform: scale(1.025); }
+.sim-kind {
+    position: absolute; left: .8rem; top: .8rem; padding: .35rem .6rem;
+    font: 600 .68rem/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase;
+    background: var(--page); color: var(--heading); border: 1px solid var(--border); border-radius: var(--radius-pill);
+}
+.sim-kind.lab { background: var(--crimson); border-color: var(--crimson); color: #fff; }
+.sim-kind.draft { left: auto; right: .8rem; background: var(--page); color: var(--muted); border-style: dashed; }
+
+.sim-meta { display: block; padding: 1rem 1.15rem 1.1rem; }
+.sim-eyebrow {
+    display: flex; gap: .6rem; align-items: baseline; margin-bottom: .45rem;
+    font: 600 .72rem/1.2 var(--font-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--gold);
+}
+.sim-eyebrow .sec { color: var(--muted); font-weight: 500; }
+.sim-title {
+    display: block; font: var(--h-weight) 1.12rem/1.25 var(--font-display); color: var(--heading);
+    letter-spacing: -.01em; text-wrap: balance;
+}
+.sim-lead { display: block; margin-top: .5rem; font: 400 .9rem/1.5 var(--font-body); color: var(--muted); }
+.sim-foot { display: flex; align-items: center; justify-content: space-between; gap: .8rem; margin-top: .9rem; }
+.sim-key {
+    font: 500 .8rem/1 var(--font-mono); color: var(--text); background: var(--cream);
+    padding: .4rem .6rem; border-radius: calc(var(--radius) / 2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.sim-more { display: inline-flex; align-items: center; gap: .35rem; font: 600 .8rem/1 var(--font-ui); color: var(--gold); white-space: nowrap; }
+.sim-more svg { width: 1em; height: 1em; transition: transform .25s ease; }
+.sim.is-open .sim-more svg { transform: rotate(180deg); }
+.t-less { display: none; }
+.sim.is-open .t-more { display: none; }
+.sim.is-open .t-less { display: inline; }
+/* у розгорнутій картці знімок показано в тілі, тож шапка лишається рядком заголовка */
+.sim.is-open .sim-shot { display: none; }
+.sim.is-open .sim-meta { padding-top: 1.15rem; }
+.sim.is-open .sim-key { display: none; }
+.sim.is-open .sim-foot { justify-content: flex-end; margin-top: .4rem; }
+.sim.is-open .sim-lead { max-width: 70ch; }
+
+/* ── Розгорнута частина ── */
+.sim-body { display: none; border-top: 1px solid var(--border); }
+html:not(.js) .sim-body { display: block; }
+.sim.is-open .sim-body { display: block; animation: sim-in .28s ease both; }
+@keyframes sim-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+.sim-cols { display: grid; gap: 1.6rem; padding: 1.4rem 1.15rem 1.3rem; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+.sim-big { display: block; position: relative; border: 1px solid var(--border); border-radius: calc(var(--radius) / 1.5); overflow: hidden; background: var(--cream); align-self: start; }
+.sim-big img { display: block; width: 100%; height: auto; }
+.sim-big .play {
+    position: absolute; inset: auto 1rem 1rem auto; display: inline-flex; align-items: center; gap: .5rem;
+    padding: .7rem 1.05rem; font: 600 .85rem/1 var(--font-ui);
+    background: var(--btn-bg); color: var(--btn-fg); border-radius: var(--radius-pill); box-shadow: 0 6px 18px rgb(0 0 0 / .22);
+}
+.sim-big:hover .play { filter: brightness(1.08); }
+
+.sim-text h3 {
+    margin: 0 0 .6rem; font: 600 .72rem/1 var(--font-mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted);
+}
+.sim-text h3:not(:first-child) { margin-top: 1.3rem; }
+.sim-text ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .55rem; }
+.sim-text li { position: relative; padding-left: 1.15rem; font: 400 .93rem/1.5 var(--font-body); color: var(--text); }
+.sim-text li::before { content: ""; position: absolute; left: 0; top: .62em; width: .5rem; height: 2px; background: var(--gold); }
+.sim-formulas { display: flex; flex-wrap: wrap; gap: .5rem; }
+.sim-formulas code {
+    font: 500 .88rem/1.2 var(--font-mono); color: var(--heading); background: var(--cream);
+    border: 1px solid var(--border); padding: .45rem .65rem; border-radius: calc(var(--radius) / 2);
+}
+.sim-model { margin: 0; font: 400 .85rem/1.55 var(--font-body); color: var(--muted); }
+.sim-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.4rem; }
+.sbtn {
+    display: inline-flex; align-items: center; gap: .5rem; padding: .8rem 1.1rem; text-decoration: none;
+    font: 600 .86rem/1 var(--font-ui); border-radius: var(--radius-pill); border: 1px solid var(--rule); color: var(--heading); background: transparent;
+}
+.sbtn:hover { border-color: var(--gold); color: var(--gold); }
+.sbtn.primary { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--btn-fg); }
+.sbtn.primary:hover { filter: brightness(1.1); color: var(--btn-fg); }
+
+.sims-note { padding: 0 2.5rem 2rem; font: 400 .85rem/1.55 var(--font-body); color: var(--muted); max-width: 70ch; }
+
+/* ── Адаптація ── */
+@media (max-width: 760px) {
+    .sims-hero { padding: 4.6rem 1.25rem 1.2rem; }
+    .sims-bar, .sims-grid, .sims-note { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .sim-cols { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; }
+    .sims-count { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .sim-shot img, .sim-more svg { transition: none; }
+    .sim.is-open .sim-body { animation: none; }
+}
