@@ -322,7 +322,8 @@
 %   \end{table}
 \NewTblrEnviron{platbl}
 \SetTblrInner[platbl]{
-	row{1}={c,m,bg=themecolorlight!12,font=\bfseries},
+	row{1}={c,m,bg=themecolorlight!28,fg=themecolordark,font=\bfseries},
+	row{2-Z}={fg=black!85},
 	hlines={0.3pt,gray!50},
 	hline{1,Z}={0.8pt,black},
 	hline{2}={0.5pt,black},
@@ -332,7 +333,8 @@
 \DefTblrTemplate{conthead-text}{default}{(Продовження)}
 \DefTblrTemplate{caption-sep}{default}{.\enskip}% «Таблиця 5.2. …», як у звичайних таблицях
 \SetTblrInner[longtblr]{
-	row{1}={c,m,bg=themecolorlight!12,font=\bfseries},
+	row{1}={c,m,bg=themecolorlight!28,fg=themecolordark,font=\bfseries},
+	row{2-Z}={fg=black!85},
 	hlines={0.3pt,gray!50},
 	hline{1,Z}={0.8pt,black},
 	hline{2}={0.5pt,black},
