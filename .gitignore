@@ -16,6 +16,10 @@ Notes/
 
 
 *.thm
+*.idx
+*.ilg
+*.ind
+*.bbl-SAVE-ERROR
 
 # books/: довідкові підручники (scans) не в git; в репозиторії лишаються TOC_*.md, README і скрипти
 books/*.pdf
