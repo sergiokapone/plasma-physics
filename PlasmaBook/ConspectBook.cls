@@ -767,7 +767,7 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 	\setcounter{section}{0}%
 	\renewcommand{\thesection}{\arabic{section}}
 	\clearpage\pagestyle{answers}
-	\chapter*{Відповіді}%
+	\chapter*{Відповіді}\hypertarget{answers}{}%
 	\addcontentsline{toc}{chapter}{Відповіді}
 	\renewcommand{\theequation}{\arabic{equation}}
 	\if@restonecol\twocolumn\fi
@@ -826,7 +826,8 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % та горизонтальна лінія праворуч від нього
 \titleformat{\chapter}[block]
 {\normalfont\sffamily}{}{0pt}
-{\gdef\hdrnum{\thechapter.\ }\gdef\hdrtitle{#1}%
+{\hypertarget{ch\arabic{chapter}}{}% стабільна точка призначення в PDF для посилань із сайту (index.html)
+	\gdef\hdrnum{\thechapter.\ }\gdef\hdrtitle{#1}%
 	\parbox[b]{\chapnumb}{%
 		\color{themecolordark}\fontsize{100}{90}\selectfont\thechapter}%
 	\parbox[b]{\dimexpr\textwidth-\chapnumb\relax}{%
@@ -849,7 +850,7 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 % Знак § перед номером підрозділу (у додатках і відповідях вимкнено: \sectionsign = порожньо)
 \newcommand{\sectionsign}{\S\,}
 \titleformat{\section}
-{\normalsize\bfseries}{\sectionsign\thesection.}{1em}{#1}
+{\normalsize\bfseries}{\sectionsign\thesection.}{1em}{\hypertarget{s\arabic{chapter}.\arabic{section}}{}#1}
 
 % Заголовок підсекції: у підбір з текстом ("runin"), закінчується крапкою
 \titleformat{\subsection}[runin]

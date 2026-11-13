@@ -32,6 +32,19 @@ cd PlasmaBook
 
 Потрібні TeX Live з `lualatex`, `latexmk`, `biber`, `upmendex`. `pdflatex` не підходить.
 
+### Сайт підручника
+
+`index.html` у корені репозиторію (з `assets/`) — сторінка для GitHub Pages: кнопка завантаження PDF і зміст, де кожен розділ і підрозділ відкриває `PlasmaBook/main.pdf` на потрібному місці (`#nameddest=ch3`, `#nameddest=s3.2`). Точки призначення створює `ConspectBook.cls` (`\hypertarget` у заголовках розділів і підрозділів), а ще вручну задані: `preface`, `summary`, `answers`, `app-notation`, `app-sgs-si`, `app-cheatsheet`, `glossary`, `bibliography`.
+
+Після кожної збірки книги, що змінила розділи чи їхні назви, перегенеруйте сторінку, бо зміст береться з `main.toc`:
+
+```powershell
+cd PlasmaBook
+python -I make_site.py
+```
+
+Онлайн-версії (HTML) книги поки немає.
+
 ### Симуляції
 
 Інтерактивні HTML-симуляції лежать у `PlasmaBook/sims/` (Дебаївське екранування, зонд Ленгмюра, шар, магнітне дзеркало, плазмові коливання, інтерферометрія, МГД-хвилі та ін.). Відкриваються просто в браузері. У книзі на них є посилання (`\simlink`).
