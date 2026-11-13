@@ -1237,6 +1237,8 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 	left=3mm,right=3mm,top=1.5mm,bottom=1mm,
 	fontupper=\small,before upper={\parindent0pt\setlist[itemize]{topsep=0.3ex,itemsep=0.5ex,parsep=0pt,partopsep=0pt,leftmargin=1.4em}},
 }
+% Підсумок не розривати: якщо не лишилось місця на весь блок, переносити його цілим.
+\pretocmd{\Summary}{\Needspace{16\baselineskip}}{}{}
 
 % \tocunnum{Назва} — запис без номера в змісті (рівень section) і закладка PDF; ставиться перед \section*.
 \newcommand{\tocunnum}[1]{\phantomsection\addcontentsline{toc}{section}{\protect\numberline{}#1}}
