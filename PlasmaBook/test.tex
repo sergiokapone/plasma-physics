@@ -1,0 +1,24 @@
+% Збірка ОДНОГО розділу: .\build.ps1 -Chapter Collisions  (див. build.ps1)
+% Ім'я розділу передається через \TargetChapter (latexmk -pretex); посилання на інші розділи лишаються «??».
+% !TeX program = lualatex
+\documentclass[biblatex]{ConspectBook}
+
+\title{Елементи фізики плазми}
+\def\subtitle{}
+\def\authors{С.~М.~Пономаренко}
+
+\addbibresource{./bibliography/bibliography.bib}
+
+\begin{document}
+\pagestyle{main}
+\input{\TargetChapter/\TargetChapter}
+
+% відповіді розділу (їх записує пакет answers на попередньому проході)
+\answers
+\InputIfFileExists{\TargetChapter/\TargetChapter-Answers}{}{}
+
+% література розділу: \TargetBib визначає build.ps1, якщо в розділі є \cite
+\ifdefined\TargetBib
+  \clearpage\bibliographytrue\phantomsection\pagestyle{bibliography}\printbibliographies
+\fi
+\end{document}
