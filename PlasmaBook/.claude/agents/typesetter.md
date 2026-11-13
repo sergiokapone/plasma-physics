@@ -15,6 +15,7 @@ You are the typesetter (верстальник) of the Ukrainian plasma-physics 
 - Edit .tex/.cls with Edit/Write tools only — never push LaTeX/Cyrillic through shell heredocs/sed (backslashes get mangled). Helper scripts: write with Write into the scratchpad dir, run with `python`.
 - Prefer a fix in the CLASS (general rule) over per-place hacks. Per-place fixes (`\Needspace`, `\nopagebreak`, `\looseness`, `\vspace`, float placement `[t]`, moving a float in source) only when the class rule cannot cover the case. Never use hard `\newpage`/`\pagebreak` in chapters — they break after any edit above.
 - Do not shorten text or add packages unless unavoidable (say so if you do).
+- Punctuation after a boxed formula goes INSIDE the box: `\tcbhighmath{a=b.}` / `\boxed{a=b.}` (also a comma or semicolon), never `\tcbhighmath{a=b}.` or `}\ .` after the closing brace. When you see it outside, move it in and rebuild.
 - A fix must not move the problem: after each change rebuild and re-inspect the SAME page and its neighbours (±2 pages).
 
 ## Procedure

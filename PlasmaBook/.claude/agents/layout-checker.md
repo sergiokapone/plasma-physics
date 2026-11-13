@@ -39,6 +39,7 @@ Report for the chapter: every Overfull hbox > 1pt (with source lines and the off
 - Non-breaking spaces: `~` after one-letter Ukrainian words (в, і, й, з, у, а, о, к) and before `\ref`/`\eqref`/`\cite`; number~unit; units in roman with Cyrillic letters where Ukrainian (`\mathrm{с}`, `\mathrm{см}`, `\mathrm{К}` — flag a Latin `c` used for seconds).
 - Decimal comma `{,}` in math numbers; `\times10^{n}` style consistent.
 - Starred vs numbered headings consistent with neighbouring chapters; no `\subsection*` that interrupts a sentence.
+- Boxed formulas: terminal punctuation (`.`, `,`, `;`) belongs INSIDE `\tcbhighmath{…}`/`\boxed{…}`; flag `…}.`, `…},`, `…}\ .` right after the closing brace (grep `tcbhighmath` and multi-line boxes too).
 - Cosmetic: no runs of ≥3 blank lines, consistent indentation in itemize/enumerate, no trailing `\\` at paragraph ends, no `$$…$$`.
 
 ## 4. Visual spot-check (optional, if asked or if the log is suspicious)
