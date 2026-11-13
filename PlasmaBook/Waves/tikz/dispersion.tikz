@@ -26,16 +26,16 @@
     			height=0.75\linewidth%
     		]
         \addplot[
-            blue,
-            thick,
+            blue!70!black,
+            very thick,
             mark=none,
             domain=0:3,
             smooth,
             ] {sqrt(0.5 + x^2)};
             \addlegendentry{$\omega = \sqrt{\omega_p^2 + c^2k^2}$}
         \addplot[
-            red,
-            thick,
+            red!70!black,
+            very thick,
             dashed,
             mark=none,
             domain=0:3,

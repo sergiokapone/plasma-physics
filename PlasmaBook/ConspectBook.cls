@@ -462,6 +462,14 @@
 	%every tick label/.append style={scale=0.5},
 	every axis label/.append style={font=\small},
 	compat=newest,
+	% --- єдиний вигляд графіків книги (pgfplots) ---
+	% криві — very thick; кольори: blue!70!black, red!70!black, green!50!black;
+	% допоміжні лінії — dashed gray; маркери тонкі, щоб не «жирніли» разом з кривою
+	every axis plot/.append style={very thick, mark options={solid, line width=0.4pt}},
+	grid style={gray!25},
+	label style={font=\small},
+	tick label style={font=\small},
+	legend style={font=\scriptsize, draw=none, fill=white, fill opacity=0.8, text opacity=1},
 }
 \tikzset{every picture/.style={font=\small}}   % єдиний розмір шрифту в усіх tikzpicture
 

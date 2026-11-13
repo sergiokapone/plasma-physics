@@ -6,13 +6,13 @@
 		xtick={0,20,40,60,80,100}, ytick=\empty, clip=true,
 		legend style={at={(0.97,0.97)}, anchor=north east, font=\scriptsize, draw=none, fill=none}]
 		% max boltzmann tail: exp(-E/kT), kT = 10 keV
-		\addplot[thick, blue!70!black, domain=0.5:110, samples=200] {exp(-x/10)};
+		\addplot[blue!70!black, domain=0.5:110, samples=200] {exp(-x/10)};
 		\addlegendentry{$e^{-E/T}$ ($T=10$~кеВ)}
 		% Gamow penetration: exp(-sqrt(E_G/E)) , E_G = 1175 keV ; normalized to 1 at 110 keV
-		\addplot[thick, green!50!black, domain=0.5:110, samples=200] {exp(-sqrt(1175/x))/0.0323*1.0};
+		\addplot[green!50!black, domain=0.5:110, samples=200] {exp(-sqrt(1175/x))/0.0323*1.0};
 		\addlegendentry{$e^{-\sqrt{E_G/E}}$ (відн.)}
 		% product normalized
-		\addplot[very thick, red!70!black, domain=0.5:110, samples=200] {exp(-x/10-sqrt(1175/x))/0.0000958};
+		\addplot[red!70!black, domain=0.5:110, samples=200] {exp(-x/10-sqrt(1175/x))/0.0000958};
 		\addlegendentry{добуток: пік Гамова}
 		\draw[dashed] (axis cs:31,0) -- (axis cs:31,1.05);
 		\node[font=\scriptsize, anchor=south] at (axis cs:31,1.05) {$E_0\approx31$~кеВ};

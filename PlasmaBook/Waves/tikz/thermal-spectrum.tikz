@@ -10,7 +10,7 @@
     grid=both,
     tick label style={font=\small},
     label style={font=\small},
-    every axis plot/.append style={thick, blue, smooth},
+    every axis plot/.append style={blue!70!black, smooth},
 ]
 % смуги, показані на панелях (б)--(г)
 \fill[red!15, opacity=0.6] (axis cs:0.35,0) rectangle (axis cs:0.8,1.15);
