@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Фізика плазми | Підручник</title>
+    <meta name="description" content="Підручник з фізики плазми для студентів-прикладних фізиків: від іонізації та дебаївського екранування до хвиль, нестійкостей, магнітного утримання й термоядерного синтезу.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sergiokapone.github.io/plasma-physics/">
+
+    <meta property="og:title" content="Фізика плазми | Підручник">
+    <meta property="og:description" content="Підручник з фізики плазми: 12 розділів, задачі з відповідями, інтерактивні симуляції.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sergiokapone.github.io/plasma-physics/">
+
+    <!-- Дизайн і тема застосовуються до першого малювання, щоб не мигало -->
+    <script>(function(){var r=document.documentElement;try{var d=localStorage.getItem('plasma-design');r.setAttribute('data-design',['field','blueprint','book'].indexOf(d)>-1?d:'field');var t=localStorage.getItem('plasma-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){r.classList.add('dark');}}catch(e){r.setAttribute('data-design','field');}})();</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400..600;1,7..72,400..600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="stylesheet" href="assets/designs.css">
+    <style>
+        .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;position:relative;z-index:1}
+        .pdf-button-primary{background:var(--gold);border-color:var(--gold);color:#1b0e0c}
+        .pdf-button-primary .btn-icon{color:inherit}
+        .pdf-button-primary:hover{background:var(--gold-bright);border-color:var(--gold-bright);color:#1b0e0c}
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="pdf-hero">
+        <div class="hero-tools">
+            <div class="design-switch" role="group" aria-label="Дизайн сторінки">
+                <button type="button" data-design="field" aria-pressed="true">Поле</button>
+                <button type="button" data-design="blueprint" aria-pressed="false">Креслення</button>
+                <button type="button" data-design="book" aria-pressed="false">Книга</button>
+            </div>
+            <button class="theme-toggle" id="theme-toggle" type="button" title="Перемкнути тему" aria-label="Перемкнути тему">🌙</button>
+        </div>
+        <h1>Фізика плазми</h1>
+        <div class="subtitle">Підручник</div>
+        <div class="hero-rule"></div>
+        <div class="hero-actions">
+            <a href="PlasmaBook/main.pdf" class="pdf-button pdf-button-primary">
+                <span class="btn-icon">&#8595;</span> Завантажити підручник (PDF)
+            </a>
+        </div>
+        <p class="pdf-note">Повна версія у форматі PDF. Пункти змісту нижче відкривають PDF на потрібному місці.</p>
+    </div>
+
+    <div class="content">
+
+        <!-- Автор -->
+        <div class="section">
+            <h2 class="section-heading">Автор</h2>
+            <div class="authors">
+                <div class="author-card">
+                    <img class="author-photo"
+                         src="https://apd.ipt.kpi.ua/wp-content/uploads/2025/01/MyPhoto2.jpg"
+                         alt="Сергій Пономаренко" loading="lazy"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/110x110?text=С.М.+Пономаренко';">
+                    <strong>
+                        <a href="https://apd.ipt.kpi.ua/kafedra/stuff/ponomarenko/" target="_blank">
+                            Пономаренко Сергій Миколайович
+                        </a>
+                    </strong>
+                    <p>Кандидат фізико-математичних наук, доцент кафедри прикладної фізики КПІ ім. Ігоря Сікорського.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Про підручник -->
+        <div class="preface">
+            <h2>Про підручник</h2>
+            <p>Підручник з курсу <strong>«Фізика плазми»</strong> розрахований на студентів-прикладних фізиків, які вже знають загальну й теоретичну фізику. Він веде від умов, за яких іонізований газ стає плазмою (іонізація, дебаївське екранування, колективність), через хвилі, рух частинок, зіткнення, рідинний і кінетичний опис до нестійкостей, магнітного утримання, термоядерного синтезу й газового розряду.</p>
+            <p>Викладення спирається на оцінки величин: у розділах є рамки <em>Estimate</em> з числовими прикладами, блоки «Як це вимірюють» про діагностику плазми, задачі з розв'язками й контрольні питання, а також посилання на інтерактивні симуляції. Використано гауссову систему одиниць, температуру подано в енергетичних одиницях (<i>k</i><sub>B</sub> = 1); у додатку є перехід до СІ.</p>
+        </div>
+
+        <!-- ── Зміст ─────────────────────────────────────────────────── -->
+        <div class="section" id="toc-section">
+            <h2 class="section-heading">Зміст</h2>
+            <div class="toc-controls">
+                <button type="button" id="toc-expand-all" class="toc-ctrl-btn">Розгорнути все</button>
+                <button type="button" id="toc-collapse-all" class="toc-ctrl-btn">Згорнути все</button>
+            </div>
+            <ul class="toc-list toc-preamble">
+                <li><a href="PlasmaBook/main.pdf#nameddest=preface" class="toc-title">Передмова</a></li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <ul class="toc-list">
+                <li>
+                    <span class="toc-num">1</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch1" class="toc-title">Плазма: від іонізованого газу до колективного середовища</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s1.1">1.1 Що таке плазма?</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s1.2">1.2 Іонізація: формула Саха</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s1.3">1.3 Температура плазми та два компоненти</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s1.4">1.4 Квазінейтральність і плазмові коливання</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s1.5">1.5 Дебаївське екранування</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s1.6">1.6 Дебаївська сфера. Умова колективності</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s1.7">1.7 Слабкозв'язана та сильнозв'язана плазма</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s1.8">1.8 Екранування в виродженому газі: довжина Томаса–Фермі</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s1.9">1.9 Шар біля стінки і зонд Ленгмюра</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">2</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch2" class="toc-title">Колективні коливання та хвилі в плазмі</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s2.1">2.1 Діелектрична проникність холодної плазми</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s2.2">2.2 Закон дисперсії. Частота відсікання</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s2.3">2.3 Поздовжні (ленгмюрівські) хвилі</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s2.4">2.4 Зіткнення й поглинання електромагнітних хвиль</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s2.5">2.5 Відбиття електромагнітних хвиль від плазми</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s2.6">2.6 Іоносфера і далекий радіозв'язок</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s2.7">2.7 Як це вимірюють: інтерферометрія і рефлектометрія</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">3</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch3" class="toc-title">Рух зарядженої частинки в електричному та магнітному полях</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s3.1">3.1 Однорідне магнітне поле</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s3.2">3.2 Дрейфи в схрещених полях</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s3.3">3.3 Поляризаційний дрейф</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s3.4">3.4 Магнітний момент і адіабатичний інваріант</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s3.5">3.5 Магнітне дзеркало і конус втрат</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s3.6">3.6 Подовжній інваріант</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s3.7">3.7 Диполь Землі та радіаційні пояси</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s3.8">3.8 Як це вимірюють: аналізатор енергій і ECE</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">4</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch4" class="toc-title">Зіткнення, провідність та перенос у плазмі</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s4.1">4.1 Кулонівські зіткнення</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s4.2">4.2 Провідність плазми</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s4.3">4.3 Теплопровідність плазми</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s4.4">4.4 Дифузія в плазмі. Амбіполярна дифузія</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s4.5">4.5 Як це вимірюють: температура з опору і з ширини ліній</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">5</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch5" class="toc-title">Гідродинамічний та магнітогідродинамічний опис</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.1">5.1 Гідродинамічний опис не є синонімом частих зіткнень</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.2">5.2 Дворідинний опис</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.3">5.3 Від дворідинної моделі до однорідинної МГД</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.4">5.4 Основне рівняння магнітної гідродинаміки</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.5">5.5 Альвенівська швидкість і число Альвена</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.6">5.6 МГД-рівновага та магнітні поверхні</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.7">5.7 Енергія електромагнітного поля та плазми</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.8">5.8 Діамагнетизм плазми</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.9">5.9 Вмороженість магнітного поля</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.10">5.10 Перез'єднання силових ліній</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.11">5.11 Дві мови опису: окремі частинки й суцільне середовище</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s5.12">5.12 Як це вимірюють: магнітні виміри</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">6</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch6" class="toc-title">Хвилі в замагніченій плазмі</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s6.1">6.1 Що в плазмі може бути відновлювальною силою?</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s6.2">6.2 Звукова й іонно-звукова хвилі</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s6.3">6.3 Лінеаризована МГД і загальне дисперсійне рівняння</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s6.4">6.4 Альвенівська хвиля</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s6.5">6.5 Магнітозвукові хвилі</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s6.6">6.6 Підсумок: хвилі в рідинному описі</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s6.7">6.7 Високочастотні хвилі в замагніченій плазмі</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s6.8">6.8 Межі застосовності МГД-хвиль</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">7</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch7" class="toc-title">Кінетичний опис плазми</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.1">7.1 Функція розподілу та фазовий простір</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.2">7.2 Моменти функції розподілу</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.3">7.3 Кінетичне рівняння</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.4">7.4 Максвеллівський розподіл і температура</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.5">7.5 Від кінетики до гідродинаміки</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.6">7.6 Дворідинна картина та її зв'язок із МГД</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.7">7.7 Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.8">7.8 Лінеаризація кінетичного рівняння та хвильовий відгук</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.9">7.9 Загасання Ландау</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.10">7.10 Коли потрібен кінетичний опис?</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s7.11">7.11 Як це вимірюють: томсонівське розсіяння</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">8</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch8" class="toc-title">Загальний принцип нестійкості плазми</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.1">8.1 Що означає нестійкість?</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.2">8.2 Лінеаризація: як знайти долю малого збурення</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.3">8.3 Хвиля, що може рости</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.4">8.4 Дисперсійне рівняння</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.5">8.5 Звідки береться енергія нестійкості?</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.6">8.6 Рівновага та стійкість у магнітному полі</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.7">8.7 Перетяжка як найпростіший приклад нестійкості</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.8">8.8 Лінійна та нелінійна стадії</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.9">8.9 Нестійкість Релея–Тейлора та жолобкова нестійкість</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.10">8.10 Двопотокова нестійкість та нестійкість пучка</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.11">8.11 Нестійкості анізотропної плазми</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.12">8.12 Енергетичний принцип</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.13">8.13 Дрейфові хвилі та аномальний перенос</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.14">8.14 Від загального принципу до конкретних нестійкостей</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s8.15">8.15 Як це вимірюють: котушки Мірнова і м'який рентген</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">9</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch9" class="toc-title">Магнітне утримання плазми</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.1">9.1 Проблема утримання</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.2">9.2 Відкриті пастки: магнітне дзеркало</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.3">9.3 Пінч-ефект</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.4">9.4 Рівновага <i>z</i>-пінча. Співвідношення Беннета</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.5">9.5 Рівновага <i>θ</i>-пінча</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.6">9.6 Нестійкості пінча</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.7">9.7 Тороїдальні системи: токамак і стеларатор</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.8">9.8 Захоплені частинки й неокласичний перенос</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.9">9.9 Рівновага тора: зсув Шафранова та межа за тиском</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s9.10">9.10 Як це вимірюють: магнітна реконструкція рівноваги</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">10</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch10" class="toc-title">Керований термоядерний синтез</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.1">10.1 Реакції та паливо</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.2">10.2 Чому потрібна саме така температура: бар'єр і тунелювання</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.3">10.3 Баланс потужностей і критерій Лоусона</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.4">10.4 Втрати</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.5">10.5 Дві стратегії: магнітне й інерційне утримання</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.6">10.6 Від реакції до розетки</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.7">10.7 Що ще треба вирішити</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.8">10.8 Інерційний шлях</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.9">10.9 Де ми зараз: стан на 2026 рік</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s10.10">10.10 Як це вимірюють: нейтронна діагностика</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">11</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch11" class="toc-title">Низькотемпературна плазма та газовий розряд</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s11.1">11.1 Елементарні процеси: іонізація і її швидкість</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s11.2">11.2 Пробій газу: механізм Таунсенда і закон Пашена</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s11.3">11.3 Тліючий розряд і дуга</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s11.4">11.4 Приелектродний шар у розряді</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s11.5">11.5 Глобальна модель розряду</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s11.6">11.6 Високочастотні джерела плазми</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s11.7">11.7 Плазмова обробка матеріалів</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s11.8">11.8 Як це вимірюють: оптична емісія і ВЧ-зонди</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="toc-num">12</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=ch12" class="toc-title">Основні масштаби, режими та межі моделей</a>
+                    <ul class="sub-list">
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s12.1">12.1 Просторові та часові масштаби</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s12.2">12.2 Зіткнювальний та беззіткнювальний режими</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s12.3">12.3 Як за масштабами вибирають модель</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s12.4">12.4 Типова ієрархія масштабів у магнітному утриманні</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s12.5">12.5 Від кінетики до МГД</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s12.6">12.6 Безрозмірні параметри МГД</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s12.7">12.7 Межі простих моделей</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s12.8">12.8 Основні масштаби та формули</a></li>
+                        <li><a href="PlasmaBook/main.pdf#nameddest=s12.9">12.9 Що вимірюють на якому масштабі</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section section-appendix">
+            <h2 class="section-heading">Підсумки, додатки, словник</h2>
+            <ul class="toc-list">
+                <li>
+                    <a href="PlasmaBook/main.pdf#nameddest=summary" class="toc-title">Підсумки</a>
+                </li>
+                <li>
+                    <a href="PlasmaBook/main.pdf#nameddest=answers" class="toc-title">Відповіді</a>
+                </li>
+                <li>
+                    <span class="toc-num">А</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=app-notation" class="toc-title">Таблиця позначень</a>
+                </li>
+                <li>
+                    <span class="toc-num">Б</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=app-sgs-si" class="toc-title">Перехід між СГС і СІ. Константи</a>
+                </li>
+                <li>
+                    <span class="toc-num">В</span>
+                    <a href="PlasmaBook/main.pdf#nameddest=app-cheatsheet" class="toc-title">Шпаргалка: ключові масштаби</a>
+                </li>
+                <li>
+                    <a href="PlasmaBook/main.pdf#nameddest=glossary" class="toc-title">Словник термінів</a>
+                </li>
+                <li>
+                    <a href="PlasmaBook/main.pdf#nameddest=bibliography" class="toc-title">Література</a>
+                </li>
+            </ul>
+        </div>
+        <!-- ── /Зміст ──────────────────────────────────────────────────── -->
+
+        <hr>
+        <p class="ref-links">
+            <a href="https://apd.ipt.kpi.ua/kafedra/stuff/ponomarenko/" target="_blank">Пономаренко С.М.</a>
+        </p>
+
+    </div><!-- /content -->
+
+    <footer>
+        Фізика плазми &nbsp;|&nbsp; Підручник<br>
+        Кафедра прикладної фізики, КПІ ім. Ігоря Сікорського
+    </footer>
+
+</div><!-- /container -->
+
+<button class="back-to-top" id="back-to-top" type="button" title="Нагору" aria-label="Прогорнути нагору">↑</button>
+
+<script src="assets/script.js"></script>
+</body>
+</html>
