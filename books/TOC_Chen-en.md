@@ -1,7 +1,8 @@
 # Chen F.F. Introduction to Plasma Physics and Controlled Fusion (3rd ed., Springer, 2016), англ.
 
 Файл: `Chen, Francis F - Introduction to plasma physics and controlled fusion-Springer (2016).pdf`; сторінок у pdf: 497.
-Номер у книзі = індекс pdf -11 (за колонтитулами; голоси: [(-11, 73), (-12, 68), (-8, 36)]).
+Номер у книзі = індекс pdf -12 (за колонтитулами; голоси: [(-11, 73), (-12, 68), (-8, 36)]).
+Колонтитули дають дві ділянки (-12 і -11, -8 у частині сторінок): номер у книзі звіряй за зображенням. Проверено: pdf 102-104 = с. 90-92 книги.
 Номери нижче — індекси сторінок pdf (`search_books.py --png N -b <книга>`).
 
 - Preface — с. 6
