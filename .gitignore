@@ -16,3 +16,11 @@ Notes/
 
 
 *.thm
+
+# books/: довідкові підручники (scans) не в git; в репозиторії лишаються TOC_*.md, README і скрипти
+books/*.pdf
+books/*.PDF
+books/*.djvu
+books/*.DJVU
+books/.cache/
+__pycache__/
