@@ -1,6 +1,6 @@
 \begin{tikzpicture}
 \begin{axis}[
-    width=10cm, height=5.5cm,
+    width=\linewidth-6.5mm, height=7cm,
     xmode=log,
     xlabel={$k\lambda_{De}$},
     ylabel={$\langle|n_k|^2\rangle/N$},
