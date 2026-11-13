@@ -1,0 +1,235 @@
+# Chen F.F. Introduction to Plasma Physics and Controlled Fusion (3rd ed., Springer, 2016), англ.
+
+Файл: `Chen, Francis F - Introduction to plasma physics and controlled fusion-Springer (2016).pdf`; сторінок у pdf: 497.
+Номер у книзі = індекс pdf -11 (за колонтитулами; голоси: [(-11, 73), (-12, 68), (-8, 36)]).
+Номери нижче — індекси сторінок pdf (`search_books.py --png N -b <книга>`).
+
+- Preface — с. 6
+- Contents — с. 8
+- Chapter 1: Introduction — с. 14
+  - 1.1 Occurrence of Plasmas in Nature — с. 14
+  - 1.2 Definition of Plasma — с. 15
+  - 1.3 Concept of Temperature — с. 17
+  - 1.4 Debye Shielding — с. 20
+  - 1.5 The Plasma Parameter — с. 24
+  - 1.6 Criteria for Plasmas — с. 24
+  - 1.7 Applications of Plasma Physics — с. 25
+    - 1.7.1 Gas Discharges (Gaseous Electronics) — с. 26
+    - 1.7.2 Controlled Thermonuclear Fusion — с. 26
+    - 1.7.3 Space Physics — с. 27
+    - 1.7.4 Modern Astrophysics — с. 27
+    - 1.7.5 MHD Energy Conversion and Ion Propulsion — с. 28
+    - 1.7.6 Solid State Plasmas — с. 29
+    - 1.7.7 Gas Lasers — с. 29
+    - 1.7.8 Particle Accelerators — с. 30
+    - 1.7.9 Industrial Plasmas — с. 30
+    - 1.7.10 Atmospheric Plasmas — с. 30
+- Chapter 2: Single-Particle Motions — с. 32
+  - 2.1 Introduction — с. 32
+  - 2.2 Uniform E and B Fields — с. 32
+    - 2.2.1 E=0 — с. 32
+    - 2.2.2 Finite E — с. 34
+    - 2.2.3 Gravitational Field — с. 37
+  - 2.3 Nonuniform B Field — с. 39
+    - 2.3.1 : Grad-B Drift — с. 39
+    - 2.3.2 Curved B: Curvature Drift — с. 41
+    - 2.3.3 BB: Magnetic Mirrors — с. 42
+  - 2.4 Nonuniform E Field — с. 48
+  - 2.5 Time-Varying E Field — с. 50
+  - 2.6 Time-Varying B Field — с. 52
+  - 2.7 Summary of Guiding Center Drifts — с. 54
+  - 2.8 Adiabatic Invariants — с. 55
+    - 2.8.1 The First Adiabatic Invariant, mu — с. 55
+    - 2.8.2 The Second Adiabatic Invariant, J — с. 57
+    - 2.8.3 The Third Adiabatic Invariant, — с. 60
+- Chapter 3: Plasmas as Fluids — с. 63
+  - 3.1 Introduction — с. 63
+  - 3.2 Relation of Plasma Physics to Ordinary Electromagnetics — с. 64
+    - 3.2.1 Maxwell´s Equations — с. 64
+    - 3.2.2 Classical Treatment of Magnetic Materials — с. 65
+    - 3.2.3 Classical Treatment of Dielectrics — с. 66
+    - 3.2.4 The Dielectric Constant of a Plasma — с. 67
+  - 3.3 The Fluid Equation of Motion — с. 68
+    - 3.3.1 The Convective Derivative — с. 68
+    - 3.3.2 The Stress Tensor — с. 71
+    - 3.3.3 Collisions — с. 74
+    - 3.3.4 Comparison with Ordinary Hydrodynamics — с. 75
+    - 3.3.5 Equation of Continuity — с. 76
+    - 3.3.6 Equation of State — с. 76
+    - 3.3.7 The Complete Set of Fluid Equations — с. 77
+  - 3.4 Fluid Drifts Perpendicular to B — с. 77
+  - 3.5 Fluid Drifts Parallel to B — с. 83
+  - 3.6 The Plasma Approximation — с. 85
+- Chapter 4: Waves in Plasmas — с. 87
+  - 4.1 Representation of Waves — с. 87
+  - 4.2 Group Velocity — с. 89
+  - 4.3 Plasma Oscillations — с. 90
+  - 4.4 Electron Plasma Waves — с. 95
+  - 4.5 Sound Waves — с. 101
+  - 4.6 Ion Waves — с. 102
+  - 4.7 Validity of the Plasma Approximation — с. 104
+  - 4.8 Comparison of Ion and Electron Waves — с. 105
+  - 4.9 Electrostatic Electron Oscillations Perpendicular to B — с. 108
+  - 4.10 Electrostatic Ion Waves Perpendicular to B — с. 114
+  - 4.11 The Lower Hybrid Frequency — с. 116
+  - 4.12 Electromagnetic Waves with B0=0 — с. 118
+  - 4.13 Experimental Applications — с. 121
+  - 4.14 Electromagnetic Waves Perpendicular to B0 — с. 125
+    - 4.14.1 Ordinary Wave, E1  B0 — с. 125
+    - 4.14.2 Extraordinary Wave, E1  B0 — с. 127
+  - 4.15 Cutoffs and Resonances — с. 129
+  - 4.16 Electromagnetic Waves Parallel to B0 — с. 132
+  - 4.17 Experimental Consequences — с. 134
+    - 4.17.1 The Whistler Mode — с. 134
+    - 4.17.2 Faraday Rotation — с. 136
+  - 4.18 Hydromagnetic Waves — с. 138
+  - 4.19 Magnetosonic Waves — с. 143
+  - 4.20 Summary of Elementary Plasma Waves — с. 146
+  - 4.21 The CMA Diagram — с. 147
+- Chapter 5: Diffusion and Resistivity — с. 157
+  - 5.1 Diffusion and Mobility in Weakly Ionized Gases — с. 157
+    - 5.1.1 Collision Parameters — с. 157
+    - 5.1.2 Diffusion Parameters — с. 159
+  - 5.2 Decay of a Plasma by Diffusion — с. 160
+    - 5.2.1 Ambipolar Diffusion — с. 160
+    - 5.2.2 Diffusion in a Slab — с. 162
+    - 5.2.3 Diffusion in a Cylinder — с. 165
+  - 5.3 Steady State Solutions — с. 166
+    - 5.3.1 Constant Ionization Function — с. 166
+    - 5.3.2 Plane Source — с. 167
+    - 5.3.3 Line Source — с. 167
+  - 5.4 Recombination — с. 168
+  - 5.5 Diffusion Across a Magnetic Field — с. 169
+    - 5.5.1 Ambipolar Diffusion Across B — с. 173
+    - 5.5.2 Experimental Checks — с. 174
+  - 5.6 Collisions in Fully Ionized Plasmas — с. 176
+    - 5.6.1 Plasma Resistivity — с. 178
+    - 5.6.2 Mechanics of Coulomb Collisions — с. 179
+    - 5.6.3 Physical Meaning of eta — с. 181
+    - 5.6.4 Numerical Values of eta — с. 183
+    - 5.6.5 Pulsed Currents — с. 183
+  - 5.7 The Single-Fluid MHD Equations — с. 184
+  - 5.8 Diffusion of Fully Ionized Plasmas — с. 186
+  - 5.9 Solutions of the Diffusion Equation — с. 188
+    - 5.9.1 Time Dependence — с. 188
+    - 5.9.2 Time-Independent Solutions — с. 189
+  - 5.10 Bohm Diffusion and Neoclassical Diffusion — с. 190
+- Chapter 6: Equilibrium and Stability — с. 198
+  - 6.1 Introduction — с. 198
+  - 6.2 Hydromagnetic Equilibrium — с. 199
+  - 6.3 The Concept of beta — с. 201
+  - 6.4 Diffusion of Magnetic Field into a Plasma — с. 203
+  - 6.5 Classification of Instabilities — с. 207
+    - 6.5.1 Streaming instabilities — с. 208
+    - 6.5.2 Rayleigh-Taylor instabilities — с. 208
+    - 6.5.3 Universal instabilities — с. 208
+    - 6.5.4 Kinetic instabilities — с. 209
+  - 6.6 Two-Stream Instability — с. 209
+  - 6.7 The ``Gravitational´´ Instability — с. 213
+  - 6.8 Resistive Drift Waves — с. 217
+  - 6.9 The Weibel Instability — с. 221
+- Chapter 7: Kinetic Theory — с. 222
+  - 7.1 The Meaning of f(v) — с. 222
+  - 7.2 Equations of Kinetic Theory — с. 228
+  - 7.3 Derivation of the Fluid Equations — с. 233
+  - 7.4 Plasma Oscillations and Landau Damping — с. 235
+  - 7.5 The Meaning of Landau Damping — с. 241
+    - 7.5.1 The Kinetic Energy of a Beam of Electrons — с. 244
+    - 7.5.2 The Effect of Initial Conditions — с. 248
+  - 7.6 A Physical Derivation of Landau Damping — с. 249
+    - 7.6.1 The Resonant Particles — с. 253
+    - 7.6.2 Two Paradoxes Resolved — с. 254
+  - 7.7 BGK and Van Kampen Modes — с. 255
+  - 7.8 Experimental Verification — с. 256
+  - 7.9 Ion Landau Damping — с. 260
+    - 7.9.1 The Plasma Dispersion Function — с. 261
+    - 7.9.2 Ion Waves and Their Damping — с. 263
+  - 7.10 Kinetic Effects in a Magnetic Field — с. 267
+    - 7.10.1 The Hot Plasma Dielectric Tensor — с. 268
+    - 7.10.2 Cyclotron Damping — с. 270
+    - 7.10.3 Bernstein Waves — с. 271
+- Chapter 8: Nonlinear Effects — с. 278
+  - 8.1 Introduction — с. 278
+  - 8.2 Sheaths — с. 280
+    - 8.2.1 The Necessity for Sheaths — с. 280
+    - 8.2.2 The Planar Sheath Equation — с. 281
+    - 8.2.3 The Bohm Sheath Criterion — с. 283
+    - 8.2.4 The Child-Langmuir Law — с. 284
+    - 8.2.5 Electrostatic Probes — с. 285
+  - 8.3 Ion Acoustic Shock Waves — с. 287
+    - 8.3.1 The Sagdeev Potential — с. 288
+    - 8.3.2 The Critical Mach Numbers — с. 290
+    - 8.3.3 Wave Steepening — с. 292
+    - 8.3.4 Experimental Observations — с. 293
+    - 8.3.5 Double Layers — с. 293
+  - 8.4 The Ponderomotive Force — с. 295
+  - 8.5 Parametric Instabilities — с. 298
+    - 8.5.1 Coupled Oscillators — с. 298
+    - 8.5.2 Frequency Matching — с. 299
+    - 8.5.3 Instability Threshold — с. 302
+    - 8.5.4 Physical Mechanism — с. 304
+    - 8.5.5 The Oscillating Two-Stream Instability — с. 306
+    - 8.5.6 The Parametric Decay Instability — с. 309
+  - 8.6 Plasma Echoes — с. 312
+  - 8.7 Nonlinear Landau Damping — с. 315
+  - 8.8 Equations of Nonlinear Plasma Physics — с. 318
+    - 8.8.1 The Korteweg-de Vries Equation — с. 318
+    - 8.8.2 The Nonlinear Schrödinger Equation — с. 323
+  - 8.9 Reconnection — с. 333
+  - 8.10 Turbulence — с. 335
+  - 8.11 Sheath Boundaries — с. 340
+- Chapter 9: Special Plasmas — с. 343
+  - 9.1 Non-Neutral Plasmas — с. 343
+    - 9.1.1 Pure Electron Plasmas — с. 343
+    - 9.1.2 Experiments — с. 344
+  - 9.2 Solid, Ultra-Cold Plasmas — с. 345
+  - 9.3 Pair-ion Plasmas — с. 347
+  - 9.4 Dusty Plasmas — с. 349
+    - 9.4.1 Dust Acoustic Waves — с. 352
+    - 9.4.2 Dust Ion-acoustic Waves — с. 354
+  - 9.5 Helicon Plasmas — с. 356
+  - 9.6 Plasmas in Space — с. 359
+  - 9.7 Atmospheric-Pressure Plasmas — с. 360
+    - 9.7.1 Dielectric Barrier Discharges — с. 361
+    - 9.7.2 RF Pencil Discharges — с. 362
+- Chapter 10: Plasma Applications — с. 364
+  - 10.1 Introduction — с. 364
+  - 10.2 Fusion Energy — с. 365
+    - 10.2.1 Magnetic Fusion — с. 365
+      - 10.2.1.1 Pinches and Pulsed Power — с. 368
+      - 10.2.1.2 Magnetic Mirrors — с. 372
+      - 10.2.1.3 Reversed-Field Configurations — с. 377
+      - 10.2.1.4 Stellarators — с. 377
+      - 10.2.1.5 Tokamaks — с. 382
+        - Islands and Bananas — с. 384
+        - Bootstrap Current — с. 386
+        - The H-Mode — с. 387
+        - D-Shapes and Divertors — с. 388
+        - The Density Limit — с. 389
+        - Heating and Current Drive — с. 390
+        - Disruptions — с. 393
+      - 10.2.1.6 Spheromaks and Spherical Tokamaks — с. 393
+  - 10.3 Plasma Accelerators — с. 395
+    - 10.3.1 Free-Electron Lasers — с. 401
+  - 10.4 Inertial Fusion — с. 402
+    - 10.4.1 Glass Lasers — с. 402
+    - 10.4.2 KrF Lasers — с. 408
+  - 10.5 Semiconductor Etching — с. 408
+  - 10.6 Spacecraft Propulsion — с. 414
+    - 10.6.1 General Principles — с. 414
+    - 10.6.2 Types of Thrusters — с. 416
+      - 10.6.2.1 Gridded Thrusters — с. 416
+      - 10.6.2.2 Hall Thrusters — с. 416
+      - 10.6.2.3 Helicon Thrusters — с. 417
+  - 10.7 Plasmas in Everyday Life — с. 420
+- Appendix A: Units, Constants and Formulas, Vector Relations — с. 421
+  - Units — с. 421
+  - Useful Constants and Formulas — с. 422
+  - Useful Vector Relations — с. 423
+  - Cylindrical Coordinates (r, theta, z) — с. 424
+- Appendix B: Theory of Waves in a Cold Uniform Plasma — с. 425
+- Appendix C: Sample Three-Hour Final Exam — с. 431
+  - Part A (One Hour, Closed Book) — с. 431
+  - Part B (Two Hours, Open Book; Do 4 Out of 5) — с. 434
+- Appendix D: Answers to Some Problems — с. 437
+- Index — с. 492

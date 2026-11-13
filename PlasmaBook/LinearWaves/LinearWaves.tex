@@ -72,7 +72,7 @@ p_B=\frac{B^2}{8\pi}.
 \item зміна магнітного тиску.
 \end{enumerate}
 
-Перший механізм дає звукову хвилю, другий~--- альвенівську, а поєднання тиску плазми та
+Перший механізм дає звукову хвилю, другий~--- альвенівську, а~поєднання тиску плазми та
 магнітного поля породжує магнітозвукові хвилі.
 \begin{figure}[ht]
 \centering
@@ -110,8 +110,8 @@ c_s^2=\left(\frac{\partial p}{\partial\rho_m}\right)_S=\frac{\gamma\,(p_e+p_i)}{
 \label{eq:wave-sound-equation}
 \end{equation}
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Тут $p_e+p_i$~--- повний тиск плазми, $\gamma$~--- показник адіабати (в~одновимірному
-стисканні $\gamma=3$, у~тривимірному ізотропному $\gamma=5/3$). Отже, звук виникає тому, що
+Тут $p_e+p_i$~--- повний тиск плазми, $\gamma$~--- показник адіабати ($\gamma=5/3$, бо зіткнення
+підтримують ізотропний тиск). Отже, звук виникає тому, що
 локальне стискання породжує зміну тиску, а~зміна тиску породжує рух, який передає
 збурення сусіднім ділянкам.
 
@@ -126,7 +126,7 @@ c_s^2=\left(\frac{\partial p}{\partial\rho_m}\right)_S=\frac{\gamma\,(p_e+p_i)}{
 \paragraph{Звук без зіткнень: іонно-звукова хвиля.}
 Формула з~одним $\gamma$ працює, поки зіткнень достатньо. У~розрідженій гарячій плазмі
 довжина вільного пробігу більша за~довжину хвилі, температури сортів не вирівнюються, і~для
-кожного сорту потрібен свій $\gamma$. Звук у такій плазмі лишається поздовжньою хвилею стискання й~розрідження, але вже беззіткнювальною; її називають \emph{іонно-звуковою}.
+кожного сорту потрібен свій $\gamma$. Звук у~такій плазмі лишається поздовжньою хвилею стискання й~розрідження, але вже беззіткнювальною; її називають \emph{іонно-звуковою}.
 Виведемо її швидкість. Інерція належить іонам, а~електрони встигають встановити больцманівський розподіл.
 Це можливо, коли хвиля \emph{повільна} порівняно з~електронами: її фазова швидкість набагато менша
 за~теплову швидкість електронів, $\omega/k\ll v_{Te}$, тобто $\omega\ll kv_{Te}$. Тоді за~період хвилі
@@ -138,19 +138,19 @@ $-i\omega m_iv=-ik\,e\varphi$, $n_{i1}/n_0=kv/\omega$; рівняння Пуас
 $\omega^2=k^2(T_e/m_i)/(1+k^2\lambda_{De}^2)$; урахування тиску іонів і~заряду $Z$ дає загальний вигляд
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{equation}\label{eq:ion-acoustic}
-	\tcbhighmath{\omega^2=\frac{k^2c_s^2}{1+k^2\lambda_{De}^2}},\qquad
-	c_s^2=\frac{ZT_e+3T_i}{m_i},
+	\tcbhighmath{\omega^2=k^2\biggl[\frac{ZT_e}{m_i\,(1+k^2\lambda_{De}^2)}+\frac{3T_i}{m_i}\biggr]},
 \end{equation}
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-де $Z$~--- заряд іона (для водню $Z=1$). Швидкість $c_s$ відповідає формулі
+де $Z$~--- заряд іона (для водню $Z=1$). При $k\lambda_{De}\ll1$ маємо $\omega=kc_s$ зі швидкістю
+$c_s^2=(ZT_e+3T_i)/m_i$. Вона відповідає формулі
 $c_s^2=(\gamma_ep_e+\gamma_ip_i)/\rho_m$ з~окремим $\gamma$ для кожного сорту: ізотермічні електрони
 ($\gamma_e=1$) дають $ZT_e$, а~іони (адіабата одновимірного стискання, $\gamma_i=3$)~--- $3T_i$.
 При $T_i\ll T_e$ $c_s$ збігається з~граничною швидкістю іонів
-в~критерії Бома (розд.~\ref{sec:bohm-sheath}), і~це не випадковість: іони мають входити в~шар
+в~критерії Бома (§\,\ref{sec:bohm-sheath}), і~це не випадковість: іони мають входити в~шар
 зі~швидкістю не меншою за $c_s$, щоб потенціал у~шарі спадав монотонно, без осциляцій.
-При $k\lambda_{De}\ll1$ маємо $\omega=kc_s$~--- звичайний звук, швидкість якого визначає
+При $k\lambda_{De}\ll1$ хвиля~--- звичайний звук, швидкість якого визначає
 \emph{електронна} температура ($T_e\gg T_i$) і~\emph{іонна} маса; при $k\lambda_{De}\gtrsim1$ частота
-виходить на $\omega_{pi}$. Така хвиля існує вже в~дворідинному описі, а~кінетика (розд.~\ref{sec:landau-damping})
+виходить на $\omega_{pi}$. Така хвиля існує вже в~дворідинному описі, а~кінетика (§\,\ref{sec:landau-damping})
 визначає лише її \emph{загасання}. Декремент
 $\operatorname{Im}\omega/\omega\approx-\sqrt{\pi/8}\bigl[\sqrt{m_e/m_i}+(T_e/T_i)^{3/2}e^{-T_e/2T_i-3/2}\bigr]$
 малий лише за $T_e\gg T_i$; при $T_e\sim T_i$ хвиля сильно загасає на іонах, і~її не спостерігають.
@@ -165,7 +165,7 @@ $\operatorname{Im}\omega/\omega\approx-\sqrt{\pi/8}\bigl[\sqrt{m_e/m_i}+(T_e/T_i
 Розглянемо ідеальну МГД (розд.~\ref{sec:mhd}) над рівноважним станом: однорідні $\rho_0$, $p_0$ і~поле
 $\vect B_0=B_0\hat{\vect z}$, швидкість $\vect v_0=0$. Лінеаризуємо рівняння неперервності,
 руху ($\vect j\times\vect B/c=(\nabla\times\vect B)\times\vect B/4\pi$), індукції та
-адіабатичності, поклавши $\delta p=c_s^2\delta\rho$:
+адіабатичності, поклавши $\delta p=c_s^2\delta\rho$ ($c_s$~--- швидкість звуку з~\eqref{eq:wave-sound-equation} з~одним показником адіабати):
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{equation}\label{eq:linear-mhd}
 \begin{aligned}
@@ -203,7 +203,7 @@ $\delta\vect B=[\vect B_0(\vect k\cdot\vect v)-\vect v(\vect k\cdot\vect B_0)]/\
 	  \emphx{швидку}\index{Магнітозвукові хвилі!швидка} і~\emphx{повільну}\index{Магнітозвукові хвилі!повільна}.
 \end{itemize}
 Покажемо кроки. Нехай $\vect k=k(\sin\theta,0,\cos\theta)$, $\vect v_A=v_A\hat{\vect z}$, так що
-$\vect k\cdot\vect v_A=kv_A\cos\theta$. Розпишемо \eqref{eq:mhd-dispersion-vector} за компонентами.
+$\vect k\cdot\vect v_A=kv_A\cos\theta$. Розпишемо~\eqref{eq:mhd-dispersion-vector} за компонентами.
 \emph{Компонента $y$}: $(\omega^2-k^2v_A^2\cos^2\theta)\,v_y=0$~--- альвенівська мода, що відщеплюється.
 \emph{Компоненти $x$, $z$}:
 \[\begin{pmatrix}\omega^2-k^2(v_A^2+c_s^2\sin^2\theta)&-k^2c_s^2\sin\theta\cos\theta\\
@@ -211,7 +211,7 @@ $\vect k\cdot\vect v_A=kv_A\cos\theta$. Розпишемо \eqref{eq:mhd-dispers
 \begin{pmatrix}v_x\\v_z\end{pmatrix}=0.\]
 Прирівнявши визначник до нуля, маємо
 $\omega^4-\omega^2k^2(v_A^2+c_s^2)+k^4\bigl[(v_A^2+c_s^2\sin^2\theta)c_s^2\cos^2\theta-c_s^4\sin^2\theta\cos^2\theta\bigr]=0$,
-де вираз у~дужках дорівнює $v_A^2c_s^2\cos^2\theta$, тобто \eqref{eq:magnetosonic-biquad}.
+де вираз у~дужках дорівнює $v_A^2c_s^2\cos^2\theta$, тобто~\eqref{eq:magnetosonic-biquad}.
 
 Отже, у~однорідній ідеальній МГД є \emph{три} хвильові гілки, і~всі вони недисперсійні
 ($\omega\propto k$).
@@ -255,7 +255,7 @@ $\vect j\times\vect B/c=-\nabla(B^2/8\pi)+(\vect B\cdot\nabla)\vect B/4\pi$.
 \label{fig:alfven-wave}
 \end{figure}
 
-Властивості, які легко перевірити за \eqref{eq:mhd-dispersion-vector}:
+Властивості, які легко перевірити за~\eqref{eq:mhd-dispersion-vector}:
 \begin{itemize}
 	\item хвиля \emph{нестислива}: $\delta\rho=0$ і~$\delta|\vect B|=0$ у~лінійному наближенні;
 	\item вона поперечна: $\vect v\perp\vect B_0$ і~$\vect v\perp\vect k$; для хвилі, що біжить
@@ -263,7 +263,7 @@ $\vect j\times\vect B/c=-\nabla(B^2/8\pi)+(\vect B\cdot\nabla)\vect B/4\pi$.
 	  (співвідношення Валена); енергія розподілена порівну між кінетичною та магнітною;
 	\item для похилого поширення $\omega=k\,v_A\cos\theta$, тобто фазова швидкість
 	  $v_A\cos\theta$ залежить від напрямку, а~\emph{групова швидкість}
-	  $\partial\omega/\partial\vect k=v_A\hat{\vect b}$ спрямована \emph{завжди вздовж} поля. Енергія
+	  $\partial\omega/\partial\vect k=v_A\hat{\vect b}$, $\hat{\vect b}=\vect B_0/B_0$, спрямована \emph{завжди вздовж} поля. Енергія
 	  альвенівської хвилі поширюється лише вздовж силових ліній;
 	\item швидкість визначається магнітним полем і~густиною, а~не температурою.
 \end{itemize}
@@ -383,12 +383,12 @@ $v_-$
 Де вони трапляються: альвенівські хвилі~--- у~сонячній короні, сонячному вітрі й~токамаках
 (альвенівські власні моди); швидку магнітозвукову хвилю збуджують антенами для іонно-циклотронного
 нагріву в~токамаках. Високочастотні хвилі (вістлери, $X$- і~$O$-моди, гібридні резонанси)
-розглянемо в~розд.~\ref{sec:cold-magnetized}.
+розглянемо в~§\,\ref{sec:cold-magnetized}.
 
 Таблиця~\ref{tab:plasma-wave-modes} дає корисну фізичну карту, але її не слід сприймати як
 остаточну класифікацію всіх плазмових хвиль. Ми розглядали лише МГД-моди~--- тобто
 довгохвильові та повільні процеси, для яких рідинний опис є достатнім. У~термоядерній
-плазмі $\beta\sim1\text{--}3\%$, тому $v_A\gg c_s$ ($v_A\approx7{,}7\times10^8$ проти
+плазмі $\beta$ становить від 1 до 3~\%, тому $v_A\gg c_s$ ($v_A\approx7{,}7\times10^8$ проти
 $c_s\sim10^8$~см/с), і~швидка мода практично збігається з~хвилею, що поширюється
 зі~швидкістю $v_A$ в~усіх напрямках.
 
@@ -425,9 +425,9 @@ $\vect N\times(\vect N\times\vect E)+\hat\varepsilon\vect E=0$,
 \[-i\omega m_s\vect v=q_s\Bigl(\vect E+\frac{\vect v\times\vect B_0}c\Bigr).\]
 Покомпонентно, при $\Omega_s=q_sB_0/m_sc$:
 \[-i\omega v_x=\frac{q_s}{m_s}E_x+\Omega_s v_y,\qquad -i\omega v_y=\frac{q_s}{m_s}E_y-\Omega_s v_x.\]
-Складемо колові комбінації $v_\pm=v_x\pm iv_y$,\ $E_\pm=E_x\pm iE_y$ --- вони розв'язують систему окремо:
+Складемо колові комбінації $v_\pm=v_x\pm iv_y$,\ $E_\pm=E_x\pm iE_y$~--- вони розв'язують систему окремо:
 \[v_\pm=\frac{iq_s}{m_s}\,\frac{E_\pm}{\omega\mp\Omega_s},\qquad v_z=\frac{iq_s}{m_s\omega}\,E_z.\]
-Тоді $\vect j=\sum_sn_sq_s\vect v_s$, $\sigma_\pm=\sum_s in_s q_s^2/[m_s(\omega\mp\Omega_s)]$, і~$\varepsilon_\pm=1+4\pi i\sigma_\pm/\omega$ дає
+Тоді $\vect j=\sum_sn_sq_s\vect v_s$, $\sigma_\pm=\sum_s in_s q_s^2/[m_s(\omega\mp\Omega_s)]$, і~$\varepsilon_\pm=1+4\pi i\sigma_\pm/\omega$ дає (тут $\omega_{ps}^2=4\pi n_sq_s^2/m_s$~--- квадрат плазмової частоти сорту $s$)
 \[\varepsilon_\mp=1-\sum_s\frac{\omega_{ps}^2}{\omega(\omega\pm\Omega_s)},\qquad P=\varepsilon_{zz}=1-\sum_s\frac{\omega_{ps}^2}{\omega^2}.\]
 Отже, $R\equiv\varepsilon_-$ і~$L\equiv\varepsilon_+$~--- відгуки на \emph{колові} складові поля, а~резонанс у~$R$ ($\omega=-\Omega_e=\omega_{ce}$)
 чи в~$L$ ($\omega=\Omega_i=\omega_{ci}$) виникає, коли поле обертається разом із~частинкою. Назви $S$, $D$, $P$\index{Стікса позначення ($S,D,P,R,L$)|textbf}:
@@ -449,7 +449,7 @@ $\vect N\times(\vect N\times\vect E)+\hat\varepsilon\vect E=0$,
 Для плоскої хвилі рівняння Максвелла дають $\vect N\times(\vect N\times\vect E)+\hat\varepsilon\vect E=0$~--- це
 три лінійні однорідні рівняння для трьох компонент $E_x,E_y,E_z$ (у~розд.~\ref{sec:plasma-waves}~--- рівняння~\eqref{eq:wave-master}).
 Ненульовий розв'язок $\vect E$ (тобто сама хвиля) існує лише тоді, коли визначник цієї системи дорівнює нулю; ця умова
-і~є \emph{дисперсійним рівнянням} $D(\omega,k)=0$. Воно дає кілька залежностей $\omega(k)$~--- \emph{гілок} (розд.~\ref{sec:plasma-waves}); кожна~--- окремий тип коливання зі~своєю поляризацією.
+і~є \emph{дисперсійним рівнянням}. Воно дає кілька залежностей $\omega(k)$~--- \emph{гілок} (розд.~\ref{sec:plasma-waves}); кожна~--- окремий тип коливання зі~своєю поляризацією.
 \begin{itemize}
 	\item \emph{Без магнітного поля} $\hat\varepsilon=\varepsilon\hat1$~--- скаляр, і~єдиний виділений напрям~--- $\vect k$.
 	  Поле $\vect E$ або вздовж $\vect k$, або впоперек, і~ці випадки не змішуються. Гілок три: ленгмюрівська ($\varepsilon=0$,
@@ -530,8 +530,8 @@ $\omega_{pe}<\omega$. Альтернатива~--- $X$-мода другої г�
 поглинається сильніше й~дозволяє застосувати гіротрон цієї частоти при вдвічі меншому полі, але
 її відсікання настає вже при $\omega_{pe}^2=\omega^2/2$, тобто при вдвічі меншій густині, ніж для $O$-моди. Оскільки в~токамаку $B\propto1/R$, шар $\omega=\omega_{ce}(R)$~--- вузька
 поверхня на певному радіусі, що дозволяє локалізувати нагрів (задача~\ref{prb:ECRHRadius}). Повну
-діаграму Клеммова--Малея--Ендрюса (CMA), яка показує, куди хвиля може дійти за заданих $n$ і~$B$, ми
-опускаємо; її можна знайти в~монографії Стікса~\cite{stix1992waves} та в~курсі Чена~(§4.18).
+діаграму Клеммова--Муллалі--Елліса (CMA), яка показує, куди хвиля може дійти за заданих $n$ і~$B$, ми
+опускаємо; її можна знайти в~монографії Стікса~\cite{stix1992waves} та в~курсі Чена~\cite{chen2016introduction} (§\,4.21).
 
 \subsection*{Як це вимірюють: обертання Фарадея}\index{Діагностика плазми!поляриметрія}\index{Фарадея обертання|textbf}\label{sec:faraday-diagnostics}
 Лінійно поляризована хвиля, що йде вздовж $\vect B_0$, є сумою $R$- і~$L$-хвиль, які мають різні
@@ -539,11 +539,11 @@ $\omega_{pe}<\omega$. Альтернатива~--- $X$-мода другої г�
 Для $\omega\gg\omega_{pe},\omega_{ce}$ з~\eqref{eq:stix-RLP}
 $N_{R,L}\simeq1-\dfrac{\omega_{pe}^2}{2\omega^2}\bigl(1\pm\dfrac{\omega_{ce}}\omega\bigr)$, тож кут повороту
 \begin{equation}\label{eq:faraday-rotation}
-	\tcbhighmath{\psi=\frac\omega{2c}\int(N_R-N_L)\,dl=\frac{e^3\lambda^2}{2\pi m_e^2c^4}\int n_eB_\parallel\,dl
+	\tcbhighmath{\psi=\frac\omega{2c}\int(N_L-N_R)\,dl=\frac{e^3\lambda^2}{2\pi m_e^2c^4}\int n_eB_\parallel\,dl
 	\approx2{,}6\times10^{-17}\lambda^2\!\int n_eB_\parallel\,dl}
 \end{equation}
 (СГС: $\lambda$ і~$l$ у~см, $n_e$ у~см$^{-3}$, $B_\parallel$ у~Гс; $\psi$ у~радіанах). Оскільки $\psi\propto\int nB_\parallel\,dl$,
-поєднання з~інтерферометром (фаза $\propto\int n\,dl$, розд.~\ref{sec:wave-diagnostics}) дає
+поєднання з~інтерферометром (фаза $\propto\int n\,dl$, §\,\ref{sec:wave-diagnostics}) дає
 $\int B_\parallel\,dl$, тобто інформацію про поле \emph{всередині} плазми, зокрема про полоїдальне поле й~розподіл
 струму в~токамаку. У~астрофізиці той самий ефект ($\psi\propto\lambda^2$) дає магнітне поле міжзоряного
 середовища за пульсарами. Числову оцінку для токамака див. у~задачі~\ref{prb:FaradayRotation}.
@@ -718,8 +718,9 @@ $\omega\gtrsim\omega_{pe}$, $\omega_{ce}$ &
 	$0{,}1\,f_{ce}$ і~$0{,}2\,f_{ce}$ і~різницю часів приходу. Порівняйте з~реальним свистом
 	(секунди).
 	\begin{solution}
-		$v_g\approx2c\sqrt{\omega\omega_{ce}}/\omega_{pe}\approx3{,}8\times10^{9}$ і~$5{,}4\times10^{9}$~см/с;
-	час проходу $\approx2{,}6$ і~$1{,}9$~с, $\Delta t\approx0{,}8$~с.
+		$v_g=2c\sqrt{\omega}\,(\omega_{ce}-\omega)^{3/2}/(\omega_{pe}\omega_{ce})\approx3{,}2\times10^{9}$ і~$3{,}8\times10^{9}$~см/с;
+		час проходу $\approx3{,}1$ і~$2{,}6$~с, $\Delta t\approx0{,}5$~с. Формула $v_g\approx2c\sqrt{\omega\omega_{ce}}/\omega_{pe}$ (границя $\omega\ll\omega_{ce}$) дала б
+		$3{,}8\times10^{9}$ і~$5{,}4\times10^{9}$~см/с, $\Delta t\approx0{,}8$~с, тобто завищує $v_g$ на $15$ і~$30$~\%.
 	\end{solution}
 \end{problem}
 
