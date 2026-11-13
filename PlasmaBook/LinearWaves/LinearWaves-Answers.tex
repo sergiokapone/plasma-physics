@@ -39,6 +39,44 @@
 	
 \end{Solution}
 \begin{Solution}{6.{9}}
+		Вивід за~\cite{chen2016introduction}. Збурення беремо у~вигляді $\propto e^{i(kx-\omega t)}$, тож
+		$\partial_t\to-i\omega$, $\partial_x\to ik$. Незбурена плазма квазінейтральна: $n_{e0}=Zn_{i0}$.
+
+		\emph{Електрони.} Через $\omega\ll kv_{Te}$ вони больцманівські, $n_e=n_{e0}e^{e\varphi/T_e}$, і~після
+		лінеаризації
+		\begin{equation*}
+			\frac{n_{e1}}{n_{e0}}=\frac{e\varphi}{T_e}.
+		\end{equation*}
+
+		\emph{Іони.} Сила на~іон $-Ze\,\partial_x\varphi$, а~тиск іонів $p_{i1}=\gamma_iT_in_{i1}$ з~$\gamma_i=3$, тож
+		градієнт тиску на~один іон дорівнює $-\gamma_iT_i\,\partial_xn_{i1}/n_{i0}$:
+		\begin{equation*}
+			-i\omega m_iv=-ik\,Ze\varphi-ik\,3T_i\,\frac{n_{i1}}{n_{i0}}.
+		\end{equation*}
+		Неперервність $-i\omega n_{i1}+ikn_{i0}v=0$ дає $n_{i1}/n_{i0}=kv/\omega$, тобто $v=\omega n_{i1}/(kn_{i0})$.
+		Підставляємо $v$ в~рівняння руху, множимо на~$ik$ і~групуємо члени з~$n_{i1}$:
+		\begin{equation*}
+			\Bigl(\omega^2-\frac{3k^2T_i}{m_i}\Bigr)\frac{n_{i1}}{n_{i0}}=\frac{k^2Ze\varphi}{m_i}
+			\;\Rightarrow\;
+			\frac{n_{i1}}{n_{i0}}=\frac{k^2Ze\varphi}{m_i\,(\omega^2-3k^2T_i/m_i)}.
+		\end{equation*}
+
+		\emph{Пуассон.} $\nabla^2\varphi=-4\pi\rho$ з~$\rho=e(Zn_{i1}-n_{e1})$ дає $k^2\varphi=4\pi e(Zn_{i1}-n_{e1})$.
+		Підставляємо $n_{i1}$ та~$n_{e1}=Zn_{i0}\,e\varphi/T_e$ і~скорочуємо на~$\varphi$:
+		\begin{equation*}
+			k^2=4\pi Z^2e^2n_{i0}\left[\frac{k^2}{m_i(\omega^2-3k^2T_i/m_i)}-\frac1{ZT_e}\right].
+		\end{equation*}
+		Оскільки $4\pi Z^2e^2n_{i0}/(ZT_e)=4\pi n_{e0}e^2/T_e=\lambda_{De}^{-2}$, множимо на~$\lambda_{De}^2$:
+		\begin{equation*}
+			k^2\lambda_{De}^2+1=\frac{ZT_e}{m_i}\,\frac{k^2}{\omega^2-3k^2T_i/m_i}.
+		\end{equation*}
+		Звідси $\omega^2-3k^2T_i/m_i=k^2ZT_e/[m_i(1+k^2\lambda_{De}^2)]$, тобто
+		\begin{equation*}
+			\omega^2=k^2\Bigl[\frac{ZT_e}{m_i\,(1+k^2\lambda_{De}^2)}+\frac{3T_i}{m_i}\Bigr].
+		\end{equation*}
+	
+\end{Solution}
+\begin{Solution}{6.{10}}
 		$c_s\approx3{,}1\times10^{6}$~см/с; $k\lambda_{De}\approx0{,}48$.
 	
 \end{Solution}

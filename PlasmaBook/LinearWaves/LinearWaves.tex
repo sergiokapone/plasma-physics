@@ -169,25 +169,7 @@ $k^2+\lambda_{De}^{-2}=\omega_{pi}^2k^2/\omega^2$. Оскільки $\omega_{pi}
 Знаменник має ясний зміст: електрони, що перерозподілилися за~Больцманом, екранують поле,
 яке тягне іони, і~тим послаблюють повертальну силу.
 
-Тепер урахуємо заряд іона $Z$ та~скінченну температуру іонів. По-перше, сила на~іон стає
-$-Ze\,\partial_x\varphi$, а~через квазінейтральність $n_{e0}=Zn_{i0}$ і~в~рівнянні Пуассона
-$\rho=e(Zn_{i1}-n_{e1})$. По-друге, до~рівняння руху додається градієнт тиску іонів
-$p_{i1}=\gamma_iT_in_{i1}$ з~$\gamma_i=3$ (адіабата одновимірного стискання):
-\begin{equation*}
--i\omega m_iv=-ik\,Ze\varphi-ik\cdot3T_i\,\frac{n_{i1}}{n_{i0}},
-\qquad
-\frac{n_{i1}}{n_{i0}}=\frac{kv}{\omega}.
-\end{equation*}
-Виключаючи $v$, знаходимо
-\begin{equation*}
-\frac{n_{i1}}{n_{i0}}=\frac{k^2Ze\varphi}{m_i\,(\omega^2-3k^2T_i/m_i)}.
-\end{equation*}
-Підстановка в~рівняння Пуассона з~$n_{e1}=Zn_{i0}\,e\varphi/T_e$ і~врахування того, що
-$4\pi n_{e0}e^2/T_e=\lambda_{De}^{-2}$, дає
-\begin{equation*}
-1+k^2\lambda_{De}^2=\frac{ZT_e}{m_i}\,\frac{k^2}{\omega^2-3k^2T_i/m_i},
-\end{equation*}
-тобто остаточно дисперсійне рівняння іонно-звукової хвилі
+Для іонів із~зарядом $Z$ і~скінченною температурою $T_i$ ті~самі кроки (їх подано в~задачі~\ref{prb:IonAcousticZ}) дають дисперсійне рівняння іонно-звукової хвилі
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{equation}\label{eq:ion-acoustic}
 	\tcbhighmath{\omega^2=k^2\biggl[\frac{ZT_e}{m_i\,(1+k^2\lambda_{De}^2)}+\frac{3T_i}{m_i}\biggr]},
@@ -201,11 +183,19 @@ $c_s^2=(\gamma_ep_e+\gamma_ip_i)/\rho_m$ з~окремим $\gamma$ для ко�
 в~критерії Бома (§\,\ref{sec:bohm-sheath}), і~це не випадковість: іони мають входити в~шар
 зі~швидкістю не меншою за $c_s$, щоб потенціал у~шарі спадав монотонно, без осциляцій.
 При $k\lambda_{De}\ll1$ хвиля~--- звичайний звук, швидкість якого визначає
-\emph{електронна} температура ($T_e\gg T_i$) і~\emph{іонна} маса; при $k\lambda_{De}\gtrsim1$ частота
-виходить на $\omega_{pi}$. Така хвиля існує вже в~дворідинному описі, а~кінетика (§\,\ref{sec:landau-damping})
-визначає лише її \emph{загасання}. Декремент (для $Z=1$)~\cite{chen2016introduction}
+\emph{електронна} температура ($T_e\gg T_i$) і~\emph{іонна} маса; при $k\lambda_{De}\gg1$ частота
+прямує до $\omega_{pi}$ (при $k\lambda_{De}=1$ вона вже $\omega_{pi}/\sqrt2$). Така хвиля існує вже в~дворідинному описі, а~кінетика (§\,\ref{sec:landau-damping})
+визначає лише її \emph{загасання}. Декремент (для $Z=1$ і~$k\lambda_{De}\ll1$)~\cite{chen2016introduction}
 $\operatorname{Im}\omega/\omega\approx-\sqrt{\pi/8}\bigl[\sqrt{m_e/m_i}+(T_e/T_i)^{3/2}e^{-T_e/2T_i-3/2}\bigr]$
 малий лише за $T_e\gg T_i$; при $T_e\sim T_i$ хвиля сильно загасає на іонах, і~її не спостерігають.
+
+\begin{Estimate}
+Водневий розряд із $T_e=10$~еВ, $T_i\ll T_e$, $n=10^{12}$~см$^{-3}$: $\lambda_{De}\approx2{,}4\times10^{-3}$~см,
+$c_s\approx3{,}1\times10^{6}$~см/с, $f_{pi}\approx210$~МГц. Хвиля довжиною $1$~см має
+$k\lambda_{De}\approx0{,}015$ і~частоту $f\approx c_s/\lambda\approx3$~МГц (дисперсією можна знехтувати);
+довжиною $1$~мм~--- $k\lambda_{De}\approx0{,}15$, $f\approx31$~МГц, лише на~$1$~\% нижче за~$kc_s/2\pi$.
+В~обох випадках $f\ll f_{pi}$.
+\end{Estimate}
 
 
 %% ========================================================
@@ -827,9 +817,52 @@ $\omega\gtrsim\omega_{pe}$, $\omega_{ce}$ &
 	\end{solution}
 \end{problem}
 
+\begin{problem}\label{prb:IonAcousticZ}\lvl{2}
+	Виведіть дисперсійне рівняння іонно-звукової хвилі~\eqref{eq:ion-acoustic} для іонів із~зарядом $Z$
+	і~температурою $T_i$. Електрони вважайте больцманівськими, а~для іонів
+	візьміть адіабату одновимірного стискання ($\gamma_i=3$).
+	\begin{solution}
+		Вивід за~\cite{chen2016introduction}. Збурення беремо у~вигляді $\propto e^{i(kx-\omega t)}$, тож
+		$\partial_t\to-i\omega$, $\partial_x\to ik$. Незбурена плазма квазінейтральна: $n_{e0}=Zn_{i0}$.
+
+		\emph{Електрони.} Через $\omega\ll kv_{Te}$ вони больцманівські, $n_e=n_{e0}e^{e\varphi/T_e}$, і~після
+		лінеаризації
+		\begin{equation*}
+			\frac{n_{e1}}{n_{e0}}=\frac{e\varphi}{T_e}.
+		\end{equation*}
+
+		\emph{Іони.} Сила на~іон $-Ze\,\partial_x\varphi$, а~тиск іонів $p_{i1}=\gamma_iT_in_{i1}$ з~$\gamma_i=3$, тож
+		градієнт тиску на~один іон дорівнює $-\gamma_iT_i\,\partial_xn_{i1}/n_{i0}$:
+		\begin{equation*}
+			-i\omega m_iv=-ik\,Ze\varphi-ik\,3T_i\,\frac{n_{i1}}{n_{i0}}.
+		\end{equation*}
+		Неперервність $-i\omega n_{i1}+ikn_{i0}v=0$ дає $n_{i1}/n_{i0}=kv/\omega$, тобто $v=\omega n_{i1}/(kn_{i0})$.
+		Підставляємо $v$ в~рівняння руху, множимо на~$ik$ і~групуємо члени з~$n_{i1}$:
+		\begin{equation*}
+			\Bigl(\omega^2-\frac{3k^2T_i}{m_i}\Bigr)\frac{n_{i1}}{n_{i0}}=\frac{k^2Ze\varphi}{m_i}
+			\;\Rightarrow\;
+			\frac{n_{i1}}{n_{i0}}=\frac{k^2Ze\varphi}{m_i\,(\omega^2-3k^2T_i/m_i)}.
+		\end{equation*}
+
+		\emph{Пуассон.} $\nabla^2\varphi=-4\pi\rho$ з~$\rho=e(Zn_{i1}-n_{e1})$ дає $k^2\varphi=4\pi e(Zn_{i1}-n_{e1})$.
+		Підставляємо $n_{i1}$ та~$n_{e1}=Zn_{i0}\,e\varphi/T_e$ і~скорочуємо на~$\varphi$:
+		\begin{equation*}
+			k^2=4\pi Z^2e^2n_{i0}\left[\frac{k^2}{m_i(\omega^2-3k^2T_i/m_i)}-\frac1{ZT_e}\right].
+		\end{equation*}
+		Оскільки $4\pi Z^2e^2n_{i0}/(ZT_e)=4\pi n_{e0}e^2/T_e=\lambda_{De}^{-2}$, множимо на~$\lambda_{De}^2$:
+		\begin{equation*}
+			k^2\lambda_{De}^2+1=\frac{ZT_e}{m_i}\,\frac{k^2}{\omega^2-3k^2T_i/m_i}.
+		\end{equation*}
+		Звідси $\omega^2-3k^2T_i/m_i=k^2ZT_e/[m_i(1+k^2\lambda_{De}^2)]$, тобто
+		\begin{equation*}
+			\omega^2=k^2\Bigl[\frac{ZT_e}{m_i\,(1+k^2\lambda_{De}^2)}+\frac{3T_i}{m_i}\Bigr].
+		\end{equation*}
+	\end{solution}
+\end{problem}
+
 \begin{problem}\label{prb:IonAcoustic}\lvl{2}
 	Знайдіть швидкість іонного звуку в~водневій плазмі з~$T_e=10$~еВ, $T_i\ll T_e$. При якому $k\lambda_{De}$
-	частота іонного звуку відрізняється від $kc_s$ на 10~\%?
+	частота іонного звуку стає на~10~\% меншою за~$kc_s$?
 	\begin{solution}
 		$c_s\approx3{,}1\times10^{6}$~см/с; $k\lambda_{De}\approx0{,}48$.
 	\end{solution}
