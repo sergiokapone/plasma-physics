@@ -28,3 +28,16 @@ books/*.djvu
 books/*.DJVU
 books/.cache/
 __pycache__/
+
+# HTML-варіант (lwarp): збірка йде в корені PlasmaBook тимчасово, build-html.ps1 усе прибирає; лишаються html/ (джерела) і online/ (готова книга)
+PlasmaBook/html/logs/
+PlasmaBook/html/cache/
+PlasmaBook/html/node_modules/
+PlasmaBook/html/package*.json
+PlasmaBook/main-html*
+PlasmaBook/_html/
+PlasmaBook/lwarp*
+PlasmaBook/lateximage*
+PlasmaBook/ConspectBookHTML.cls
+PlasmaBook/build-error.txt
+PlasmaBook/html/_test/

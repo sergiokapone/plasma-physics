@@ -1,0 +1,3638 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Елементи фізики плазми — Колективні коливання та хвилі в-плазмі</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-109"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Елементи фізики плазми</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../PlasmaBook/main.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="ch1.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-26" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Плазма: від іонізованого газу до колективного середовища</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-27" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Що таке плазма?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-32" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Іонізація: формула Саха</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-37" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Температура плазми та два компоненти</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-38" class="tocsection" >
+<span class="sectionnumber">1.4</span><span class="toctitle">&#x2003;Квазінейтральність і&nbsp;плазмові коливання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-48" class="tocsection" >
+<span class="sectionnumber">1.5</span><span class="toctitle">&#x2003;Дебаївське екранування</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-58" class="tocsection" >
+<span class="sectionnumber">1.6</span><span class="toctitle">&#x2003;Дебаївська сфера. Умова колективності</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-65" class="tocsection" >
+<span class="sectionnumber">1.7</span><span class="toctitle">&#x2003;Слабкозв’язана та сильнозв’язана плазма</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-66" class="tocsection" >
+<span class="sectionnumber">1.8</span><span class="toctitle">&#x2003;Екранування в&nbsp;виродженому газі: довжина Томаса–Фермі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-67" class="tocsection" >
+<span class="sectionnumber">1.9</span><span class="toctitle">&#x2003;Шар біля стінки і&nbsp;зонд Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-111" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Колективні коливання та хвилі в&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-112" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Діелектрична проникність холодної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-116" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Закон дисперсії. Частота відсікання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-121" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Поздовжні (ленгмюрівські) хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-129" class="tocsection" >
+<span class="sectionnumber">2.4</span><span class="toctitle">&#x2003;Зіткнення й&nbsp;поглинання електромагнітних хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-130" class="tocsection" >
+<span class="sectionnumber">2.5</span><span class="toctitle">&#x2003;Відбиття електромагнітних хвиль від плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-133" class="tocsection" >
+<span class="sectionnumber">2.6</span><span class="toctitle">&#x2003;Іоносфера і&nbsp;далекий радіозв’язок</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-135" class="tocsection" >
+<span class="sectionnumber">2.7</span><span class="toctitle">&#x2003;Як це вимірюють: інтерферометрія і&nbsp;рефлектометрія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-158" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Рух зарядженої частинки в&nbsp;електричному та&nbsp;магнітному полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-159" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Однорідне магнітне поле</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-163" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Дрейфи в&nbsp;схрещених полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-181" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Поляризаційний дрейф</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-185" class="tocsection" >
+<span class="sectionnumber">3.4</span><span class="toctitle">&#x2003;Магнітний момент і&nbsp;адіабатичний інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-198" class="tocsection" >
+<span class="sectionnumber">3.5</span><span class="toctitle">&#x2003;Магнітне дзеркало і&nbsp;конус втрат</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-205" class="tocsection" >
+<span class="sectionnumber">3.6</span><span class="toctitle">&#x2003;Подовжній інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-206" class="tocsection" >
+<span class="sectionnumber">3.7</span><span class="toctitle">&#x2003;Диполь Землі та радіаційні пояси</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-211" class="tocsection" >
+<span class="sectionnumber">3.8</span><span class="toctitle">&#x2003;Як це вимірюють: аналізатор енергій і&nbsp;ECE</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-227" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Зіткнення, провідність та перенос у&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-228" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Кулонівські зіткнення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-233" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Провідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-236" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Теплопровідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-237" class="tocsection" >
+<span class="sectionnumber">4.4</span><span class="toctitle">&#x2003;Дифузія в&nbsp;плазмі. Амбіполярна дифузія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-239" class="tocsection" >
+<span class="sectionnumber">4.5</span><span class="toctitle">&#x2003;Як це вимірюють: температура з&nbsp;опору і&nbsp;з&nbsp;ширини ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-251" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Гідродинамічний та магнітогідродинамічний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-252" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Гідродинамічний опис не є синонімом частих зіткнень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-253" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Дворідинний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-254" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Від дворідинної моделі до однорідинної МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-257" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Основне рівняння магнітної гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-265" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Альвенівська швидкість і&nbsp;число Альвена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-266" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;МГД-рівновага та магнітні поверхні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-271" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Енергія електромагнітного поля та плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-272" class="tocsection" >
+<span class="sectionnumber">5.8</span><span class="toctitle">&#x2003;Діамагнетизм плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-274" class="tocsection" >
+<span class="sectionnumber">5.9</span><span class="toctitle">&#x2003;Вмороженість магнітного поля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-281" class="tocsection" >
+<span class="sectionnumber">5.10</span><span class="toctitle">&#x2003;Перез’єднання силових ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-285" class="tocsection" >
+<span class="sectionnumber">5.11</span><span class="toctitle">&#x2003;Дві мови опису: окремі частинки й&nbsp;суцільне середовище</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-300" class="tocsection" >
+<span class="sectionnumber">5.12</span><span class="toctitle">&#x2003;Як це вимірюють: магнітні виміри</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-327" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-328" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Що в&nbsp;плазмі може бути відновлювальною силою?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-332" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Звукова й&nbsp;іонно-звукова хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-337" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Лінеаризована МГД і&nbsp;загальне дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-338" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Альвенівська хвиля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-344" class="tocsection" >
+<span class="sectionnumber">6.5</span><span class="toctitle">&#x2003;Магнітозвукові хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-351" class="tocsection" >
+<span class="sectionnumber">6.6</span><span class="toctitle">&#x2003;Підсумок: хвилі в&nbsp;рідинному описі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-354" class="tocsection" >
+<span class="sectionnumber">6.7</span><span class="toctitle">&#x2003;Високочастотні хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-362" class="tocsection" >
+<span class="sectionnumber">6.8</span><span class="toctitle">&#x2003;Межі застосовності МГД-хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-383" class="tocchapter" >
+<span class="sectionnumber">7</span><span class="toctitle">&#x2003;Кінетичний опис плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-384" class="tocsection" >
+<span class="sectionnumber">7.1</span><span class="toctitle">&#x2003;Функція розподілу та фазовий простір</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-385" class="tocsection" >
+<span class="sectionnumber">7.2</span><span class="toctitle">&#x2003;Моменти функції розподілу</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-386" class="tocsection" >
+<span class="sectionnumber">7.3</span><span class="toctitle">&#x2003;Кінетичне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-387" class="tocsection" >
+<span class="sectionnumber">7.4</span><span class="toctitle">&#x2003;Максвеллівський розподіл і&nbsp;температура</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-388" class="tocsection" >
+<span class="sectionnumber">7.5</span><span class="toctitle">&#x2003;Від кінетики до гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-389" class="tocsection" >
+<span class="sectionnumber">7.6</span><span class="toctitle">&#x2003;Дворідинна картина та її зв’язок із МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-390" class="tocsection" >
+<span class="sectionnumber">7.7</span><span class="toctitle">&#x2003;Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-391" class="tocsection" >
+<span class="sectionnumber">7.8</span><span class="toctitle">&#x2003;Лінеаризація кінетичного рівняння та хвильовий відгук</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-399" class="tocsection" >
+<span class="sectionnumber">7.9</span><span class="toctitle">&#x2003;Загасання Ландау</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-408" class="tocsection" >
+<span class="sectionnumber">7.10</span><span class="toctitle">&#x2003;Коли потрібен кінетичний опис?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-409" class="tocsection" >
+<span class="sectionnumber">7.11</span><span class="toctitle">&#x2003;Як це вимірюють: томсонівське розсіяння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-434" class="tocchapter" >
+<span class="sectionnumber">8</span><span class="toctitle">&#x2003;Загальний принцип нестійкості плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-435" class="tocsection" >
+<span class="sectionnumber">8.1</span><span class="toctitle">&#x2003;Що означає нестійкість?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-439" class="tocsection" >
+<span class="sectionnumber">8.2</span><span class="toctitle">&#x2003;Лінеаризація: як знайти долю малого збурення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-441" class="tocsection" >
+<span class="sectionnumber">8.3</span><span class="toctitle">&#x2003;Хвиля, що може рости</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-445" class="tocsection" >
+<span class="sectionnumber">8.4</span><span class="toctitle">&#x2003;Дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-449" class="tocsection" >
+<span class="sectionnumber">8.5</span><span class="toctitle">&#x2003;Звідки береться енергія нестійкості?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-453" class="tocsection" >
+<span class="sectionnumber">8.6</span><span class="toctitle">&#x2003;Рівновага та стійкість у&nbsp;магнітному полі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-457" class="tocsection" >
+<span class="sectionnumber">8.7</span><span class="toctitle">&#x2003;Перетяжка як найпростіший приклад нестійкості</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-458" class="tocsection" >
+<span class="sectionnumber">8.8</span><span class="toctitle">&#x2003;Лінійна та нелінійна стадії</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-462" class="tocsection" >
+<span class="sectionnumber">8.9</span><span class="toctitle">&#x2003;Нестійкість Релея–Тейлора та жолобкова нестійкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-469" class="tocsection" >
+<span class="sectionnumber">8.10</span><span class="toctitle">&#x2003;Двопотокова нестійкість та нестійкість пучка</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-473" class="tocsection" >
+<span class="sectionnumber">8.11</span><span class="toctitle">&#x2003;Нестійкості анізотропної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-474" class="tocsection" >
+<span class="sectionnumber">8.12</span><span class="toctitle">&#x2003;Енергетичний принцип</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-475" class="tocsection" >
+<span class="sectionnumber">8.13</span><span class="toctitle">&#x2003;Дрейфові хвилі та аномальний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-476" class="tocsection" >
+<span class="sectionnumber">8.14</span><span class="toctitle">&#x2003;Від загального принципу до конкретних нестійкостей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-479" class="tocsection" >
+<span class="sectionnumber">8.15</span><span class="toctitle">&#x2003;Як це вимірюють: котушки Мірнова і&nbsp;м’який рентген</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-490" class="tocchapter" >
+<span class="sectionnumber">9</span><span class="toctitle">&#x2003;Магнітне утримання плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-491" class="tocsection" >
+<span class="sectionnumber">9.1</span><span class="toctitle">&#x2003;Проблема утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-492" class="tocsection" >
+<span class="sectionnumber">9.2</span><span class="toctitle">&#x2003;Відкриті пастки: магнітне дзеркало</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-493" class="tocsection" >
+<span class="sectionnumber">9.3</span><span class="toctitle">&#x2003;Пінч-ефект</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-497" class="tocsection" >
+<span class="sectionnumber">9.4</span><span class="toctitle">&#x2003;Рівновага \(z\)-пінча. Співвідношення Беннета</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-503" class="tocsection" >
+<span class="sectionnumber">9.5</span><span class="toctitle">&#x2003;Рівновага \(\mittheta \)-пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-504" class="tocsection" >
+<span class="sectionnumber">9.6</span><span class="toctitle">&#x2003;Нестійкості пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-511" class="tocsection" >
+<span class="sectionnumber">9.7</span><span class="toctitle">&#x2003;Тороїдальні системи: токамак і&nbsp;стеларатор</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-515" class="tocsection" >
+<span class="sectionnumber">9.8</span><span class="toctitle">&#x2003;Захоплені частинки й&nbsp;неокласичний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-519" class="tocsection" >
+<span class="sectionnumber">9.9</span><span class="toctitle">&#x2003;Рівновага тора: зсув Шафранова та межа за тиском</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-520" class="tocsection" >
+<span class="sectionnumber">9.10</span><span class="toctitle">&#x2003;Як це вимірюють: магнітна реконструкція рівноваги</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-531" class="tocchapter" >
+<span class="sectionnumber">10</span><span class="toctitle">&#x2003;Керований термоядерний синтез</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-532" class="tocsection" >
+<span class="sectionnumber">10.1</span><span class="toctitle">&#x2003;Реакції та паливо</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">10.2</span><span class="toctitle">&#x2003;Чому потрібна саме така температура: бар’єр і&nbsp;тунелювання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-540" class="tocsection" >
+<span class="sectionnumber">10.3</span><span class="toctitle">&#x2003;Баланс потужностей і&nbsp;критерій Лоусона</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-541" class="tocsection" >
+<span class="sectionnumber">10.4</span><span class="toctitle">&#x2003;Втрати</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-542" class="tocsection" >
+<span class="sectionnumber">10.5</span><span class="toctitle">&#x2003;Дві стратегії: магнітне й&nbsp;інерційне утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-543" class="tocsection" >
+<span class="sectionnumber">10.6</span><span class="toctitle">&#x2003;Від реакції до розетки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-550" class="tocsection" >
+<span class="sectionnumber">10.7</span><span class="toctitle">&#x2003;Що ще треба вирішити</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-551" class="tocsection" >
+<span class="sectionnumber">10.8</span><span class="toctitle">&#x2003;Інерційний шлях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-552" class="tocsection" >
+<span class="sectionnumber">10.9</span><span class="toctitle">&#x2003;Де ми зараз: стан на&nbsp;2026&nbsp;рік</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-555" class="tocsection" >
+<span class="sectionnumber">10.10</span><span class="toctitle">&#x2003;Як це вимірюють: нейтронна діагностика</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-566" class="tocchapter" >
+<span class="sectionnumber">11</span><span class="toctitle">&#x2003;Низькотемпературна плазма та газовий розряд</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-567" class="tocsection" >
+<span class="sectionnumber">11.1</span><span class="toctitle">&#x2003;Елементарні процеси: іонізація і&nbsp;її швидкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-568" class="tocsection" >
+<span class="sectionnumber">11.2</span><span class="toctitle">&#x2003;Пробій газу: механізм Таунсенда і&nbsp;закон Пашена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-572" class="tocsection" >
+<span class="sectionnumber">11.3</span><span class="toctitle">&#x2003;Тліючий розряд і&nbsp;дуга</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-578" class="tocsection" >
+<span class="sectionnumber">11.4</span><span class="toctitle">&#x2003;Приелектродний шар у&nbsp;розряді</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-579" class="tocsection" >
+<span class="sectionnumber">11.5</span><span class="toctitle">&#x2003;Глобальна модель розряду</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-580" class="tocsection" >
+<span class="sectionnumber">11.6</span><span class="toctitle">&#x2003;Високочастотні джерела плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-589" class="tocsection" >
+<span class="sectionnumber">11.7</span><span class="toctitle">&#x2003;Плазмова обробка матеріалів</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-590" class="tocsection" >
+<span class="sectionnumber">11.8</span><span class="toctitle">&#x2003;Як це вимірюють: оптична емісія і&nbsp;ВЧ-зонди</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-601" class="tocchapter" >
+<span class="sectionnumber">12</span><span class="toctitle">&#x2003;Основні масштаби, режими та межі моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-602" class="tocsection" >
+<span class="sectionnumber">12.1</span><span class="toctitle">&#x2003;Просторові та часові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-606" class="tocsection" >
+<span class="sectionnumber">12.2</span><span class="toctitle">&#x2003;Зіткнювальний та беззіткнювальний режими</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-607" class="tocsection" >
+<span class="sectionnumber">12.3</span><span class="toctitle">&#x2003;Як за масштабами вибирають модель</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-610" class="tocsection" >
+<span class="sectionnumber">12.4</span><span class="toctitle">&#x2003;Типова ієрархія масштабів у магнітному утриманні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-611" class="tocsection" >
+<span class="sectionnumber">12.5</span><span class="toctitle">&#x2003;Від кінетики до МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-612" class="tocsection" >
+<span class="sectionnumber">12.6</span><span class="toctitle">&#x2003;Безрозмірні параметри МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-613" class="tocsection" >
+<span class="sectionnumber">12.7</span><span class="toctitle">&#x2003;Межі простих моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-614" class="tocsection" >
+<span class="sectionnumber">12.8</span><span class="toctitle">&#x2003;Основні масштаби та формули</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-617" class="tocsection" >
+<span class="sectionnumber">12.9</span><span class="toctitle">&#x2003;Що вимірюють на&nbsp;якому масштабі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch14.html#autosec-629" class="tocchapter" >
+Підсумки</a>
+</p>
+
+
+
+<p>
+<a href="ch15.html#autosec-634" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-649" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-650" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Таблиця позначень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-660" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Перехід між СГС і&nbsp;СІ. Константи</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-673" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Шпаргалка: ключові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch17.html#autosec-678" class="tocpart" >
+Словник термінів</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-682" class="tocchapter" >
+Література</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-683" class="tocsection" >
+Підручники та посібники</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-684" class="tocsection" >
+Джерела фактів і результатів</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Колективні коливання та хвилі в-плазмі">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Елементи фізики плазми</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\newcommand {\vect }[1]{\mathbf {#1}}\)
+
+\(\newcommand {\Efield }{\vect {E}}\)
+
+\(\newcommand {\Dfield }{\vect {D}}\)
+
+\(\newcommand {\Bfield }{\vect {B}}\)
+
+\(\newcommand {\Hfield }{\vect {H}}\)
+
+\(\newcommand {\rot }{\mathbf {\nabla }\times }\)
+
+\(\newcommand {\divg }{\mathbf {\nabla }\cdot }\)
+
+\(\newcommand {\grad }{\vect {\nabla }}\)
+
+\(\newcommand {\diff }[2]{\frac {\partial #1}{\partial #2}}\)
+
+\(\newcommand {\ddiff }[2]{\frac {\partial ^2 #1}{\partial #2^2}}\)
+
+\(\newcommand {\parttime }[1]{\frac {\partial {#1}}{\partial t}}\)
+
+\(\newcommand {\pparttime }[1]{\frac {\partial ^2{#1}}{\partial t^2}}\)
+
+\(\renewcommand {\phi }{\varphi }\)
+
+\(\renewcommand {\epsilon }{\varepsilon }\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\Div }{div}\)
+
+\(\DeclareMathOperator {\Rot }{rot}\)
+
+\(\DeclareMathOperator {\Grad }{grad}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\renewcommand {\iiint }{\int }\)
+
+\(\renewcommand {\iint }{\int }\)
+
+\(\newcommand {\oiint }{\oint }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Колективні коливання та хвилі в-плазмі ......
+-->
+<h3 id="autosec-111"><span class="sectionnumber">2&#x2003;</span>Колективні коливання та хвилі в&nbsp;плазмі</h3>
+<a id="main-html-autopage-111"></a>
+<a id="main-html-autofile-3"></a>
+
+<a id="sec:plasma-waves"></a>
+
+<p>
+<a id="LWR-ht-plasma-waves"></a>
+</p>
+
+<p>
+Дебаївська довжина \(\lambda _D\) задає просторовий масштаб колективної відповіді плазми, а&nbsp;плазмова частота \(\omega _p\)&nbsp;— часовий (§&#x202f;<a href="ch2.html#sec:plasma-oscillations">1.4</a>). Тут розглянемо
+колективні збурення, що змінюються і&nbsp;в&nbsp;просторі, і&nbsp;в&nbsp;часі: на масштабах \(L\gg \lambda _D\) для них можна вводити гладкі макроскопічні поля та густини. При цьому з’являються два різні класи хвиль: поперечні
+електромагнітні хвилі та поздовжні електростатичні плазмові хвилі. Їх об’єднує спільне джерело&nbsp;— колективний рух заряджених частинок, але фізика поширення в&nbsp;них різна. Обидва класи можна збудити ззовні (антена, пучок, хвиля),
+але вони виникають і&nbsp;самі, з&nbsp;теплових флуктуацій, як тихий шум (див. кінець розд.&nbsp;<a href="ch3.html#sec:langmuir-waves">2.3</a>).
+</p>
+<!--
+...... section Діелектрична проникність холодної плазми ......
+-->
+<h4 id="autosec-112"><span class="sectionnumber">&#xA7;&#x202F;2.1&#x2003;</span>Діелектрична проникність холодної плазми</h4>
+<a id="main-html-autopage-112"></a>
+
+
+<a id="sec:plasma-permittivity"></a>
+
+<p>
+Нехай на плазму падає електромагнітна хвиля з&nbsp;частотою \(\omega \) (рис.&nbsp;<a href="ch3.html#tikz:emwave">2.1</a>). Знайдемо відповідь плазми на змінне поле. Зробимо чотири припущення, які в&nbsp;типових умовах
+виконуються.
+</p>
+
+<figure id="autoid-48" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-19"
+    class="lateximagesource"
+><!--
+            𝑝𝑧 = −𝑒𝑧
+
+        +    Нерухомий іон
+
+
+
+
+𝑧
+
+
+
+    𝑥
+--><img
+   src="main-html-images/image-19.png"
+   alt="Рис. 2.1. Електромагнітна хвиля, що падає з вакууму на шар плазми"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;2.1. Електромагнітна хвиля, що падає з&nbsp;вакууму на шар плазми
+
+</div>
+
+<a id="tikz:emwave"></a>
+
+</div>
+
+</figure>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Рухаються переважно електрони. Маса іона не менша за \(1836\,m_e\), тому струм іонів малий порівняно зі струмом електронів (внесок іонів пропорційний \(m_e/m_i\)).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Швидкість електронів мала, \(v\ll c\), тому силою Лоренца від магнітного поля хвилі (\(\sim (v/c)eE\)) можна знехтувати.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> <a id="asm:uniform-field"></a> На масштабі руху електронів поле можна вважати однорідним. Для теплового руху це означає \(kv_{Te}\ll \omega \): за період коливання електрон проходить відстань
+\(v_{Te}/\omega \), набагато меншу за довжину хвилі, тож він «бачить» однорідне поле й&nbsp;рухається лише під дією \(\vect E\). Амплітуда вимушеного руху також має бути малою, щоб зберігалася лінеаризація.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">4.</span> Зіткненнями можна знехтувати на часі одного коливання: \(\nu \ll \omega \).
+</p>
+</li>
+</ul>
+
+<p>
+Плазму, для якої ці припущення виконуються, а&nbsp;отже, тепловим рухом частинок можна знехтувати, називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>холодною</span></em>. Це не про кельвіни, а&nbsp;про порівняння: плазма з&nbsp;\(T\sim 10^6\)&nbsp;К холодна для хвилі, у&nbsp;якої \(kv_{Te}\ll \omega \), бо за період електрон не встигає змістится на помітну частку довжини хвилі
+(див. також <a href="ch17.html#sec:glossary">Словник термінів</a>, с.&nbsp;(page&nbsp;for section&nbsp;<a href="ch17.html#sec:glossary">В</a>)).
+</p>
+
+<p>
+Рівняння руху електрона \(m_e\ddot {\vect r}=-e\vect {E}\) має розв’язок
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{0}\)</span>
+
+<!--
+
+                                                                                                                         𝑒
+                                                                                                                  𝐫=          𝐄,
+                                                                                                                        𝑚𝑒 𝜔2
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect r=\frac {e}{m_e\omega ^2}\vect E,
+\end{equation*}
+
+</p>
+
+<p>
+тобто зміщення збігається за напрямом з&nbsp;полем \(\vect E\). Це означає, що воно перебуває в&nbsp;протифазі до сили \(-e\vect E\), яка діє на електрон (так буває при вимушених коливаннях на частоті, вищій за власну; у&nbsp;вільної
+частинки власна частота нульова). Електрони плазми подібні до зв’язаних зарядів діелектрика, оскільки вони лише коливаються відносно початкового положення. Зміщення створює ефективний дипольний момент електрона \(\vect p=-e\vect
+r=-e^2\vect E/(m_e\omega ^2)\), напрямлений проти поля, а&nbsp;вектор поляризації одиниці об’єму плазми
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{0}\)</span>
+
+<!--
+
+
+                                                                                                                          𝑛𝑒 𝑒2
+                                                                                                           𝐏 = 𝑛𝑒 𝐩 = −         𝐄 ≡ 𝜒𝐄.
+                                                                                                                          𝑚𝑒 𝜔2
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect P=n_e\vect p=-\frac {n_ee^2}{m_e\omega ^2}\vect E\equiv \chi \vect E.
+\end{equation*}
+
+</p>
+
+<p>
+Оскільки \(\vect D=\vect E+4\pi \vect P=\varepsilon \vect E\), діелектрична проникність \(\varepsilon =1+4\pi \chi \):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{0}\)</span>
+
+<!--
+
+
+                                                                                                                       4𝜋𝑛𝑒 𝑒2    𝜔2𝑝
+                                                                                                          𝜀(𝜔) = 1 −        2
+                                                                                                                               =1− 2 .                                                  (2.1)--><a id="eq:plasma-permittivity"></a><!--
+                                                                                                                        𝑚𝑒 𝜔      𝜔
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:plasma-permittivity} \tcbhighmath {\varepsilon (\omega )=1-\frac {4\pi n_ee^2}{m_e\omega ^2}=1-\frac {\omega _p^2}{\omega ^2}}.
+\end{equation}
+
+</p>
+
+<p>
+Той самий результат дає опис через струм. Швидкість електрона \(\vect v=\dot {\vect {r}}=-i\omega \vect r\), густина струму \(\vect j=-n_ee\vect v=i\dfrac {n_ee^2}{m_e\omega }\vect E\equiv \sigma (\omega )\vect E\), тому
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{1}\)</span>
+
+<!--
+
+
+                                                                                     𝜔2𝑝            4𝜋𝑖𝜍    𝜔2𝑝
+                                                                         𝜍(𝜔) = 𝑖        ,   𝜀=1+        =1− 2.                                                                         (2.2)--><a id="eq:sigma-collisionless"></a><!--
+                                                                                    4𝜋𝜔              𝜔      𝜔
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:sigma-collisionless} \sigma (\omega )=i\frac {\omega _p^2}{4\pi \omega },\qquad \varepsilon =1+\frac {4\pi i\sigma }{\omega }=1-\frac {\omega _p^2}{\omega ^2}.
+\end{equation}
+
+</p>
+
+<p>
+Провідність уявна: струм відстає від поля на чверть періоду (дія інерції електронів), тому енергія не поглинається. Формула&nbsp;<span class="textup">(<a href="ch3.html#eq:plasma-permittivity">2.1</a>)</span>&nbsp;— окремий
+випадок <em><span
+    class="textcolor"
+    style="color:#990000"
+>моделі Лоренца</span></em>&nbsp;— класичної моделі діелектрика, де кожен електрон пружно прив’язаний до свого атома: \(m_e\ddot {\vect r}=-e\vect E-m_e\omega _0^2\vect r\), а&nbsp;\(\omega _0\)&nbsp;— власна частота такого
+осцилятора. Та&nbsp;сама підстановка \(\vect r\propto e^{-i\omega t}\) дає \(\varepsilon =1+4\pi n_ee^2/[m_e(\omega _0^2-\omega ^2)]\). У&nbsp;плазмі електрони <em>вільні</em>, повертаючої сили немає, тобто \(\omega _0=0\),
+і&nbsp;одержуємо&nbsp;<span class="textup">(<a href="ch3.html#eq:plasma-permittivity">2.1</a>)</span>.
+</p>
+
+<p>
+Результат якісно відрізняється від електростатики діелектриків: тут \(\varepsilon &lt;1\), а&nbsp;при \(\omega &lt;\omega _p\) взагалі \(\varepsilon &lt;0\). Звернімо увагу ще на одне. Статичне екранування (розд.&nbsp;<a
+href="ch2.html#sec:plasma-basics">1</a>) теж можна записати мовою діелектричної проникності: Фур’є-образ потенціалу&nbsp;<span class="textup">(<a href="ch2.html#eq:screened-potential">1.9</a>)</span> дорівнює \(\varphi
+_k=4\pi q/(k^2+\lambda _D^{-2})=4\pi q/(k^2\varepsilon (k))\), де \(\varepsilon (0,k)=1+1/(k\lambda _D)^2\). Це не суперечить&nbsp;<span class="textup">(<a href="ch3.html#eq:plasma-permittivity">2.1</a>)</span>: та
+формула виведена для \(\omega \gg kv_{Te}\) (допущення&nbsp;<a href="ch3.html#asm:uniform-field">3</a>), а&nbsp;статичне екранування&nbsp;— протилежна границя \(\omega \ll kv_{Te}\), де електрони встигають розподілитися за
+Больцманом. Тобто статичне поле в&nbsp;плазмі сильно перебудовується через перерозподіл зарядів, а&nbsp;високочастотне поле бачить уже іншу, інерційну відповідь електронів. Це хороший приклад того, що <em><span
+    class="textcolor"
+    style="color:#990000"
+>одне й&nbsp;те саме середовище має різну електричну відповідь на різних часових масштабах</span></em>.
+</p>
+<!--
+...... section Закон дисперсії. Частота відсікання ......
+-->
+<h4 id="autosec-116"><span class="sectionnumber">&#xA7;&#x202F;2.2&#x2003;</span>Закон дисперсії. Частота відсікання</h4>
+<a id="main-html-autopage-116"></a>
+
+
+<a id="sec:dispersion"></a>
+
+
+<div class="cb-theory">
+
+<p>
+<b>Теоретичні відомості</b> Нагадаємо з&nbsp;електродинаміки
+</p>
+
+<p>
+З&nbsp;рівнянь Максвелла \(\nabla \times \vect E=-\frac 1c\partial _t\vect B\), \(\nabla \times \vect B=\frac 1c\partial _t\vect D\) (струми вже враховано в&nbsp;\(\vect D=\varepsilon \vect E\)) маємо
+</p>
+
+<p>
+\[\nabla \times \nabla \times \vect E=-\frac 1{c^2}\,\frac {\partial ^2\vect D}{\partial t^2}.\]
+</p>
+
+<p>
+Для плоскої хвилі \(\vect E\propto e^{i\vect k\cdot \vect r-i\omega t}\) оператор \(\nabla \to i\vect k\), \(\partial _t\to -i\omega \), тому \(\nabla \times \nabla \times \vect E\to -\vect k\times (\vect k\times \vect
+E)=k^2\vect E-\vect k(\vect k\cdot \vect E)\), і&nbsp;
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{2}\)</span>
+
+<!--
+
+
+                                                                                                     (𝑘2 𝑐2 − 𝜀𝜔2 )𝐄 = 𝑐2 𝐤 (𝐤 ⋅ 𝐄).                                                      (2.3)--><a id="eq:wave-master"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:wave-master} \bigl (k^2c^2-\varepsilon \omega ^2\bigr )\vect E=c^2\,\vect k\,(\vect k\cdot \vect E).
+\end{equation}
+
+</p>
+
+<p>
+Поперечна хвиля (\(\vect k\cdot \vect E=0\)): \(k^2c^2=\varepsilon \omega ^2\). Поздовжня (\(\vect E\parallel \vect k\)): ліва частина стає \(-\varepsilon \omega ^2\vect E\) після скорочення \(k^2c^2\vect E\) з&nbsp;правою,
+тобто \(\varepsilon \omega ^2\vect E=0\), а&nbsp;отже \(\varepsilon =0\). Обидва типи хвиль&nbsp;— з&nbsp;однієї формули: поперечна гілка&nbsp;— нуль «знаменника» \(k^2c^2-\varepsilon \omega ^2\), поздовжня&nbsp;—
+\(\varepsilon =0\). Тут <em>гілка</em>&nbsp;— окремий розв’язок дисперсійного рівняння, тобто окрема залежність \(\omega (k)\) зі&nbsp;своєю поляризацією.
+</p>
+</div>
+
+<p>
+Для плоскої поперечної хвилі \(\vect E=\vect E_0\exp (ikx-i\omega t)\) (\(\vect k\cdot \vect E=0\)), отже, \(k^2c^2=\varepsilon \omega ^2\). Підставляючи&nbsp;<span class="textup">(<a
+href="ch3.html#eq:plasma-permittivity">2.1</a>)</span>, одержуємо закон дисперсії
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{3}\)</span>
+
+<!--
+
+
+                                                                                                            𝜔2 = 𝜔2𝑝 + 𝑐2 𝑘2                                                        (2.4)--><a id="eq:plasma-dispersion"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:plasma-dispersion} \tcbhighmath {\omega ^2=\omega _p^2+c^2k^2}
+\end{equation}
+
+</p>
+
+<p>
+(рис.&nbsp;<a href="ch3.html#pic:plasma-dispersion">2.2</a>). Множачи на \(\hbar ^2\), бачимо, що це релятивістський зв’язок \(\mathcal E^2=(\hbar \omega _p)^2+(\hbar ck)^2\): у&nbsp;плазмі фотон поводиться як частинка
+з&nbsp;«масою» \(\hbar \omega _p/c^2\).
+</p>
+
+<figure id="autoid-49" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-20"
+    class="lateximagesource"
+><!--
+ 𝜔
+     𝜔 = √𝜔2𝑝 + 𝑐2 𝑘2
+     𝜔 = 𝑐𝑘
+
+
+
+
+𝜔𝑝
+
+
+
+                        𝑘
+--><img
+   src="main-html-images/image-20.svg"
+   alt="Рис. 2.2. Закон дисперсії поперечної електромагнітної хвилі в холодній плазмі. Частота _p — границя поширення в однорідній плазмі"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;2.2. Закон дисперсії поперечної електромагнітної хвилі в&nbsp;холодній плазмі. Частота \(\omega _p\)&nbsp;— границя поширення в&nbsp;однорідній плазмі
+
+</div>
+
+<a id="pic:plasma-dispersion"></a>
+
+</div>
+
+</figure>
+
+<p>
+Хвилі з&nbsp;\(\omega &gt;\omega _p\) поширюються з&nbsp;довжиною \(\lambda =2\pi c/\sqrt {\omega ^2-\omega _p^2}\), а&nbsp;показник заломлення \(N=\sqrt \varepsilon &lt;1\) (літеру \(n\) лишено для концентрації). Швидкості
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{4}\)</span>
+
+<!--
+
+
+                                                                                          𝜔          𝑐                       𝑑𝜔        𝜔2𝑝
+                                                                                   𝑣ф =     =                 > 𝑐,   𝑣гр =      = 𝑐 1 − 2 < 𝑐,   𝑣ф 𝑣гр = 𝑐2 .
+                                                                                          𝑘           2   2                  𝑑𝑘    √   𝜔
+                                                                                                √1 − 𝜔𝑝 /𝜔
+
+-->
+
+<p>
+
+\begin{equation*}
+v_{\mathrm {ф}}=\frac \omega k=\frac c{\sqrt {1-\omega _p^2/\omega ^2}}&gt;c,\qquad v_{\mathrm {гр}}=\frac {d\omega }{dk}=c\sqrt {1-\frac {\omega _p^2}{\omega ^2}}&lt;c,\qquad v_{\mathrm {ф}}v_{\mathrm
+{гр}}=c^2.
+\end{equation*}
+
+</p>
+
+<p>
+Фазова швидкість більша за швидкість світла, і&nbsp;це не суперечить теорії відносності, адже переносять енергію й&nbsp;сигнал хвильові пакети з&nbsp;груповою швидкістю \(v_{\mathrm {гр}}&lt;c\).
+</p>
+<!--
+...... paragraph Хвилі з-. ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-120">Хвилі з&nbsp;\(\omega &lt;\omega _p\).</span>
+<a id="main-html-autopage-120"></a>
+Тоді \(k^2=(\omega ^2-\omega _p^2)/c^2&lt;0\). Покладемо \(k=i\kappa \), \(\kappa =\sqrt {\omega _p^2-\omega ^2}/c\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{4}\)</span>
+
+<!--
+
+
+                                                                                                          𝐸 = 𝐸0 exp(−𝜅𝑥 − 𝑖𝜔𝑡).
+
+-->
+
+<p>
+
+\begin{equation*}
+E=E_0\exp (-\kappa x-i\omega t).
+\end{equation*}
+
+</p>
+
+<p>
+Поле експоненціально спадає в&nbsp;глибину плазми, а&nbsp;середній потік енергії дорівнює нулю (\(\vect E\) і&nbsp;\(\vect B\) зсунуті за фазою на чверть періоду). Глибина проникнення \(\delta =1/\kappa \approx c/\omega _p\) при
+\(\omega \ll \omega _p\) (<em>безколізійна скін-довжина</em>). Для \(n_e=10^{12}~\mathrm {см}^{-3}\) вона становить \(\approx 0{,}5\)&nbsp;см.
+</p>
+
+<p>
+Отже, у&nbsp;цій простій моделі однорідної, немагнітної та беззіткнювальної плазми поперечні електромагнітні хвилі поширюються лише за \(\omega &gt;\omega _p\). Магнітне поле, градієнти густини та зіткнення змінюють цю картину.
+Частоту \(\omega _p\) називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>частотою відсікання</span></em> (англ.&nbsp;<em>cutoff</em>).
+</p>
+<!--
+...... section Поздовжні (ленгмюрівські) хвилі ......
+-->
+<h4 id="autosec-121"><span class="sectionnumber">&#xA7;&#x202F;2.3&#x2003;</span>Поздовжні (ленгмюрівські) хвилі</h4>
+<a id="main-html-autopage-121"></a>
+
+
+<a id="sec:langmuir-waves"></a>
+
+<p>
+Те саме рівняння, що дало поперечну гілку, дає й&nbsp;поздовжню (рівняння&nbsp;<span class="textup">(<a href="ch3.html#eq:wave-master">2.3</a>)</span>). Запис \(\vect D=\varepsilon \vect E\) і&nbsp;рівняння \(\nabla \cdot
+\vect D=0\) дають \(\varepsilon \,\vect k\cdot \vect E=0\). Є дві можливості: або \(\vect k\cdot \vect E=0\) (поперечна хвиля, розглянута вище), або \(\varepsilon (\omega )=0\) (поздовжня хвиля, \(\vect E\parallel \vect k\)).
+З&nbsp;<span class="textup">(<a href="ch3.html#eq:plasma-permittivity">2.1</a>)</span> умова \(\varepsilon =0\) дає \(\omega =\omega _p\)&nbsp;— це відомі плазмові коливання (§&#x202f;<a
+href="ch2.html#sec:plasma-oscillations">1.4</a>). У&nbsp;холодній плазмі їхня частота не залежить від \(k\): кожен електрон повертає лише власне зміщення й&nbsp;сусідів не відчуває. Групова швидкість нульова, і&nbsp;збурення не
+поширюється.
+</p>
+
+<p>
+Ситуація змінюється, якщо врахувати тепловий рух: тиск зв’язує сусідні шари. Розглянемо одновимірні поздовжні хвилі малої амплітуди (\(n_e=n_0+n_1\), \(p=p_0+p_1\), швидкість \(v\), поле \(E\); іони нерухомі). Це <em><span
+    class="textcolor"
+    style="color:#990000"
+>гідродинамічний</span></em> опис: електрони розглядаємо як суцільне середовище з&nbsp;густиною, швидкістю й&nbsp;тиском, не стежачи за окремими частинками (систематично&nbsp;— у&nbsp;розд.&nbsp;<a
+href="ch6.html#sec:mhd">5</a>). Потрібні три рівняння: неперервності (електрони не зникають: густина змінюється лише через дивергенцію потоку), руху електронного «флюїду» (сила поля й&nbsp;градієнт тиску прискорюють одиницю об’єму)
+та&nbsp;Гаусса (поле створює зайвий електронний заряд):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{4}\)</span>
+
+<!--
+
+
+                                                                                        𝜕𝑛1      𝜕𝑣                       𝜕𝑣            𝜕𝑝1       𝜕𝐸
+                                                                                            + 𝑛0    = 0,        𝑚𝑒 𝑛0        = −𝑒𝑛0 𝐸 −     ,        = −4𝜋𝑒𝑛1 .
+                                                                                         𝜕𝑡      𝜕𝑥                       𝜕𝑡            𝜕𝑥        𝜕𝑥
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\partial n_1}{\partial t}+n_0\frac {\partial v}{\partial x}=0,\qquad m_en_0\frac {\partial v}{\partial t}=-en_0E-\frac {\partial p_1}{\partial x},\qquad \frac {\partial E}{\partial x}=-4\pi en_1.
+\end{equation*}
+
+</p>
+
+<p>
+Стискання відбувається вздовж одного напрямку й&nbsp;швидко: за період електрон не встигає вилетіти з&nbsp;області стискання (\(kv_{Te}\ll \omega \approx \omega _{pe}\); оскільки \(\lambda _{De}=v_{Te}/\omega _{pe}\), це те саме,
+що \(k\lambda _{De}\ll 1\)), тому воно адіабатичне. Для одного ступеня свободи показник адіабати \(\gamma =(f+2)/f=3\), тобто \(p\propto n^3\), і&nbsp;\(p_1=3T_e\,n_1\). Виключаючи \(v\) і&nbsp;\(E\), одержуємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{4}\)</span>
+
+<!--
+
+
+                                                                                             𝜕 2 𝑛1                    𝜕 2 𝑛1
+                                                                                                 2
+                                                                                                    = −𝜔2𝑝𝑒 𝑛1 + 3𝑣2𝑇𝑒             ⇒   𝜔2 = 𝜔2𝑝𝑒 + 3𝑘2 𝑣2𝑇𝑒 .                                      (2.5)--><a id="eq:bohm-gross"></a><!--
+                                                                                              𝜕𝑡                       𝜕𝑥2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:bohm-gross} \frac {\partial ^2n_1}{\partial t^2}=-\omega _{pe}^2n_1+3v_{Te}^2\frac {\partial ^2n_1}{\partial x^2} \quad \Rightarrow \quad \tcbhighmath {\omega ^2=\omega _{pe}^2+3k^2v_{Te}^2}.
+\end{equation}
+
+</p>
+
+<p>
+Це співвідношення Бома–Гросса. Тепер збурення поширюється з&nbsp;груповою швидкістю \(v_{\mathrm {гр}}=3kv_{Te}^2/\omega \neq 0\). Формула справедлива при \(k\lambda _{De}\ll 1\) (ця умова вже використана вище для
+адіабатичності): ми описували електрони як суцільне середовище з&nbsp;тиском \(p_1=3T_en_1\) і&nbsp;не враховували, що швидкості окремих електронів різні. Коли \(k\lambda _{De}\) перестає бути малим, таке наближення втрачає точність,
+і&nbsp;потрібний опис, що враховує розподіл електронів за швидкостями. Зокрема, поблизу резонансу електрони, швидкість яких близька до фазової швидкості хвилі, можуть забирати енергію хвилі навіть за відсутності зіткнень (загасання
+Ландау, 1946&nbsp;р.; детально&nbsp;— у&nbsp;розд.&nbsp;<a href="ch8.html#sec:landau-damping">7.9</a>). Сила цього ефекту залежить від форми розподілу та параметра \(k\lambda _{De}\); це не просто поріг, після якого будь-яка хвиля
+миттєво згасає. Цей ефект неможливо одержати, описуючи електрони як суцільне середовище з&nbsp;тиском: він пов’язаний саме з&nbsp;розподілом електронів за швидкостями. Образ серфінгіста: електрони, трохи повільніші за хвилю, вона
+підганяє, і&nbsp;вони забирають енергію; трохи швидші&nbsp;— гальмуються й&nbsp;віддають її. У&nbsp;максвеллівському розподілі повільних електронів більше, тому хвиля загасає (резонанс \(v_\phi =\omega /k\sim v_{Te}\) настає при
+\(k\lambda _{De}\sim 1\), коли умова \(kv_{Te}\ll \omega \) порушується).
+</p>
+
+<p>
+Ці хвилі не обов’язково приходять ззовні. Навіть у&nbsp;плазмі, залишеній саму по собі, густина заряду в&nbsp;кожну мить випадково відхиляється від середнього, бо частинки хаотично переміщуються. Довільне таке відхилення можна розкласти
+на гармоніки (ряд Фур’є на відрізку довжини \(L\)):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{5}\)</span>
+
+<!--
+
+                                                                                                                                   2𝜋𝑚
+                                                                                            𝑛1 (𝑥, 𝑡) = ∑ 𝑛𝑘 (𝑡) 𝑒𝑖𝑘𝑥 ,       𝑘=       ,   𝑚 = 0, ±1, ±2, … ,
+                                                                                                        𝑘
+                                                                                                                                    𝐿
+
+-->
+
+<p>
+
+\begin{equation*}
+n_1(x,t)=\sum _k n_k(t)\,e^{ikx},\qquad k=\frac {2\pi m}{L},\quad m=0,\pm 1,\pm 2,\dots ,
+\end{equation*}
+
+</p>
+
+<p>
+де \(n_k=L^{-1}\!\int n_1e^{-ikx}\,dx\)&nbsp;— внесок синусоїдної складки густини з&nbsp;періодом \(\lambda =2\pi /k\). Рівняння&nbsp;<span class="textup">(<a href="ch3.html#eq:bohm-gross">2.5</a>)</span> лінійне, тому
+гармоніки не впливають одна на одну, і&nbsp;кожна коливається зі&nbsp;своєю частотою \(\omega (k)\). Довгохвильові складки (\(k\lambda _{De}\ll 1\)) коливаються на&nbsp;частоті, близькій до&nbsp;\(\omega _{pe}\); у&nbsp;коротких
+(\(k\lambda _{De}\gtrsim 1\)) електрони розлітаються швидше, ніж поле встигає їх повернути, і&nbsp;колективного коливання нема. Випадковими є лише початкові значення \(n_k\) та&nbsp;поштовхи від теплового руху, а&nbsp;не закон
+\(\omega (k)\). Так виникає тихе «дрижання» рівноважної плазми на&nbsp;власних частотах. Приклад такого розкладу&nbsp;— на&nbsp;рис.&nbsp;<a href="ch3.html#pic:thermal-map">2.3</a>: випадкова карта густини заряду
+в&nbsp;площині й&nbsp;її складові різного масштабу, як карту реліктового випромінювання розкладають на&nbsp;мультиполі.
+</p>
+
+<p>
+Це дрижання не є однією лінією на&nbsp;\(\omega _{pe}\): частота гармоніки залежить від&nbsp;\(k\) (формула Бома–Гросса), а&nbsp;загасання Ландау (розд.&nbsp;<a href="ch8.html#sec:landau-damping">7.9</a>) надає кожному піку
+скінченну ширину, тож спектр розмитий; у&nbsp;холодній плазмі не було б ні дрижання, ні розмиття. Тепловий рух ці коливання збуджує, а&nbsp;загасання гасить, і&nbsp;вони врівноважують одне одного: рівень шуму стаціонарний, хвилі не
+наростають (наростання з&nbsp;того самого шуму можливе лише в&nbsp;нерівноважній плазмі, розд.&nbsp;<a href="ch9.html#sec:anisotropy-instabilities">8.11</a>). Дрижить і&nbsp;електромагнітне поле: випадкові струми електронів
+збуджують поперечні хвилі, які майже не загасають, бо їхня фазова швидкість перевищує&nbsp;\(c\); це і&nbsp;є теплове випромінювання плазми. Його, як і&nbsp;розсіяння на флуктуаціях густини, використовують для діагностики
+(розд.&nbsp;<a href="ch4.html#sec:motion-diagnostics">3.8</a> і&nbsp;<a href="ch8.html#sec:thomson">7.11</a>).
+</p>
+
+<figure id="autoid-50" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-123"></a>
+
+<p>
+
+<a href="Waves/Pictures/thermal-map-full.png" target="_blank" ><img
+   src="Waves/Pictures/thermal-map-full.png"
+   style="
+   width:104pt;
+   "
+   class="inlineimage"
+   alt="(image)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(а) повна карта
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-124"></a>
+
+<p>
+
+<a href="Waves/Pictures/thermal-map-long.png" target="_blank" ><img
+   src="Waves/Pictures/thermal-map-long.png"
+   style="
+   width:104pt;
+   "
+   class="inlineimage"
+   alt="(image)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(б) \(k\lambda _{De}\approx 0{,}4\)–\(0{,}8\)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-125"></a>
+
+<p>
+
+<a href="Waves/Pictures/thermal-map-mid.png" target="_blank" ><img
+   src="Waves/Pictures/thermal-map-mid.png"
+   style="
+   width:104pt;
+   "
+   class="inlineimage"
+   alt="(image)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(в) \(k\lambda _{De}\approx 1\)–\(2\)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-126"></a>
+
+<p>
+
+<a href="Waves/Pictures/thermal-map-short.png" target="_blank" ><img
+   src="Waves/Pictures/thermal-map-short.png"
+   style="
+   width:104pt;
+   "
+   class="inlineimage"
+   alt="(image)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(г) \(k\lambda _{De}\approx 3\)–\(8\)
+
+</div>
+
+</div>
+
+<p>
+<span
+    id="lateximage-main-html-21"
+    class="lateximagesource"
+><!--
+               1    б         в      г
+
+
+              0.8
+
+
+
+⟨|𝑛𝑘 |2 ⟩/𝑁
+              0.6
+
+              0.4
+
+              0.2
+
+               0
+                        100              101
+                              𝑘𝜆𝐷𝑒
+--><img
+   src="main-html-images/image-21.svg"
+   alt="Рис. 2.3. Випадкові флуктуації густини заряду в плазмі без зовнішніх збурень (модель: гауссове поле зі спектром 1/(0,k)=k^2_De^2/(1+k^2_De^2); сторона карти 16_De, коло — радіус _De; враховано k_De8). Карта (а) є сумою всіх гармонік, панелі…"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;2.3. Випадкові флуктуації густини заряду в&nbsp;плазмі без зовнішніх збурень (модель: гауссове поле зі&nbsp;спектром \(1/\varepsilon (0,k)=k^2\lambda _{De}^2/(1+k^2\lambda _{De}^2)\); сторона карти \(16\lambda _{De}\),
+коло&nbsp;— радіус&nbsp;\(\lambda _{De}\); враховано \(k\lambda _{De}\le 8\)). Карта&nbsp;(а) є сумою всіх гармонік, панелі (б)–(г)&nbsp;— її складові з&nbsp;вибраних діапазонів \(k\) (кожну нормовано окремо). Внизу&nbsp;— внесок
+гармонік у&nbsp;флуктуацію: довгі складки слабші через екранування, а&nbsp;короткі виглядають як білий шум
+
+</div>
+
+<a id="pic:thermal-map"></a>
+
+</div>
+
+</figure>
+<!--
+...... section Зіткнення й-поглинання електромагнітних хвиль ......
+-->
+<h4 id="autosec-129"><span class="sectionnumber">&#xA7;&#x202F;2.4&#x2003;</span>Зіткнення й&nbsp;поглинання електромагнітних хвиль</h4>
+<a id="main-html-autopage-129"></a>
+
+
+<a id="sec:wave-absorption"></a>
+
+<p>
+Досі зіткненнями ми нехтували. Врахуємо їх у&nbsp;найпростішій формі (частоту \(\nu \equiv \nu _{ei}\) обчислимо в&nbsp;розд.&nbsp;<a href="ch5.html#sec:plasma-collisions">4</a>; тут вона&nbsp;— просто параметр): електрон
+гальмується силою тертя \(-m_e\nu \vect v\), де \(\nu \)&nbsp;— ефективна частота зіткнень з&nbsp;іонами та нейтральними атомами. Рівняння руху в&nbsp;полі \(\vect E\,e^{-i\omega t}\)
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{5}\)</span>
+
+<!--
+
+                                                                                                                                             −𝑖𝑒𝐄
+                                                                                                     𝑚𝑒 𝐯̇ = −𝑒𝐄 − 𝑚𝑒 𝜈𝐯       ⇒    𝐯=                ,
+                                                                                                                                          𝑚𝑒 (𝜔 + 𝑖𝜈)
+
+-->
+
+<p>
+
+\begin{equation*}
+m_e\dot {\vect v}=-e\vect E-m_e\nu \vect v \quad \Rightarrow \quad \vect v=\frac {-ie\vect E}{m_e(\omega +i\nu )},
+\end{equation*}
+
+</p>
+
+<p>
+звідки провідність \(\sigma (\omega )=ie^2n_e/[m_e(\omega +i\nu )]\) і&nbsp;діелектрична проникність
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{5}\)</span>
+
+<!--
+
+
+                                                                                         4𝜋𝑖𝜍        𝜔2𝑝
+                                                                            𝜀(𝜔) = 1 +        =1−           .                                                                       (2.6)--><a id="eq:eps-collisions-waves"></a><!--
+                                                                                          𝜔       𝜔(𝜔 + 𝑖𝜈)
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:eps-collisions-waves} \varepsilon (\omega )=1+\frac {4\pi i\sigma }{\omega }=1-\frac {\omega _p^2}{\omega (\omega +i\nu )}.
+\end{equation}
+
+</p>
+
+<p>
+Тепер \(\varepsilon \) комплексна, отже, і&nbsp;хвильове число \(k=(\omega /c)\sqrt \varepsilon \) має уявну частину: хвиля поглинається. Є дві граничні ситуації.
+</p>
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> \(\omega \gg \nu \) (високочастотна границя). Тоді \(\operatorname {Im}\varepsilon \approx \omega _p^2\nu /\omega ^3\), і&nbsp;амплітуда спадає як \(e^{-\operatorname {Im}k\,x}\) з
+</p>
+<span class="hidden"> \(\seteqnumber{0}{2.}{6}\)</span>
+<!--
+
+                                                                                                                         𝜈      𝜔2𝑝 /𝜔2
+                                                                                                                Im 𝑘 ≈                        .
+                                                                                                                         2𝑐          2    2
+                                                                                                                              √1 − 𝜔𝑝 /𝜔
+-->
+<p>
+
+\begin{equation*}
+\operatorname {Im}k\approx \frac {\nu }{2c}\,\frac {\omega _p^2/\omega ^2}{\sqrt {1-\omega _p^2/\omega ^2}}.
+\end{equation*}
+
+</p>
+<p>
+Поглинання пропорційне \(\nu \) і&nbsp;різко зростає поблизу відсікання \(\omega \to \omega _p\) (формула годиться, поки \(\operatorname {Im}\varepsilon \ll \operatorname {Re}\varepsilon \); там \(v_{\mathrm {гр}}\to 0\): хвиля
+повільна й&nbsp;довше взаємодіє з&nbsp;електронами). Фізично: коливний рух електрона тим сильніше переходить у&nbsp;тепло, чим частіше він зіштовхується (доки \(\nu \ll \omega \); при \(\nu \gtrsim \omega \) часті зіткнення не дають
+електрону розігнатися, і&nbsp;поглинання з&nbsp;ростом \(\nu \) падає&nbsp;— максимум при \(\nu \sim \omega \)). Цей механізм поглинає радіохвилі в&nbsp;шарі&nbsp;D іоносфери.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> \(\omega \ll \nu \) (низькочастотна границя). Електрони рухаються як у&nbsp;постійному полі: \(\sigma \to \sigma _0=\omega _p^2/4\pi \nu \), плазма поводиться як звичайний провідник
+з&nbsp;товщиною скін-шару \(\delta =c/\sqrt {2\pi \sigma _0\omega }\). Оскільки \(\nu \propto T^{-3/2}\), провідність \(\sigma _0\propto T^{3/2}\) зростає з&nbsp;нагріванням плазми, а&nbsp;скін-шар, навпаки, стає тоншим:
+\(\delta \propto \sigma _0^{-1/2}\propto T^{-3/4}\).
+</p>
+</li>
+</ul>
+
+<p>
+Отже, <em><span
+    class="textcolor"
+    style="color:#990000"
+>чи є плазма поглинальною, вирішує порівняння \(\omega \) з&nbsp;\(\nu \)</span></em>, а&nbsp;чи відбивальною&nbsp;— порівняння \(\omega \) з&nbsp;\(\omega _p\). Джоулеве тепло \(\langle \vect j\cdot \vect E\rangle
+=\operatorname {Re}\sigma \,|E|^2/2\) використовують для нагрівання плазми НВЧ-полем.
+</p>
+<!--
+...... section Відбиття електромагнітних хвиль від плазми ......
+-->
+<h4 id="autosec-130"><span class="sectionnumber">&#xA7;&#x202F;2.5&#x2003;</span>Відбиття електромагнітних хвиль від плазми</h4>
+<a id="main-html-autopage-130"></a>
+
+
+<a id="sec:reflection"></a>
+
+<p>
+Чому \(\varepsilon &lt;0\) означає відбиття? При \(\omega &lt;\omega _p\) електрони встигають зміститися й&nbsp;екранувати зовнішнє поле швидше, ніж воно змінює знак. Струм електронів випромінює хвилю, яка гасить падаючу
+всередині плазми й&nbsp;утворює відбиту назовні&nbsp;— так само поводиться метал (провідник&nbsp;— «дзеркало» до \(\omega _p\)). При \(\omega &gt;\omega _p\) інерція електронів не дає їм встигнути, і&nbsp;хвиля проходить. Аналогія
+з&nbsp;механікою: осцилятор, який збуджують нижче резонансу, рухається у&nbsp;фазі з&nbsp;силою, а&nbsp;вище резонансу&nbsp;— у&nbsp;протифазі; для вільних електронів «резонанс» стоїть на нулі, тож відгук завжди в&nbsp;протифазі,
+а&nbsp;\(\omega _p\) лише визначає, чи перевищує поляризація за величиною саме поле (\(-4\pi \chi &gt;1\)), тобто чи \(\varepsilon &lt;0\).
+</p>
+
+<p>
+Нехай на межу плазми (\(x&gt;0\)) нормально падає хвиля з&nbsp;вакууму. Амплітудний коефіцієнт відбиття (формули Френеля, \(\mu =1\))
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{6}\)</span>
+
+<!--
+
+
+                                                                                                                      1 − √𝜀
+                                                                                                                 𝑟=            .
+                                                                                                                      1 + √𝜀
+
+-->
+
+<p>
+
+\begin{equation*}
+r=\frac {1-\sqrt \varepsilon }{1+\sqrt \varepsilon }.
+\end{equation*}
+
+</p>
+
+<p>
+При \(\omega &lt;\omega _p\) величина \(\sqrt \varepsilon =i\kappa \) чисто уявна, тому
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{6}\)</span>
+
+<!--
+
+                                                                                                                                   2
+                                                                                                                         1 − 𝑖𝜅 |
+                                                                                                          𝑅 = |𝑟|2 = |||        | = 1.
+                                                                                                                         1 + 𝑖𝜅 |
+
+-->
+
+<p>
+
+\begin{equation*}
+R=|r|^2=\left |\frac {1-i\kappa }{1+i\kappa }\right |^2=1.
+\end{equation*}
+
+</p>
+
+<p>
+При \(\omega \gg \omega _p\) показник заломлення наближається до одиниці, \(N\to 1\), а&nbsp;коефіцієнт відбиття прямує до нуля, \(R\to 0\). Плазма стає прозорою для електромагнітного випромінювання.
+</p>
+
+<p>
+Саме тому високочастотне випромінювання, для якого \(\omega \gg \omega _p\), може проходити крізь плазму; до такого діапазону, зокрема, належить рентгенівське випромінювання для багатьох плазмових середовищ.
+</p>
+<!--
+...... subsection Похиле падіння ......
+-->
+<h5 id="autosec-131">Похиле падіння</h5>
+<a id="main-html-autopage-131"></a>
+
+
+<p>
+При \(\omega &gt;\omega _p\) плазма&nbsp;— середовище з&nbsp;дійсним показником заломлення \(N=\sqrt \varepsilon &lt;1\), тобто вакуум для хвилі оптично густіший. Тому можливе повне внутрішнє відбиття при \(\sin \theta \geq
+N\). Критичний кут \(\sin \theta _{\mathrm {кр}}=\sqrt {1-\omega _p^2/\omega ^2}\) прямує до нуля при \(\omega \to \omega _p+0\), і&nbsp;плазма відбиває при будь-якому куті падіння.
+</p>
+<!--
+...... subsection Плавна межа ......
+-->
+<h5 id="autosec-132">Плавна межа</h5>
+<a id="main-html-autopage-132"></a>
+
+
+<p>
+Реальні плазми (іоносфера) мають концентрацію, що повільно зростає з&nbsp;глибиною: \(n_e=n_e(x)\) на відстанях порядку довжини хвилі змінюється слабко. Тому можна використати локальне значення хвильового числа
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{6}\)</span>
+
+<!--
+
+
+                                                                                                                           1        4𝜋𝑒2
+                                                                                                              𝑘2 (𝑥) =        [𝜔2 −      𝑛 (𝑥)] .
+                                                                                                                           𝑐2        𝑚𝑒 𝑒
+
+-->
+
+<p>
+
+\begin{equation*}
+k^2(x)=\frac 1{c^2}\left [\omega ^2-\frac {4\pi e^2}{m_e}n_e(x)\right ].
+\end{equation*}
+
+</p>
+
+<p>
+При нормальному падінні \(k(x)\) перетворюється на нуль, де концентрація досягає <em><span
+    class="textcolor"
+    style="color:#990000"
+>критичного значення</span></em>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{6}\)</span>
+
+<!--
+
+
+                                                                              𝑚𝑒 𝜔2                                          𝜔
+                                                                      𝑛кр =         ≈ 1,24 × 104 𝑓2 [МГц] см−3 ,     𝑓=         .                                                          (2.7)--><a id="eq:critical-density"></a><!--
+                                                                              4𝜋𝑒2                                           2𝜋
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:critical-density} n_{\mathrm {кр}}=\frac {m_e\omega ^2}{4\pi e^2}\approx 1{,}24\times 10^{4}\,f^2[\mathrm {МГц}]~\mathrm {см}^{-3},\qquad f=\frac \omega {2\pi }.
+\end{equation}
+
+</p>
+
+<p>
+У&nbsp;цій точці («плазмове дзеркало») хвиля повертається назад. Строго кажучи, наближення локального \(k(x)\) у&nbsp;самій точці повороту непридатне (потрібне розв’язання рівняння Ейрі), але положення точки воно визначає правильно.
+</p>
+
+<p>
+При похилому падінні під кутом \(\theta _0\) з&nbsp;вакууму в&nbsp;шарувате середовище зберігається тангенційна складова хвильового вектора, тобто закон Снелліуса \(\sqrt {\varepsilon (x)}\sin \theta (x)=\sin \theta _0\).
+Поворот відбувається там, де \(\theta =90^\circ \):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{7}\)</span>
+
+<!--
+
+
+                                                                                                        𝜀(𝑥𝑡 ) = sin2 𝜃0     ⇒      𝑛𝑒 (𝑥𝑡 ) = 𝑛кр cos2 𝜃0 .
+
+-->
+
+<p>
+
+\begin{equation*}
+\varepsilon (x_t)=\sin ^2\theta _0\quad \Rightarrow \quad n_e(x_t)=n_{\mathrm {кр}}\cos ^2\theta _0.
+\end{equation*}
+
+</p>
+
+<p>
+Тому хвилю, що падає похило, плазма відбиває за меншої концентрації: максимальна частота, яку може відбити шар з&nbsp;максимальною концентрацією \(n_{\max }\), дорівнює \(f_{\max }=f_p(n_{\max })/\cos \theta _0\) («закон
+секанса»).
+</p>
+<!--
+...... section Іоносфера і-далекий радіозв'язок ......
+-->
+<h4 id="autosec-133"><span class="sectionnumber">&#xA7;&#x202F;2.6&#x2003;</span>Іоносфера і&nbsp;далекий радіозв’язок</h4>
+<a id="main-html-autopage-133"></a>
+
+
+<a id="sec:ionosphere"></a>
+
+<p>
+Іоносфера&nbsp;— шар верхньої атмосфери (від висоти \(\sim 60\)&nbsp;км), у&nbsp;якому газ іонізований ультрафіолетовим і&nbsp;рентгенівським випромінюванням Сонця та космічними променями. Ступінь іонізації невелика, але
+концентрація електронів (від \(\sim 10^{4}\)&nbsp;\(\mathrm {см}^{-3}\) в&nbsp;нижніх областях до \(\sim 10^{6}~\mathrm {см}^{-3}\) у&nbsp;максимумі шару&nbsp;F на висотах \(200\)–\(400\)&nbsp;км вдень) достатня для відбиття
+радіохвиль. Для \(n_e=10^{6}~\mathrm {см}^{-3}\) частота \(f_p\approx 9\)&nbsp;МГц, тобто короткі хвилі (декаметрові) відбиваються, а&nbsp;ультракороткі й&nbsp;мікрохвилі проходять крізь іоносферу&nbsp;— тому ними користуються для
+зв’язку з&nbsp;космічними апаратами.
+</p>
+
+<p>
+Відбиття від іоносфери дозволяє приймати радіосигнали за горизонтом (рис.&nbsp;<a href="ch3.html#pic:radio-communication">2.4</a>). Довгі та середні хвилі поводяться інакше: вдень їх поглинає нижній шар&nbsp;D через часті зіткнення
+електронів з&nbsp;нейтральними молекулами (розд.&nbsp;<a href="ch5.html#sec:plasma-collisions">4</a>), а&nbsp;вночі шар&nbsp;D зникає, і&nbsp;сигнали відбиваються від вищих шарів. Звідси відомий факт: вночі середньохвильові
+радіостанції чути значно далі.
+</p>
+
+<figure id="autoid-51" class="figure ">
+<div class="center">
+
+<p>
+
+<a href="Waves/Pictures/radio-communication.jpg" target="_blank" ><img
+   src="Waves/Pictures/radio-communication.jpg"
+   style="
+   width:390pt;
+   "
+   class="inlineimage"
+   alt="(image)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;2.4. Далекий радіозв’язок завдяки відбиттю від іоносфери
+
+</div>
+
+<a id="pic:radio-communication"></a>
+
+</div>
+
+</figure>
+
+<p>
+Той самий ефект проявляється в&nbsp;інших ситуаціях. Під час входу космічного апарата в&nbsp;атмосферу навколо нього утворюється плазмова оболонка з&nbsp;концентрацією \(n_e\gtrsim 10^{11}~\mathrm {см}^{-3}\), що за
+формулою&nbsp;<span class="textup">(<a href="ch3.html#eq:critical-density">2.7</a>)</span> відсікає радіозв’язок на частотах нижче кількох гігагерц («радіозатемнення»). Метали мають вільні електрони з&nbsp;\(n_e\sim
+10^{23}~\mathrm {см}^{-3}\) і&nbsp;\(\hbar \omega _p\sim 10\)&nbsp;еВ (ультрафіолет): вони відбивають видиме світло за тим самим механізмом, що й&nbsp;плазма радіохвилі, а&nbsp;в&nbsp;ультрафіолеті для багатьох металів (наприклад,
+лужних) стають прозорими.
+</p>
+<!--
+...... section Як це вимірюють: інтерферометрія і-рефлектометрія ......
+-->
+<h4 id="autosec-135"><span class="sectionnumber">&#xA7;&#x202F;2.7&#x2003;</span>Як це вимірюють: інтерферометрія і&nbsp;рефлектометрія</h4>
+<a id="main-html-autopage-135"></a>
+
+
+<a id="sec:wave-diagnostics"></a>
+
+<p>
+Закон дисперсії \(\omega ^2=\omega _p^2+k^2c^2\) пов’язує поширення хвилі з&nbsp;концентрацією електронів, тому електромагнітна хвиля сама є зондом густини плазми. Можливі два режими. Якщо \(\omega \gg \omega _p\), хвиля
+проходить крізь плазму, але набирає додаткову фазу&nbsp;— на цьому працює <em><span
+    class="textcolor"
+    style="color:#990000"
+>інтерферометр</span></em>. Якщо частота досягає \(\omega _p\), хвиля відбивається від шару відсікання (розд.&nbsp;<a href="ch3.html#sec:reflection">2.5</a>)&nbsp;— на цьому працює <em><span
+    class="textcolor"
+    style="color:#990000"
+>рефлектометр</span></em>. Обидва методи не вносять у&nbsp;плазму сторонніх тіл (на відміну від зонда Ленгмюра) і&nbsp;тому придатні для гарячої плазми.
+</p>
+<!--
+...... subsection Інтерферометр ......
+-->
+<h5 id="autosec-136">Інтерферометр</h5>
+<a id="main-html-autopage-136"></a>
+
+
+<p>
+Показник заломлення поперечної хвилі \(N=\sqrt \varepsilon =\sqrt {1-n_e/n_{\mathrm {кр}}}\), де критична концентрація \(n_{\mathrm {кр}}(\omega )\) дається формулою&nbsp;<span class="textup">(<a
+href="ch3.html#eq:critical-density">2.7</a>)</span>. Для \(n_e\ll n_{\mathrm {кр}}\) маємо \(1-N\approx n_e/2n_{\mathrm {кр}}\), і&nbsp;на хорді крізь плазму хвиля відстає за фазою від хвилі у&nbsp;вакуумі на
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{7}\)</span>
+
+<!--
+
+                                                                             ˆ                          ˆ                  ˆ
+                                                                         𝜔                        𝜔
+                                                                  Δ𝜑 =           (1 − 𝑁) 𝑑𝑙 ≈               𝑛𝑒 𝑑𝑙 = 𝑟𝑒 𝜆       𝑛𝑒 𝑑𝑙 ,                                           (2.8)--><a id="eq:interferometer-phase"></a><!--
+                                                                         𝑐                      2𝑐𝑛кр
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:interferometer-phase} \Delta \varphi =\frac \omega c\int (1-N)\,dl\approx \frac {\omega }{2cn_{\mathrm {кр}}}\int n_e\,dl =\tcbhighmath {r_e\lambda \int n_e\,dl},
+\end{equation}
+
+</p>
+
+<p>
+де \(r_e=e^2/m_ec^2=2{,}82\times 10^{-13}\)&nbsp;см&nbsp;— класичний радіус електрона. Він з’являється тут природно: \(n_{\mathrm {кр}}=\pi /(r_e\lambda ^2)\), або в&nbsp;практичних одиницях \(n_{\mathrm {кр}}\approx
+1{,}1\times 10^{15}/\lambda ^2[\text {мм}]~\text {см}^{-3}\).
+</p>
+
+<p>
+Набіг фази вимірюють, порівнюючи хвилю, що пройшла плазму, з&nbsp;опорною хвилею, яка йде в&nbsp;обхід (схема Маха–Цендера, рис.&nbsp;<a href="ch3.html#pic:wave-diagnostics">2.5</a>&#x202f;а). Під час розряду інтенсивність на
+детекторі проходить через максимуми й&nbsp;мінімуми; кожна «смуга» відповідає \(\Delta \varphi =2\pi \).
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Для \(\lambda =2\)&nbsp;мм, хорди \(L=1\)&nbsp;м і&nbsp;\(n_e=10^{13}~\text {см}^{-3}\) маємо \(\Delta \varphi =2{,}82\times 10^{-13}\cdot 0{,}2\cdot 10^{15}\approx 56\)&nbsp;рад, тобто близько
+9&nbsp;смуг. При цьому \(n_{\mathrm {кр}}(2~\text {мм})\approx 2{,}8\times 10^{14}~\text {см}^{-3}\), тож \(n_e/n_{\mathrm {кр}}\approx 0{,}04\), і&nbsp;розклад кореня виправданий.
+</p>
+</div>
+
+<figure id="autoid-52" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-138"></a>
+
+<p>
+<span
+    id="lateximage-main-html-22"
+    class="lateximagesource"
+><!--
+      опорне плече
+                            детектор
+
+
+
+
+НВЧ
+                ´
+      плазма,       𝑛𝑒 𝑑𝑙
+--><img
+   src="main-html-images/image-22.svg"
+   alt="(а)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-141"></a>
+
+<p>
+<span
+    id="lateximage-main-html-23"
+    class="lateximagesource"
+><!--
+      𝑛𝑒
+                                𝑛𝑒 (𝑥)
+𝑛кр (𝑓3 )
+𝑛кр (𝑓2 )
+
+𝑛кр (𝑓1 )
+
+            𝑥1   𝑥2        𝑥3            𝑥
+
+                  𝜏(𝑓2 )
+--><img
+   src="main-html-images/image-23.svg"
+   alt="(б)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б)
+
+</div>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;2.5. Мікрохвильова діагностика густини: (а)&nbsp;інтерферометр Маха–Цендера вимірює \(\int n_e\,dl\) уздовж хорди; (б)&nbsp;рефлектометр: хвиля частоти \(f\) відбивається від шару, де \(n_e(x)=n_{\mathrm {кр}}(f)\),
+і&nbsp;повертається із затримкою \(\tau (f)\)
+
+</div>
+
+<a id="pic:wave-diagnostics"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Межі застосовності інтерферометра ......
+-->
+<h5 id="autosec-144">Межі застосовності інтерферометра</h5>
+<a id="main-html-autopage-144"></a>
+
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Метод дає не \(n_e\) у&nbsp;точці, а&nbsp;<em>лінійний інтеграл</em> \(\int n_e\,dl\). Щоб відновити профіль \(n_e(r)\), вимірюють уздовж кількох хорд і&nbsp;для осесиметричної плазми виконують
+обернення Абеля.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Фаза відома з&nbsp;точністю до \(2\pi \): смуги треба відстежувати неперервно протягом усього розряду. Швидка зміна густини або втрата сигналу дає «перескок смуги»&nbsp;— похибку на ціле число
+\(2\pi \).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Вибір \(\lambda \)&nbsp;— компроміс. Корисний сигнал \(\Delta \varphi \propto \lambda \), а&nbsp;рефракція (відхилення променя градієнтом густини) зростає як \(\lambda ^2\); поблизу
+\(n_{\mathrm {кр}}\) ще й&nbsp;ламається лінійний зв’язок&nbsp;<span class="textup">(<a href="ch3.html#eq:interferometer-phase">2.8</a>)</span>. Тому для густої плазми беруть коротші хвилі (субміліметрові й&nbsp;CO\(_2\)-лазери,
+\(10{,}6\)&nbsp;мкм). Але тоді вібрації дзеркал на \(\delta l\) дають паразитну фазу \(\delta \varphi =2\pi \,\delta l/\lambda \), і&nbsp;її компенсують другим інтерферометром на іншій довжині хвилі, який «бачить» переважно вібрації.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> У&nbsp;замагніченій плазмі формула&nbsp;<span class="textup">(<a href="ch3.html#eq:interferometer-phase">2.8</a>)</span> лишається точною для звичайної хвилі (O-моди, \(\vect E\parallel
+\vect B\)), бо її рух уздовж \(\vect B\) не відчуває сили Лоренца (розд.&nbsp;<a href="ch7.html#sec:cold-magnetized">6.7</a>).
+</p>
+</li>
+</ul>
+<!--
+...... subsection Рефлектометр ......
+-->
+<h5 id="autosec-145">Рефлектометр</h5>
+<a id="main-html-autopage-145"></a>
+
+
+<p>
+Якщо підвищувати частоту зондувальної хвилі, шар відбиття \(x_c(f)\), на якому \(n_e(x_c)=n_{\mathrm {кр}}(f)\), переміщується вглиб плазми (рис.&nbsp;<a href="ch3.html#pic:wave-diagnostics">2.5</a>&#x202f;б). Вимірюють фазу
+відбитої хвилі \(\varphi =2(\omega /c)\int _0^{x_c}N\,dx-\pi /2\) (стрибок \(-\pi /2\) дає точка повороту) або, що зручніше, групову затримку
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{8}\)</span>
+
+<!--
+
+                                                                                                                                   ˆ 𝑥𝑐
+                                                                                                                       𝑑𝜑   2              𝑑𝑥
+                                                                                                             𝜏(𝑓) =       =                    .
+                                                                                                                       𝑑𝜔   𝑐       0     𝑁(𝑥)
+
+-->
+
+<p>
+
+\begin{equation*}
+\tau (f)=\frac {d\varphi }{d\omega }=\frac 2c\int _0^{x_c}\frac {dx}{N(x)}.
+\end{equation*}
+
+</p>
+
+<p>
+Тут використано \(d(\omega N)/d\omega =1/N\) (доданок від залежності межі \(x_c(\omega )\) зникає, бо \(N(x_c)=0\)), тобто хвильовий пакет рухається з&nbsp;груповою швидкістю \(v_g=cN\) і&nbsp;сповільнюється біля шару відбиття.
+Знаючи \(\tau (f)\) на всьому діапазоні частот від нуля до \(F\), положення шару відновлюють оберненням Абеля:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{8}\)</span>
+
+<!--
+
+                                                                                                                             ˆ 𝐹
+                                                                                                                         𝑐         𝜏(𝑓) 𝑑𝑓
+                                                                                                              𝑥𝑐 (𝐹) =                         .
+                                                                                                                         𝜋    0    √𝐹 2 − 𝑓2
+
+-->
+
+<p>
+
+\begin{equation*}
+\tcbhighmath {x_c(F)=\frac c\pi \int _0^F\frac {\tau (f)\,df}{\sqrt {F^2-f^2}}}.
+\end{equation*}
+
+</p>
+
+<p>
+Перевірка: для металевої стінки на відстані \(d\) маємо \(\tau =2d/c\) при всіх \(f\), і&nbsp;формула дає \(x_c=d\).
+</p>
+
+<p>
+Це той самий принцип, за яким працює <em><span
+    class="textcolor"
+    style="color:#990000"
+>іоносонда</span></em> (розд.&nbsp;<a href="ch3.html#sec:ionosphere">2.6</a>): вертикальний імпульс у&nbsp;діапазоні \(1\)–\(20\)&nbsp;МГц, а&nbsp;результат&nbsp;— іонограма, залежність «віртуальної висоти» \(h&apos;=c\tau /2\)
+від частоти. Оскільки \(N&lt;1\), віртуальна висота завжди більша за справжню висоту відбиття. У&nbsp;токамаках рефлектометри працюють у&nbsp;діапазоні десятків гігагерц і&nbsp;зондують край плазми.
+</p>
+
+<p>
+Межі застосовності рефлектометра:
+</p>
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> профіль має бути монотонним: шар за максимумом густини недосяжний, і&nbsp;область за ним метод не бачить;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> обернення потребує \(\tau (f)\) від найнижчих частот, тобто профілю на самому краї, який часто доводиться екстраполювати;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> флуктуації густини розсіюють хвилю біля шару відбиття. Для вимірювання профілю це завада, але її ж використовують, щоб вимірювати турбулентність;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> для незвичайної хвилі (X-моди, \(\vect E\perp \vect B\)) частота відсікання залежить ще й&nbsp;від \(B\) (розд.&nbsp;<a href="ch7.html#sec:cold-magnetized">6.7</a>); це ускладнює обробку, зате
+дозволяє зондувати плазму з&nbsp;боку малої густини.
+</p>
+</li>
+</ul>
+
+<p>
+Отже, обидва методи ґрунтуються на одній формулі \(\varepsilon =1-\omega _p^2/\omega ^2\): інтерферометр працює далеко від відсікання і&nbsp;вимірює інтеграл густини, рефлектометр працює саме на відсіканні і&nbsp;вимірює
+положення шарів однакової густини.
+</p>
+
+
+<div class="cb-simulation">
+
+<p>
+<b>Інтерактивна симуляція.</b> Обидва методи можна випробувати у&nbsp;<a href="https://sergiokapone.github.io/plasma-physics/PlasmaBook/sims/waves_interferometry_lab.html" target="_blank" >віртуальній
+лабораторній</a>: підібрати довжину хвилі, побачити перескок смуги та&nbsp;вплив вібрацій, зняти \(\tau (f)\) і&nbsp;відновити профіль густини невідомої плазми.
+</p>
+</div>
+
+
+<div class="cb-summary">
+
+<p>
+<b>Головне в розділі</b>
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Плазмова частота \(\omega _p\)&nbsp;— частота власних коливань електронів відносно іонів; вона задає часовий масштаб колективного відгуку.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Діелектрична проникність холодної плазми \(\varepsilon =1-\omega _p^2/\omega ^2\); поперечні хвилі поширюються лише за \(\omega &gt;\omega _p\).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> При \(\omega &lt;\omega _p\) хвиля відбивається: так працюють іоносфера й&nbsp;далекий радіозв’язок.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Поздовжні ленгмюрівські хвилі мають тепловий поправковий член у&nbsp;законі дисперсії; зіткнення призводять до поглинання хвиль.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Інтерферометр (\(\omega \gg \omega _p\)) вимірює \(\int n_e\,dl\) через набіг фази; рефлектометр використовує відсікання й&nbsp;за груповою затримкою відновлює профіль \(n_e(x)\).
+</p>
+</li>
+</ul>
+
+</div>
+<!--
+...... section Задачі ......
+-->
+<h4 id="autosec-146">Задачі</h4>
+<a id="main-html-autopage-146"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-53"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.1.</span></span> <a id="autoid-54" ></a ><a id="LWR-ht-problem:2.{1}"></a><a id="prb:BohmGross"></a>★★☆ Для електронної плазми з&nbsp;температурою
+\(T_e\) оцініть поправку \(3k^2v_{Te}^2\) до квадрата ленгмюрівської частоти. За яких умов ця поправка мала порівняно з&nbsp;\(\omega _{pe}^2\)? <a href="ch15.html#LWR-ht-solution:2.{1}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-55"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.2.</span></span> <a id="autoid-56" ></a ><a id="LWR-ht-problem:2.{2}"></a><a id="prb:PlasmaWave"></a>★☆☆ Радіохвиля частоти 1&nbsp;МГц падає на область
+плазми з&nbsp;концентрацією \(n_e=10^6~\mathrm {см}^{-3}\). Чи проникне хвиля в&nbsp;плазму? Оцініть глибину проникнення. <a href="ch15.html#LWR-ht-solution:2.{2}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-57"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.3.</span></span> <a id="autoid-58" ></a ><a id="LWR-ht-problem:2.{3}"></a><a id="prb:PlasmaIonosphere"></a>★★☆ Максимальна концентрація шару&nbsp;F
+дорівнює \(10^6~\mathrm {см}^{-3}\). Яку максимальну частоту хвилі може відбити іоносфера при кутах падіння \(0^\circ \) і&nbsp;\(70^\circ \)? Чому сигнал 100&nbsp;МГц практично не відбивається? <a
+href="ch15.html#LWR-ht-solution:2.{3}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-59"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.4.</span></span> <a id="autoid-60" ></a ><a id="LWR-ht-problem:2.{4}"></a><a id="prb:LongitudinalWave"></a>★☆☆ Чи може у&nbsp;вакуумі існувати хвиля
+\(\vect E=\vect e_xE_0e^{i(kx-\omega t)}\)? Чому? А&nbsp;в&nbsp;плазмі? <a href="ch15.html#LWR-ht-solution:2.{4}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-61"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.5.</span></span> <a id="autoid-62" ></a ><a id="LWR-ht-problem:2.{5}"></a><a id="prb:CutoffDensity"></a>★☆☆ Радіохвилі з&nbsp;частотою нижче
+\(400\)&nbsp;МГц не проходять крізь шар плазми. Знайдіть його концентрацію. <a href="ch15.html#LWR-ht-solution:2.{5}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-63"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.6.</span></span> <a id="autoid-64" ></a ><a id="LWR-ht-problem:2.{6}"></a><a id="prb:IonosphereIndex"></a>★★☆ Показник заломлення іоносфери для хвилі
+10&nbsp;МГц дорівнює \(N=0{,}90\). Знайдіть \(n_e\), а&nbsp;також фазову й&nbsp;групову швидкості; перевірте, що \(v_{\phi }v_{g}=c^2\). <a href="ch15.html#LWR-ht-solution:2.{6}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-65"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.7.</span></span> <a id="autoid-66" ></a ><a id="LWR-ht-problem:2.{7}"></a><a id="prb:Interferometer"></a>★☆☆ Мікрохвильовий інтерферометр працює на
+довжині хвилі \(\lambda =2\)&nbsp;мм; хорда в&nbsp;плазмі \(L=1\)&nbsp;м, \(n=10^{13}~\text {см}^{-3}\). Використайте \(\Delta \varphi =r_e\lambda \int n\,dl\) (\(r_e=2{,}8\times 10^{-13}\)&nbsp;см) і&nbsp;знайдіть набіг фази
+в&nbsp;радіанах і&nbsp;в&nbsp;інтерференційних смугах. Перевірте, що \(\omega \gg \omega _p\). <a href="ch15.html#LWR-ht-solution:2.{7}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-67"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.8.</span></span> <a id="autoid-68" ></a ><a id="LWR-ht-problem:2.{8}"></a><a id="prb:InterferometerWavelength"></a>★★☆ Для токамака
+з&nbsp;\(n_e=10^{14}~\text {см}^{-3}\) і&nbsp;хордою \(L=1\)&nbsp;м порівняйте два інтерферометри: \(\lambda =1\)&nbsp;мм і&nbsp;\(\lambda =10{,}6\)&nbsp;мкм (CO\(_2\)-лазер). Для кожного знайдіть \(n_{\mathrm {кр}}\), набіг
+фази \(\Delta \varphi \) і&nbsp;паразитну фазу від вібрації дзеркал з&nbsp;амплітудою \(\delta l=10\)&nbsp;мкм. Який із них потребує компенсації вібрацій? <a href="ch15.html#LWR-ht-solution:2.{8}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-69"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.9.</span></span> <a id="autoid-70" ></a ><a id="LWR-ht-problem:2.{9}"></a><a id="prb:ReflectometerLinear"></a>★★★ Концентрація лінійно зростає від краю
+плазми: \(n_e=n_0x/a\). Покажіть, що групова затримка хвилі, яка відбивається від шару \(x_c\), дорівнює \(\tau =4x_c/c\), тобто «віртуальна» глибина вдвічі більша за справжню. Який діапазон концентрацій охоплює рефлектометр із
+перестроюванням частоти \(20\)–\(75\)&nbsp;ГГц? <a href="ch15.html#LWR-ht-solution:2.{9}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+
+<div class="cb-questions">
+
+<p>
+<b>Контрольні питання</b>
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Чому плазма відбиває хвилі з&nbsp;\(\omega &lt;\omega _p\) повністю? Що відбувається при \(\omega &gt;\omega _p\)?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Як пояснити далекий радіозв’язок на коротких хвилях? Чому ультракороткі хвилі проходять крізь іоносферу?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> Чому при поширенні в&nbsp;плазмі з’являється поглинання? Що вирішує: \(\omega \gg \nu \) чи \(\omega \ll \nu \)? Чому поглинання зростає поблизу \(\omega _p\)?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">4.</span> Поясніть фізичну природу плазмових коливань. Чому частота не залежить від \(k\) у&nbsp;холодній плазмі?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">5.</span> Як з&nbsp;діелектричної проникності плазми одержати закон дисперсії? Чому \(v_\phi &gt;c\) не порушує теорії відносності?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">6.</span> Чому метали блищать, а&nbsp;в&nbsp;вакуумному ультрафіолеті стають прозорими?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">7.</span> Що саме вимірює мікрохвильовий інтерферометр: \(n\) у&nbsp;точці чи \(\int n\,dl\)?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">8.</span> Чому інтерферометр працює далеко від відсікання, а&nbsp;рефлектометр&nbsp;— саме на ньому?
+</p>
+<p>
+
+</p>
+</li>
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

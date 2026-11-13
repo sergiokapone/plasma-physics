@@ -1,0 +1,417 @@
+# build-html.ps1 - builds the HTML version of the book (lwarp). Put it in the project root.
+# Usage:   .\build-html.ps1                 full build, quiet output, logs filtered by texlogsieve
+#          .\build-html.ps1 -Placeholder    pictures that cannot be built are replaced by a box
+#          .\build-html.ps1 -SkipPrepare    skip macros/pictures preparation (nothing changed there)
+#          .\build-html.ps1 -NoImages       skip lwarpmk limages
+#          .\build-html.ps1 -Full           show the complete output of every tool (old behaviour)
+#          .\build-html.ps1 -Keep           do not delete temporary files at the end
+#          .\build-html.ps1 -NoClean        do not delete the results of the previous build at the start
+#          .\build-html.ps1 -NoPublish      do not move the finished book to the publish folder
+#          .\build-html.ps1 -OutDir site    publish folder (default: docs; this is what GitHub Pages serves)
+# On an error the script stops and writes the first LaTeX error with its context to build-error.txt
+# (send that file's text). ASCII only on purpose: Windows PowerShell 5 reads files without BOM as ANSI.
+param(
+    [switch]$Placeholder,
+    [switch]$SkipPrepare,
+    [switch]$NoImages,
+    [switch]$Full,
+    [switch]$Keep,
+    [switch]$NoClean,
+    [switch]$NoPublish,
+    [string]$OutDir = '..\online',
+    [string]$Chapters = ''      # test build of a few chapters only, e.g. -Chapters Scales (use with -OutDir html\_test)
+)
+$ErrorActionPreference = 'Stop'
+$HTMLDIR = $PSScriptRoot                      # html/: all sources of the HTML pipeline live here
+$ROOT = Split-Path -Parent $PSScriptRoot      # project root (main.tex): lwarp builds here, temporarily
+Set-Location -LiteralPath $ROOT
+try { [Console]::OutputEncoding = [Text.Encoding]::UTF8 } catch { }
+$main = 'main-html'
+$totalStages = 7
+$script:problems = 0
+
+# Prints (and saves to build-error.txt) the first LaTeX error of a log: file being read, error, context.
+function Show-FirstError([string]$log) {
+    if (-not (Test-Path $log)) { return }
+    $lines = Get-Content -LiteralPath $log -Encoding UTF8
+    $idx = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) { if ($lines[$i].StartsWith('!')) { $idx = $i; break } }
+    if ($idx -lt 0) { return }
+    $file = ''
+    for ($j = $idx; $j -ge 0; $j--) {
+        if ($lines[$j] -match '\((\.[\\/][^\s()]*\.(tex|tikz|cls|sty))') { $file = $Matches[1]; break }
+    }
+    $end = [Math]::Min($idx + 9, $lines.Count - 1)
+    $block = @("log: $log", "file being read: $file") + $lines[$idx..$end]
+    $block | Set-Content -LiteralPath 'build-error.txt' -Encoding UTF8
+    Write-Host ""
+    Write-Host "FIRST LaTeX ERROR (also saved to build-error.txt):" -ForegroundColor Red
+    $block | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+}
+
+# Filters a LaTeX log through texlogsieve and prints only what it keeps.
+function Show-Sieve([string]$log) {
+    if (-not (Test-Path $log)) { return }
+    if (-not $script:hasSieve) { return }
+    $old = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    $o = @(& texlogsieve $log 2>&1 | ForEach-Object { "$_" })
+    $ErrorActionPreference = $old
+    $o = @($o | Where-Object { $_.Trim() -ne '' })
+    if ($o.Count -eq 0) {
+        Write-Host "      log is clean ($log)" -ForegroundColor DarkGray
+    } else {
+        Write-Host "      texlogsieve: $log" -ForegroundColor DarkGray
+        $o | ForEach-Object { Write-Host "      $_" -ForegroundColor Yellow }
+    }
+}
+
+function Stage([int]$n, [string]$title) {
+    Write-Host ""
+    Write-Host ("[{0}/{1}] {2}" -f $n, $totalStages, $title) -ForegroundColor Cyan
+}
+
+# Runs one command quietly: prints one line "label ... ok (time)". Tool output is shown only on failure
+# (last lines), warnings/errors are picked from it. If $log is given, it is passed through texlogsieve.
+function Step([string]$label, [scriptblock]$cmd, [string]$log = '', [bool]$sieveOnOk = $true) {
+    Write-Host ("  - {0} ... " -f $label) -NoNewline
+    $t = [Diagnostics.Stopwatch]::StartNew()
+    $out = @()
+    if ($Full) {
+        Write-Host ""
+        & $cmd
+        $code = $LASTEXITCODE
+    } else {
+        $old = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+        $out = @(& $cmd 2>&1 | ForEach-Object { "$_" })
+        $code = $LASTEXITCODE
+        $ErrorActionPreference = $old
+    }
+    $t.Stop()
+    $time = '{0:N1}s' -f $t.Elapsed.TotalSeconds
+    if ($code -ne 0) {
+        Write-Host ("FAILED ({0})" -f $time) -ForegroundColor Red
+        if (-not $Full -and $out.Count -gt 0) {
+            Write-Host "      last lines of the tool output:" -ForegroundColor DarkGray
+            $out | Select-Object -Last 15 | ForEach-Object { Write-Host "      $_" -ForegroundColor DarkGray }
+        }
+        if ($log) { Show-Sieve $log; Show-FirstError $log }
+        throw "$label failed (exit code $code)"
+    }
+    if (-not $Full) { Write-Host ("ok ({0})" -f $time) -ForegroundColor Green }
+    if (-not $Full -and -not $log) {
+        $w = @($out | Where-Object { $_ -match '(?i)warn|error|fail|not found' } | Select-Object -First 8)
+        foreach ($l in $w) { Write-Host "      $l" -ForegroundColor Yellow }
+    }
+    if ($log -and $sieveOnOk) { Show-Sieve $log }
+}
+
+# True if an .html file was generated by lwarp (its head contains the lwarp generator tag).
+function Test-LwarpHtml([string]$path) {
+    $sr = $null
+    try {
+        $sr = New-Object IO.StreamReader($path)
+        $buf = New-Object char[] 4096
+        $n = $sr.Read($buf, 0, 4096)
+        if ($n -le 0) { return $false }
+        return ((-join $buf[0..($n - 1)]) -match '(?i)lwarp')
+    } catch { return $false }
+    finally { if ($sr) { $sr.Dispose() } }
+}
+
+# Deletes a list of files, returns @(count, bytes). Locked files (e.g. open in a browser) are skipped.
+function Remove-Files($files) {
+    $cnt = 0; $bytes = 0
+    foreach ($f in @($files)) {
+        if (-not $f) { continue }
+        try { Remove-Item -LiteralPath $f.FullName -Force -ErrorAction Stop; $cnt++; $bytes += $f.Length } catch { }
+    }
+    return @($cnt, $bytes)
+}
+
+# Files of this build in the project root: "$main*.<ext>".
+function Get-BuildFiles([string[]]$exts) {
+    foreach ($e in $exts) { Get-ChildItem -LiteralPath . -File -Filter "$main*.$e" -ErrorAction SilentlyContinue }
+}
+
+# lwarpmk converts the images in parallel and sometimes leaves a 0-byte SVG and a lateximagetemp-N.pdf behind
+# (seen: 67 of 253). This redoes exactly those conversions with the commands lwarpmk uses. Returns the number repaired.
+function Repair-Images([string]$dir, [string]$txt) {
+    if (-not (Test-Path $dir)) { return 0 }
+    $names = @{}
+    if (Test-Path $txt) {
+        foreach ($l in (Get-Content -LiteralPath $txt -Encoding UTF8)) {
+            if ($l -match '^\|(\d+)\|[^|]*\|([^|]+)\|') { $names[$Matches[1]] = $Matches[2] }
+        }
+    }
+    $fixed = 0
+    $old = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    foreach ($t in @(Get-ChildItem -LiteralPath $dir -File -Filter 'lateximagetemp-*.pdf' -ErrorAction SilentlyContinue)) {
+        if ($t.Name -notmatch '^lateximagetemp-(\d+)\.pdf$') { continue }
+        $name = $names[$Matches[1]]
+        if (-not $name) { continue }
+        $pdf = Join-Path $dir ($name + '.pdf'); $svg = Join-Path $dir ($name + '.svg')
+        & pdfcrop --hires --margins '0 1 0 0' $t.FullName $pdf 2>&1 | Out-Null
+        if ($LASTEXITCODE -ne 0 -or -not (Test-Path $pdf)) { continue }
+        & pdftocairo -svg -noshrink $pdf $svg 2>&1 | Out-Null
+        if ((Test-Path $svg) -and ((Get-Item $svg).Length -gt 0)) {
+            Remove-Item -LiteralPath $pdf, $t.FullName -Force -ErrorAction SilentlyContinue
+            $fixed++
+        }
+    }
+    $ErrorActionPreference = $old
+    return $fixed
+}
+
+function Get-EmptySvg([string]$dir) {
+    if (-not (Test-Path $dir)) { return @() }
+    return @(Get-ChildItem -LiteralPath $dir -File -Filter '*.svg' -ErrorAction SilentlyContinue | Where-Object { $_.Length -eq 0 })
+}
+
+# --- checks ------------------------------------------------------------------
+$py = $null
+foreach ($c in 'py', 'python') { if (Get-Command $c -ErrorAction SilentlyContinue) { $py = $c; break } }
+$missing = @()
+if (-not $py) { $missing += 'python (or py)' }
+foreach ($t in 'lualatex', 'lwarpmk', 'biber', 'pdfcrop', 'pdftocairo') {
+    if (-not (Get-Command $t -ErrorAction SilentlyContinue)) { $missing += $t }
+}
+if (-not (Get-Command gnuplot -ErrorAction SilentlyContinue)) {
+    Write-Host "Warning: gnuplot not found in PATH (needed by 2 pictures in FieldInMetalls)." -ForegroundColor Yellow
+}
+$script:hasSieve = [bool](Get-Command texlogsieve -ErrorAction SilentlyContinue)
+if (-not $script:hasSieve) {
+    Write-Host "Warning: texlogsieve not found in PATH - logs will not be filtered (tlmgr install texlogsieve)." -ForegroundColor Yellow
+}
+if ($missing.Count -gt 0) { throw "Not found in PATH: $($missing -join ', ')" }
+foreach ($f in "html/$main.tex", 'html/ConspectBookHTML.cls', 'html/tools/mathjax2lwarp.py', 'html/tools/prepare_html.py', 'html/tools/publish_html.py', 'ConspectBook.cls') {
+    if (-not (Test-Path $f)) { throw "File not found: $f" }
+}
+Remove-Item -ErrorAction SilentlyContinue build-error.txt
+$sw = [Diagnostics.Stopwatch]::StartNew()
+
+# --- 0. bring the sources into the project root for the build; the cleanup in `finally` removes them again --------
+# What the print book owns and the HTML pass rewrites (<Chapter>/<Chapter>-Answers.tex) is saved and put back.
+$ansBackup = Join-Path $env:TEMP 'plasmabook-html-answers'
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $ansBackup
+New-Item -ItemType Directory -Force $ansBackup | Out-Null
+foreach ($f in Get-ChildItem -Path '*/*-Answers.tex' -File) {
+    New-Item -ItemType Directory -Force (Join-Path $ansBackup $f.Directory.Name) | Out-Null
+    Copy-Item -LiteralPath $f.FullName -Destination (Join-Path $ansBackup $f.Directory.Name)
+}
+Copy-Item "html/$main.tex", 'html/ConspectBookHTML.cls' -Destination . -Force
+if ($Chapters) {
+    $t = [IO.File]::ReadAllText("$ROOT/$main.tex", [Text.Encoding]::UTF8)
+    $t = [regex]::Replace($t, '\\multiinclude\{[^}]*\}', { param($m) '\multiinclude{' + $Chapters + '}' })
+    [IO.File]::WriteAllText("$ROOT/$main.tex", $t, (New-Object Text.UTF8Encoding($false)))
+}
+# cache of pictures compiled alone (slow): kept in html/cache/ between builds
+if (Test-Path 'html/cache/ext') { New-Item -ItemType Directory -Force '_html' | Out-Null; Copy-Item 'html/cache/ext' '_html/ext' -Recurse -Force }
+
+# Removes everything this build puts into the project root; the root is left as it was before.
+function Clear-Root {
+    New-Item -ItemType Directory -Force 'html/logs' | Out-Null
+    # logs and the error text are kept (ignored by git) for diagnosis
+    foreach ($f in @(Get-BuildFiles @('log')) + @(Get-Item -ErrorAction SilentlyContinue build-error.txt)) {
+        if ($f) { Copy-Item -LiteralPath $f.FullName -Destination 'html/logs' -Force }
+    }
+    if (Test-Path '_html/ext') { New-Item -ItemType Directory -Force 'html/cache' | Out-Null; Remove-Item -Recurse -Force 'html/cache/ext' -ErrorAction SilentlyContinue; Copy-Item '_html/ext' 'html/cache/ext' -Recurse -Force }
+    foreach ($f in Get-ChildItem -Path '*/*-Answers.tex' -File) {
+        $b = Join-Path (Join-Path $ansBackup $f.Directory.Name) $f.Name
+        if (Test-Path $b) { Copy-Item -LiteralPath $b -Destination $f.FullName -Force }
+    }
+    foreach ($e in 'pdf','aux','out','log','toc','lof','lot','bcf','blg','run.xml','bbl','idx','ind','ilg','thm','tex','sidetoc','fls','fdb_latexmk','html','lwarpmkconf','xml','css','gnuplot','table','tmp','txt','sty','cls','ist') {
+        Remove-Files @(Get-ChildItem -LiteralPath . -File -Filter "$main*.$e" -ErrorAction SilentlyContinue) | Out-Null
+    }
+    $junk = @('ConspectBookHTML.cls', "$main.tex", 'lwarp-mathjax.tex', 'lwarp-tikzdefs.tex', 'lwarpmk.conf', 'lwarp.css', 'sitemap.xml', 'build-error.txt')
+    Remove-Files @(Get-ChildItem -LiteralPath . -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -in $junk -or $_.Name -like 'lwarp*' -or $_.Name -like 'lateximagetemp-*' -or $_.Name -like 'lateximage-*' -or $_.Name -like 'comment_*.cut' -or $_.Name -eq 'sample_project.css' }) | Out-Null
+    Remove-Files @(Get-ChildItem -LiteralPath . -File -Filter '*.html' -ErrorAction SilentlyContinue | Where-Object { (Test-LwarpHtml $_.FullName) -and $_.Name -ne 'index.html' }) | Out-Null
+    foreach ($d in '_html', 'lateximages', "$main-images", "${main}_html-images") { Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $d }
+    # SVG made from */Pictures/*.pdf (lwarpmk pdftosvg) that publish_html.py did not move
+    Remove-Files @(Get-ChildItem -Path '*/Pictures/*.pdf' -File -ErrorAction SilentlyContinue | ForEach-Object {
+        $s = [IO.Path]::ChangeExtension($_.FullName, '.svg'); if (Test-Path -LiteralPath $s) { Get-Item -LiteralPath $s } }) | Out-Null
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $ansBackup
+}
+try {
+
+# --- 1. preparation ------------------------------------------------------------
+Stage 1 'Preparation'
+if (-not $NoClean) {
+    # Only what lwarp and this build create: HTML pages with the lwarp tag (not "del *.html"), lwarp css,
+    # sitemap, lateximage-* pictures, and the temporary files of $main. Generated inputs of the build
+    # (lwarp-mathjax.tex, SVG pictures, fixed tikz copies) stay: -SkipPrepare needs them.
+    $old = @(Get-BuildFiles @('pdf', 'aux', 'out', 'log', 'toc', 'lof', 'lot', 'bcf', 'blg', 'run.xml', 'bbl'))
+    $html = @(Get-ChildItem -LiteralPath . -File -Filter '*.html' -ErrorAction SilentlyContinue | Where-Object { Test-LwarpHtml $_.FullName })
+    $misc = @(Get-ChildItem -LiteralPath . -File -Filter 'lwarp*.css' -ErrorAction SilentlyContinue)
+    $misc += @(Get-ChildItem -LiteralPath . -File -Filter 'sitemap.xml' -ErrorAction SilentlyContinue)
+    if (Test-Path 'lateximages') {
+        $misc += @(Get-ChildItem -LiteralPath 'lateximages' -File -Filter 'lateximage-*' -ErrorAction SilentlyContinue)
+    }
+    $r = Remove-Files ($old + $html + $misc)
+    Write-Host ("  - cleaned previous build: {0} files ({1:N1} MB), of them {2} html pages" -f $r[0], ($r[1] / 1MB), $html.Count) -ForegroundColor Green
+}
+# publish_html.py moves the SVG made from */Pictures/*.pdf into the publish folder; the next build needs them back
+# (-SkipPrepare would not make them; prepare_html.py does not convert them again). One older than its PDF is left there.
+$restored = 0
+foreach ($pdf in @(Get-ChildItem -Path '*/Pictures/*.pdf' -File -ErrorAction SilentlyContinue)) {
+    $svg = [IO.Path]::ChangeExtension($pdf.FullName, '.svg')
+    if (Test-Path -LiteralPath $svg) { continue }
+    $rel = Resolve-Path -LiteralPath $pdf.FullName -Relative
+    $pub = Join-Path $OutDir ([IO.Path]::ChangeExtension($rel, '.svg'))
+    if ((Test-Path -LiteralPath $pub) -and (Get-Item -LiteralPath $pub).LastWriteTime -ge $pdf.LastWriteTime) {
+        Copy-Item -LiteralPath $pub -Destination $svg; $restored++
+    }
+}
+if ($restored -gt 0) { Write-Host "  - $restored SVG pictures taken back from $OutDir/" -ForegroundColor Green }
+if (-not $SkipPrepare) {
+    Step 'shared parts of ConspectBook.cls -> _html/shared-*.tex' { & $py html/tools/prepare_html.py --shared }
+    Step 'MathJax macros -> lwarp-mathjax.tex' { & $py html/tools/mathjax2lwarp.py _html/shared-mathmacros.tex lwarp-mathjax.tex }
+    $prepArgs = @('html/tools/prepare_html.py')
+    if ($Placeholder) { $prepArgs += '--placeholder' }
+    Step 'PDF pictures -> SVG, fixed copies of tikz files' { & $py @prepArgs }
+} else {
+    Write-Host "  (skipped: -SkipPrepare)" -ForegroundColor DarkGray
+}
+
+# --- 2. print pass + bibliography ----------------------------------------------
+# lwarp records --shell-escape in lwarpmk.conf only if THIS first pass runs with it (needed for 'plot gnuplot').
+# Old config files are removed so that they are recreated with the right command.
+# Note: undefined references/citations in this first pass are normal - biber has not run yet.
+Stage 2 'LaTeX print pass and bibliography'
+Remove-Item -ErrorAction SilentlyContinue lwarpmk.conf, "$main.lwarpmkconf"
+Step "lualatex -shell-escape $main" {
+    lualatex -shell-escape -interaction=nonstopmode -halt-on-error $main
+} "$main.log" $false
+Write-Host "      (the print PDF is thrown away: its 'rerun' and undefined references do not matter, the HTML pass redoes them)" -ForegroundColor DarkGray
+# \tag{\theequation ..} cannot be expanded by MathJax: its number is taken from the aux file of the pass above.
+Step 'equation numbers for \tag{\theequation ..}' { & $py html/tools/prepare_html.py --tags }
+Step "biber $main" { biber $main }
+# the HTML pass is the job ${main}_html and reads ${main}_html.bbl: without it every citation is undefined and the
+# bibliography is empty. Both jobs are the same document, so the bbl of the print pass fits.
+Copy-Item -LiteralPath "$main.bbl" -Destination "${main}_html.bbl" -Force
+
+# --- 3. HTML ---------------------------------------------------------------------
+Stage 3 'HTML build (lwarpmk, several passes - this is the long step)'
+# lwarpmk does not notice changes of the class or of included files: force the rebuild.
+Step 'lwarpmk again' { lwarpmk again -p $main }
+Step 'lwarpmk html' { lwarpmk html -p $main } "${main}_html.log"
+
+# --- 4. checks ---------------------------------------------------------------------
+Stage 4 'Checks'
+$log = "${main}_html.log"
+if (Test-Path $log) {
+    $undef = (Select-String -Path $log -Pattern 'Reference .* undefined|Citation .* undefined').Count
+    if ($undef -gt 0) {
+        Write-Host "  Undefined references/citations in the HTML log: $undef" -ForegroundColor Yellow
+        $script:problems += $undef
+    } else {
+        Write-Host "  references and citations: ok" -ForegroundColor Green
+    }
+    $rerun = (Select-String -Path $log -Pattern 'Rerun to get|Label\(s\) may have changed|Please \(re\)run Biber').Count
+    if ($rerun -gt 0) {
+        Write-Host "  The HTML log still asks for a rerun - run the script once more (lwarpmk did not converge)." -ForegroundColor Yellow
+        $script:problems += $rerun
+    } else {
+        Write-Host "  no rerun requested by the HTML log" -ForegroundColor Green
+    }
+}
+
+# stray carets (font ligatures) and MathJax errors in the formulas
+$rawHtml = "${main}_html.html"
+if (Test-Path $rawHtml) {
+    $caret = (Select-String -Path $rawHtml -Pattern '-\^->|\^/>|\^</|https?:\^//|_\^-' -AllMatches | ForEach-Object { $_.Matches.Count } | Measure-Object -Sum).Sum
+    if ($caret -gt 0) {
+        Write-Host "  Stray ^ in the HTML: $caret places. Cause: ligatures of the monospace font (JetBrains Mono); check that" -ForegroundColor Yellow
+        Write-Host "  ConspectBookHTML.cls has [RawFeature={-calt,-liga}] and that 'lwarpmk again' was run." -ForegroundColor Yellow
+        $script:problems += $caret
+    } else {
+        Write-Host "  stray carets: none" -ForegroundColor Green
+    }
+    if ((Test-Path 'html/node_modules/mathjax-full') -and (Get-Command node -ErrorAction SilentlyContinue)) {
+        Step 'MathJax check of the formulas' { node html/tools/check-mathjax-html.js $rawHtml }
+    } else {
+        Write-Host "  (optional) npm i mathjax-full  -> the build will then check all formulas with MathJax" -ForegroundColor DarkGray
+    }
+}
+
+# --- 5. images -------------------------------------------------------------------
+Stage 5 'Images'
+$imagesDone = $true
+if (-not $NoImages) {
+    Step 'lwarpmk limages' { lwarpmk limages -p $main }
+    # image conversion may continue in the background: wait for it before deleting anything
+    $workers = 'pdftocairo', 'pdfcrop', 'gswin64c', 'gswin32c'
+    $deadline = (Get-Date).AddMinutes(10)
+    $waited = $false
+    while (Get-Process -Name $workers -ErrorAction SilentlyContinue) {
+        if (-not $waited) { Write-Host "  waiting for background image conversion ..." -ForegroundColor DarkGray; $waited = $true }
+        if ((Get-Date) -gt $deadline) { $imagesDone = $false; break }
+        Start-Sleep -Seconds 2
+    }
+    if ($imagesDone) { Write-Host "  images finished" -ForegroundColor Green }
+    else { Write-Host "  images are still being converted after 10 min; temporary files are kept." -ForegroundColor Yellow }
+    if ($imagesDone) {
+        $imgDir = "$main-images"; $imgTxt = "$main-images.txt"
+        $empty = @(Get-EmptySvg $imgDir)
+        if ($empty.Count -gt 0) {
+            Write-Host ("  {0} images came out empty (lwarpmk converts in parallel); redoing them ..." -f $empty.Count) -ForegroundColor Yellow
+            $n = Repair-Images $imgDir $imgTxt
+            $left = @(Get-EmptySvg $imgDir).Count
+            if ($left -gt 0) {
+                Write-Host ("  {0} still empty: running lwarpmk limages once more" -f $left) -ForegroundColor Yellow
+                Step 'lwarpmk limages (second try)' { lwarpmk limages -p $main }
+                $deadline = (Get-Date).AddMinutes(5)
+                while ((Get-Process -Name $workers -ErrorAction SilentlyContinue) -and ((Get-Date) -lt $deadline)) { Start-Sleep -Seconds 2 }
+                $n += Repair-Images $imgDir $imgTxt
+                $left = @(Get-EmptySvg $imgDir).Count
+            }
+            if ($left -gt 0) {
+                Write-Host ("  {0} images are still empty - see the folder {1}" -f $left, $imgDir) -ForegroundColor Red
+                $script:problems += $left
+            } else {
+                Write-Host ("  all empty images repaired ({0})" -f $n) -ForegroundColor Green
+            }
+        } else {
+            Write-Host "  no empty images" -ForegroundColor Green
+        }
+    }
+} else {
+    Write-Host "  (skipped: -NoImages)" -ForegroundColor DarkGray
+}
+
+# --- 6. publish ----------------------------------------------------------------------------
+# Moves what only the site needs (lwarp pages, lwarp css, sitemap, lateximages, <main>-images, and once: index.html,
+# google*.html, assets/) to $OutDir and COPIES what the TeX project needs too (chapter pictures, the PDF).
+# book.js and conspect.css live in $OutDir/assets/ (links in the pages are rewritten, book.js is added to each page).
+# Empty folders left in the project root (main-html-images/, lateximages/ ...) are removed.
+# $OutDir is emptied on every run except the site's own files (index.html, assets/, google*.html, CNAME).
+Stage 6 "Publish to $OutDir/"
+if ($NoPublish) {
+    Write-Host "  (skipped: -NoPublish)" -ForegroundColor DarkGray
+} else {
+    & $py html/tools/publish_html.py --out $OutDir
+    if ($LASTEXITCODE -ne 0) { throw "publish_html.py failed (exit code $LASTEXITCODE)" }
+    # search index for book.js: $OutDir/pagefind/ (only the chapter text, marked by publish_html.py). Needs node (npx).
+    if (Get-Command npx -ErrorAction SilentlyContinue) {
+        Step 'search index (Pagefind)' { npx -y pagefind@1.3.0 --site $OutDir }
+    } else {
+        Write-Host "  Warning: npx (node) not found - no search index, the search field stays hidden." -ForegroundColor Yellow
+        $script:problems++
+    }
+}
+
+# --- 7. cleanup: done in `finally` below (also after an error) -------------------------------
+Stage 7 'Cleanup'
+if ($Keep) { Write-Host "  (skipped: -Keep; the project root keeps the build files)" -ForegroundColor DarkGray }
+else { Write-Host "  the project root will be restored (lwarp files, copies of the class and main-html.tex, _html/ removed; logs saved to html/logs/)" -ForegroundColor Green }
+
+$sw.Stop()
+Write-Host ""
+if ($script:problems -gt 0) {
+    Write-Host ("Done in {0:mm\:ss}, with warnings. Open {1}/{2}.html in a browser (internet is needed for MathJax)." -f $sw.Elapsed, $OutDir, $main) -ForegroundColor Yellow
+} else {
+    Write-Host ("Done in {0:mm\:ss}. Open {1}/{2}.html in a browser (internet is needed for MathJax)." -f $sw.Elapsed, $OutDir, $main) -ForegroundColor Green
+}
+} finally {
+    if (-not $Keep) { Clear-Root }
+}
+

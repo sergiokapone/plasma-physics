@@ -1,0 +1,3896 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Елементи фізики плазми — Основні масштаби, режими та межі моделей</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-599"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Елементи фізики плазми</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../PlasmaBook/main.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="ch1.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-26" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Плазма: від іонізованого газу до колективного середовища</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-27" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Що таке плазма?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-32" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Іонізація: формула Саха</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-37" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Температура плазми та два компоненти</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-38" class="tocsection" >
+<span class="sectionnumber">1.4</span><span class="toctitle">&#x2003;Квазінейтральність і&nbsp;плазмові коливання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-48" class="tocsection" >
+<span class="sectionnumber">1.5</span><span class="toctitle">&#x2003;Дебаївське екранування</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-58" class="tocsection" >
+<span class="sectionnumber">1.6</span><span class="toctitle">&#x2003;Дебаївська сфера. Умова колективності</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-65" class="tocsection" >
+<span class="sectionnumber">1.7</span><span class="toctitle">&#x2003;Слабкозв’язана та сильнозв’язана плазма</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-66" class="tocsection" >
+<span class="sectionnumber">1.8</span><span class="toctitle">&#x2003;Екранування в&nbsp;виродженому газі: довжина Томаса–Фермі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-67" class="tocsection" >
+<span class="sectionnumber">1.9</span><span class="toctitle">&#x2003;Шар біля стінки і&nbsp;зонд Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-111" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Колективні коливання та хвилі в&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-112" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Діелектрична проникність холодної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-116" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Закон дисперсії. Частота відсікання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-121" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Поздовжні (ленгмюрівські) хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-129" class="tocsection" >
+<span class="sectionnumber">2.4</span><span class="toctitle">&#x2003;Зіткнення й&nbsp;поглинання електромагнітних хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-130" class="tocsection" >
+<span class="sectionnumber">2.5</span><span class="toctitle">&#x2003;Відбиття електромагнітних хвиль від плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-133" class="tocsection" >
+<span class="sectionnumber">2.6</span><span class="toctitle">&#x2003;Іоносфера і&nbsp;далекий радіозв’язок</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-135" class="tocsection" >
+<span class="sectionnumber">2.7</span><span class="toctitle">&#x2003;Як це вимірюють: інтерферометрія і&nbsp;рефлектометрія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-158" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Рух зарядженої частинки в&nbsp;електричному та&nbsp;магнітному полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-159" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Однорідне магнітне поле</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-163" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Дрейфи в&nbsp;схрещених полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-181" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Поляризаційний дрейф</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-185" class="tocsection" >
+<span class="sectionnumber">3.4</span><span class="toctitle">&#x2003;Магнітний момент і&nbsp;адіабатичний інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-198" class="tocsection" >
+<span class="sectionnumber">3.5</span><span class="toctitle">&#x2003;Магнітне дзеркало і&nbsp;конус втрат</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-205" class="tocsection" >
+<span class="sectionnumber">3.6</span><span class="toctitle">&#x2003;Подовжній інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-206" class="tocsection" >
+<span class="sectionnumber">3.7</span><span class="toctitle">&#x2003;Диполь Землі та радіаційні пояси</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-211" class="tocsection" >
+<span class="sectionnumber">3.8</span><span class="toctitle">&#x2003;Як це вимірюють: аналізатор енергій і&nbsp;ECE</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-227" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Зіткнення, провідність та перенос у&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-228" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Кулонівські зіткнення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-233" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Провідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-236" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Теплопровідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-237" class="tocsection" >
+<span class="sectionnumber">4.4</span><span class="toctitle">&#x2003;Дифузія в&nbsp;плазмі. Амбіполярна дифузія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-239" class="tocsection" >
+<span class="sectionnumber">4.5</span><span class="toctitle">&#x2003;Як це вимірюють: температура з&nbsp;опору і&nbsp;з&nbsp;ширини ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-251" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Гідродинамічний та магнітогідродинамічний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-252" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Гідродинамічний опис не є синонімом частих зіткнень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-253" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Дворідинний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-254" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Від дворідинної моделі до однорідинної МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-257" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Основне рівняння магнітної гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-265" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Альвенівська швидкість і&nbsp;число Альвена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-266" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;МГД-рівновага та магнітні поверхні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-271" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Енергія електромагнітного поля та плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-272" class="tocsection" >
+<span class="sectionnumber">5.8</span><span class="toctitle">&#x2003;Діамагнетизм плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-274" class="tocsection" >
+<span class="sectionnumber">5.9</span><span class="toctitle">&#x2003;Вмороженість магнітного поля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-281" class="tocsection" >
+<span class="sectionnumber">5.10</span><span class="toctitle">&#x2003;Перез’єднання силових ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-285" class="tocsection" >
+<span class="sectionnumber">5.11</span><span class="toctitle">&#x2003;Дві мови опису: окремі частинки й&nbsp;суцільне середовище</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-300" class="tocsection" >
+<span class="sectionnumber">5.12</span><span class="toctitle">&#x2003;Як це вимірюють: магнітні виміри</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-327" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-328" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Що в&nbsp;плазмі може бути відновлювальною силою?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-332" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Звукова й&nbsp;іонно-звукова хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-337" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Лінеаризована МГД і&nbsp;загальне дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-338" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Альвенівська хвиля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-344" class="tocsection" >
+<span class="sectionnumber">6.5</span><span class="toctitle">&#x2003;Магнітозвукові хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-351" class="tocsection" >
+<span class="sectionnumber">6.6</span><span class="toctitle">&#x2003;Підсумок: хвилі в&nbsp;рідинному описі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-354" class="tocsection" >
+<span class="sectionnumber">6.7</span><span class="toctitle">&#x2003;Високочастотні хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-362" class="tocsection" >
+<span class="sectionnumber">6.8</span><span class="toctitle">&#x2003;Межі застосовності МГД-хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-383" class="tocchapter" >
+<span class="sectionnumber">7</span><span class="toctitle">&#x2003;Кінетичний опис плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-384" class="tocsection" >
+<span class="sectionnumber">7.1</span><span class="toctitle">&#x2003;Функція розподілу та фазовий простір</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-385" class="tocsection" >
+<span class="sectionnumber">7.2</span><span class="toctitle">&#x2003;Моменти функції розподілу</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-386" class="tocsection" >
+<span class="sectionnumber">7.3</span><span class="toctitle">&#x2003;Кінетичне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-387" class="tocsection" >
+<span class="sectionnumber">7.4</span><span class="toctitle">&#x2003;Максвеллівський розподіл і&nbsp;температура</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-388" class="tocsection" >
+<span class="sectionnumber">7.5</span><span class="toctitle">&#x2003;Від кінетики до гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-389" class="tocsection" >
+<span class="sectionnumber">7.6</span><span class="toctitle">&#x2003;Дворідинна картина та її зв’язок із МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-390" class="tocsection" >
+<span class="sectionnumber">7.7</span><span class="toctitle">&#x2003;Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-391" class="tocsection" >
+<span class="sectionnumber">7.8</span><span class="toctitle">&#x2003;Лінеаризація кінетичного рівняння та хвильовий відгук</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-399" class="tocsection" >
+<span class="sectionnumber">7.9</span><span class="toctitle">&#x2003;Загасання Ландау</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-408" class="tocsection" >
+<span class="sectionnumber">7.10</span><span class="toctitle">&#x2003;Коли потрібен кінетичний опис?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-409" class="tocsection" >
+<span class="sectionnumber">7.11</span><span class="toctitle">&#x2003;Як це вимірюють: томсонівське розсіяння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-434" class="tocchapter" >
+<span class="sectionnumber">8</span><span class="toctitle">&#x2003;Загальний принцип нестійкості плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-435" class="tocsection" >
+<span class="sectionnumber">8.1</span><span class="toctitle">&#x2003;Що означає нестійкість?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-439" class="tocsection" >
+<span class="sectionnumber">8.2</span><span class="toctitle">&#x2003;Лінеаризація: як знайти долю малого збурення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-441" class="tocsection" >
+<span class="sectionnumber">8.3</span><span class="toctitle">&#x2003;Хвиля, що може рости</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-445" class="tocsection" >
+<span class="sectionnumber">8.4</span><span class="toctitle">&#x2003;Дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-449" class="tocsection" >
+<span class="sectionnumber">8.5</span><span class="toctitle">&#x2003;Звідки береться енергія нестійкості?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-453" class="tocsection" >
+<span class="sectionnumber">8.6</span><span class="toctitle">&#x2003;Рівновага та стійкість у&nbsp;магнітному полі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-457" class="tocsection" >
+<span class="sectionnumber">8.7</span><span class="toctitle">&#x2003;Перетяжка як найпростіший приклад нестійкості</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-458" class="tocsection" >
+<span class="sectionnumber">8.8</span><span class="toctitle">&#x2003;Лінійна та нелінійна стадії</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-462" class="tocsection" >
+<span class="sectionnumber">8.9</span><span class="toctitle">&#x2003;Нестійкість Релея–Тейлора та жолобкова нестійкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-469" class="tocsection" >
+<span class="sectionnumber">8.10</span><span class="toctitle">&#x2003;Двопотокова нестійкість та нестійкість пучка</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-473" class="tocsection" >
+<span class="sectionnumber">8.11</span><span class="toctitle">&#x2003;Нестійкості анізотропної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-474" class="tocsection" >
+<span class="sectionnumber">8.12</span><span class="toctitle">&#x2003;Енергетичний принцип</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-475" class="tocsection" >
+<span class="sectionnumber">8.13</span><span class="toctitle">&#x2003;Дрейфові хвилі та аномальний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-476" class="tocsection" >
+<span class="sectionnumber">8.14</span><span class="toctitle">&#x2003;Від загального принципу до конкретних нестійкостей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-479" class="tocsection" >
+<span class="sectionnumber">8.15</span><span class="toctitle">&#x2003;Як це вимірюють: котушки Мірнова і&nbsp;м’який рентген</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-490" class="tocchapter" >
+<span class="sectionnumber">9</span><span class="toctitle">&#x2003;Магнітне утримання плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-491" class="tocsection" >
+<span class="sectionnumber">9.1</span><span class="toctitle">&#x2003;Проблема утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-492" class="tocsection" >
+<span class="sectionnumber">9.2</span><span class="toctitle">&#x2003;Відкриті пастки: магнітне дзеркало</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-493" class="tocsection" >
+<span class="sectionnumber">9.3</span><span class="toctitle">&#x2003;Пінч-ефект</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-497" class="tocsection" >
+<span class="sectionnumber">9.4</span><span class="toctitle">&#x2003;Рівновага \(z\)-пінча. Співвідношення Беннета</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-503" class="tocsection" >
+<span class="sectionnumber">9.5</span><span class="toctitle">&#x2003;Рівновага \(\mittheta \)-пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-504" class="tocsection" >
+<span class="sectionnumber">9.6</span><span class="toctitle">&#x2003;Нестійкості пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-511" class="tocsection" >
+<span class="sectionnumber">9.7</span><span class="toctitle">&#x2003;Тороїдальні системи: токамак і&nbsp;стеларатор</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-515" class="tocsection" >
+<span class="sectionnumber">9.8</span><span class="toctitle">&#x2003;Захоплені частинки й&nbsp;неокласичний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-519" class="tocsection" >
+<span class="sectionnumber">9.9</span><span class="toctitle">&#x2003;Рівновага тора: зсув Шафранова та межа за тиском</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-520" class="tocsection" >
+<span class="sectionnumber">9.10</span><span class="toctitle">&#x2003;Як це вимірюють: магнітна реконструкція рівноваги</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-531" class="tocchapter" >
+<span class="sectionnumber">10</span><span class="toctitle">&#x2003;Керований термоядерний синтез</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-532" class="tocsection" >
+<span class="sectionnumber">10.1</span><span class="toctitle">&#x2003;Реакції та паливо</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">10.2</span><span class="toctitle">&#x2003;Чому потрібна саме така температура: бар’єр і&nbsp;тунелювання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-540" class="tocsection" >
+<span class="sectionnumber">10.3</span><span class="toctitle">&#x2003;Баланс потужностей і&nbsp;критерій Лоусона</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-541" class="tocsection" >
+<span class="sectionnumber">10.4</span><span class="toctitle">&#x2003;Втрати</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-542" class="tocsection" >
+<span class="sectionnumber">10.5</span><span class="toctitle">&#x2003;Дві стратегії: магнітне й&nbsp;інерційне утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-543" class="tocsection" >
+<span class="sectionnumber">10.6</span><span class="toctitle">&#x2003;Від реакції до розетки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-550" class="tocsection" >
+<span class="sectionnumber">10.7</span><span class="toctitle">&#x2003;Що ще треба вирішити</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-551" class="tocsection" >
+<span class="sectionnumber">10.8</span><span class="toctitle">&#x2003;Інерційний шлях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-552" class="tocsection" >
+<span class="sectionnumber">10.9</span><span class="toctitle">&#x2003;Де ми зараз: стан на&nbsp;2026&nbsp;рік</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-555" class="tocsection" >
+<span class="sectionnumber">10.10</span><span class="toctitle">&#x2003;Як це вимірюють: нейтронна діагностика</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-566" class="tocchapter" >
+<span class="sectionnumber">11</span><span class="toctitle">&#x2003;Низькотемпературна плазма та газовий розряд</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-567" class="tocsection" >
+<span class="sectionnumber">11.1</span><span class="toctitle">&#x2003;Елементарні процеси: іонізація і&nbsp;її швидкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-568" class="tocsection" >
+<span class="sectionnumber">11.2</span><span class="toctitle">&#x2003;Пробій газу: механізм Таунсенда і&nbsp;закон Пашена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-572" class="tocsection" >
+<span class="sectionnumber">11.3</span><span class="toctitle">&#x2003;Тліючий розряд і&nbsp;дуга</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-578" class="tocsection" >
+<span class="sectionnumber">11.4</span><span class="toctitle">&#x2003;Приелектродний шар у&nbsp;розряді</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-579" class="tocsection" >
+<span class="sectionnumber">11.5</span><span class="toctitle">&#x2003;Глобальна модель розряду</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-580" class="tocsection" >
+<span class="sectionnumber">11.6</span><span class="toctitle">&#x2003;Високочастотні джерела плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-589" class="tocsection" >
+<span class="sectionnumber">11.7</span><span class="toctitle">&#x2003;Плазмова обробка матеріалів</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-590" class="tocsection" >
+<span class="sectionnumber">11.8</span><span class="toctitle">&#x2003;Як це вимірюють: оптична емісія і&nbsp;ВЧ-зонди</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-601" class="tocchapter" >
+<span class="sectionnumber">12</span><span class="toctitle">&#x2003;Основні масштаби, режими та межі моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-602" class="tocsection" >
+<span class="sectionnumber">12.1</span><span class="toctitle">&#x2003;Просторові та часові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-606" class="tocsection" >
+<span class="sectionnumber">12.2</span><span class="toctitle">&#x2003;Зіткнювальний та беззіткнювальний режими</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-607" class="tocsection" >
+<span class="sectionnumber">12.3</span><span class="toctitle">&#x2003;Як за масштабами вибирають модель</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-610" class="tocsection" >
+<span class="sectionnumber">12.4</span><span class="toctitle">&#x2003;Типова ієрархія масштабів у магнітному утриманні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-611" class="tocsection" >
+<span class="sectionnumber">12.5</span><span class="toctitle">&#x2003;Від кінетики до МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-612" class="tocsection" >
+<span class="sectionnumber">12.6</span><span class="toctitle">&#x2003;Безрозмірні параметри МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-613" class="tocsection" >
+<span class="sectionnumber">12.7</span><span class="toctitle">&#x2003;Межі простих моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-614" class="tocsection" >
+<span class="sectionnumber">12.8</span><span class="toctitle">&#x2003;Основні масштаби та формули</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-617" class="tocsection" >
+<span class="sectionnumber">12.9</span><span class="toctitle">&#x2003;Що вимірюють на&nbsp;якому масштабі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch14.html#autosec-629" class="tocchapter" >
+Підсумки</a>
+</p>
+
+
+
+<p>
+<a href="ch15.html#autosec-634" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-649" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-650" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Таблиця позначень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-660" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Перехід між СГС і&nbsp;СІ. Константи</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-673" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Шпаргалка: ключові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch17.html#autosec-678" class="tocpart" >
+Словник термінів</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-682" class="tocchapter" >
+Література</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-683" class="tocsection" >
+Підручники та посібники</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-684" class="tocsection" >
+Джерела фактів і результатів</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Основні масштаби, режими та межі моделей">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Елементи фізики плазми</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\newcommand {\vect }[1]{\mathbf {#1}}\)
+
+\(\newcommand {\Efield }{\vect {E}}\)
+
+\(\newcommand {\Dfield }{\vect {D}}\)
+
+\(\newcommand {\Bfield }{\vect {B}}\)
+
+\(\newcommand {\Hfield }{\vect {H}}\)
+
+\(\newcommand {\rot }{\mathbf {\nabla }\times }\)
+
+\(\newcommand {\divg }{\mathbf {\nabla }\cdot }\)
+
+\(\newcommand {\grad }{\vect {\nabla }}\)
+
+\(\newcommand {\diff }[2]{\frac {\partial #1}{\partial #2}}\)
+
+\(\newcommand {\ddiff }[2]{\frac {\partial ^2 #1}{\partial #2^2}}\)
+
+\(\newcommand {\parttime }[1]{\frac {\partial {#1}}{\partial t}}\)
+
+\(\newcommand {\pparttime }[1]{\frac {\partial ^2{#1}}{\partial t^2}}\)
+
+\(\renewcommand {\phi }{\varphi }\)
+
+\(\renewcommand {\epsilon }{\varepsilon }\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\Div }{div}\)
+
+\(\DeclareMathOperator {\Rot }{rot}\)
+
+\(\DeclareMathOperator {\Grad }{grad}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\renewcommand {\iiint }{\int }\)
+
+\(\renewcommand {\iint }{\int }\)
+
+\(\newcommand {\oiint }{\oint }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Основні масштаби, режими та межі моделей ......
+-->
+<h3 id="autosec-601"><span class="sectionnumber">12&#x2003;</span>Основні масштаби, режими та межі моделей</h3>
+<a id="main-html-autopage-601"></a>
+<a id="main-html-autofile-13"></a>
+
+<a id="sec:plasma-scales"></a>
+
+<p>
+<a id="LWR-ht-plasma-scales"></a>
+</p>
+
+<p>
+Після розгляду основних фізичних явищ корисно зібрати в одному місці методичну ідею, яка проходить через усю фізику плазми: <em><span
+    class="textcolor"
+    style="color:#990000"
+>модель визначається не назвою середовища, а співвідношенням характерних масштабів</span></em>. Одна й та сама плазма може потребувати різного опису залежно від просторового масштабу, характерного часу та швидкості процесу.
+</p>
+
+<p>
+Нехай \(L\) — просторовий масштаб задачі, а \(\tau \sim 1/\omega \) — характерний час її розвитку. Насамперед порівнюють
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{0}\)</span>
+
+<!--
+
+
+                                                                                                   𝜆𝐷     𝑟𝐿     𝜔         𝜔      𝜈
+                                                                                                      ,      ,      ,         ,      .
+                                                                                                    𝐿     𝐿      𝜔𝑝        𝜔𝑐     𝜔𝑐
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\lambda _D}{L},\qquad \frac {r_L}{L},\qquad \frac {\omega }{\omega _p},\qquad \frac {\omega }{\omega _c},\qquad \frac {\nu }{\omega _c}.
+\end{equation*}
+
+</p>
+
+<p>
+Ці відношення не є незалежним набором «характеристик плазми». Кожне з них відповідає на конкретне фізичне питання: чи можна вважати плазму квазінейтральною, чи замагнічені частинки, чи встигають електрони відновлювати
+квазінейтральність, чи встигають частинки здійснювати гірообертання та чи руйнують зіткнення замагніченість.
+</p>
+<!--
+...... section Просторові та часові масштаби ......
+-->
+<h4 id="autosec-602"><span class="sectionnumber">&#xA7;&#x202F;12.1&#x2003;</span>Просторові та часові масштаби</h4>
+<a id="main-html-autopage-602"></a>
+
+
+<p>
+Для токамака (\(n=10^{14}~\mathrm {см}^{-3}\), \(T=10\)&nbsp;кеВ, \(B=5\times 10^{4}\)&nbsp;Гс, \(L\approx 1\)&nbsp;м) ієрархію довжин і&nbsp;частот показано на рис.&nbsp;<a href="ch13.html#fig:scales-hierarchy">12.1</a>; далі
+кожна умова вибору моделі&nbsp;— це порівняння двох точок на цій шкалі.
+</p>
+
+<figure id="autoid-290" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-74"
+    class="lateximagesource"
+><!--
+Довжини
+                        𝑟𝐿𝑒
+                                     𝑐/𝜔𝑝𝑒
+ 𝑛−1/3                         𝜆𝐷𝑒            𝑟𝐿𝑖                      𝐿                               𝜆пр
+
+
+10−5      10−4   10−3         10−2     10−1         100         101    102   103          104    105   106
+ ℓ, см
+
+
+
+
+Частоти
+                                                                                           𝜔𝑐𝑒
+
+         𝜈𝑒𝑖                                              𝜔𝑐𝑖         𝜔𝐿𝐻           𝜔𝑝𝑒
+
+
+103        104   105          106       107         108         109   1010   1011         1012
+𝜔, с−1
+--><img
+   src="main-html-images/image-74.svg"
+   alt="Рис. 12.1. Ієрархія масштабів у токамаку на логарифмічній осі: довжини (зверху) і частоти (знизу). Червоним позначено масштаби задачі (L, _пр, _ei), синім — магнітні масштаби. Для _LH використано точну формулу з урахуванням _pi"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;12.1. Ієрархія масштабів у&nbsp;токамаку на логарифмічній осі: довжини (зверху) і&nbsp;частоти (знизу). Червоним позначено масштаби задачі (\(L\), \(\lambda _{\mathrm {пр}}\), \(\nu _{ei}\)), синім&nbsp;— магнітні масштаби.
+Для \(\omega _{LH}\) використано точну формулу з&nbsp;урахуванням \(\omega _{pi}\)
+
+</div>
+
+<a id="fig:scales-hierarchy"></a>
+
+</div>
+
+</figure>
+
+<p>
+Умова
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{0}\)</span>
+
+<!--
+
+
+                                                                                                                 𝜆𝐷 ≪ 𝐿
+
+-->
+
+<p>
+
+\begin{equation*}
+\lambda _D\ll L
+\end{equation*}
+
+</p>
+
+<p>
+означає, що дебаївське екранування відбувається на значно меншому масштабі, ніж досліджувана задача. Тому на масштабі \(L\) можна, як правило, покладати \(n_e\simeq Zn_i\) і користуватися квазінейтральним описом. Якщо ж \(L\sim
+\lambda _D\), електростатичне поле та розділення зарядів стають частиною самої задачі.
+</p>
+
+<p>
+Аналогічно,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{0}\)</span>
+
+<!--
+
+
+                                                                                                                  𝑟𝐿 ≪ 𝐿
+
+-->
+
+<p>
+
+\begin{equation*}
+r_L\ll L
+\end{equation*}
+
+</p>
+
+<p>
+є просторовою умовою: на одній ларморівській орбіті поле та його градієнти майже однорідні, тому орбіту можна замінити ведучим центром. Вона відрізняється від часової умови \(\omega \ll \omega _c\) (за час зміни плазми частинка багато
+разів обертається навколо силової лінії); обидві потрібні для дрейфового наближення (розд.&nbsp;<a href="ch4.html#sec:particle-motion">3</a>). Якщо \(r_L\sim L\), гірація вже не є малим швидким масштабом, який можна відокремити від
+основного руху.
+</p>
+
+<p>
+Порівняння характерної частоти процесу з плазмовою частотою має інший зміст. Умова \(\omega \ll \omega _p\) означає, що електрони швидко реагують на спробу порушити квазінейтральність, тоді як при \(\omega \gtrsim \omega _p\) їхня
+інерція стає суттєвою.
+</p>
+
+<p>
+Умова \(\omega \ll \omega _c\) означає, що гірація є швидким рухом порівняно з еволюцією макроскопічного збурення. Саме тому у повільній МГД-динаміці окремий гірооберт можна не відстежувати.
+</p>
+
+<p>
+Нарешті, відношення \(\nu /\omega _c\) характеризує конкуренцію зіткнень та магнітного обертання. При \(\nu \ll \omega _c\) частинка встигає здійснити багато гірообертів між зіткненнями і є сильно замагніченою; при \(\nu \gg \omega
+_c\) зіткнення руйнують гірообертання ще до завершення циклу.
+</p>
+<!--
+...... section Зіткнювальний та беззіткнювальний режими ......
+-->
+<h4 id="autosec-606"><span class="sectionnumber">&#xA7;&#x202F;12.2&#x2003;</span>Зіткнювальний та беззіткнювальний режими</h4>
+<a id="main-html-autopage-606"></a>
+
+
+<p>
+Для зіткнювального та беззіткнювального режимів одного порівняння частот недостатньо. Вводимо середню довжину вільного пробігу
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{0}\)</span>
+
+<!--
+
+                                                                                                                        𝑣th
+                                                                                                                𝜆пр ∼
+                                                                                                                         𝜈
+
+-->
+
+<p>
+
+\begin{equation*}
+\lambda _{\mathrm {пр}}\sim \frac {v_{\mathrm {th}}}{\nu }
+\end{equation*}
+
+</p>
+
+<p>
+та число Кнудсена
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{0}\)</span>
+
+<!--
+
+
+                                                                         𝜆пр
+                                                                  𝐾𝑛 =       .                                                                (12.1)                                             --><a id="eq:plasma-knudsen"></a><!--
+                                                                          𝐿
+
+-->
+
+<p>
+
+\begin{equation}
+Kn=\frac {\lambda _{\mathrm {пр}}}{L}. \label {eq:plasma-knudsen}
+\end{equation}
+
+</p>
+
+<p>
+Якщо \(Kn\ll 1\), частинка багато разів стикається на масштабі \(L\) і локальний гідродинамічний опис може бути виправданим. Якщо \(Kn\gtrsim 1\), структура функції розподілу за швидкостями стає істотною, і кінетичні ефекти вже не
+можна автоматично відкидати.
+</p>
+
+<p>
+<em>Ключова оцінка для токамака</em> (\(n=10^{14}~\mathrm {см}^{-3}\), \(T=10\)&nbsp;кеВ): \(\nu _{ei}\approx 5\times 10^{3}~\mathrm {с}^{-1}\), \(v_{Te}\approx 4\times 10^{9}~\mathrm {см/с}\), тому \(\lambda _{\mathrm
+{пр}}=v_{Te}/\nu _{ei}\approx 10^6\)&nbsp;см \(\approx 10\)&nbsp;км, тоді як \(L\approx 1\)&nbsp;м. Отже, \(Kn\sim 10^4\): плазма «беззіткнювальна», проте МГД працює. Парадокс знімається так: поперек поля роль довжини вільного
+пробігу відіграє \(r_{Li}\ll L\) (магнітне поле «склеює» частинки поперек \(\vect B\)), а&nbsp;вздовж поля ні&nbsp;— тому саме поздовжній перенос потребує кінетики.
+</p>
+
+<p>
+Водночас беззіткнювальність завжди треба розуміти відносно конкретного процесу. Умова
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{1}\)</span>
+
+<!--
+
+
+                                                                                                                  𝜈≪𝜔
+
+-->
+
+<p>
+
+\begin{equation*}
+\nu \ll \omega
+\end{equation*}
+
+</p>
+
+<p>
+означає, що зіткнення слабкі саме для явища з характерною частотою \(\omega \). Повільний процес може бути зіткнювальним у тій самій плазмі, для якої швидкі коливання є беззіткнювальними.
+</p>
+
+<p>
+Отже, твердження «плазма беззіткнювальна» без зазначення масштабу часу є неповним.
+</p>
+<!--
+...... section Як за масштабами вибирають модель ......
+-->
+<h4 id="autosec-607"><span class="sectionnumber">&#xA7;&#x202F;12.3&#x2003;</span>Як за масштабами вибирають модель</h4>
+<a id="main-html-autopage-607"></a>
+
+
+<p>
+Корисно розглядати наведені вище співвідношення не окремо, а як послідовність запитань.
+</p>
+
+<figure id="autoid-291" class="table ">
+<div class="center">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;12.1. Характерні умови вибору моделі плазми.
+
+</div>
+
+<a id="tab:plasma-regimes"></a>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr class="hline">
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Умова</b></span></td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>Фізичний наслідок</b></span>
+</p>
+</td>
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+    class="textcolor"
+    style="color:#002E64"
+><b>Типовий опис</b></span></td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(\lambda _D\ll L\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+квазінейтральність, \(n_e\simeq Zn_i\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+можна вводити єдину рідину (потрібне ще замикання)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(r_L\ll L\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+замагніченість
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+дрейфовий / МГД (разом з&nbsp;\(\omega \ll \omega _{ci}\))
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(Kn\ll 1\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+багато зіткнень на масштабі \(L\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+гідродинамічний
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(Kn\gtrsim 1\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+важлива структура \(f(\vect r,\vect v,t)\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+кінетичний
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(\nu \ll \omega \)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+зіткнення слабкі для даного процесу
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+беззіткнювальний режим
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(R_m\gg 1\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+резистивна дифузія поля повільна
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+ідеалізована МГД
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(\beta \ll 1\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+магнітний тиск домінує
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+магнітно-керований режим
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(\beta \gtrsim 1\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+плазма істотно деформує поле
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+МГД з&nbsp;повним балансом тиску плазми й&nbsp;поля
+</p>
+</td>
+</tr>
+
+<tr class="hline" aria-hidden="true">
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+</table>
+
+</div>
+
+</figure>
+
+<p>
+Таблицю&nbsp;<a href="ch13.html#tab:plasma-regimes">12.1</a> не слід читати як набір взаємовиключних категорій. Реальна плазма може одночасно задовольняти кілька нерівностей. Саме їхня сукупність визначає, які члени рівнянь можна
+відкинути, а які залишити.
+</p>
+
+<p>
+Це особливо важливо для МГД. Наприклад, \(R_m\gg 1\) саме по собі не означає повної ідеальної МГД: воно лише пригнічує резистивний член. Щоб отримати
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{1}\)</span>
+
+<!--
+
+                                                                                                                        1
+                                                                                                                   𝐄+     𝐯 × 𝐁 ≃ 0,
+                                                                                                                        𝑐
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect E+\frac {1}{c}\vect v\times \vect B\simeq 0,
+\end{equation*}
+
+</p>
+
+<p>
+треба також перевірити малість холлівського, електроннотискового та інерційного членів узагальненого закону Ома.
+</p>
+
+<p>
+Таким чином, «МГД-опис» — це не властивість плазми взагалі, а&nbsp;наближення, справедливість якого треба обґрунтувати для конкретного процесу.
+</p>
+<!--
+...... section Типова ієрархія масштабів у магнітному утриманні ......
+-->
+<h4 id="autosec-610"><span class="sectionnumber">&#xA7;&#x202F;12.4&#x2003;</span>Типова ієрархія масштабів у магнітному утриманні</h4>
+<a id="main-html-autopage-610"></a>
+
+
+<p>
+Розглянемо типову установку магнітного утримання: \(n=10^{14}~\mathrm {см}^{-3}\), \(T=10\)&nbsp;кеВ, \(B=5\times 10^{4}\)&nbsp;Гс, дейтерієва плазма. Для неї характерна ієрархія
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{1}\)</span>
+
+<!--
+
+
+                                                                                                𝑛−1/3     ≪     𝜆⏟      ∼    𝑟⏟     ≪ 𝑟⏟
+                                                                                                ⏟                 𝐷𝑒          𝐿𝑒        𝐿𝑖 ≪   𝐿⏟ .
+                                                                                              2×10−5 см       7×10−3 см   5×10−3 см  0,3 см  ∼102 см
+
+
+-->
+
+<p>
+
+\begin{equation*}
+\underbrace {n^{-1/3}}_{2\times 10^{-5}~\text {см}} \ll \underbrace {\lambda _{De}}_{7\times 10^{-3}~\text {см}} \sim \underbrace {r_{Le}}_{5\times 10^{-3}~\text {см}} \ll \underbrace {r_{Li}}_{0{,}3~\text
+{см}} \ll \underbrace {L}_{\sim 10^{2}~\text {см}}.
+\end{equation*}
+
+</p>
+
+<p>
+Ця послідовність дає набагато більше фізичної інформації, ніж кожне число окремо. На найменшому масштабі видно дискретність частинок; далі виникають дебаївське екранування та електронна гірація; ще більшим є іонний ларморівський
+радіус; і лише на масштабі всієї установки з’являється макроскопічний рух плазми.
+</p>
+
+<p>
+Частотна ієрархія для тієї самої оцінки має вигляд
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{1}\)</span>
+
+<!--
+
+
+                                                                                                  𝜔𝑝𝑒 ≈ 6 × 1011 с−1 ,       𝜔𝑐𝑒 ≈ 9 × 1011 с−1 ,
+                                                                                                    𝜔𝑐𝑖   ≈ 2 × 108 с−1 ,    𝜈𝑒𝑖 ≈ 5 × 103 с−1 .
+
+-->
+
+<p>
+
+\begin{equation*}
+\begin{gathered} \omega _{pe}\approx 6\times 10^{11}~\mathrm {с}^{-1}, \qquad \omega _{ce}\approx 9\times 10^{11}~\mathrm {с}^{-1},\\ \omega _{ci}\approx 2\times 10^{8}~\mathrm {с}^{-1}, \qquad \nu _{ei}\approx
+5\times 10^{3}~\mathrm {с}^{-1}. \end {gathered}
+\end{equation*}
+
+</p>
+
+<p>
+Отже, зіткнення значно рідші за електронний та іонний циклотронний рух. Плазма сильно замагнічена і для багатьох швидких процесів практично беззіткнювальна.
+</p>
+
+<p>
+Але з цієї ж ієрархії випливає важливе обмеження: «беззіткнювальна» не означає «завжди кінетична». На достатньо великих масштабах і&nbsp;повільних часах багато мікроскопічних ступенів свободи усереднюються, і виникає ефективний
+рідинний опис.
+</p>
+<!--
+...... section Від кінетики до МГД ......
+-->
+<h4 id="autosec-611"><span class="sectionnumber">&#xA7;&#x202F;12.5&#x2003;</span>Від кінетики до МГД</h4>
+<a id="main-html-autopage-611"></a>
+
+
+<p>
+На масштабах, що значно перевищують іонний ларморівський радіус, і для повільних рухів, коли \(\omega \ll \omega _{ci}\), доцільний магнітогідродинамічний опис: плазма розглядається як провідне суцільне середовище (вивід&nbsp;—
+розд.&nbsp;<a href="ch8.html#sec:kinetic-moments">7.5</a> і&nbsp;<a href="ch6.html#sec:mhd">5</a>).
+</p>
+
+<p>
+Для швидких процесів і малих масштабів потрібен кінетичний опис: функція розподілу
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{1}\)</span>
+
+<!--
+
+
+                                                                                                                    𝑓𝑠 = 𝑓𝑠 (𝐫, 𝐯, 𝑡)
+
+-->
+
+<p>
+
+\begin{equation*}
+f_s=f_s(\vect r,\vect v,t)
+\end{equation*}
+
+</p>
+
+<p>
+залежить від координат і швидкостей. Для беззіткнювальної плазми вона задовольняє рівняння Власова
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{1}\)</span>
+
+<!--
+
+
+                                                𝜕𝑓𝑠     𝜕𝑓𝑠  𝑞      1         𝜕𝑓𝑠
+                                                    +𝐯⋅     + 𝑠 (𝐄 + 𝐯 × 𝐁) ⋅     = 0.                                                               (12.2)                                --><a id="eq:plasma-vlasov-summary"></a><!--
+                                                 𝜕𝑡      𝜕𝐫  𝑚𝑠     𝑐         𝜕𝐯
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial f_s}{\partial t} +\vect v\cdot \frac {\partial f_s}{\partial \vect r} +\frac {q_s}{m_s} \left ( \vect E+\frac {1}{c}\vect v\times \vect B \right ) \cdot \frac {\partial f_s}{\partial \vect v}
+=0. \label {eq:plasma-vlasov-summary}
+\end{equation}
+
+</p>
+
+<p>
+Рівняння&nbsp;<span class="textup">(<a href="ch13.html#eq:plasma-vlasov-summary">12.2</a>)</span> доповнюється рівняннями Максвелла з&nbsp;джерелами
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{2}\)</span>
+
+<!--
+
+                                                                                                              ˆ                          ˆ
+                                                                                                   𝜌 = ∑ 𝑞𝑠       𝑓𝑠 𝑑3 𝑣,    𝐣 = ∑ 𝑞𝑠       𝐯𝑓𝑠 𝑑3 𝑣.
+                                                                                                       𝑠                           𝑠
+
+-->
+
+<p>
+
+\begin{equation*}
+\rho =\sum _s q_s\int f_s\,d^3v, \qquad \vect j=\sum _s q_s\int \vect v f_s\,d^3v.
+\end{equation*}
+
+</p>
+
+<p>
+Саме з кінетичного опису природно випливають ефекти, які не містяться в&nbsp;найпростішій МГД: загасання Ландау, кінетичні плазмові хвилі, резонансна взаємодія хвиль із частинками та багато видів нестійкостей.
+</p>
+
+<p>
+Водночас кінетичний опис не «кращий» за МГД у всіх ситуаціях. Він містить значно більше інформації, ніж потрібно для повільної макроскопічної динаміки. Завдання теорії — не використовувати найскладнішу модель, а відкинути лише ті ступені
+свободи, які справді є несуттєвими на вибраному масштабі.
+</p>
+<!--
+...... section Безрозмірні параметри МГД ......
+-->
+<h4 id="autosec-612"><span class="sectionnumber">&#xA7;&#x202F;12.6&#x2003;</span>Безрозмірні параметри МГД</h4>
+<a id="main-html-autopage-612"></a>
+
+
+<p>
+Для магнітогідродинаміки додатково важливі безрозмірні параметри
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{12.}{2}\)</span>
+
+<!--
+
+                                             8𝜋𝑝            4𝜋𝜍𝐿𝑣             𝑣              𝐵
+                                        𝛽=       ,   𝑅𝑚 ∼         ,   𝑀𝐴 =      ,   𝑣𝐴 =           .                                    (12.3)                                             --><a id="eq:plasma-mhd-parameters"></a><!--
+                                              𝐵2              𝑐2             𝑣𝐴            √4𝜋𝜌𝑚
+
+-->
+
+<p>
+
+\begin{equation}
+\beta =\frac {8\pi p}{B^2}, \qquad R_m\sim \frac {4\pi \sigma Lv}{c^2}, \qquad M_A=\frac {v}{v_A}, \qquad v_A=\frac {B}{\sqrt {4\pi \rho _m}}. \label {eq:plasma-mhd-parameters}
+\end{equation}
+
+</p>
+
+<p>
+Параметр \(\beta \) порівнює плазмовий тиск із магнітним. При \(\beta \ll 1\) магнітне поле домінує над газодинамічним тиском, тоді як при \(\beta \gtrsim 1\) тиск плазми стає істотним у силовому балансі. Сама величина \(\beta \)
+не&nbsp;визначає застосовності МГД (вона працює і&nbsp;за малих \(\beta \)), а&nbsp;лише показує, наскільки плазма впливає на&nbsp;поле.
+</p>
+
+<p>
+Магнітне число Рейнольдса \(R_m\) порівнює характерний час руху плазми з часом дифузії магнітного поля. Велике \(R_m\) означає, що резистивна дифузія поля повільна порівняно з рухом плазми.
+</p>
+
+<p>
+Число Альвена \(M_A\) порівнює швидкість руху плазми з&nbsp;альвенівською швидкістю. Воно показує, наскільки важливі магнітні напруження для динаміки порівняно з&nbsp;інерцією потоку.
+</p>
+
+<p>
+Ці параметри не задають одну-єдину «категорію плазми». Вони описують різні сторони одного й того самого режиму.
+</p>
+<!--
+...... section Межі простих моделей ......
+-->
+<h4 id="autosec-613"><span class="sectionnumber">&#xA7;&#x202F;12.7&#x2003;</span>Межі простих моделей</h4>
+<a id="main-html-autopage-613"></a>
+
+
+<p>
+Наведені вище критерії дозволяють визначити режим, але не скасовують обмежень самих моделей.
+</p>
+
+<p>
+У цьому курсі ми лише позначили, але не розвинули повністю дрейфово-кінетичну теорію, нелінійну теорію хвиль та сильну турбулентність. Повний опис хвиль у&nbsp;замагніченій плазмі потребує розв’язання тензорного дисперсійного рівняння,
+а&nbsp;детальний опис нестійкостей — лінеаризації кінетичних або МГД-рівнянь для конкретної рівноваги.
+</p>
+
+<p>
+Особливо важливо, що реальний перенос у магнітно утримуваній плазмі може бути значно сильнішим за класичний колізійний перенос. Турбулентність породжує <em>аномальний перенос</em>, який може визначати реальний час утримання
+енергії. Тому навіть дуже мала частота зіткнень не гарантує ідеального утримання. Оцінка: для токамака бомівська дифузія \(D_B=cT/16eB\approx 1{,}3\times 10^{6}~\mathrm {см}^2/\mathrm {с}\) (\(\approx 10^{2}~\mathrm
+{м}^2/\mathrm {с}\)), тоді як класична \(D_\perp \sim \nu _{ei}r_{Le}^2\sim 0{,}1\)&nbsp;см\(^2\)/с: розрив у&nbsp;\(\sim 10^{7}\) разів. Турбулентні флуктуації \(\vect E\times \vect B\) перемішують плазму з&nbsp;кроком порядку
+розміру вихору, а&nbsp;не \(r_L\) (розд.&nbsp;<a href="ch10.html#sec:magnetic-confinement">9</a>).
+</p>
+
+<p>
+Сильнозв’язана та квантова плазма потребує окремих методів. Отже, опис, побудований у цій книзі, треба розуміти як систему моделей із чітко визначеними межами застосовності, а не як універсальне рівняння для будь-якої плазми.
+</p>
+<!--
+...... section Основні масштаби та формули ......
+-->
+<h4 id="autosec-614"><span class="sectionnumber">&#xA7;&#x202F;12.8&#x2003;</span>Основні масштаби та формули</h4>
+<a id="main-html-autopage-614"></a>
+
+
+<p>
+У таблиці зведено основні величини посібника. Наведені практичні формули відповідають системі СГС; \(T\) задано в&nbsp;еВ, \(n\) — у&nbsp;\(\mathrm {см}^{-3}\), \(B\) — у Гс, \(f\) — у МГц; \(A\) і&nbsp;\(Z\) — масове число та заряд іона.
+</p>
+
+
+<div class="cb-attention">
+
+<p>
+Практичні формули в&nbsp;таблиці записано в&nbsp;СГС із&nbsp;числовими множниками для вказаних одиниць (\(T\) в&nbsp;еВ, \(n\) в&nbsp;см\(^{-3}\), \(B\) в&nbsp;Гс); вони не&nbsp;переносяться на&nbsp;СІ без перерахунку.
+Температуру всюди виражено в&nbsp;енергетичних одиницях (еВ).
+</p>
+</div>
+
+<figure id="autoid-292" class="table ">
+<div class="center">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;12.2. Основні масштаби та формули фізики плазми в системі СГС.
+
+</div>
+
+<a id="tab:plasma-formulas"></a>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Величина
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+Формула
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+Практична форма
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Дебаївська довжина
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\lambda _{De}=\sqrt {T_e/4\pi n_ee^2}\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(7{,}43\times 10^{2}\sqrt {T_e/n_e}\)&nbsp;см
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Число частинок у сфері
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(N_D=\frac {4\pi }3n_e\lambda _{De}^3\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(N_D\approx 0{,}094\,\Gamma ^{-3/2}\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Параметр зв’язку
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\Gamma =e^2n^{1/3}/T\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Плазмова частота
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\omega _{pe}=\sqrt {4\pi n_ee^2/m_e}\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(5{,}64\times 10^{4}\sqrt {n_e}~\mathrm {с}^{-1}\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Теплова швидкість
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(v_{Te}=\sqrt {T_e/m_e}\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(4{,}19\times 10^{7}\sqrt {T_e}\)&nbsp;см/с
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Циклотронна частота
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\omega _c=|q|B/mc\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(\omega _{ce}=1{,}76\times 10^{7}B\), \(\omega _{ci}=9{,}58\times 10^{3}(Z/A)B\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Ларморівський радіус
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(r_L=mcv_\perp /|q|B\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(r_{Le}=2{,}38\sqrt {T_e}/B\)&nbsp;см, \(r_{Li}=1{,}02\times 10^{2}\sqrt {AT_i}/(ZB)\)&nbsp;см
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Частота зіткнень \(e\)–\(i\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+формула&nbsp;<span class="textup">(<a href="ch5.html#eq:nu-ei">4.1</a>)</span>
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(2{,}9\times 10^{-6}\,n\ln \Lambda \,T_e^{-3/2}~\mathrm {с}^{-1}\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Провідність (Спітцер), вздовж \(\vect B\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\sigma _\parallel \propto T_e^{3/2}/\ln \Lambda \)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(1{,}7\times 10^{14}\,T_e^{3/2}/\ln \Lambda ~\mathrm {с}^{-1}\) (поперек \(\sigma _\perp \approx \sigma _\parallel /2\))
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Критична концентрація
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(n_{\mathrm {кр}}=m_e\omega ^2/4\pi e^2\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(1{,}24\times 10^{4}f^2~\mathrm {см}^{-3}\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Магнітний тиск
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(B^2/8\pi \)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(3{,}98\times 10^{6}\,(B/10^4)^2\)&nbsp;дин/\(\mathrm {см}^2\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Параметр \(\beta \)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\beta =8\pi p/B^2\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Альвенівська швидкість
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(v_A=B/\sqrt {4\pi \rho _m}\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(2{,}18\times 10^{11}B/\sqrt {n_i}\)&nbsp;см/с (водень)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Час дифузії поля
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\tau _d=4\pi \sigma L^2/c^2\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Довжина Томаса — Фермі
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\lambda _{TF}=\sqrt {E_F/6\pi ne^2}\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(0{,}5\sqrt {a_Bn^{-1/3}}\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Амбіполярна дифузія
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(D_a\approx D_i(1+T_e/T_i)\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Швидкість іонного звуку
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(c_s=\sqrt {(ZT_e+3T_i)/m_i}\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(9{,}79\times 10^{5}\sqrt {ZT_e/A}\)&nbsp;см/с (\(T_i\ll T_e\))
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Дрейф \(\vect E\times \vect B\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(v_E=cE/B\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(10^{8}\,E[\text {В/см}]/B[\text {Гс}]\)&nbsp;см/с
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Дифузія Бома
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(D_B=cT_e/16eB\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(6{,}25\times 10^{6}\,T_e/B~\mathrm {см}^2/\mathrm {с}\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Верхній / нижній гібридні частоти
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\omega _{UH}^2=\omega _{pe}^2+\omega _{ce}^2\); \(\omega _{LH}^2\simeq \omega _{ci}\omega _{ce}\) (лише при \(\omega _{pe}\gg \omega _{ce}\))
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(f_{UH}=\sqrt {f_{pe}^2+f_{ce}^2}\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Поле Драйсера
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(E_D=4\pi e^3n\ln \Lambda /T_e\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(2{,}6\times 10^{-13}\,n\ln \Lambda /T_e~\text {В/см}\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Критерій запалювання (D–T)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(n\tau _E\geq 12T/\langle \sigma v\rangle E_\alpha \)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(\gtrsim 1{,}5\times 10^{14}~\mathrm {см}^{-3}\mathrm {с}\) (мінімум, \(T\sim 25\)&nbsp;кеВ)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Гальмівне випромінювання
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(P_{br}\propto n_e\sqrt {T_e}\sum Z^2n_i\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(1{,}7\times 10^{-32}n_e\sqrt {T_e}\sum Z^2n_i\) Вт/\(\mathrm {см}^3\)
+</p>
+</td>
+</tr>
+
+</table>
+
+</div>
+
+</figure>
+
+<p>
+Таблиця&nbsp;<a href="ch13.html#tab:plasma-formulas">12.2</a> призначена не для заміни виведень, а для швидкої оцінки порядків величин. При виборі моделі спочатку визначають характерні масштаби задачі, а вже потім звертаються до
+відповідних формул.
+</p>
+<!--
+...... section Що вимірюють на-якому масштабі ......
+-->
+<h4 id="autosec-617"><span class="sectionnumber">&#xA7;&#x202F;12.9&#x2003;</span>Що вимірюють на&nbsp;якому масштабі</h4>
+<a id="main-html-autopage-617"></a>
+
+
+<a id="sec:scales-diagnostics"></a>
+
+<p>
+Кожен параметр плазми «видно» лише методом, чий власний масштаб (довжина хвилі, ларморівський радіус, розмір котушки) сумірний із&nbsp;вимірюваною величиною. Таблиця&nbsp;<a href="ch13.html#tab:scales-methods">12.3</a>
+зводить методи, розібрані в&nbsp;попередніх розділах.
+</p>
+
+<figure id="autoid-293" class="table ">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;12.3. Масштаб, величина й&nbsp;метод діагностики.
+
+</div>
+
+<a id="tab:scales-methods"></a>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr class="hline">
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Величина</b></span></td>
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Метод</b></span></td>
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Де розглянуто</b></span></td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(n_e\) (інтегральна, по&nbsp;хорді)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+інтерферометрія, \(\omega \gg \omega _p\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch3.html#sec:wave-diagnostics">2.7</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(n_e\) (локальна, профіль)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+рефлектометрія, \(\omega =\omega _p\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch3.html#sec:wave-diagnostics">2.7</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(T_e\), \(n_e\) (локально)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+томсонівське розсіяння, \(\alpha =1/k\lambda _D\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch8.html#sec:thomson">7.11</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(T_e\) (середня)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+опір за&nbsp;Спітцером
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch5.html#sec:collision-diagnostics">4.5</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(T_e(r)\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+ECE, \(\omega =\ell \omega _{ce}\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch4.html#sec:motion-diagnostics">3.8</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(T_i\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+допплерівське розширення ліній, нейтрони
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch5.html#sec:collision-diagnostics">4.5</a>, <a href="ch11.html#sec:fusion-diagnostics">10.10</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(I\), енергія плазми
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+пояс Роговського, діамагнітна петля
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch6.html#sec:magnetic-diagnostics">5.12</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+положення, \(\Delta \), \(\beta _p+l_i/2\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+магнітна реконструкція
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch10.html#sec:equilibrium-diagnostics">9.10</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+моди \(m,n\), \(\delta B\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+котушки Мірнова, м’який рентген
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch9.html#sec:instability-diagnostics">8.15</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(q(r)\), \(B\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+обертання Фарадея
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch7.html#sec:faraday-diagnostics">6.7</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(P_f\), \(Q\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+потік нейтронів
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+розд.&nbsp;<a href="ch11.html#sec:fusion-diagnostics">10.10</a>
+</p>
+</td>
+</tr>
+
+<tr class="hline" aria-hidden="true">
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+</table>
+
+</figure>
+
+<p>
+Метод треба вибирати за&nbsp;тими самими критеріями, що й&nbsp;модель: наприклад, томсонівське розсіяння з&nbsp;\(\alpha \ll 1\) дає тепловий спектр, а&nbsp;з&nbsp;\(\alpha \gtrsim 1\)&nbsp;— колективні ефекти.
+</p>
+
+
+<div class="cb-summary">
+
+<p>
+<b>Головне в розділі</b>
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Модель плазми визначається не назвою середовища, а&nbsp;співвідношенням характерних масштабів задачі.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Порівнюють \(\lambda _D/L\), \(r_L/L\), число Кнудсена \(Kn\), частоти \(\nu /\omega \), магнітне число Рейнольдса \(R_m\) та&nbsp;\(\beta \).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Зіткнювальний режим допускає гідродинамічний опис, беззіткнювальний&nbsp;— потребує кінетики.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Простіші моделі мають межі застосовності; їх треба перевіряти оцінкою масштабів до розв’язання задачі.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Параметри плазми вимірюють методами, чий масштаб відповідає вимірюваній величині (табл.&nbsp;<a href="ch13.html#tab:scales-methods">12.3</a>).
+</p>
+</li>
+</ul>
+
+</div>
+<!--
+...... section Задачі ......
+-->
+<h4 id="autosec-619">Задачі</h4>
+<a id="main-html-autopage-619"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-294"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 12.1.</span></span> <a id="autoid-295" ></a ><a id="LWR-ht-problem:12.{1}"></a><a id="prb:PlasmaTable"></a>★☆☆ Оцініть \(\lambda _{De}\), середню відстань
+\(a=n^{-1/3}\) та \(N_D\) для чотирьох об’єктів з&nbsp;табл.&nbsp;<a href="ch2.html#tab:plasma-types">1.1</a>: іоносфера (\(n=10^5~\mathrm {см}^{-3}\), \(0{,}1\)&nbsp;еВ), сонячна корона (\(10^8~\mathrm {см}^{-3}\),
+\(100\)&nbsp;еВ), токамак (\(10^{14}~\mathrm {см}^{-3}\), \(10\)&nbsp;кеВ), ядро Сонця (\(10^{26}~\mathrm {см}^{-3}\), \(1\)&nbsp;кеВ). Для якого з них колективний опис найменш обґрунтований? <a
+href="ch15.html#LWR-ht-solution:12.{1}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-296"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 12.2.</span></span> <a id="autoid-297" ></a ><a id="LWR-ht-problem:12.{2}"></a><a id="prb:PlasmaScales"></a>★☆☆ Для дейтерієвої плазми \(n=10^{14}~\mathrm
+{см}^{-3}\), \(T=10\)&nbsp;кеВ у&nbsp;полі \(B=5\times 10^{4}\)&nbsp;Гс знайдіть \(n^{-1/3}\), \(\lambda _{De}\), \(r_{Le}\), \(r_{Li}\) і розташуйте їх за зростанням. Яка з обох довжин (\(r_{Le}\) чи \(\lambda _{De}\)) більша? <a
+href="ch15.html#LWR-ht-solution:12.{2}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-298"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 12.3.</span></span> <a id="autoid-299" ></a ><a id="LWR-ht-problem:12.{3}"></a><a id="prb:PlasmaCollisions"></a>★☆☆ Для \(n_e=10^{12}~\mathrm
+{см}^{-3}\), \(T_e=10\)&nbsp;еВ, \(\ln \Lambda =15\) знайдіть частоту зіткнень \(\nu _{ei}\), відношення \(\nu _{ei}/\omega _{pe}\) та довжину вільного пробігу \(\lambda _{\mathrm {пр}}=v_{Te}/\nu _{ei}\). Порівняйте \(\lambda
+_{\mathrm {пр}}\) з \(\lambda _{De}\). <a href="ch15.html#LWR-ht-solution:12.{3}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-300"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 12.4.</span></span> <a id="autoid-301" ></a ><a id="LWR-ht-problem:12.{4}"></a><a id="prb:PlasmaFormulaCheck"></a>★☆☆ Користуючись табл.&nbsp;<a
+href="ch13.html#tab:plasma-formulas">12.2</a>, оцініть \(\lambda _D\) та \(\omega _{pe}\) для плазми газового розряду з&nbsp;\(n_e=10^{10}~\mathrm {см}^{-3}\) і&nbsp;\(T_e=3\)&nbsp;еВ. Порівняйте отримані масштаби з типовим
+часом і просторовим масштабом макроскопічного процесу. <a href="ch15.html#LWR-ht-solution:12.{4}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-302"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 12.5.</span></span> <a id="autoid-303" ></a ><a id="LWR-ht-problem:12.{5}"></a><a id="prb:ClassicalVsBohmTau"></a>★★☆ Оцініть час утримання \(\tau \sim
+a^2/D\) для токамака з&nbsp;\(a=1\)&nbsp;м і&nbsp;\(B=5\)&nbsp;Тл, \(T=10\)&nbsp;кеВ, якщо діє (а)&nbsp;класична дифузія \(D_\perp \sim 0{,}1~\mathrm {см}^2/\mathrm {с}\), (б)&nbsp;бомівська \(D_B=cT/(16eB)\). Який із&nbsp;двох
+результатів узгоджується з&nbsp;експериментом (\(\tau _E\sim 1\)&nbsp;с) і&nbsp;що це означає для вибору моделі? <a href="ch15.html#LWR-ht-solution:12.{5}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-304"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 12.6.</span></span> <a id="autoid-305" ></a ><a id="LWR-ht-problem:12.{6}"></a><a id="prb:IdealDegenerate"></a>★★☆ За якої густини плазма
+з&nbsp;\(T=1\)&nbsp;кеВ перестає бути ідеальною (\(\Gamma \sim 1\)) і&nbsp;за якої стає виродженою (\(T\sim E_F\))? Порівняйте з&nbsp;ядром Сонця (задача&nbsp;<a href="ch13.html#prb:PlasmaTable">12.1</a>). <a
+href="ch15.html#LWR-ht-solution:12.{6}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-306"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 12.7.</span></span> <a id="autoid-307" ></a ><a id="LWR-ht-problem:12.{7}"></a><a id="prb:PlasmaModelLimits"></a>★★☆ Для плазми
+з&nbsp;\(n=10^{14}~\mathrm {см}^{-3}\), \(T_i=10\)&nbsp;кеВ та характерним розміром \(L=1\)&nbsp;м задано \(\lambda _{\mathrm {пр}}=10^6~\mathrm {см}\) і \(r_{Li}=0{,}3~\mathrm {см}\). Оцініть \(Kn=\lambda _{\mathrm
+{пр}}/L\) та \(r_{Li}/L\). Який із&nbsp;двох параметрів показує, що звичайна ізотропна МГД-модель має обмеження? Яке уточнення опису слід розглядати? <a href="ch15.html#LWR-ht-solution:12.{7}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+
+<div class="cb-questions">
+
+<p>
+<b>Контрольні питання</b>
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Що таке квазінейтральність? Якою нерівністю визначається можливість нехтувати розділенням зарядів на масштабі \(L\)?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Чому порівняння масштабів часто важливіше за числове значення окремої величини?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> Що фізично означають умови \(\lambda _D\ll L\) та \(r_L\ll L\)?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">4.</span> Чому умова \(\nu \ll \omega \) повинна формулюватися відносно конкретного процесу?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">5.</span> Чим принципово відрізняються МГД- та кінетичний описи? За яких умов кінетичний опис стає необхідним?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">6.</span> Чому виконання \(R_m\gg 1\) саме по собі не гарантує повної ідеальної МГД?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">7.</span> Як пов’язані між собою число Кнудсена \(Kn\), довжина вільного пробігу та характерний розмір задачі?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">8.</span> Чому плазма може бути беззіткнювальною для швидких процесів і водночас суцільним середовищем на великих масштабах?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">9.</span> Які явища не описуються найпростішою ізотропною МГД-моделлю?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">10.</span> Яку інформацію дає типова ієрархія \(n^{-1/3}\ll \lambda _D\sim r_{Le}\ll r_{Li}\ll L\)?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">11.</span> Чому для МГД важлива саме \(\omega _{ci}\), а&nbsp;не \(\omega _{ce}\)?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">12.</span> Чому в&nbsp;токамаку перенос поперек поля аномальний і&nbsp;що це означає для моделі?
+</p>
+<p>
+
+</p>
+</li>
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

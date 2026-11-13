@@ -1,0 +1,4433 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Елементи фізики плазми — Кінетичний опис плазми</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-381"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Елементи фізики плазми</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../PlasmaBook/main.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="ch1.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-26" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Плазма: від іонізованого газу до колективного середовища</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-27" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Що таке плазма?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-32" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Іонізація: формула Саха</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-37" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Температура плазми та два компоненти</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-38" class="tocsection" >
+<span class="sectionnumber">1.4</span><span class="toctitle">&#x2003;Квазінейтральність і&nbsp;плазмові коливання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-48" class="tocsection" >
+<span class="sectionnumber">1.5</span><span class="toctitle">&#x2003;Дебаївське екранування</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-58" class="tocsection" >
+<span class="sectionnumber">1.6</span><span class="toctitle">&#x2003;Дебаївська сфера. Умова колективності</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-65" class="tocsection" >
+<span class="sectionnumber">1.7</span><span class="toctitle">&#x2003;Слабкозв’язана та сильнозв’язана плазма</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-66" class="tocsection" >
+<span class="sectionnumber">1.8</span><span class="toctitle">&#x2003;Екранування в&nbsp;виродженому газі: довжина Томаса–Фермі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-67" class="tocsection" >
+<span class="sectionnumber">1.9</span><span class="toctitle">&#x2003;Шар біля стінки і&nbsp;зонд Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-111" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Колективні коливання та хвилі в&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-112" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Діелектрична проникність холодної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-116" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Закон дисперсії. Частота відсікання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-121" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Поздовжні (ленгмюрівські) хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-129" class="tocsection" >
+<span class="sectionnumber">2.4</span><span class="toctitle">&#x2003;Зіткнення й&nbsp;поглинання електромагнітних хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-130" class="tocsection" >
+<span class="sectionnumber">2.5</span><span class="toctitle">&#x2003;Відбиття електромагнітних хвиль від плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-133" class="tocsection" >
+<span class="sectionnumber">2.6</span><span class="toctitle">&#x2003;Іоносфера і&nbsp;далекий радіозв’язок</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-135" class="tocsection" >
+<span class="sectionnumber">2.7</span><span class="toctitle">&#x2003;Як це вимірюють: інтерферометрія і&nbsp;рефлектометрія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-158" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Рух зарядженої частинки в&nbsp;електричному та&nbsp;магнітному полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-159" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Однорідне магнітне поле</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-163" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Дрейфи в&nbsp;схрещених полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-181" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Поляризаційний дрейф</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-185" class="tocsection" >
+<span class="sectionnumber">3.4</span><span class="toctitle">&#x2003;Магнітний момент і&nbsp;адіабатичний інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-198" class="tocsection" >
+<span class="sectionnumber">3.5</span><span class="toctitle">&#x2003;Магнітне дзеркало і&nbsp;конус втрат</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-205" class="tocsection" >
+<span class="sectionnumber">3.6</span><span class="toctitle">&#x2003;Подовжній інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-206" class="tocsection" >
+<span class="sectionnumber">3.7</span><span class="toctitle">&#x2003;Диполь Землі та радіаційні пояси</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-211" class="tocsection" >
+<span class="sectionnumber">3.8</span><span class="toctitle">&#x2003;Як це вимірюють: аналізатор енергій і&nbsp;ECE</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-227" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Зіткнення, провідність та перенос у&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-228" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Кулонівські зіткнення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-233" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Провідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-236" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Теплопровідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-237" class="tocsection" >
+<span class="sectionnumber">4.4</span><span class="toctitle">&#x2003;Дифузія в&nbsp;плазмі. Амбіполярна дифузія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-239" class="tocsection" >
+<span class="sectionnumber">4.5</span><span class="toctitle">&#x2003;Як це вимірюють: температура з&nbsp;опору і&nbsp;з&nbsp;ширини ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-251" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Гідродинамічний та магнітогідродинамічний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-252" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Гідродинамічний опис не є синонімом частих зіткнень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-253" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Дворідинний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-254" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Від дворідинної моделі до однорідинної МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-257" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Основне рівняння магнітної гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-265" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Альвенівська швидкість і&nbsp;число Альвена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-266" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;МГД-рівновага та магнітні поверхні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-271" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Енергія електромагнітного поля та плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-272" class="tocsection" >
+<span class="sectionnumber">5.8</span><span class="toctitle">&#x2003;Діамагнетизм плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-274" class="tocsection" >
+<span class="sectionnumber">5.9</span><span class="toctitle">&#x2003;Вмороженість магнітного поля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-281" class="tocsection" >
+<span class="sectionnumber">5.10</span><span class="toctitle">&#x2003;Перез’єднання силових ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-285" class="tocsection" >
+<span class="sectionnumber">5.11</span><span class="toctitle">&#x2003;Дві мови опису: окремі частинки й&nbsp;суцільне середовище</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-300" class="tocsection" >
+<span class="sectionnumber">5.12</span><span class="toctitle">&#x2003;Як це вимірюють: магнітні виміри</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-327" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-328" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Що в&nbsp;плазмі може бути відновлювальною силою?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-332" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Звукова й&nbsp;іонно-звукова хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-337" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Лінеаризована МГД і&nbsp;загальне дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-338" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Альвенівська хвиля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-344" class="tocsection" >
+<span class="sectionnumber">6.5</span><span class="toctitle">&#x2003;Магнітозвукові хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-351" class="tocsection" >
+<span class="sectionnumber">6.6</span><span class="toctitle">&#x2003;Підсумок: хвилі в&nbsp;рідинному описі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-354" class="tocsection" >
+<span class="sectionnumber">6.7</span><span class="toctitle">&#x2003;Високочастотні хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-362" class="tocsection" >
+<span class="sectionnumber">6.8</span><span class="toctitle">&#x2003;Межі застосовності МГД-хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-383" class="tocchapter" >
+<span class="sectionnumber">7</span><span class="toctitle">&#x2003;Кінетичний опис плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-384" class="tocsection" >
+<span class="sectionnumber">7.1</span><span class="toctitle">&#x2003;Функція розподілу та фазовий простір</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-385" class="tocsection" >
+<span class="sectionnumber">7.2</span><span class="toctitle">&#x2003;Моменти функції розподілу</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-386" class="tocsection" >
+<span class="sectionnumber">7.3</span><span class="toctitle">&#x2003;Кінетичне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-387" class="tocsection" >
+<span class="sectionnumber">7.4</span><span class="toctitle">&#x2003;Максвеллівський розподіл і&nbsp;температура</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-388" class="tocsection" >
+<span class="sectionnumber">7.5</span><span class="toctitle">&#x2003;Від кінетики до гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-389" class="tocsection" >
+<span class="sectionnumber">7.6</span><span class="toctitle">&#x2003;Дворідинна картина та її зв’язок із МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-390" class="tocsection" >
+<span class="sectionnumber">7.7</span><span class="toctitle">&#x2003;Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-391" class="tocsection" >
+<span class="sectionnumber">7.8</span><span class="toctitle">&#x2003;Лінеаризація кінетичного рівняння та хвильовий відгук</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-399" class="tocsection" >
+<span class="sectionnumber">7.9</span><span class="toctitle">&#x2003;Загасання Ландау</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-408" class="tocsection" >
+<span class="sectionnumber">7.10</span><span class="toctitle">&#x2003;Коли потрібен кінетичний опис?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-409" class="tocsection" >
+<span class="sectionnumber">7.11</span><span class="toctitle">&#x2003;Як це вимірюють: томсонівське розсіяння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-434" class="tocchapter" >
+<span class="sectionnumber">8</span><span class="toctitle">&#x2003;Загальний принцип нестійкості плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-435" class="tocsection" >
+<span class="sectionnumber">8.1</span><span class="toctitle">&#x2003;Що означає нестійкість?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-439" class="tocsection" >
+<span class="sectionnumber">8.2</span><span class="toctitle">&#x2003;Лінеаризація: як знайти долю малого збурення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-441" class="tocsection" >
+<span class="sectionnumber">8.3</span><span class="toctitle">&#x2003;Хвиля, що може рости</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-445" class="tocsection" >
+<span class="sectionnumber">8.4</span><span class="toctitle">&#x2003;Дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-449" class="tocsection" >
+<span class="sectionnumber">8.5</span><span class="toctitle">&#x2003;Звідки береться енергія нестійкості?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-453" class="tocsection" >
+<span class="sectionnumber">8.6</span><span class="toctitle">&#x2003;Рівновага та стійкість у&nbsp;магнітному полі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-457" class="tocsection" >
+<span class="sectionnumber">8.7</span><span class="toctitle">&#x2003;Перетяжка як найпростіший приклад нестійкості</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-458" class="tocsection" >
+<span class="sectionnumber">8.8</span><span class="toctitle">&#x2003;Лінійна та нелінійна стадії</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-462" class="tocsection" >
+<span class="sectionnumber">8.9</span><span class="toctitle">&#x2003;Нестійкість Релея–Тейлора та жолобкова нестійкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-469" class="tocsection" >
+<span class="sectionnumber">8.10</span><span class="toctitle">&#x2003;Двопотокова нестійкість та нестійкість пучка</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-473" class="tocsection" >
+<span class="sectionnumber">8.11</span><span class="toctitle">&#x2003;Нестійкості анізотропної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-474" class="tocsection" >
+<span class="sectionnumber">8.12</span><span class="toctitle">&#x2003;Енергетичний принцип</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-475" class="tocsection" >
+<span class="sectionnumber">8.13</span><span class="toctitle">&#x2003;Дрейфові хвилі та аномальний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-476" class="tocsection" >
+<span class="sectionnumber">8.14</span><span class="toctitle">&#x2003;Від загального принципу до конкретних нестійкостей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-479" class="tocsection" >
+<span class="sectionnumber">8.15</span><span class="toctitle">&#x2003;Як це вимірюють: котушки Мірнова і&nbsp;м’який рентген</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-490" class="tocchapter" >
+<span class="sectionnumber">9</span><span class="toctitle">&#x2003;Магнітне утримання плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-491" class="tocsection" >
+<span class="sectionnumber">9.1</span><span class="toctitle">&#x2003;Проблема утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-492" class="tocsection" >
+<span class="sectionnumber">9.2</span><span class="toctitle">&#x2003;Відкриті пастки: магнітне дзеркало</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-493" class="tocsection" >
+<span class="sectionnumber">9.3</span><span class="toctitle">&#x2003;Пінч-ефект</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-497" class="tocsection" >
+<span class="sectionnumber">9.4</span><span class="toctitle">&#x2003;Рівновага \(z\)-пінча. Співвідношення Беннета</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-503" class="tocsection" >
+<span class="sectionnumber">9.5</span><span class="toctitle">&#x2003;Рівновага \(\mittheta \)-пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-504" class="tocsection" >
+<span class="sectionnumber">9.6</span><span class="toctitle">&#x2003;Нестійкості пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-511" class="tocsection" >
+<span class="sectionnumber">9.7</span><span class="toctitle">&#x2003;Тороїдальні системи: токамак і&nbsp;стеларатор</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-515" class="tocsection" >
+<span class="sectionnumber">9.8</span><span class="toctitle">&#x2003;Захоплені частинки й&nbsp;неокласичний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-519" class="tocsection" >
+<span class="sectionnumber">9.9</span><span class="toctitle">&#x2003;Рівновага тора: зсув Шафранова та межа за тиском</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-520" class="tocsection" >
+<span class="sectionnumber">9.10</span><span class="toctitle">&#x2003;Як це вимірюють: магнітна реконструкція рівноваги</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-531" class="tocchapter" >
+<span class="sectionnumber">10</span><span class="toctitle">&#x2003;Керований термоядерний синтез</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-532" class="tocsection" >
+<span class="sectionnumber">10.1</span><span class="toctitle">&#x2003;Реакції та паливо</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">10.2</span><span class="toctitle">&#x2003;Чому потрібна саме така температура: бар’єр і&nbsp;тунелювання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-540" class="tocsection" >
+<span class="sectionnumber">10.3</span><span class="toctitle">&#x2003;Баланс потужностей і&nbsp;критерій Лоусона</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-541" class="tocsection" >
+<span class="sectionnumber">10.4</span><span class="toctitle">&#x2003;Втрати</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-542" class="tocsection" >
+<span class="sectionnumber">10.5</span><span class="toctitle">&#x2003;Дві стратегії: магнітне й&nbsp;інерційне утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-543" class="tocsection" >
+<span class="sectionnumber">10.6</span><span class="toctitle">&#x2003;Від реакції до розетки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-550" class="tocsection" >
+<span class="sectionnumber">10.7</span><span class="toctitle">&#x2003;Що ще треба вирішити</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-551" class="tocsection" >
+<span class="sectionnumber">10.8</span><span class="toctitle">&#x2003;Інерційний шлях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-552" class="tocsection" >
+<span class="sectionnumber">10.9</span><span class="toctitle">&#x2003;Де ми зараз: стан на&nbsp;2026&nbsp;рік</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-555" class="tocsection" >
+<span class="sectionnumber">10.10</span><span class="toctitle">&#x2003;Як це вимірюють: нейтронна діагностика</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-566" class="tocchapter" >
+<span class="sectionnumber">11</span><span class="toctitle">&#x2003;Низькотемпературна плазма та газовий розряд</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-567" class="tocsection" >
+<span class="sectionnumber">11.1</span><span class="toctitle">&#x2003;Елементарні процеси: іонізація і&nbsp;її швидкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-568" class="tocsection" >
+<span class="sectionnumber">11.2</span><span class="toctitle">&#x2003;Пробій газу: механізм Таунсенда і&nbsp;закон Пашена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-572" class="tocsection" >
+<span class="sectionnumber">11.3</span><span class="toctitle">&#x2003;Тліючий розряд і&nbsp;дуга</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-578" class="tocsection" >
+<span class="sectionnumber">11.4</span><span class="toctitle">&#x2003;Приелектродний шар у&nbsp;розряді</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-579" class="tocsection" >
+<span class="sectionnumber">11.5</span><span class="toctitle">&#x2003;Глобальна модель розряду</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-580" class="tocsection" >
+<span class="sectionnumber">11.6</span><span class="toctitle">&#x2003;Високочастотні джерела плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-589" class="tocsection" >
+<span class="sectionnumber">11.7</span><span class="toctitle">&#x2003;Плазмова обробка матеріалів</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-590" class="tocsection" >
+<span class="sectionnumber">11.8</span><span class="toctitle">&#x2003;Як це вимірюють: оптична емісія і&nbsp;ВЧ-зонди</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-601" class="tocchapter" >
+<span class="sectionnumber">12</span><span class="toctitle">&#x2003;Основні масштаби, режими та межі моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-602" class="tocsection" >
+<span class="sectionnumber">12.1</span><span class="toctitle">&#x2003;Просторові та часові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-606" class="tocsection" >
+<span class="sectionnumber">12.2</span><span class="toctitle">&#x2003;Зіткнювальний та беззіткнювальний режими</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-607" class="tocsection" >
+<span class="sectionnumber">12.3</span><span class="toctitle">&#x2003;Як за масштабами вибирають модель</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-610" class="tocsection" >
+<span class="sectionnumber">12.4</span><span class="toctitle">&#x2003;Типова ієрархія масштабів у магнітному утриманні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-611" class="tocsection" >
+<span class="sectionnumber">12.5</span><span class="toctitle">&#x2003;Від кінетики до МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-612" class="tocsection" >
+<span class="sectionnumber">12.6</span><span class="toctitle">&#x2003;Безрозмірні параметри МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-613" class="tocsection" >
+<span class="sectionnumber">12.7</span><span class="toctitle">&#x2003;Межі простих моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-614" class="tocsection" >
+<span class="sectionnumber">12.8</span><span class="toctitle">&#x2003;Основні масштаби та формули</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-617" class="tocsection" >
+<span class="sectionnumber">12.9</span><span class="toctitle">&#x2003;Що вимірюють на&nbsp;якому масштабі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch14.html#autosec-629" class="tocchapter" >
+Підсумки</a>
+</p>
+
+
+
+<p>
+<a href="ch15.html#autosec-634" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-649" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-650" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Таблиця позначень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-660" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Перехід між СГС і&nbsp;СІ. Константи</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-673" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Шпаргалка: ключові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch17.html#autosec-678" class="tocpart" >
+Словник термінів</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-682" class="tocchapter" >
+Література</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-683" class="tocsection" >
+Підручники та посібники</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-684" class="tocsection" >
+Джерела фактів і результатів</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Кінетичний опис плазми">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Елементи фізики плазми</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\newcommand {\vect }[1]{\mathbf {#1}}\)
+
+\(\newcommand {\Efield }{\vect {E}}\)
+
+\(\newcommand {\Dfield }{\vect {D}}\)
+
+\(\newcommand {\Bfield }{\vect {B}}\)
+
+\(\newcommand {\Hfield }{\vect {H}}\)
+
+\(\newcommand {\rot }{\mathbf {\nabla }\times }\)
+
+\(\newcommand {\divg }{\mathbf {\nabla }\cdot }\)
+
+\(\newcommand {\grad }{\vect {\nabla }}\)
+
+\(\newcommand {\diff }[2]{\frac {\partial #1}{\partial #2}}\)
+
+\(\newcommand {\ddiff }[2]{\frac {\partial ^2 #1}{\partial #2^2}}\)
+
+\(\newcommand {\parttime }[1]{\frac {\partial {#1}}{\partial t}}\)
+
+\(\newcommand {\pparttime }[1]{\frac {\partial ^2{#1}}{\partial t^2}}\)
+
+\(\renewcommand {\phi }{\varphi }\)
+
+\(\renewcommand {\epsilon }{\varepsilon }\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\Div }{div}\)
+
+\(\DeclareMathOperator {\Rot }{rot}\)
+
+\(\DeclareMathOperator {\Grad }{grad}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\renewcommand {\iiint }{\int }\)
+
+\(\renewcommand {\iint }{\int }\)
+
+\(\newcommand {\oiint }{\oint }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Кінетичний опис плазми ......
+-->
+<h3 id="autosec-383"><span class="sectionnumber">7&#x2003;</span>Кінетичний опис плазми</h3>
+<a id="main-html-autopage-383"></a>
+<a id="main-html-autofile-8"></a>
+
+<a id="sec:plasma-kinetic"></a>
+
+<p>
+<a id="LWR-ht-plasma-kinetic"></a>
+</p>
+
+<p>
+Рідинний опис виникає після усереднення руху великої кількості частинок. Але іноді самого середнього значення швидкості недостатньо. Дві плазми можуть мати однакові густину \(n\) та середню швидкість \(\vect v\), але різні розподіли
+частинок за швидкостями, а&nbsp;отже по-різному реагувати на хвилі, зіткнення та нестійкості.
+</p>
+
+<p>
+Кінетичний опис зберігає інформацію про те, як частинки розподілені не лише в координатному просторі, а&nbsp;й&nbsp;у&nbsp;просторі швидкостей. Це особливо важливо тоді, коли характер процесу визначається невеликою частиною
+частинок із певними швидкостями: наприклад, при резонансній взаємодії з&nbsp;хвилею. Рідинні величини в&nbsp;такому разі вже можуть не містити достатньої інформації.
+</p>
+<!--
+...... section Функція розподілу та фазовий простір ......
+-->
+<h4 id="autosec-384"><span class="sectionnumber">&#xA7;&#x202F;7.1&#x2003;</span>Функція розподілу та фазовий простір</h4>
+<a id="main-html-autopage-384"></a>
+
+
+<p>
+Для кожного сорту частинок \(s\) вводять <em><span
+    class="textcolor"
+    style="color:#990000"
+>функцію розподілу</span></em> \(f_s(\vect r,\vect v,t)\). Вона визначена у&nbsp;шестимірному фазовому просторі \((\vect r,\vect v)\) і&nbsp;часі. Величина
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{0}\)</span>
+
+<!--
+
+
+                                                                                                               𝑓𝑠 (𝐫, 𝐯, 𝑡) 𝑑3 𝑟 𝑑3 𝑣
+
+-->
+
+<p>
+
+\begin{equation*}
+f_s(\vect r,\vect v,t)\,d^3r\,d^3v
+\end{equation*}
+
+</p>
+
+<p>
+є середнім числом частинок виду \(s\), які в&nbsp;момент часу \(t\) перебувають у&nbsp;елементі фазового простору \(d^3r\,d^3v\).
+</p>
+
+<p>
+На відміну від концентрації, функція \(f_s\) містить інформацію про розподіл частинок за швидкостями. Концентрація є її нульовим моментом,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{0}\)</span>
+
+<!--
+
+                                                                                                                        ˆ
+                                                                                                          𝑛𝑠 (𝐫, 𝑡) =       𝑓𝑠 (𝐫, 𝐯, 𝑡) 𝑑3 𝑣,                                               (7.1)--><a id="eq:kinetic-density"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-density} n_s(\vect r,t)=\int f_s(\vect r,\vect v,t)\,d^3v,
+\end{equation}
+
+</p>
+
+<p>
+а&nbsp;середня швидкість визначається першим моментом,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{1}\)</span>
+
+<!--
+
+                                                                                                                            ˆ
+                                                                                                              𝑛𝑠 𝐯𝑠 =           𝐯𝑓𝑠 𝑑3 𝑣.                                                   (7.2)--><a id="eq:kinetic-velocity"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-velocity} n_s\vect v_s=\int \vect v f_s\,d^3v.
+\end{equation}
+
+</p>
+
+<p>
+Знання тільки \(n_s\) та \(\vect v_s\) не відновлює функцію розподілу. У&nbsp;цьому полягає одна з&nbsp;головних відмінностей кінетичного опису від рідинного: кінетична теорія зберігає значно більше інформації про мікроскопічний стан
+плазми.
+</p>
+<!--
+...... section Моменти функції розподілу ......
+-->
+<h4 id="autosec-385"><span class="sectionnumber">&#xA7;&#x202F;7.2&#x2003;</span>Моменти функції розподілу</h4>
+<a id="main-html-autopage-385"></a>
+
+
+<p>
+Середня швидкість характеризує рух центра розподілу. Для опису хаотичного руху введемо відносну швидкість
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{2}\)</span>
+
+<!--
+
+
+                                                                                                                                 𝐜 = 𝐯 − 𝐯𝑠 .
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect c=\vect v-\vect v_s.
+\end{equation*}
+
+</p>
+
+<p>
+Тоді тензор тиску визначається другим центральним моментом:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{2}\)</span>
+
+<!--
+
+                                                                                                                           ˆ
+                                                                                                              𝑃𝑠,𝑖𝑗 = 𝑚𝑠       (𝑣𝑖 − 𝑣𝑠,𝑖 )(𝑣𝑗 − 𝑣𝑠,𝑗 )𝑓𝑠 𝑑3 𝑣.                           (7.3)--><a id="eq:pressure-tensor"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:pressure-tensor} P_{s,ij} = m_s\int (v_i-v_{s,i})(v_j-v_{s,j})f_s\,d^3v.
+\end{equation}
+
+</p>
+
+<p>
+У&nbsp;загальному випадку \(\mathsf P_s\) є тензором, а&nbsp;не скаляром. Якщо розподіл ізотропний, усі напрямки еквівалентні й
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{3}\)</span>
+
+<!--
+
+
+                                                                                                                               𝑃𝑠,𝑖𝑗 = 𝑝𝑠 𝛿𝑖𝑗 .                                        (7.4)--><a id="eq:isotropic-pressure"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:isotropic-pressure} P_{s,ij}=p_s\delta _{ij}.
+\end{equation}
+
+</p>
+
+<p>
+Скалярний тиск тоді пов’язаний із другим центральним моментом:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{4}\)</span>
+
+<!--
+
+                                                                                                                                      ˆ
+                                                                                                                                 𝑚𝑠
+                                                                                                                       𝑝𝑠 =               𝑐2 𝑓𝑠 𝑑3 𝑣.                                     (7.5)--><a id="eq:pressure-energy"></a><!--
+                                                                                                                                 3
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:pressure-energy} p_s=\frac {m_s}{3}\int c^2 f_s\,d^3v.
+\end{equation}
+
+</p>
+
+<p>
+Для ізотропного розподілу температуру сорту \(s\) означимо як \(T_s\equiv (m_s/3n_s)\int c^2f_s\,d^3v\), звідки \(p_s=n_sT_s\); фізично&nbsp;— це середня енергія хаотичного руху частинок (\(T\) в&nbsp;енергетичних одиницях).
+У&nbsp;неізотропній плазмі природніше говорити окремо про тиск поперек і&nbsp;вздовж магнітного поля, \(p_\perp \) та \(p_\parallel \). Саме тому кінетичний опис потрібний там, де анізотропія розподілу є істотною.
+</p>
+
+<p>
+Із моментів можна побудувати також густину кінетичної енергії частинок,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{5}\)</span>
+
+<!--
+
+                                                                                            ˆ
+                                                                                       𝑚𝑠
+                                                                                𝑤𝑠 =            𝑣2 𝑓𝑠 𝑑3 𝑣.                                                                       (7.6)--><a id="eq:kinetic-energy-density"></a><!--
+                                                                                       2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-energy-density} w_s=\frac {m_s}{2}\int v^2 f_s\,d^3v.
+\end{equation}
+
+</p>
+
+<p>
+Після розкладання \(\vect v=\vect v_s+\vect c\) вона містить дві частини: енергію впорядкованого руху та енергію хаотичного руху. Саме друга частина пов’язана з&nbsp;температурою і&nbsp;тиском.
+</p>
+<!--
+...... section Кінетичне рівняння ......
+-->
+<h4 id="autosec-386"><span class="sectionnumber">&#xA7;&#x202F;7.3&#x2003;</span>Кінетичне рівняння</h4>
+<a id="main-html-autopage-386"></a>
+
+
+<p>
+Еволюцію функції розподілу визначає кінетичне рівняння. У&nbsp;беззіткнювальній плазмі воно має вигляд рівняння Власова:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{6}\)</span>
+
+<!--
+
+
+                                                                                                    𝜕𝑓𝑠            𝑞      1
+                                                                                                        + 𝐯 ⋅ ∇𝑓𝑠 + 𝑠 (𝐄 + 𝐯 × 𝐁) ⋅ ∇𝐯 𝑓𝑠 = 0.                                                          (7.7)--><a id="eq:vlasov"></a><!--
+                                                                                                     𝜕𝑡            𝑚𝑠     𝑐
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:vlasov} \frac {\partial f_s}{\partial t} +\vect v\cdot \nabla f_s +\frac {q_s}{m_s} \left ( \vect E+\frac 1c\vect v\times \vect B \right ) \cdot \nabla _{\vect v}f_s=0.
+\end{equation}
+
+</p>
+
+<p>
+Перший доданок описує зміну розподілу з&nbsp;часом, другий&nbsp;— його перенесення в&nbsp;координатному просторі, а&nbsp;третій&nbsp;— зміну швидкостей під дією сили Лоренца.
+</p>
+
+<p>
+Рівняння можна записати компактніше через повну похідну вздовж траєкторії частинки:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{7}\)</span>
+
+<!--
+
+
+                                                                                                                     𝑑𝑓𝑠
+                                                                                                                         = 0.                                                          (7.8)--><a id="eq:vlasov-characteristic"></a><!--
+                                                                                                                      𝑑𝑡
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:vlasov-characteristic} \frac {d f_s}{dt}=0.
+\end{equation}
+
+</p>
+
+<p>
+Це не означає, що \(f_s\) не змінюється в&nbsp;просторі або в&nbsp;часі. Йдеться про те, що вздовж фазової траєкторії, визначеної рівняннями руху частинки, значення функції розподілу зберігається. Фізично це є законом збереження числа
+частинок у&nbsp;фазовому просторі.
+</p>
+
+
+<div class="cb-theory">
+
+<p>
+<b>Теоретичні відомості</b> Нагадаємо з&nbsp;теоретичної механіки
+</p>
+
+<p>
+<em>Теорема Ліувілля</em>: для гамільтонової системи фазовий об’єм \(d^3r\,d^3p\), що рухається разом з&nbsp;частинками, зберігається; у&nbsp;нерелятивістському випадку \(\vect p=m\vect v\), тож те саме справджується для
+\(d^3r\,d^3v\). Звідси випливає вивід рівняння Власова. Частинки не народжуються й&nbsp;не зникають, тому в&nbsp;6-вимірному фазовому просторі \((\vect r,\vect v)\) виконується рівняння неперервності
+</p>
+
+<p>
+\[\frac {\partial f}{\partial t}+\nabla _{\vect r}\cdot (\vect vf)+\nabla _{\vect v}\cdot \Bigl (\frac {\vect F}mf\Bigr )=0.\]
+</p>
+
+<p>
+Оскільки \(\vect r\) і&nbsp;\(\vect v\)&nbsp;— незалежні змінні, \(\nabla _{\vect r}\cdot \vect v=0\); для сили Лоренца \(\vect F=q(\vect E+\vect v\times \vect B/c)\) маємо \(\nabla _{\vect v}\cdot \vect F=0\) (бо \(\nabla
+_{\vect v}\cdot (\vect v\times \vect B)=0\), а&nbsp;\(\vect E\) від \(\vect v\) не залежить). Тому \(\vect v\) і&nbsp;\(\vect F\) виносяться з&nbsp;дивергенції, і&nbsp;виходить <span class="textup">(<a
+href="ch8.html#eq:vlasov">7.7</a>)</span>, тобто \(df/dt=0\) вздовж траєкторії&nbsp;— теорема Ліувілля.
+</p>
+</div>
+
+<p>
+Якщо зіткнення важливі, рівняння набуває форми
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{8}\)</span>
+
+<!--
+
+
+                                                                        𝜕𝑓𝑠            𝑞      1
+                                                                            + 𝐯 ⋅ ∇𝑓𝑠 + 𝑠 (𝐄 + 𝐯 × 𝐁) ⋅ ∇𝐯 𝑓𝑠 = 𝐶𝑠 [𝑓].                                                                     (7.9)--><a id="eq:kinetic-collision"></a><!--
+                                                                         𝜕𝑡            𝑚𝑠     𝑐
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-collision} \frac {\partial f_s}{\partial t} +\vect v\cdot \nabla f_s +\frac {q_s}{m_s} \left ( \vect E+\frac 1c\vect v\times \vect B \right ) \cdot \nabla _{\vect v}f_s =C_s[f].
+\end{equation}
+
+</p>
+
+<p>
+Оператор \(C_s[f]\) описує зміну функції розподілу внаслідок зіткнень. Найпростіша модель&nbsp;— БГК: \(C[f]=-\nu (f-f_M)\), де \(f_M\)&nbsp;— максвеллівський розподіл; зіткнення «тягнуть» розподіл до максвеллівського
+з&nbsp;характерним часом \(1/\nu \) (\(\nu \)&nbsp;— характерна частота зіткнень, для електронів порядку \(\nu _{ei}+\nu _{ee}\), див.&nbsp;розд.&nbsp;<a href="ch5.html#sec:plasma-collisions">4</a>). Для слабкозв’язаної плазми
+кулонівська взаємодія далекодіюча, тому проста модель зіткнення двох твердих кульок не є адекватною: зіткнення визначається великою кількістю слабких кулонівських відхилень.
+</p>
+
+<p>
+Таким чином, рівняння Власова та кінетичне рівняння зіткнювальної плазми відрізняються саме способом урахування взаємодії між частинками. У&nbsp;першому випадку основною є самоузгоджена електромагнітна взаємодія, у&nbsp;другому
+додається кінетичний ефект зіткнень.
+</p>
+<!--
+...... section Максвеллівський розподіл і-температура ......
+-->
+<h4 id="autosec-387"><span class="sectionnumber">&#xA7;&#x202F;7.4&#x2003;</span>Максвеллівський розподіл і&nbsp;температура</h4>
+<a id="main-html-autopage-387"></a>
+
+
+<p>
+Найпростішим прикладом функції розподілу є локальний максвеллівський розподіл. Для частинок маси \(m\), концентрації \(n\) та температури \(T\) він має вигляд
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{9}\)</span>
+
+<!--
+
+
+                                                                                            𝑚 3/2       𝑚(𝐯 − 𝐮)2
+                                                                            𝑓𝑀 (𝐯) = 𝑛 (       ) exp [−           ].                                                                    (7.10)--><a id="eq:maxwell-distribution"></a><!--
+                                                                                           2𝜋𝑇             2𝑇
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:maxwell-distribution} f_M(\vect v)= n\left (\frac {m}{2\pi T}\right )^{3/2} \exp \left [ -\frac {m(\vect v-\vect u)^2}{2T} \right ].
+\end{equation}
+
+</p>
+
+<p>
+Тут \(\vect u\) є середньою швидкістю. Розподіл має максимум при \(\vect v=\vect u\), а&nbsp;його ширина визначається температурою. Чим вища \(T\), тим більша частка частинок має великі теплові швидкості.
+</p>
+
+<p>
+Для максвеллівського розподілу
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{10}\)</span>
+
+<!--
+
+                                                                                                                                 3𝑇
+                                                                                                                       ⟨𝑐2 ⟩ =      ,                                                          (7.11)--><a id="eq:thermal-speed"></a><!--
+                                                                                                                                 𝑚
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:thermal-speed} \left \langle c^2\right \rangle =\frac {3T}{m},
+\end{equation}
+
+</p>
+
+<p>
+тому характерну теплову швидкість зручно визначити як
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{11}\)</span>
+
+<!--
+
+
+                                                                                                  𝑇
+                                                                                       𝑣𝑇 = √       .                                                                              (7.12)--><a id="eq:thermal-speed-definition"></a><!--
+                                                                                                  𝑚
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:thermal-speed-definition} v_T=\sqrt {\frac {T}{m}}.
+\end{equation}
+
+</p>
+
+<p>
+<em>Обережно з&nbsp;означеннями.</em> Розподіл можна записати в&nbsp;трьох формах: одновимірний \(F(v_x)\propto e^{-mv_x^2/2T}\), тривимірний \(f(\vect v)\) і&nbsp;розподіл за модулем швидкості \(4\pi v^2f(v)\). Відповідно
+існують три «теплові швидкості»: найімовірніша \(\sqrt {2T/m}\) (максимум \(4\pi v^2f\)), середня \(\sqrt {8T/\pi m}\) і&nbsp;середньоквадратична \(\sqrt {3T/m}\) (задача&nbsp;<a href="ch8.html#prb:MaxwellSpeeds">7.4</a>). Різні
+підручники називають «тепловою» різні з&nbsp;них (часто \(\sqrt {2T/m}\), як у&nbsp;Чена), що дає розбіжності на множник \(\sqrt 2\). У&nbsp;цій книзі \(v_T=\sqrt {T/m}\) всюди.
+</p>
+
+<p>
+У&nbsp;плазмі електрони та іони не зобов’язані мати однакові температури:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{12}\)</span>
+
+<!--
+
+
+                                                                                                                        𝑇𝑒 ≠ 𝑇 𝑖 .
+
+-->
+
+<p>
+
+\begin{equation*}
+T_e\neq T_i.
+\end{equation*}
+
+</p>
+
+<p>
+Різні сорти частинок можуть обмінюватися енергією через зіткнення, але цей обмін не обов’язково відбувається настільки швидко, щоб встановити спільну температуру. Тому \(T_e\) та \(T_i\) слід розглядати як окремі характеристики, якщо це
+випливає з&nbsp;умов задачі.
+</p>
+
+<p>
+У&nbsp;слабо зіткнювальній або беззіткнювальній плазмі розподіл може істотно відхилятися від максвеллівського. Тоді однієї температури вже недостатньо для повного опису кінетичного стану.
+</p>
+<!--
+...... section Від кінетики до гідродинаміки ......
+-->
+<h4 id="autosec-388"><span class="sectionnumber">&#xA7;&#x202F;7.5&#x2003;</span>Від кінетики до гідродинаміки</h4>
+<a id="main-html-autopage-388"></a>
+
+
+<a id="sec:kinetic-moments"></a>
+
+<p>
+Рідинні рівняння можна отримати з&nbsp;кінетичного рівняння, якщо замінити повну функцію розподілу набором її моментів. Це робить особливо наочним зв’язок між кінетичним, дворідинним та однорідинним описами.
+</p>
+
+<p>
+Помножимо рівняння Власова на одиницю та проінтегруємо за швидкостями. За умови достатньо швидкого спадання \(f_s\) при \(v\to \infty \) інтеграл від похідної за швидкістю перетворюється на поверхневий інтеграл, який зникає.
+Отримуємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{12}\)</span>
+
+<!--
+
+                                                                                                                      𝜕𝑛𝑠
+                                                                                                                          + ∇ ⋅ (𝑛𝑠 𝐯𝑠 ) = 0.                                          (7.13)--><a id="eq:kinetic-continuity"></a><!--
+                                                                                                                       𝜕𝑡
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-continuity} \frac {\partial n_s}{\partial t} +\nabla \cdot (n_s\vect v_s)=0.
+\end{equation}
+
+</p>
+
+<p>
+Це рівняння неперервності для кожного сорту частинок.
+</p>
+
+<p>
+Тепер помножимо кінетичне рівняння на \(m_s\vect v\) та проінтегруємо. Розберемо доданки. Перший дає \(m_s\partial _t(n_s\vect v_s)\). Другий: \(\nabla \cdot \int m_s\vect v\vect vf\,d^3v\), де з&nbsp;розкладом \(\vect
+v=\vect v_s+\vect c\) (\(\vect c\)&nbsp;— хаотична швидкість, \(\int \vect cf\,d^3v=0\)) маємо \(\int \vect v\vect vf\,d^3v=n_s\vect v_s\vect v_s+\int \vect c\vect cf\,d^3v\), тобто \(m_sn_s\vect v_s\vect v_s+\mathsf
+P_s\). Третій&nbsp;— ключовий: інтегруємо частинами за швидкостями,
+</p>
+
+<p>
+\[\int v_i\,\vect a\cdot \nabla _{\vect v}f\,d^3v=-\int f\,\frac {\partial (v_ia_j)}{\partial v_j}\,d^3v=-\int f\,a_i\,d^3v=-n_sa_i,\]
+</p>
+
+<p>
+де \(\vect a=(q_s/m_s)(\vect E+\vect v\times \vect B/c)\); поверхневі члени зникають через спад \(f\to 0\) при \(|\vect v|\to \infty \), а&nbsp;\(\partial _{v_j}(\vect v\times \vect B)_j=0\). Підставивши
+й&nbsp;скориставшись <span class="textup">(<a href="ch8.html#eq:kinetic-continuity">7.13</a>)</span>, щоб скоротити доданки з&nbsp;\(\partial _tn_s\) і&nbsp;\(\nabla \cdot (n_s\vect v_s)\), дістаємо рівняння руху
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{13}\)</span>
+
+<!--
+
+                                                                             𝜕𝐯𝑠                          1
+                                                                   𝑚𝑠 𝑛𝑠 (       + 𝐯𝑠 ⋅ ∇𝐯𝑠 ) = 𝑞𝑠 𝑛𝑠 (𝐄 + 𝐯𝑠 × 𝐁) − ∇ ⋅ P𝑠 + 𝐑𝑠 .                                                       (7.14)--><a id="eq:kinetic-momentum"></a><!--
+                                                                              𝜕𝑡                          𝑐
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-momentum} m_sn_s \left ( \frac {\partial \vect v_s}{\partial t} +\vect v_s\cdot \nabla \vect v_s \right ) = q_sn_s \left ( \vect E+\frac 1c\vect v_s\times \vect B \right ) -\nabla \cdot
+\mathsf P_s +\vect R_s.
+\end{equation}
+
+</p>
+
+<p>
+Тут \(\vect R_s\) описує передачу імпульсу між різними сортами частинок. У&nbsp;беззіткнювальній моделі цей член відсутній.
+</p>
+
+<p>
+Рівняння показує важливу річ: електромагнітна сила діє на середній рух, але внутрішня кінетика частинок входить через тензор тиску \(\mathsf P_s\). Тому просте скалярне рівняння стану \(p=p(n,T)\) є вже додатковим припущенням,
+а&nbsp;не прямим наслідком кінетичного рівняння.
+</p>
+
+<p>
+Якщо перейти до наступного моменту, виникає рівняння для потоку енергії. У&nbsp;ньому з’являються моменти вищого порядку. Отже, виникає <em><span
+    class="textcolor"
+    style="color:#990000"
+>ієрархія моментів</span></em>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{14}\)</span>
+
+<!--
+
+
+                                                                                                𝑓𝑠 ⟶ (𝑛𝑠 , 𝐯𝑠 , P𝑠 ) ⟶ потік енергії ⟶ вищі моменти ⟶ ⋯
+
+-->
+
+<p>
+
+\begin{equation*}
+f_s \longrightarrow (n_s,\vect v_s,\mathsf P_s) \longrightarrow \text {потік енергії} \longrightarrow \text {вищі моменти} \longrightarrow \cdots
+\end{equation*}
+
+</p>
+
+<p>
+Ієрархія сама по собі не замикається: рівняння для моменту порядку \(N\) містить момент порядку \(N+1\). Щоб отримати скінченну систему рідинних рівнянь, необхідне <em>замикання</em>. Прикладами є припущення про ізотропний тиск,
+рівняння стану, адіабатичний зв’язок або задану теплопровідність.
+</p>
+
+<p>
+Тому ланцюжок переходу між рівнями опису має вигляд
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{14}\)</span>
+
+<!--
+
+
+                                                                 𝑓𝑠 (𝐫, 𝐯, 𝑡) ⟶ (𝑛𝑠 , 𝐯𝑠 , P𝑠 , …) ⟶ дворідинна модель ⟶ МГД.                                                           (7.15)--><a id="eq:kinetic-hierarchy"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-hierarchy} \boxed { f_s(\vect r,\vect v,t) \longrightarrow (n_s,\vect v_s,\mathsf P_s,\ldots ) \longrightarrow \text {дворідинна модель} \longrightarrow \text {МГД}. }
+\end{equation}
+
+</p>
+
+<p>
+Кожна стрілка означає не просто зміну позначень, а&nbsp;втрату частини інформації та введення певних припущень.
+</p>
+<!--
+...... section Дворідинна картина та її зв'язок із МГД ......
+-->
+<h4 id="autosec-389"><span class="sectionnumber">&#xA7;&#x202F;7.6&#x2003;</span>Дворідинна картина та її зв’язок із МГД</h4>
+<a id="main-html-autopage-389"></a>
+
+
+<p>
+Для плазми з&nbsp;електронів та іонів кінетичне рівняння записують окремо для кожного сорту, а&nbsp;моменти дають дві системи рідинних рівнянь зі&nbsp;своїми \(n_s\), \(\vect v_s\), \(\mathsf P_s\) (дворідинний опис). Їхнє додавання
+й&nbsp;віднімання, яке зводить дворідинну модель до однорідинної МГД (рівняння руху центра мас, узагальнений закон Ома, струм \(\vect j=en_e(\vect v_i-\vect v_e)\)), виконано в&nbsp;розд.&nbsp;<a href="ch6.html#sec:mhd">5</a>;
+тут важливо лише, що ця різниця швидкостей губиться при переході до однієї середньої швидкості, і&nbsp;тому МГД не може описати ефекти, чутливі до окремого руху електронів та іонів.
+</p>
+<!--
+...... section Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра ......
+-->
+<h4 id="autosec-390"><span class="sectionnumber">&#xA7;&#x202F;7.7&#x2003;</span>Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра</h4>
+<a id="main-html-autopage-390"></a>
+
+
+<p>
+Рідинний вивід поправки Бома–Гросса \(\omega ^2\simeq \omega _{pe}^2+3k^2v_{Te}^2\) наведено в&nbsp;розд.&nbsp;<a href="ch3.html#sec:langmuir-waves">2.3</a>; там показник \(3\) виникає як адіабата одновимірного стиснення.
+Кінетичний вивід (див. нижче, <span class="textup">(<a href="ch8.html#eq:eps-kinetic">7.28</a>)</span>) показує, що ця формула справедлива лише при \(\omega /k\gg v_{Te}\), тобто для довгих хвиль, \(k\lambda _{De}\ll 1\).
+Поправка пов’язана з&nbsp;тепловим рухом електронів, а&nbsp;за \(k\lambda _{De}\gtrsim 0{,}3\) виникає ще й&nbsp;загасання Ландау, якого рідинна модель не передбачає.
+</p>
+<!--
+...... section Лінеаризація кінетичного рівняння та хвильовий відгук ......
+-->
+<h4 id="autosec-391"><span class="sectionnumber">&#xA7;&#x202F;7.8&#x2003;</span>Лінеаризація кінетичного рівняння та хвильовий відгук</h4>
+<a id="main-html-autopage-391"></a>
+
+
+<p>
+До цього моменту ми розглядали функцію розподілу як спосіб описати стан плазми та її еволюцію в&nbsp;часі. Тепер поставимо інше питання: <em>що відбувається з&nbsp;плазмою, якщо її трохи відхилити від рівноваги?</em>
+</p>
+
+<p>
+Це питання є природним продовженням теорії хвиль. У&nbsp;рідинному описі ми вже бачили, що мале відхилення густини, швидкості або магнітного поля може поширюватися в&nbsp;плазмі у&nbsp;вигляді хвилі. У&nbsp;кінетичному описі
+треба поставити те саме питання безпосередньо для функції розподілу.
+</p>
+<!--
+...... subsection Що означає хвиля в-кінетичному описі? ......
+-->
+<h5 id="autosec-392">Що означає хвиля в&nbsp;кінетичному описі?</h5>
+<a id="main-html-autopage-392"></a>
+
+
+<p>
+Нехай плазма перебуває в&nbsp;простому однорідному рівноважному стані. Для кожного сорту частинок його описує функція розподілу
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{15}\)</span>
+
+<!--
+
+
+                                                                                   𝑓𝑠 = 𝑓0𝑠 (𝐯).                                                                         (7.16)--><a id="eq:kinetic-equilibrium-distribution"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-equilibrium-distribution} f_s=f_{0s}(\vect v).
+\end{equation}
+
+</p>
+
+<p>
+Ми спеціально розглядаємо однорідний рівноважний стан, тому \(f_{0s}\) не залежить від \(\vect r\) та \(t\). Фізично це означає, що в&nbsp;середньому властивості плазми однакові в&nbsp;усіх точках простору та не змінюються з&nbsp;часом.
+</p>
+
+<p>
+Тепер уявімо, що цей стан трохи збурили. Наприклад, у&nbsp;деякій області виникла невелика надлишкова густина електронів. Вона створює електричне поле. Це поле змінює рух електронів, а&nbsp;змінений рух електронів змінює густину заряду
+і, відповідно, саме поле.
+</p>
+
+<p>
+Отже, виникає замкнений ланцюг:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{16}\)</span>
+
+<!--
+
+
+                                                                                                збурення розподілу ⟶ збурення заряду ⟶ електричне поле
+                                                                                                             ⟶ зміна руху частинок ⟶ нове збурення.
+
+-->
+
+<p>
+
+\begin{equation*}
+\begin{gathered} \text {збурення розподілу} \;\longrightarrow \; \text {збурення заряду} \;\longrightarrow \; \text {електричне поле}\\ \longrightarrow \; \text {зміна руху частинок} \;\longrightarrow \; \text
+{нове збурення}. \end {gathered}
+\end{equation*}
+
+</p>
+
+<p>
+Саме ця <em>самоузгодженість</em> є суттю колективної хвилі в&nbsp;плазмі. Поле не просто задане ззовні: воно створюється самими частинками і&nbsp;водночас впливає на їхній рух.
+</p>
+
+<p>
+У&nbsp;кінетичному описі тому хвиля є збуренням самої функції розподілу. Запишемо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{16}\)</span>
+
+<!--
+
+
+                                                                   𝑓𝑠 (𝐫, 𝐯, 𝑡) = 𝑓0𝑠 (𝐯) + 𝛿𝑓𝑠 (𝐫, 𝐯, 𝑡),     |𝛿𝑓𝑠 | ≪ 𝑓0𝑠 .                                                    (7.17)--><a id="eq:kinetic-wave-perturbation"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-wave-perturbation} f_s(\vect r,\vect v,t) = f_{0s}(\vect v) + \delta f_s(\vect r,\vect v,t), \qquad |\delta f_s|\ll f_{0s}.
+\end{equation}
+
+</p>
+
+<p>
+Тут \(f_{0s}\) описує незбурений стан, а&nbsp;\(\delta f_s\) — малу зміну цього стану. На відміну від густини або середньої швидкості, збурення \(\delta f_s\) залежить ще й&nbsp;від швидкості \(\vect v\). Тому воно відповідає не просто
+зміні кількості частинок, а&nbsp;зміні самої форми розподілу за швидкостями.
+</p>
+
+<p>
+Це принципово важливо. Дві ділянки плазми можуть мати однакову густину, але різний розподіл частинок за швидкостями. Кінетична теорія дозволяє розрізнити такі стани, тоді як рідинний опис може їх ототожнювати.
+</p>
+<!--
+...... subsection Лінеаризація рівняння Власова ......
+-->
+<h5 id="autosec-393">Лінеаризація рівняння Власова</h5>
+<a id="main-html-autopage-393"></a>
+
+
+<p>
+Щоб знайти, як розвивається мале збурення, підставимо <span class="textup">(<a href="ch8.html#eq:kinetic-wave-perturbation">7.17</a>)</span> у&nbsp;рівняння Власова <span class="textup">(<a
+href="ch8.html#eq:vlasov">7.7</a>)</span>. Для простоти спочатку розглянемо електростатичні збурення однорідної плазми без зовнішнього магнітного поля. Тоді
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{17}\)</span>
+
+<!--
+
+
+                                                                      𝜕𝑓𝑠            𝑞
+                                                                          + 𝐯 ⋅ ∇𝑓𝑠 + 𝑠 𝐄 ⋅ ∇𝐯 𝑓𝑠 = 0.                                                                   (7.18)--><a id="eq:kinetic-electrostatic-vlasov"></a><!--
+                                                                       𝜕𝑡            𝑚𝑠
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-electrostatic-vlasov} \frac {\partial f_s}{\partial t} + \vect v\cdot \nabla f_s + \frac {q_s}{m_s}\vect E\cdot \nabla _{\vect v}f_s =0.
+\end{equation}
+
+</p>
+
+<p>
+У&nbsp;рівноважному стані поле відсутнє, тому
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                𝐄0 = 0.
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect E_0=0.
+\end{equation*}
+
+</p>
+
+<p>
+Після збурення поле також є малим:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                𝐄 = 𝛿𝐄.
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect E=\delta \vect E.
+\end{equation*}
+
+</p>
+
+<p>
+Підставимо ці вирази у&nbsp;<span class="textup">(<a href="ch8.html#eq:kinetic-electrostatic-vlasov">7.18</a>)</span>. Виникають члени двох типів. Частина є лінійною за малими величинами, а&nbsp;частина містить добуток двох
+збурень, наприклад
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{18}\)</span>
+
+<!--
+
+
+                                                                                                              𝛿𝐄 ⋅ ∇𝐯 𝛿𝑓𝑠 .
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta \vect E\cdot \nabla _{\vect v}\delta f_s.
+\end{equation*}
+
+</p>
+
+<p>
+Оскільки і&nbsp;\(\delta \vect E\), і&nbsp;\(\delta f_s\) малі, їхній добуток є величиною другого порядку мализни. У&nbsp;лінійному наближенні такими членами нехтуємо. Залишається
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{18}\)</span>
+
+<!--
+
+
+                                                                      𝜕𝛿𝑓𝑠             𝑞
+                                                                           + 𝐯 ⋅ ∇𝛿𝑓𝑠 + 𝑠 𝛿𝐄 ⋅ ∇𝐯 𝑓0𝑠 = 0.                                                                   (7.19)--><a id="eq:kinetic-linearized-vlasov"></a><!--
+                                                                       𝜕𝑡              𝑚𝑠
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-linearized-vlasov} \frac {\partial \delta f_s}{\partial t} + \vect v\cdot \nabla \delta f_s + \frac {q_s}{m_s} \delta \vect E\cdot \nabla _{\vect v}f_{0s} =0.
+\end{equation}
+
+</p>
+
+<p>
+Тепер маємо перше принципово нове для нас рівняння: воно безпосередньо визначає еволюцію малого збурення функції розподілу.
+</p>
+
+<p>
+У&nbsp;ньому добре видно фізику процесу. Перші два доданки описують перенесення збурення частинками. Останній доданок показує дію електричного поля: поле змінює швидкості частинок, а&nbsp;отже, перерозподіляє їх у&nbsp;просторі
+швидкостей.
+</p>
+
+<p>
+Таким чином, <span class="textup">(<a href="ch8.html#eq:kinetic-linearized-vlasov">7.19</a>)</span> вже містить обидві необхідні складові кінетичної картини: <em>вільний рух частинок</em> та <em>їхню реакцію на збурене
+поле</em>.
+</p>
+
+<p>
+Але поки що це ще не хвильове рівняння.
+</p>
+<!--
+...... subsection Як із цього виникає хвиля? ......
+-->
+<h5 id="autosec-394">Як із цього виникає хвиля?</h5>
+<a id="main-html-autopage-394"></a>
+
+
+<p>
+Щоб побачити хвильову поведінку, треба згадати, що збурення функції розподілу саме створює електричне поле. З&nbsp;функції \(\delta f_s\) отримуємо збурення густини заряду:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{19}\)</span>
+
+<!--
+
+                                                                                          ˆ
+                                                                              𝛿𝜌 = ∑ 𝑞𝑠       𝛿𝑓𝑠 𝑑3 𝑣.                                                                         (7.20)--><a id="eq:kinetic-perturbed-charge"></a><!--
+                                                                                   𝑠
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-perturbed-charge} \delta \rho = \sum _s q_s \int \delta f_s\,d^3v.
+\end{equation}
+
+</p>
+
+<p>
+А&nbsp;це поле визначається рівняннями електродинаміки. У&nbsp;найпростішій електростатичній задачі достатньо рівняння Пуассона:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{20}\)</span>
+
+<!--
+
+
+                                                                                ∇ ⋅ 𝛿𝐄 = 4𝜋𝛿𝜌.                                                                                 (7.21)--><a id="eq:kinetic-perturbed-poisson"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-perturbed-poisson} \nabla \cdot \delta \vect E = 4\pi \delta \rho .
+\end{equation}
+
+</p>
+
+<p>
+Отже, маємо замкнений ланцюг:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{21}\)</span>
+
+<!--
+
+
+                                                                                                          𝛿𝑓𝑠 ⟶ 𝛿𝜌 ⟶ 𝛿𝐄 ⟶ 𝛿𝑓𝑠 .
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta f_s \;\longrightarrow \; \delta \rho \;\longrightarrow \; \delta \vect E \;\longrightarrow \; \delta f_s.
+\end{equation*}
+
+</p>
+
+<p>
+Саме тому збурення не можна розглядати як просто задану зміну функції розподілу. Воно повинно бути узгоджене з&nbsp;полем, яке саме це збурення породжує.
+</p>
+
+<p>
+Якщо таке самоузгоджене збурення поширюється в&nbsp;просторі та змінюється в&nbsp;часі, ми називаємо його хвилею.
+</p>
+
+<p>
+Це важливий момент: у&nbsp;кінетичній теорії хвиля не вводиться окремим хвильовим рівнянням. Вона виникає як <em>самоузгоджений розв’язок лінеаризованого кінетичного рівняння разом із рівняннями електромагнітного поля</em>.
+</p>
+<!--
+...... subsection Нормальна мода ......
+-->
+<h5 id="autosec-395">Нормальна мода</h5>
+<a id="main-html-autopage-395"></a>
+
+
+<p>
+Тепер скористаємося спеціальною властивістю обраного рівноважного стану. Він однорідний та стаціонарний, тому коефіцієнти лінеаризованих рівнянь не залежать від \(\vect r\) і&nbsp;\(t\). Для такої системи природно розкласти довільне
+мале збурення на гармонічні складові.
+</p>
+
+<p>
+Розглянемо одну таку складову та запишемо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{21}\)</span>
+
+<!--
+
+
+                                                                          𝛿𝑓𝑠 (𝐫, 𝐯, 𝑡) = 𝑓˜𝑠 (𝐯) exp [𝑖(𝐤 ⋅ 𝐫 − 𝜔𝑡)] .                                                              (7.22)--><a id="eq:kinetic-wave-harmonic"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-wave-harmonic} \delta f_s(\vect r,\vect v,t) =\widetilde f_s(\vect v) \exp \left [i(\vect k\cdot \vect r-\omega t)\right ].
+\end{equation}
+
+</p>
+
+<p>
+Тепер ця формула вже не з’являється нізвідки. Ми не стверджуємо, що функція розподілу «зобов’язана» мати такий вигляд. Ми розкладаємо мале збурення на нормальні гармонічні моди, кожна з&nbsp;яких характеризується хвильовим вектором
+\(\vect k\) та частотою \(\omega \).
+</p>
+
+<p>
+Для електричного поля записуємо аналогічно
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{22}\)</span>
+
+<!--
+
+
+                                                                                                                              ˜ exp [𝑖(𝐤 ⋅ 𝐫 − 𝜔𝑡)] .
+                                                                                                                   𝛿𝐄(𝐫, 𝑡) = 𝐄
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta \vect E(\vect r,t) = \widetilde {\vect E} \exp \left [i(\vect k\cdot \vect r-\omega t)\right ].
+\end{equation*}
+
+</p>
+
+<p>
+Спільний множник у&nbsp;цих виразах описує просторово-часову структуру хвилі, тоді як \(\widetilde f_s(\vect v)\) визначає, як ця хвиля змінює розподіл частинок за швидкостями.
+</p>
+
+<p>
+Після такої підстановки диференціювання стає простим:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{22}\)</span>
+
+<!--
+
+                                                                                                                      𝜕
+                                                                                                                         ⟶ −𝑖𝜔,         ∇ ⟶ 𝑖𝐤.
+                                                                                                                      𝜕𝑡
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\partial }{\partial t} \longrightarrow -i\omega , \qquad \nabla \longrightarrow i\vect k.
+\end{equation*}
+
+</p>
+
+<p>
+Тому <span class="textup">(<a href="ch8.html#eq:kinetic-linearized-vlasov">7.19</a>)</span> перетворюється на
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{22}\)</span>
+
+<!--
+
+                                                                                                 𝑞𝑠 ˜
+                                                                           −𝑖(𝜔 − 𝐤 ⋅ 𝐯)𝑓˜𝑠 +       𝐄 ⋅ ∇𝐯 𝑓0𝑠 = 0.                                                                  (7.23)--><a id="eq:kinetic-wave-response"></a><!--
+                                                                                                 𝑚𝑠
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-wave-response} -i(\omega -\vect k\cdot \vect v)\widetilde f_s + \frac {q_s}{m_s} \widetilde {\vect E}\cdot \nabla _{\vect v}f_{0s} =0.
+\end{equation}
+
+</p>
+
+<p>
+Це рівняння вже значно відрізняється від звичайного рівняння для рідинної швидкості. Воно містить \(\vect v\) як незалежну змінну. Тому різні групи частинок із різними швидкостями мають різний відгук на ту саму хвилю.
+</p>
+<!--
+...... subsection Звідки береться резонанс? ......
+-->
+<h5 id="autosec-396">Звідки береться резонанс?</h5>
+<a id="main-html-autopage-396"></a>
+
+
+<p>
+Саме тут уперше з’являється характерна для кінетичної теорії фізика.
+</p>
+
+<p>
+У&nbsp;<span class="textup">(<a href="ch8.html#eq:kinetic-wave-response">7.23</a>)</span> присутня комбінація
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{23}\)</span>
+
+<!--
+
+
+                                                                              𝜔 − 𝐤 ⋅ 𝐯.                                                                            (7.24)--><a id="eq:kinetic-wave-resonance-denominator"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-wave-resonance-denominator} \omega -\vect k\cdot \vect v.
+\end{equation}
+
+</p>
+
+<p>
+Розглянемо для простоти рух уздовж напрямку поширення хвилі. Тоді \(\vect k\cdot \vect v=k_\parallel v_\parallel \), і&nbsp;особливо важливими стають частинки, для яких
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{24}\)</span>
+
+<!--
+
+                                                                                                                       𝜔
+                                                                                                                𝑣∥ ≃      .                                                      (7.25)--><a id="eq:kinetic-wave-resonance"></a><!--
+                                                                                                                       𝑘∥
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-wave-resonance} v_\parallel \simeq \frac {\omega }{k_\parallel }.
+\end{equation}
+
+</p>
+
+<p>
+Права частина є фазовою швидкістю хвилі вздовж її напрямку поширення. Отже, резонансні частинки рухаються приблизно з&nbsp;тією самою швидкістю, з&nbsp;якою рухається фаза хвилі.
+</p>
+
+<p>
+Фізично це зрозуміло. Якщо частинка рухається значно повільніше або значно швидше за хвилю, вона швидко проходить крізь різні фази хвилі. Вплив поля на неї при цьому значною мірою взаємно компенсується. Але якщо частинка рухається
+приблизно разом із фазою, вона може протягом тривалого часу залишатися в&nbsp;області поля одного знака і&nbsp;ефективно обмінюватися з&nbsp;хвилею енергією.
+</p>
+
+<p>
+Таким чином, резонанс не є додатковою умовою, яку ми просто постулюємо. Він безпосередньо випливає зі структури кінетичного відгуку <span class="textup">(<a href="ch8.html#eq:kinetic-wave-response">7.23</a>)</span>.
+</p>
+
+<p>
+Саме цієї інформації не було в&nbsp;простому рідинному описі. Там ми працювали із середньою швидкістю, густиною та тиском. Тут же бачимо, що частинки з&nbsp;різними \(v_\parallel \) взаємодіють із хвилею по-різному.
+</p>
+<!--
+...... subsection Самоузгодженість і-дисперсійне рівняння ......
+-->
+<h5 id="autosec-397">Самоузгодженість і&nbsp;дисперсійне рівняння</h5>
+<a id="main-html-autopage-397"></a>
+
+
+<p>
+До цього моменту ми фактично розглядали відгук частинок на збурене електричне поле. Але поле не є незалежною величиною: воно створюється самою плазмою. Тому треба одночасно виконати рівняння Пуассона.
+</p>
+
+<p>
+Для гармонічної моди <span class="textup">(<a href="ch8.html#eq:kinetic-wave-harmonic">7.22</a>)</span> воно має вигляд
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{25}\)</span>
+
+<!--
+
+                                                                                            ˆ
+                                                                              ˜ = 4𝜋 ∑ 𝑞𝑠
+                                                                         𝑖𝐤 ⋅ 𝐄                 𝑓˜𝑠 (𝐯) 𝑑3 𝑣.                                                              (7.26)--><a id="eq:kinetic-wave-poisson-harmonic"></a><!--
+                                                                                     𝑠
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-wave-poisson-harmonic} i\vect k\cdot \widetilde {\vect E} = 4\pi \sum _s q_s \int \widetilde f_s(\vect v)\,d^3v.
+\end{equation}
+
+</p>
+
+<p>
+Отже, маємо дві частини однієї задачі:
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> кінетичне рівняння визначає, як частинки реагують на поле;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> рівняння Пуассона визначає, яке поле створюють ці частинки.
+</p>
+</li>
+</ul>
+
+<p>
+Потрібно знайти такий розподіл частинок і&nbsp;таке поле, які одночасно задовольняють обидві умови. Саме ця вимога називається <em>самоузгодженістю</em>.
+</p>
+
+<p>
+Після підстановки кінетичного відгуку в&nbsp;рівняння поля отримуємо умову існування нетривіального розв’язку. У&nbsp;загальному вигляді її записують як дисперсійне рівняння
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{26}\)</span>
+
+<!--
+
+
+                                                                                𝐷(𝜔, 𝐤) = 0.                                                                             (7.27)--><a id="eq:kinetic-wave-dispersion-general"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kinetic-wave-dispersion-general} D(\omega ,\vect k)=0.
+\end{equation}
+
+</p>
+
+<p>
+Це рівняння відповідає на два принципові питання.
+</p>
+
+<p>
+По-перше, які хвилі взагалі можуть існувати в&nbsp;даній плазмі? Відповідь задається дисперсією \(\omega (\vect k)\).
+</p>
+
+<p>
+По-друге, що відбувається з&nbsp;амплітудою хвилі під час її поширення? Якщо \(\omega \) має уявну частину, амплітуда може зростати або спадати з&nbsp;часом.
+</p>
+
+<p>
+Отже, дисперсійне рівняння є результатом не просто математичної підстановки. Воно є умовою самоузгодженого існування колективного руху частинок і&nbsp;поля.
+</p>
+<!--
+...... subsection Чому кінетичний опис дає нову фізику? ......
+-->
+<h5 id="autosec-398">Чому кінетичний опис дає нову фізику?</h5>
+<a id="main-html-autopage-398"></a>
+
+
+<p>
+У&nbsp;рідинному описі ми замінюємо повну функцію розподілу її моментами: густиною, середньою швидкістю, тиском тощо. Це дуже корисно, але разом із цим втрачається інформація про те, скільки частинок має ту чи іншу швидкість.
+</p>
+
+<p>
+Для багатьох повільних і&nbsp;великомасштабних процесів ця втрата інформації неістотна. Але для хвиль вона може стати принциповою. Як показує <span class="textup">(<a href="ch8.html#eq:kinetic-wave-response">7.23</a>)</span>,
+відгук залежить безпосередньо від \(\vect v\). Тому хвиля може вибірково взаємодіяти з&nbsp;певною частиною розподілу.
+</p>
+
+<p>
+У&nbsp;цьому полягає одна з&nbsp;головних переваг кінетичного опису: він дозволяє досліджувати не лише рух середнього потоку, а&nbsp;й обмін енергією між хвилею та частинками з&nbsp;різними швидкостями.
+</p>
+
+<p>
+Саме тут природно виникає загасання Ландау. Якщо швидкості резонансних частинок попадають на ділянку розподілу, де кількість частинок із різними швидкостями неоднакова, обмін енергією між хвилею та частинками не компенсується. Для
+звичайного максвеллівського розподілу це приводить до загасання хвилі.
+</p>
+
+<p>
+Таким чином, наступний крок буде вже не введенням нового математичного апарату заради самого апарату. Ми використаємо отриману картину, щоб зрозуміти, <em>чому хвиля може втрачати енергію навіть у&nbsp;повністю
+беззіткнювальній плазмі</em>.
+</p>
+<!--
+...... section Загасання Ландау ......
+-->
+<h4 id="autosec-399"><span class="sectionnumber">&#xA7;&#x202F;7.9&#x2003;</span>Загасання Ландау</h4>
+<a id="main-html-autopage-399"></a>
+
+
+<a id="sec:landau-damping"></a>
+
+<p>
+Одним із найважливіших результатів кінетичної теорії є можливість загасання хвилі навіть у&nbsp;беззіткнювальній плазмі. Покажемо це кількісно для ленгмюрівських хвиль.
+</p>
+<!--
+...... subsection Діелектрична проникність беззіткнювальної плазми ......
+-->
+<h5 id="autosec-400">Діелектрична проникність беззіткнювальної плазми</h5>
+<a id="main-html-autopage-400"></a>
+
+
+<p>
+Розглянемо одновимірну поздовжню хвилю \(\propto e^{i(kx-\omega t)}\) вздовж \(x\) і&nbsp;позначимо \(F_{s}(v)=\int f_{0s}\,dv_y\,dv_z\) (так що \(\int F_s\,dv=n_s\)). Виведення займає чотири кроки.
+</p>
+
+<p>
+<em>(1)</em>&nbsp;Для \(\vect k\parallel x\) проінтегруємо <span class="textup">(<a href="ch8.html#eq:kinetic-wave-response">7.23</a>)</span> за&nbsp;\(v_y,v_z\); позначивши \(v\equiv v_x\), маємо
+</p>
+
+<p>
+\[ -i(\omega -kv)\widetilde f_s+\frac {q_s}{m_s}\widetilde E\,F_s&apos;=0, \]
+</p>
+
+<p>
+де тепер \(\widetilde f_s(v)\)&nbsp;— збурення, проінтегроване за&nbsp;поперечними швидкостями.
+</p>
+
+<p>
+<em>(2)</em>&nbsp;Звідси
+</p>
+
+<p>
+\[ \widetilde f_s=-i\,\frac {q_s}{m_s}\,\frac {\widetilde E\,F_s&apos;}{\omega -kv}. \]
+</p>
+
+<p>
+<em>(3)</em>&nbsp;Підставляємо в&nbsp;рівняння Пуассона <span class="textup">(<a href="ch8.html#eq:kinetic-wave-poisson-harmonic">7.26</a>)</span>:
+</p>
+
+<p>
+\[ ik\widetilde E=4\pi \sum _sq_s\int \widetilde f_s\,dv =-4\pi i\,\widetilde E\sum _s\frac {q_s^2}{m_s}\int \frac {F_s&apos;}{\omega -kv}\,dv. \]
+</p>
+
+<p>
+<em>(4)</em>&nbsp;Скорочуємо \(ik\widetilde E\) і&nbsp;вводимо \(\omega _{ps}^2=4\pi n_sq_s^2/m_s\); отримуємо дисперсійне рівняння \(\varepsilon (\omega ,k)=0\) з&nbsp;
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{27}\)</span>
+
+<!--
+
+                                                                                                                                       ˆ
+                                                                                                                                𝜔2𝑝𝑠       𝐹𝑠′ (𝑣)
+                                                                                                              𝜀(𝜔, 𝑘) = 1 + ∑                      𝑑𝑣.                                      (7.28)--><a id="eq:eps-kinetic"></a><!--
+                                                                                                                              𝑠
+                                                                                                                                𝑘 𝑛𝑠       𝜔 − 𝑘𝑣
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:eps-kinetic} \varepsilon (\omega ,k)=1+\sum _s\frac {\omega _{ps}^2}{k\,n_s}\int \frac {F_s&apos;(v)}{\omega -kv}\,dv.
+\end{equation}
+
+</p>
+
+<p>
+Для холодної плазми \(F_s=n_s\delta (v)\) маємо \(\int F&apos;/(\omega -kv)\,dv=-n_sk/\omega ^2\) і&nbsp; \(\varepsilon =1-\sum \omega _{ps}^2/\omega ^2\)&nbsp;— відомий результат&nbsp;<span class="textup">(<a
+href="ch3.html#eq:plasma-permittivity">2.1</a>)</span>. Якщо ж \(\omega \gg kv_{Te}\), інтегруємо по частинах і&nbsp;розкладаємо:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{7.}{28}\)</span>
+
+
+<!--
+
+
+                                                                                                     ˆ                    ˆ
+                                                                                                           𝐹′               𝐹
+                                                                                                                𝑑𝑣 = −𝑘           𝑑𝑣
+                                                                                                         𝜔 − 𝑘𝑣         (𝜔 − 𝑘𝑣)2
+                                                                                                                       ˆ
+                                                                                                                    𝑘           2𝑘𝑣   3𝑘2 𝑣2
+                                                                                                                  =− 2   𝐹(1 +      +        + … )𝑑𝑣
+                                                                                                                    𝜔            𝜔     𝜔2
+                                                                                                                       𝑛𝑠 𝑘      3𝑘2 𝑣2𝑇𝑠
+                                                                                                                  ≈−        (1 +          ),
+                                                                                                                       𝜔2          𝜔2
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+\int \frac {F&apos;}{\omega -kv}\,dv&amp;=-k\int \frac {F}{(\omega -kv)^2}\,dv\\ &amp;=-\frac k{\omega ^2}\int F\Bigl (1+\frac {2kv}\omega +\frac {3k^2v^2}{\omega ^2}+\dots \Bigr )dv\\ &amp;\approx -\frac
+{n_sk}{\omega ^2}\Bigl (1+\frac {3k^2v_{Ts}^2}{\omega ^2}\Bigr ),
+\end{align*}
+бо непарний за \(v\) член зникає для симетричного \(F\), а&nbsp;\(\int v^2F\,dv=n_sv_{Ts}^2\). Множник&nbsp;3 виникає тут з&nbsp;розкладу \((1-kv/\omega )^{-2}\), а&nbsp;не з&nbsp;показника адіабати; рідинний вивід
+у&nbsp;розд.&nbsp;<a href="ch3.html#sec:langmuir-waves">2.3</a> з&nbsp;\(\gamma =3\) для одновимірного стиснення дає те саме, і&nbsp;це перевірка узгодженості кінетики й&nbsp;гідродинаміки. Звідси \(\varepsilon \approx
+1-(\omega _p^2/\omega ^2)(1+3k^2v_{Te}^2/\omega ^2)\) і&nbsp; \(\varepsilon =0\) дає формулу Бома–Гросса&nbsp;<span class="textup">(<a href="ch3.html#eq:bohm-gross">2.5</a>)</span>. Новим є те, що підінтегральний вираз
+має <em>полюс</em> при \(v=\omega /k\): саме тут «живуть» резонансні частинки.
+</p>
+
+
+<div class="cb-theory">
+
+<p>
+<b>Теоретичні відомості</b> Нагадаємо з&nbsp;теорії функцій комплексної змінної
+</p>
+
+<p>
+Формула Сохоцького: \(\dfrac 1{x\pm i0}=\mathrm P\dfrac 1x\mp i\pi \delta (x)\). Ілюстрація: \(\operatorname {Im}\dfrac 1{x+i\epsilon }=-\dfrac {\epsilon }{x^2+\epsilon ^2}\to -\pi \delta (x)\) при \(\epsilon \to 0^+\)
+(лоренціан з&nbsp;площею \(\pi \)). Знак «\(+i0\)» визначає причинність: збурення вмикається при \(t=0\), тому для перетворення Лапласа потрібно \(\operatorname {Im}\omega &gt;0\)&nbsp;— як адіабатичне вмикання \(e^{\epsilon t}\)
+в&nbsp;теорії збурень квантової механіки.
+</p>
+</div>
+
+<p>
+Як обійти полюс? Л.&nbsp;Ландау (1946&nbsp;р.) показав, що правильно розв’язувати задачу початкових умов: тоді збурення вмикається в&nbsp;момент \(t=0\), і&nbsp;для збіжності інтеграла треба вважати \(\operatorname {Im}\omega
+&gt;0\). Результат продовжують аналітично на область \(\operatorname {Im}\omega \le 0\), що зводиться до заміни \(\omega \to \omega +i0\). За формулою Сохоцького \(1/(\omega -kv+i0)=\mathrm P\,1/(\omega -kv)-i\pi \delta
+(\omega -kv)\) маємо \(\varepsilon =\varepsilon _r+i\varepsilon _i\) з&nbsp;
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{28}\)</span>
+
+<!--
+
+
+                                                                               𝜔2𝑝𝑠           𝜔
+                                                            𝜀𝑖 (𝜔, 𝑘) = −𝜋 ∑          𝐹𝑠′ (     ).                                                       (7.29)                                     --><a id="eq:eps-imag"></a><!--
+                                                                          𝑠
+                                                                            𝑘2 𝑛 𝑠            𝑘
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:eps-imag} \varepsilon _i(\omega ,k)=-\pi \sum _s\frac {\omega _{ps}^2}{k^2\,n_s}\,F_s&apos;\!\left (\frac {\omega }{k}\right ).
+\end{equation}
+
+</p>
+
+<p>
+Уявна частина проникності визначається нахилом розподілу <em>у&nbsp;точці резонансу</em> \(v=v_\varphi =\omega /k\)&nbsp;— вона відсутня в&nbsp;будь-якому рідинному описі.
+</p>
+<!--
+...... subsection Декремент ......
+-->
+<h5 id="autosec-401">Декремент</h5>
+<a id="main-html-autopage-401"></a>
+
+
+<p>
+Нехай хвиля слабко загасає: \(\omega =\omega _r+i\gamma \), \(|\gamma |\ll \omega _r\). Тоді \(\varepsilon _r(\omega _r,k)=0\) (це дає частоту, наприклад Бома–Гросса), а&nbsp;поправка знаходиться з&nbsp;розкладу
+</p>
+
+<p>
+\[ \varepsilon (\omega _r+i\gamma )\approx \varepsilon _r(\omega _r)+i\gamma \,\frac {\partial \varepsilon _r}{\partial \omega }+i\varepsilon _i=0 \quad \Longrightarrow \quad \gamma =-\varepsilon _i\Big /\frac
+{\partial \varepsilon _r}{\partial \omega }. \]
+</p>
+
+<p>
+Для ленгмюрівської хвилі \(\partial \varepsilon _r/\partial \omega \approx 2/\omega _{pe}\), тому
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{29}\)</span>
+
+<!--
+
+
+                                                                     𝜋𝜔3𝑝𝑒
+                                                                𝛾=            𝐹𝑒′ (𝑣𝜑 ).                                                     (7.30)                                            --><a id="eq:landau-general"></a><!--
+                                                                     2𝑘2 𝑛𝑒
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:landau-general} \gamma =\frac {\pi \omega _{pe}^3}{2k^2n_e}\,F_e&apos;(v_\varphi ).
+\end{equation}
+
+</p>
+
+<p>
+Знак \(\gamma \) збігається зі&nbsp;знаком \(F_e&apos;(v_\varphi )\). Для максвеллівського розподілу \(F_e&apos;(v)=-(v/v_{Te}^2)F_e\), тобто \(F_e&apos;(v_\varphi )&lt;0\), і&nbsp;хвиля загасає:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{30}\)</span>
+
+<!--
+
+
+                                                𝛾       𝜋    1              1                  3
+                                                   =−              exp(−                   −     )   (𝑘𝜆𝐷𝑒 ≪ 1).                               (7.31)                                            --><a id="eq:landau-gamma"></a><!--
+                                               𝜔𝑝𝑒    √ 8 (𝑘𝜆𝐷𝑒 )3       2𝑘2 𝜆2                2
+                                                                                    𝐷𝑒
+
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:landau-gamma} \tcbhighmath {\frac {\gamma }{\omega _{pe}}=-\sqrt {\frac \pi 8}\,\frac {1}{(k\lambda _{De})^3} \exp \!\left (-\frac {1}{2k^2\lambda _{De}^2}-\frac 32\right )}\qquad (k\lambda _{De}\ll
+1).
+\end{equation}
+
+</p>
+
+<p>
+Тут \(\lambda _{De}=v_{Te}/\omega _{pe}\) (\(v_{Te}^2=T_e/m_e\)), а&nbsp;\(-3/2\) в&nbsp;експоненті враховує поправку Бома–Гросса до \(v_\varphi \). Експоненціальна залежність від \(1/k^2\lambda _{De}^2\) показує, що довгі хвилі
+(\(k\lambda _{De}\ll 1\)) практично не загасають, бо \(v_\varphi \gg v_{Te}\) і&nbsp;в&nbsp;«хвості» розподілу майже немає частинок. Типові числа: \(k\lambda _{De}=0{,}3\) дає \(|\gamma |/\omega _{pe}\approx 0{,}02\),
+а&nbsp;\(k\lambda _{De}=0{,}5\)&nbsp;— \(\approx 0{,}15\) (така хвиля живе лише близько одного періоду, і&nbsp;розклад за малим \(\gamma \) втрачає силу).
+</p>
+
+<figure id="autoid-187" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-51"
+    class="lateximagesource"
+><!--
+𝐹0 (𝑣)
+                                       𝑣𝜑 = 𝜔/𝑘
+
+         𝐹0′ (𝑣𝜑 ) < 0 ⇒ 𝛾 < 0
+
+
+                                  частинок
+                                   більше:
+                                 набирають
+                                   енергію
+
+
+
+                                                  частинок менше:
+                                                      віддають
+
+
+
+
+                                                                    𝑣
+--><img
+   src="main-html-images/image-51.svg"
+   alt="Рис. 7.1. Загасання Ландау: частинок, трохи повільніших за хвилю, більше, ніж трохи швидших, тому обмін енергією не компенсується, і хвиля віддає енергію розподілу"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;7.1. Загасання Ландау: частинок, трохи повільніших за&nbsp;хвилю, більше, ніж трохи швидших, тому обмін енергією не компенсується, і&nbsp;хвиля віддає енергію розподілу
+
+</div>
+
+<a id="pic:landau"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Фізична картина ......
+-->
+<h5 id="autosec-405">Фізична картина</h5>
+<a id="main-html-autopage-405"></a>
+
+
+<p>
+Частинки, трохи повільніші за хвилю, прискорюються нею (хвиля «наздоганяє» їх і&nbsp;штовхає), а&nbsp;трохи швидші&nbsp;— гальмуються (вони передають енергію хвилі). Оскільки для спадного розподілу (\(F&apos;&lt;0\)) повільних
+частинок більше, ніж швидких, сумарно енергія переходить від хвилі до частинок (рис.&nbsp;<a href="ch8.html#pic:landau">7.1</a>). Це загасання принципово відрізняється від омічної дисипації: зіткнень немає, а&nbsp;енергія
+перекачується з&nbsp;поля в&nbsp;кінетичну енергію резонансних частинок. Лінійне загасання Ландау експериментально підтвердили Малмберг і&nbsp;Уортон (1964&nbsp;р.).
+</p>
+
+<p>
+<em>Аналогія серфінгу.</em> Частинки&nbsp;— серфери на хвилі: ті, що трохи повільніші за хвилю, хвиля підхоплює й&nbsp;розганяє; ті, що трохи швидші, самі штовхають хвилю й&nbsp;гальмуються. У&nbsp;системі відліку хвилі частинка
+з&nbsp;відносною швидкістю \(u=v-v_\varphi \) відбивається від «горба» потенціалу, сумарний обмін енергією пропорційний нахилу \(F&apos;(v_\varphi )\): для спадного \(F\) виграють повільні. <em>Парадокс.</em> Рівняння Власова
+оборотне, а&nbsp;загасання є: енергія не зникає, а&nbsp;переходить у&nbsp;дрібномасштабну структуру \(f\) у&nbsp;просторі швидкостей (фазове перемішування), яку макроскопічні величини вже не бачать.
+</p>
+<!--
+...... paragraph Нестійкість пучка на хвості. ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-406">Нестійкість «пучка на хвості».</span>
+<a id="main-html-autopage-406"></a>
+Якщо розподіл має локальний максимум при \(v_b&gt;v_{Te}\) (електронний пучок), то на його висхідній ділянці \(F_e&apos;(v_\varphi )&gt;0\), і&nbsp;за&nbsp;<span class="textup">(<a
+href="ch8.html#eq:landau-general">7.30</a>)</span> \(\gamma &gt;0\)&nbsp;— хвиля <em>зростає</em> (обернене загасання Ландау, розд.&nbsp;<a href="ch9.html#sec:instability">8</a>). Нестійкість зникає, коли пучок розпливається
+або хвиля захоплює резонансні частинки.
+</p>
+<!--
+...... paragraph Нелінійне захоплення. ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-407">Нелінійне захоплення.</span>
+<a id="main-html-autopage-407"></a>
+Лінійна теорія працює, поки амплітуда мала. Резонансні частинки в&nbsp;потенціалі хвилі \(\varphi _0\) здійснюють коливання з&nbsp;частотою відбиття \(\omega _b=\sqrt {ek^2\varphi _0/m_e}\). Коли \(\omega _b\gtrsim |\gamma |\),
+частинки встигають повернути й&nbsp;віддати енергію назад: розподіл у&nbsp;околі \(v_\varphi \) вирівнюється (плато), \(F&apos;(v_\varphi )\to 0\), і&nbsp;загасання припиняється (теорію захоплення дав О’Нійл, 1965&nbsp;р.).
+</p>
+
+<p>
+Тому загасання Ландау є важливою межею простого рідинного опису. Скалярні величини \(n\), \(\vect v\) та \(T\) не містять достатньої інформації про поведінку розподілу поблизу резонансної швидкості. Потрібна сама функція \(f_s(\vect
+r,\vect v,t)\) або принаймні модель, яка зберігає відповідну кінетичну інформацію.
+</p>
+<!--
+...... section Коли потрібен кінетичний опис? ......
+-->
+<h4 id="autosec-408"><span class="sectionnumber">&#xA7;&#x202F;7.10&#x2003;</span>Коли потрібен кінетичний опис?</h4>
+<a id="main-html-autopage-408"></a>
+
+
+<p>
+Вибір між кінетичною та рідинною моделлю визначається не тим, яка модель «правильна», а&nbsp;масштабом явища. Якщо нас цікавлять довгохвильові процеси, для яких розподіл частинок залишається близьким до локальної рівноваги, можна
+перейти до моментів і&nbsp;замкнути систему рідинними рівняннями.
+</p>
+
+<p>
+Кінетичний опис стає необхідним, коли важливими є:
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> детальний розподіл частинок за швидкостями;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> резонансна взаємодія частинок із хвилями;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> анізотропія розподілу або тиску;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> нерівноважні хвости функції розподілу;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> процеси, для яких зіткнення занадто рідкі, щоб підтримувати локальну рівновагу.
+</p>
+</li>
+</ul>
+
+<p>
+У&nbsp;магнетизованій плазмі додатково виникає відмінність між рухом уздовж та поперек магнітного поля. Тому навіть тиск може стати анізотропним,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{31}\)</span>
+
+<!--
+
+
+                                                                                                                𝑝⟂ ≠ 𝑝 ∥ ,
+
+-->
+
+<p>
+
+\begin{equation*}
+p_\perp \neq p_\parallel ,
+\end{equation*}
+
+</p>
+
+<p>
+і&nbsp;проста однорідинна МГД-модель зі скалярним тиском перестає бути достатньою.
+</p>
+
+<p>
+Загальну послідовність переходів між рівнями опису (від \(f_s\) до моментів \(n_s,\vect v_s,\mathsf P_s\), далі до дворідинної моделі й&nbsp;до МГД) наведено в&nbsp;<span class="textup">(<a
+href="ch8.html#eq:kinetic-hierarchy">7.15</a>)</span>.
+</p>
+
+<p>
+Чим далі ми рухаємося вправо, тим менше мікроскопічної інформації зберігаємо і&nbsp;тим більше припущень про замикання повинні зробити. Натомість рідинний опис стає значно простішим для довгохвильових макроскопічних процесів.
+</p>
+<!--
+...... section Як це вимірюють: томсонівське розсіяння ......
+-->
+<h4 id="autosec-409"><span class="sectionnumber">&#xA7;&#x202F;7.11&#x2003;</span>Як це вимірюють: томсонівське розсіяння</h4>
+<a id="main-html-autopage-409"></a>
+
+
+<a id="sec:thomson"></a>
+
+<p>
+Функцію розподілу не можна виміряти зондом, не збурюючи плазму, але її можна <em>прочитати зі&nbsp;спектра розсіяного світла</em>. Вільний електрон у&nbsp;полі лазерної хвилі коливається й&nbsp;перевипромінює її (томсонівське
+розсіяння) з&nbsp;перерізом \(\sigma _T=\tfrac {8\pi }3r_e^2=6{,}65\times 10^{-25}\)&nbsp;см\(^2\), де \(r_e=e^2/m_ec^2\). Нехай падає хвиля \((\omega _i,\vect k_i)\), а&nbsp;під кутом \(\theta \) реєструють хвилю \((\omega
+_s,\vect k_s)\). Електрон, що рухається зі&nbsp;швидкістю \(\vect v\), розсіює з&nbsp;допплерівським зсувом \(\omega _s-\omega _i=\vect k\cdot \vect v\), де \(\vect k=\vect k_s-\vect k_i\) і&nbsp;\(|\vect k|=2k_i\sin (\theta
+/2)=(4\pi /\lambda _i)\sin (\theta /2)\). Отже, спектр розсіяного світла відображає розподіл електронів за&nbsp;проєкцією швидкості на&nbsp;\(\vect k\), тобто саму \(F_e(v)\). Те, що саме ми побачимо, визначає <em><span
+    class="textcolor"
+    style="color:#990000"
+>параметр розсіяння</span></em>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{31}\)</span>
+
+<!--
+
+
+                                                              1         𝜆𝑖
+                                                       𝛼=        =                .                                                (7.32)                                           --><a id="eq:scattering-parameter"></a><!--
+                                                            𝑘𝜆𝐷𝑒   4𝜋𝜆𝐷𝑒 sin(𝜃/2)
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:scattering-parameter} \alpha =\frac 1{k\lambda _{De}}=\frac {\lambda _i}{4\pi \lambda _{De}\sin (\theta /2)}.
+\end{equation}
+
+</p>
+
+<p>
+Це той самий параметр \(k\lambda _{De}\), який керував загасанням Ландау (формула&nbsp;<span class="textup">(<a href="ch8.html#eq:landau-gamma">7.31</a>)</span>): він порівнює масштаб \(1/k\), на&nbsp;якому «дивимося»
+на&nbsp;плазму, з&nbsp;дебаївським радіусом.
+</p>
+<!--
+...... subsection Некогерентне розсіяння () ......
+-->
+<h5 id="autosec-410">Некогерентне розсіяння (\(\alpha \ll 1\))</h5>
+<a id="main-html-autopage-410"></a>
+
+
+<p>
+Якщо \(1/k\ll \lambda _{De}\), електрони розсіюють незалежно, і&nbsp;спектр повторює розподіл. Для максвеллівського \(F_e\propto \exp (-v^2/2v_{Te}^2)\) спектр гауссів, а&nbsp;оскільки \(\Delta \lambda /\lambda _i=-\Delta
+\omega /\omega _i\) (для \(\omega _i=ck_i\)), його стандартне відхилення дорівнює
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{32}\)</span>
+
+<!--
+
+
+                                                 𝜍𝜆         𝜃 𝑣𝑇𝑒         𝜃    𝑇𝑒                 𝑇𝑒
+                                                    = 2 sin       = 2 sin            ,   𝑣2𝑇𝑒 =      .                                       (7.33)                                         --><a id="eq:thomson-width"></a><!--
+                                                 𝜆𝑖         2 𝑐           2 √ 𝑚 𝑒 𝑐2              𝑚𝑒
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:thomson-width} \tcbhighmath {\frac {\sigma _\lambda }{\lambda _i}=2\sin \frac \theta 2\,\frac {v_{Te}}{c} =2\sin \frac \theta 2\sqrt {\frac {T_e}{m_ec^2}}},\qquad v_{Te}^2=\frac {T_e}{m_e}.
+\end{equation}
+
+</p>
+
+<p>
+Ширина спектра дає \(T_e\), а&nbsp;повний сигнал, пропорційний \(n_e\)&nbsp;— густину (абсолютне калібрування виконують за&nbsp;розсіянням на&nbsp;газі відомої густини).
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Для Nd:YAG-лазера (\(\lambda _i=1064\)&nbsp;нм), \(\theta =90^\circ \) і&nbsp;\(T_e=1\)&nbsp;кеВ маємо \(v_{Te}/c=0{,}044\) і&nbsp;\(\sigma _\lambda \approx 67\)&nbsp;нм (6&#x202f;&percnt; від
+\(\lambda _i\)): спектр легко розкласти на&nbsp;кілька спектральних каналів. При \(n_e=10^{14}~\text {см}^{-3}\) дебаївський радіус \(\lambda _{De}=2{,}4\times 10^{-3}\)&nbsp;см, тож \(\alpha \approx 5\times 10^{-3}\ll 1\).
+Частка розсіяного світла \(P_s/P_0\approx n_er_e^2L\,\Delta \Omega \approx 10^{14}\cdot 8\times 10^{-26}\cdot 1\cdot 10^{-2}\approx 8\times 10^{-14}\) (довжина перетину \(L=1\)&nbsp;см, тілесний кут збору \(\Delta \Omega
+=10^{-2}\)&nbsp;ср). Імпульс&nbsp;1&nbsp;Дж містить \(5\times 10^{18}\) фотонів, тобто розсіюється лише \(\sim 4\times 10^5\) фотонів, і&nbsp;до детекторів доходить їхня невелика частка.
+</p>
+</div>
+
+<figure id="autoid-188" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-412"></a>
+
+<p>
+<span
+    id="lateximage-main-html-52"
+    class="lateximagesource"
+><!--
+𝑆(𝜔)
+
+
+
+       𝑇1
+
+
+
+            𝑇2 > 𝑇 1
+
+
+              𝜔 − 𝜔𝑖
+--><img
+   src="main-html-images/image-52.svg"
+   alt="(а)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-415"></a>
+
+<p>
+<span
+    id="lateximage-main-html-53"
+    class="lateximagesource"
+><!--
+              𝑆(𝜔)
+
+
+
+
+                      іонна компонента
+електронний             електронний
+   сателіт                 сателіт
+
+
+   −𝜔БГ         𝑘𝑐𝑠         𝜔БГ
+                             𝜔 − 𝜔𝑖
+--><img
+   src="main-html-images/image-53.svg"
+   alt="(б)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б)
+
+</div>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;7.2. Спектр томсонівського розсіяння: (а)&nbsp;\(\alpha \ll 1\)&nbsp;— гауссів профіль, ширина якого зростає як \(\sqrt {T_e}\); (б)&nbsp;\(\alpha \gtrsim 1\)&nbsp;— вузька іонна компонента й&nbsp;електронні сателіти
+на&nbsp;частотах Бома–Гросса
+
+</div>
+
+<a id="pic:thomson"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Колективне розсіяння () ......
+-->
+<h5 id="autosec-418">Колективне розсіяння (\(\alpha \gtrsim 1\))</h5>
+<a id="main-html-autopage-418"></a>
+
+
+<p>
+Коли \(1/k\gtrsim \lambda _{De}\), електрони вже не незалежні: кожен оточений дебаївською хмарою, і&nbsp;розсіяння визначається тепловими флуктуаціями густини з&nbsp;хвильовим вектором \(\vect k\)&nbsp;— тобто тими самими
+хвилями, що розглянуто вище. Спектр (рис.&nbsp;<a href="ch8.html#pic:thomson">7.2</a>&#x202f;б) має дві складові:
+</p>
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> <em>електронні сателіти</em> на&nbsp;частотах \(\pm \omega _{\text {БГ}}\)&nbsp;— теплові ленгмюрівські хвилі&nbsp;<span class="textup">(<a
+href="ch3.html#eq:bohm-gross">2.5</a>)</span>; їхнє положення \(\omega _{\text {БГ}}=\sqrt {\omega _{pe}^2+3k^2v_{Te}^2}\) дає густину без абсолютного калібрування, а&nbsp;ширину задає загасання Ландау&nbsp;<span
+class="textup">(<a href="ch8.html#eq:landau-gamma">7.31</a>)</span>;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> <em>іонну компоненту</em> завширшки \(\sim kv_{Ti}\). При \(T_e\gg T_i\) вона розщеплюється на&nbsp;два іонно-звукові піки \(\pm kc_s\) (розд.&nbsp;<a
+href="ch7.html#sec:ion-acoustic">6.2</a>), за&nbsp;формою яких знаходять&nbsp;\(T_i\).
+</p>
+</li>
+</ul>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Для CO\(_2\)-лазера (\(\lambda _i=10{,}6\)&nbsp;мкм), \(\theta =5^\circ \), \(T_e=100\)&nbsp;еВ і&nbsp;\(n_e=10^{14}~\text {см}^{-3}\) маємо \(\lambda _{De}\approx 7\times 10^{-4}\)&nbsp;см
+і&nbsp;\(\alpha \approx 2{,}6\): розсіяння колективне.
+</p>
+</div>
+<!--
+...... subsection Межі застосовності ......
+-->
+<h5 id="autosec-419">Межі застосовності</h5>
+<a id="main-html-autopage-419"></a>
+
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Формула&nbsp;<span class="textup">(<a href="ch8.html#eq:thomson-width">7.33</a>)</span> справедлива лише за&nbsp;\(\alpha \ll 1\) і&nbsp;максвеллівського розподілу; негаусові «крила»
+спектра свідчать про&nbsp;нетеплові хвости. Для проміжних \(\alpha \sim 1\) спектр знаходять чисельним розрахунком, підгоняючи \(T_e\) і&nbsp;\(T_i\) одночасно.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Нерелятивістський вираз працює при \(T_e\ll m_ec^2\). Для \(T_e\gtrsim \) кількох кеВ спектр стає асиметричним і&nbsp;зсувається в&nbsp;синю область; поправка має порядок \(T_e/m_ec^2\) (близько
+2&#x202f;&percnt; при 10&nbsp;кеВ), і&nbsp;у&nbsp;термоядерній плазмі її обов’язково враховують.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Сигнал приблизно на&nbsp;13 порядків слабший за&nbsp;лазерний пучок, тому потрібні потужні імпульсні лазери, придушення розсіяного світла від стінок і&nbsp;облік фону плазми (гальмівне
+випромінювання). У&nbsp;колективному режимі малі кути розсіяння ще ускладнюють відокремлення сигналу.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Вимірювання <em>локальне</em>: об’єм визначається перетином пучка та&nbsp;поля зору. Часова роздільність дорівнює тривалості імпульсу (\(\sim 10\)&nbsp;нс), але частота повторення невелика
+(\(10\)–\(100\)&nbsp;Гц), тому швидкі процеси потребують багатоімпульсних лазерів.
+</p>
+</li>
+</ul>
+
+<p>
+Отже, томсонівське розсіяння&nbsp;— один із&nbsp;небагатьох методів, що безпосередньо читає \(F_e(v)\): за&nbsp;\(\alpha \ll 1\) вимірюється форма розподілу, за&nbsp;\(\alpha \gtrsim 1\)&nbsp;— діелектричний відгук \(\varepsilon
+(\omega ,k)\) з&nbsp;усіма хвильовими модами й&nbsp;загасанням Ландау.
+</p>
+
+
+<div class="cb-summary">
+
+<p>
+<b>Головне в розділі</b>
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Кінетичний опис оперує функцією розподілу \(f_s(\vect r,\vect v,t)\); з&nbsp;її моментів отримують \(n\), \(\vect v\) і&nbsp;тензор тиску.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Рівняння Власова описує беззіткнювальну плазму; зіткнення додають інтеграл зіткнень у&nbsp;правій частині.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Ланцюжок моментів не замикається сам, тому гідродинаміка вимагає додаткових припущень про функцію розподілу.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Загасання Ландау&nbsp;— беззіткнювальний резонанс хвилі з&nbsp;частинками, швидкість яких близька до \(v_\varphi \).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Знак декремента визначається похідною розподілу в&nbsp;резонансній точці: за \(F_e&apos;(v_\varphi )&gt;0\) хвиля росте.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Томсонівське розсіяння лазерного світла дає \(T_e\) і&nbsp;\(n_e\) локально: за \(\alpha =1/k\lambda _{De}\ll 1\) ширина спектра \(\propto \sqrt {T_e}\), за&nbsp;\(\alpha \gtrsim 1\) спектр
+відображає колективні моди (розд.&nbsp;<a href="ch8.html#sec:thomson">7.11</a>).
+</p>
+</li>
+</ul>
+
+</div>
+<!--
+...... section Задачі ......
+-->
+<h4 id="autosec-420">Задачі</h4>
+<a id="main-html-autopage-420"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-189"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.1.</span></span> <a id="autoid-190" ></a ><a id="LWR-ht-problem:7.{1}"></a><a id="prb:KineticMoments"></a>★★★ Для беззіткнювальної плазми покажіть, що
+інтегрування рівняння Власова за всіма швидкостями приводить до рівняння неперервності
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{33}\)</span>
+
+<!--
+
+
+                                                                                                        𝜕𝑛𝑠
+                                                                                                            + ∇ ⋅ (𝑛𝑠 𝐯𝑠 ) = 0.
+                                                                                                         𝜕𝑡
+
+-->
+
+<p>
+
+
+\begin{equation*}
+\frac {\partial n_s}{\partial t} +\nabla \cdot (n_s\vect v_s)=0.
+\end{equation*}
+
+
+</p>
+
+<p>
+Яку властивість функції розподілу потрібно використати, щоб поверхневий інтеграл у&nbsp;просторі швидкостей зник? <a href="ch15.html#LWR-ht-solution:7.{1}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-191"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.2.</span></span> <a id="autoid-192" ></a ><a id="LWR-ht-problem:7.{2}"></a><a id="prb:MaxwellPressure"></a>★★★ Для максвеллівського розподілу покажіть, що
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{33}\)</span>
+
+<!--
+
+                                                                                                                   ˆ
+                                                                                                              𝑚𝑠
+                                                                                                       𝑝𝑠 =            𝑐 2 𝑓 𝑠 𝑑 3 𝑣 = 𝑛 𝑠 𝑇𝑠 .
+                                                                                                              3
+
+-->
+
+<p>
+
+
+\begin{equation*}
+p_s=\frac {m_s}{3}\int c^2f_s\,d^3v =n_sT_s.
+\end{equation*}
+
+
+</p>
+
+<p>
+Поясніть, чому цей результат потребує ізотропності розподілу. <a href="ch15.html#LWR-ht-solution:7.{2}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-193"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.3.</span></span> <a id="autoid-194" ></a ><a id="LWR-ht-problem:7.{3}"></a><a id="prb:LandauResonance"></a>★★☆ Для ленгмюрівської хвилі в&nbsp;плазмі
+з&nbsp;\(T_e=10\)&nbsp;еВ, \(n_e=10^{12}~\text {см}^{-3}\) та&nbsp;довжиною хвилі \(\lambda =2\pi /k=1\)&nbsp;мм: (а)&nbsp;знайдіть \(v_\varphi \), відношення \(v_\varphi /v_{Te}\) і&nbsp;декремент \(\gamma /\omega _{pe}\)
+за&nbsp;<span class="textup">(<a href="ch8.html#eq:landau-gamma">7.31</a>)</span>. Чи виконується умова слабкого загасання? Поясніть, чому саме частинки з&nbsp;\(v\simeq v_\varphi \) відіграють особливу роль.
+(б)&nbsp;За&nbsp;якої довжини хвилі амплітуда спадає в&nbsp;\(e\) разів за&nbsp;\(\sim 10\) періодів? <a href="ch15.html#LWR-ht-solution:7.{3}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-195"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.4.</span></span> <a id="autoid-196" ></a ><a id="LWR-ht-problem:7.{4}"></a><a id="prb:MaxwellSpeeds"></a>★★★ Для максвеллівського розподілу обчисліть
+найімовірнішу швидкість, середню швидкість \(\langle v\rangle \) і&nbsp;середньоквадратичну швидкість. <a href="ch15.html#LWR-ht-solution:7.{4}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-197"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.5.</span></span> <a id="autoid-198" ></a ><a id="LWR-ht-problem:7.{5}"></a><a id="prb:BGKModel"></a>★★★ У&nbsp;моделі БГК інтеграл зіткнень \(-\nu
+\,\delta f\) додається до рівняння Власова для&nbsp;збурення \(\delta f\). Знайдіть \(\delta f\) і&nbsp;покажіть, що в&nbsp;знаменниках&nbsp;<span class="textup">(<a href="ch8.html#eq:eps-kinetic">7.28</a>)</span>
+відбувається заміна \(\omega \to \omega +i\nu \). Як це поєднує результати розділу про зіткнення й&nbsp;кінетичну теорію? (Проста форма не зберігає число частинок; це наближення слід мати на&nbsp;увазі.) <a
+href="ch15.html#LWR-ht-solution:7.{5}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-199"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.6.</span></span> <a id="autoid-200" ></a ><a id="LWR-ht-problem:7.{6}"></a><a id="prb:BohmGrossDerivation"></a>★★★ Із&nbsp;<span class="textup">(<a
+href="ch8.html#eq:eps-kinetic">7.28</a>)</span> для \(\omega /k\gg v_{Te}\) розкладіть знаменник за&nbsp;\(kv/\omega \) і&nbsp;самостійно одержіть закон Бома–Гросса \(\omega ^2=\omega _{pe}^2+3k^2v_{Te}^2\)
+(\(v_{Te}^2=T_e/m_e\)).
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-201"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.7.</span></span> <a id="autoid-202" ></a ><a id="LWR-ht-problem:7.{7}"></a><a id="prb:TwoStreamKinetic"></a>★★★ Для розподілу \(F=(n/2)[\delta
+(v-u)+\delta (v+u)]\) одержіть із&nbsp;<span class="textup">(<a href="ch8.html#eq:eps-kinetic">7.28</a>)</span> дисперсійне рівняння двопотокової нестійкості і&nbsp;порівняйте з&nbsp;задачею&nbsp;<a
+href="ch9.html#prb:SymmetricTwoStream">8.5</a>. <a href="ch15.html#LWR-ht-solution:7.{7}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-203"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.8.</span></span> <a id="autoid-204" ></a ><a id="LWR-ht-problem:7.{8}"></a><a id="prb:TrappingCheck"></a>★★☆ Оцініть частоту коливань захопленої частинки
+\(\omega _b=\sqrt {ek^2\varphi _0/m}\) для хвилі з&nbsp;\(e\varphi _0/T_e=10^{-3}\) при \(k\lambda _{De}=0{,}3\) і&nbsp;порівняйте з&nbsp;\(\gamma \). Чи встигне відбутися захоплення? <a
+href="ch15.html#LWR-ht-solution:7.{8}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-205"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.9.</span></span> <a id="autoid-206" ></a ><a id="LWR-ht-problem:7.{9}"></a><a id="prb:BumpOnTail"></a>★★★ Розподіл електронів складається
+з&nbsp;максвеллівського «тіла» (\(n_0\), \(v_{Te}\)) та&nbsp;слабкого пучка (\(n_b\ll n_0\), швидкість \(v_b\gg v_{Te}\), розкид \(\Delta v\ll v_b\)). Використовуючи <span class="textup">(<a
+href="ch8.html#eq:landau-general">7.30</a>)</span>, оцініть інкремент нестійкості \(\gamma \sim \omega _{pe}(n_b/n_0)(v_b/\Delta v)^2\) та поясніть, чому він максимальний при \(v_\varphi \) трохи менше \(v_b\). <a
+href="ch15.html#LWR-ht-solution:7.{9}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-207"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.10.</span></span> <a id="autoid-208" ></a ><a id="LWR-ht-problem:7.{10}"></a><a id="prb:ThomsonTe"></a>★★☆ Спектр томсонівського розсіяння (\(\theta
+=90^\circ \), \(\lambda _i=1064\)&nbsp;нм) має гауссів профіль зі&nbsp;стандартним відхиленням \(\sigma _\lambda =20\)&nbsp;нм. Знайдіть \(T_e\) і&nbsp;переконайтеся, що розсіяння некогерентне при \(n_e=5\times 10^{13}~\text
+{см}^{-3}\). <a href="ch15.html#LWR-ht-solution:7.{10}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-209"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 7.11.</span></span> <a id="autoid-210" ></a ><a id="LWR-ht-problem:7.{11}"></a><a id="prb:ThomsonCollective"></a>★★☆ Для CO\(_2\)-лазера (\(\lambda
+_i=10{,}6\)&nbsp;мкм) у&nbsp;плазмі з&nbsp;\(T_e=100\)&nbsp;еВ, \(n_e=10^{14}~\text {см}^{-3}\) знайдіть кут розсіяння, при&nbsp;якому \(\alpha =1\). При яких кутах розсіяння колективне? Чому для&nbsp;\(\lambda
+_i=1064\)&nbsp;нм колективний режим при тих самих параметрах недосяжний? <a href="ch15.html#LWR-ht-solution:7.{11}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+
+<div class="cb-questions">
+
+<p>
+<b>Контрольні питання</b>
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Що таке функція розподілу \(f_s(\vect r,\vect v,t)\) і&nbsp;чим вона відрізняється від концентрації \(n_s\)?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Як через моменти функції розподілу визначають концентрацію, середню швидкість та тензор тиску?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> Чому в&nbsp;загальному випадку тиск є тензором, а&nbsp;не скаляром?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">4.</span> Який фізичний зміст рівняння Власова?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">5.</span> Що змінюється в&nbsp;кінетичному рівнянні, якщо зіткнення не можна нехтувати?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">6.</span> Чому кулонівські зіткнення не можна просто моделювати як зіткнення твердих кульок?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">7.</span> Що визначає ширину максвеллівського розподілу?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">8.</span> Чому в&nbsp;плазмі можуть бути різні температури електронів та іонів?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">9.</span> Як із кінетичного рівняння отримується рівняння неперервності?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">10.</span> Чому ієрархія моментів не замикається сама?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">11.</span> Які припущення можуть використовуватися для замикання рідинної моделі?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">12.</span> У&nbsp;чому фізичний зміст формули Бома–Гросса?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">13.</span> Чим загасання Ландау відрізняється від омічної дисипації?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">14.</span> Чому для опису загасання Ландау недостатньо знати лише \(n\), \(\vect v\) та \(T\)?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">15.</span> Від чого залежить знак декремента \(\gamma \) у&nbsp;формулі&nbsp;<span class="textup">(<a href="ch8.html#eq:landau-general">7.30</a>)</span>? Коли хвиля зростає?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">16.</span> Що таке нелінійне захоплення частинок хвилею і&nbsp;чому воно припиняє загасання?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">17.</span> За яких обставин кінетичний опис є принципово необхідним?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">18.</span> Чому оборотне рівняння Власова описує загасання?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">19.</span> Чому довгі ленгмюрівські хвилі майже не загасають, а&nbsp;короткі (\(k\lambda _{De}\sim 1\)) загасають так сильно, що практично не існують як хвилі?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">20.</span> Чому іонний звук спостерігають лише при \(T_e\gg T_i\)?
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">21.</span> Чим відрізняється томсонівське розсіяння при \(\alpha \ll 1\) та&nbsp;\(\alpha \gtrsim 1\) і&nbsp;яку інформацію про плазму дає кожен режим?
+</p>
+</li>
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

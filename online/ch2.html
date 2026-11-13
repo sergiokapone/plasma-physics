@@ -1,0 +1,5511 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Елементи фізики плазми — Плазма: від іонізованого газу до колективного середовища</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-24"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Елементи фізики плазми</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../PlasmaBook/main.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="ch1.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-26" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Плазма: від іонізованого газу до колективного середовища</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-27" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Що таке плазма?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-32" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Іонізація: формула Саха</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-37" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Температура плазми та два компоненти</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-38" class="tocsection" >
+<span class="sectionnumber">1.4</span><span class="toctitle">&#x2003;Квазінейтральність і&nbsp;плазмові коливання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-48" class="tocsection" >
+<span class="sectionnumber">1.5</span><span class="toctitle">&#x2003;Дебаївське екранування</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-58" class="tocsection" >
+<span class="sectionnumber">1.6</span><span class="toctitle">&#x2003;Дебаївська сфера. Умова колективності</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-65" class="tocsection" >
+<span class="sectionnumber">1.7</span><span class="toctitle">&#x2003;Слабкозв’язана та сильнозв’язана плазма</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-66" class="tocsection" >
+<span class="sectionnumber">1.8</span><span class="toctitle">&#x2003;Екранування в&nbsp;виродженому газі: довжина Томаса–Фермі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-67" class="tocsection" >
+<span class="sectionnumber">1.9</span><span class="toctitle">&#x2003;Шар біля стінки і&nbsp;зонд Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-111" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Колективні коливання та хвилі в&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-112" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Діелектрична проникність холодної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-116" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Закон дисперсії. Частота відсікання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-121" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Поздовжні (ленгмюрівські) хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-129" class="tocsection" >
+<span class="sectionnumber">2.4</span><span class="toctitle">&#x2003;Зіткнення й&nbsp;поглинання електромагнітних хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-130" class="tocsection" >
+<span class="sectionnumber">2.5</span><span class="toctitle">&#x2003;Відбиття електромагнітних хвиль від плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-133" class="tocsection" >
+<span class="sectionnumber">2.6</span><span class="toctitle">&#x2003;Іоносфера і&nbsp;далекий радіозв’язок</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-135" class="tocsection" >
+<span class="sectionnumber">2.7</span><span class="toctitle">&#x2003;Як це вимірюють: інтерферометрія і&nbsp;рефлектометрія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-158" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Рух зарядженої частинки в&nbsp;електричному та&nbsp;магнітному полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-159" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Однорідне магнітне поле</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-163" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Дрейфи в&nbsp;схрещених полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-181" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Поляризаційний дрейф</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-185" class="tocsection" >
+<span class="sectionnumber">3.4</span><span class="toctitle">&#x2003;Магнітний момент і&nbsp;адіабатичний інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-198" class="tocsection" >
+<span class="sectionnumber">3.5</span><span class="toctitle">&#x2003;Магнітне дзеркало і&nbsp;конус втрат</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-205" class="tocsection" >
+<span class="sectionnumber">3.6</span><span class="toctitle">&#x2003;Подовжній інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-206" class="tocsection" >
+<span class="sectionnumber">3.7</span><span class="toctitle">&#x2003;Диполь Землі та радіаційні пояси</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-211" class="tocsection" >
+<span class="sectionnumber">3.8</span><span class="toctitle">&#x2003;Як це вимірюють: аналізатор енергій і&nbsp;ECE</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-227" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Зіткнення, провідність та перенос у&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-228" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Кулонівські зіткнення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-233" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Провідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-236" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Теплопровідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-237" class="tocsection" >
+<span class="sectionnumber">4.4</span><span class="toctitle">&#x2003;Дифузія в&nbsp;плазмі. Амбіполярна дифузія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-239" class="tocsection" >
+<span class="sectionnumber">4.5</span><span class="toctitle">&#x2003;Як це вимірюють: температура з&nbsp;опору і&nbsp;з&nbsp;ширини ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-251" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Гідродинамічний та магнітогідродинамічний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-252" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Гідродинамічний опис не є синонімом частих зіткнень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-253" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Дворідинний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-254" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Від дворідинної моделі до однорідинної МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-257" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Основне рівняння магнітної гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-265" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Альвенівська швидкість і&nbsp;число Альвена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-266" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;МГД-рівновага та магнітні поверхні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-271" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Енергія електромагнітного поля та плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-272" class="tocsection" >
+<span class="sectionnumber">5.8</span><span class="toctitle">&#x2003;Діамагнетизм плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-274" class="tocsection" >
+<span class="sectionnumber">5.9</span><span class="toctitle">&#x2003;Вмороженість магнітного поля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-281" class="tocsection" >
+<span class="sectionnumber">5.10</span><span class="toctitle">&#x2003;Перез’єднання силових ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-285" class="tocsection" >
+<span class="sectionnumber">5.11</span><span class="toctitle">&#x2003;Дві мови опису: окремі частинки й&nbsp;суцільне середовище</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-300" class="tocsection" >
+<span class="sectionnumber">5.12</span><span class="toctitle">&#x2003;Як це вимірюють: магнітні виміри</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-327" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-328" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Що в&nbsp;плазмі може бути відновлювальною силою?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-332" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Звукова й&nbsp;іонно-звукова хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-337" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Лінеаризована МГД і&nbsp;загальне дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-338" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Альвенівська хвиля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-344" class="tocsection" >
+<span class="sectionnumber">6.5</span><span class="toctitle">&#x2003;Магнітозвукові хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-351" class="tocsection" >
+<span class="sectionnumber">6.6</span><span class="toctitle">&#x2003;Підсумок: хвилі в&nbsp;рідинному описі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-354" class="tocsection" >
+<span class="sectionnumber">6.7</span><span class="toctitle">&#x2003;Високочастотні хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-362" class="tocsection" >
+<span class="sectionnumber">6.8</span><span class="toctitle">&#x2003;Межі застосовності МГД-хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-383" class="tocchapter" >
+<span class="sectionnumber">7</span><span class="toctitle">&#x2003;Кінетичний опис плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-384" class="tocsection" >
+<span class="sectionnumber">7.1</span><span class="toctitle">&#x2003;Функція розподілу та фазовий простір</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-385" class="tocsection" >
+<span class="sectionnumber">7.2</span><span class="toctitle">&#x2003;Моменти функції розподілу</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-386" class="tocsection" >
+<span class="sectionnumber">7.3</span><span class="toctitle">&#x2003;Кінетичне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-387" class="tocsection" >
+<span class="sectionnumber">7.4</span><span class="toctitle">&#x2003;Максвеллівський розподіл і&nbsp;температура</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-388" class="tocsection" >
+<span class="sectionnumber">7.5</span><span class="toctitle">&#x2003;Від кінетики до гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-389" class="tocsection" >
+<span class="sectionnumber">7.6</span><span class="toctitle">&#x2003;Дворідинна картина та її зв’язок із МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-390" class="tocsection" >
+<span class="sectionnumber">7.7</span><span class="toctitle">&#x2003;Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-391" class="tocsection" >
+<span class="sectionnumber">7.8</span><span class="toctitle">&#x2003;Лінеаризація кінетичного рівняння та хвильовий відгук</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-399" class="tocsection" >
+<span class="sectionnumber">7.9</span><span class="toctitle">&#x2003;Загасання Ландау</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-408" class="tocsection" >
+<span class="sectionnumber">7.10</span><span class="toctitle">&#x2003;Коли потрібен кінетичний опис?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-409" class="tocsection" >
+<span class="sectionnumber">7.11</span><span class="toctitle">&#x2003;Як це вимірюють: томсонівське розсіяння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-434" class="tocchapter" >
+<span class="sectionnumber">8</span><span class="toctitle">&#x2003;Загальний принцип нестійкості плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-435" class="tocsection" >
+<span class="sectionnumber">8.1</span><span class="toctitle">&#x2003;Що означає нестійкість?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-439" class="tocsection" >
+<span class="sectionnumber">8.2</span><span class="toctitle">&#x2003;Лінеаризація: як знайти долю малого збурення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-441" class="tocsection" >
+<span class="sectionnumber">8.3</span><span class="toctitle">&#x2003;Хвиля, що може рости</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-445" class="tocsection" >
+<span class="sectionnumber">8.4</span><span class="toctitle">&#x2003;Дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-449" class="tocsection" >
+<span class="sectionnumber">8.5</span><span class="toctitle">&#x2003;Звідки береться енергія нестійкості?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-453" class="tocsection" >
+<span class="sectionnumber">8.6</span><span class="toctitle">&#x2003;Рівновага та стійкість у&nbsp;магнітному полі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-457" class="tocsection" >
+<span class="sectionnumber">8.7</span><span class="toctitle">&#x2003;Перетяжка як найпростіший приклад нестійкості</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-458" class="tocsection" >
+<span class="sectionnumber">8.8</span><span class="toctitle">&#x2003;Лінійна та нелінійна стадії</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-462" class="tocsection" >
+<span class="sectionnumber">8.9</span><span class="toctitle">&#x2003;Нестійкість Релея–Тейлора та жолобкова нестійкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-469" class="tocsection" >
+<span class="sectionnumber">8.10</span><span class="toctitle">&#x2003;Двопотокова нестійкість та нестійкість пучка</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-473" class="tocsection" >
+<span class="sectionnumber">8.11</span><span class="toctitle">&#x2003;Нестійкості анізотропної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-474" class="tocsection" >
+<span class="sectionnumber">8.12</span><span class="toctitle">&#x2003;Енергетичний принцип</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-475" class="tocsection" >
+<span class="sectionnumber">8.13</span><span class="toctitle">&#x2003;Дрейфові хвилі та аномальний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-476" class="tocsection" >
+<span class="sectionnumber">8.14</span><span class="toctitle">&#x2003;Від загального принципу до конкретних нестійкостей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-479" class="tocsection" >
+<span class="sectionnumber">8.15</span><span class="toctitle">&#x2003;Як це вимірюють: котушки Мірнова і&nbsp;м’який рентген</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-490" class="tocchapter" >
+<span class="sectionnumber">9</span><span class="toctitle">&#x2003;Магнітне утримання плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-491" class="tocsection" >
+<span class="sectionnumber">9.1</span><span class="toctitle">&#x2003;Проблема утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-492" class="tocsection" >
+<span class="sectionnumber">9.2</span><span class="toctitle">&#x2003;Відкриті пастки: магнітне дзеркало</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-493" class="tocsection" >
+<span class="sectionnumber">9.3</span><span class="toctitle">&#x2003;Пінч-ефект</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-497" class="tocsection" >
+<span class="sectionnumber">9.4</span><span class="toctitle">&#x2003;Рівновага \(z\)-пінча. Співвідношення Беннета</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-503" class="tocsection" >
+<span class="sectionnumber">9.5</span><span class="toctitle">&#x2003;Рівновага \(\mittheta \)-пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-504" class="tocsection" >
+<span class="sectionnumber">9.6</span><span class="toctitle">&#x2003;Нестійкості пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-511" class="tocsection" >
+<span class="sectionnumber">9.7</span><span class="toctitle">&#x2003;Тороїдальні системи: токамак і&nbsp;стеларатор</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-515" class="tocsection" >
+<span class="sectionnumber">9.8</span><span class="toctitle">&#x2003;Захоплені частинки й&nbsp;неокласичний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-519" class="tocsection" >
+<span class="sectionnumber">9.9</span><span class="toctitle">&#x2003;Рівновага тора: зсув Шафранова та межа за тиском</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-520" class="tocsection" >
+<span class="sectionnumber">9.10</span><span class="toctitle">&#x2003;Як це вимірюють: магнітна реконструкція рівноваги</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-531" class="tocchapter" >
+<span class="sectionnumber">10</span><span class="toctitle">&#x2003;Керований термоядерний синтез</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-532" class="tocsection" >
+<span class="sectionnumber">10.1</span><span class="toctitle">&#x2003;Реакції та паливо</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">10.2</span><span class="toctitle">&#x2003;Чому потрібна саме така температура: бар’єр і&nbsp;тунелювання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-540" class="tocsection" >
+<span class="sectionnumber">10.3</span><span class="toctitle">&#x2003;Баланс потужностей і&nbsp;критерій Лоусона</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-541" class="tocsection" >
+<span class="sectionnumber">10.4</span><span class="toctitle">&#x2003;Втрати</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-542" class="tocsection" >
+<span class="sectionnumber">10.5</span><span class="toctitle">&#x2003;Дві стратегії: магнітне й&nbsp;інерційне утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-543" class="tocsection" >
+<span class="sectionnumber">10.6</span><span class="toctitle">&#x2003;Від реакції до розетки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-550" class="tocsection" >
+<span class="sectionnumber">10.7</span><span class="toctitle">&#x2003;Що ще треба вирішити</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-551" class="tocsection" >
+<span class="sectionnumber">10.8</span><span class="toctitle">&#x2003;Інерційний шлях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-552" class="tocsection" >
+<span class="sectionnumber">10.9</span><span class="toctitle">&#x2003;Де ми зараз: стан на&nbsp;2026&nbsp;рік</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-555" class="tocsection" >
+<span class="sectionnumber">10.10</span><span class="toctitle">&#x2003;Як це вимірюють: нейтронна діагностика</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-566" class="tocchapter" >
+<span class="sectionnumber">11</span><span class="toctitle">&#x2003;Низькотемпературна плазма та газовий розряд</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-567" class="tocsection" >
+<span class="sectionnumber">11.1</span><span class="toctitle">&#x2003;Елементарні процеси: іонізація і&nbsp;її швидкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-568" class="tocsection" >
+<span class="sectionnumber">11.2</span><span class="toctitle">&#x2003;Пробій газу: механізм Таунсенда і&nbsp;закон Пашена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-572" class="tocsection" >
+<span class="sectionnumber">11.3</span><span class="toctitle">&#x2003;Тліючий розряд і&nbsp;дуга</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-578" class="tocsection" >
+<span class="sectionnumber">11.4</span><span class="toctitle">&#x2003;Приелектродний шар у&nbsp;розряді</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-579" class="tocsection" >
+<span class="sectionnumber">11.5</span><span class="toctitle">&#x2003;Глобальна модель розряду</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-580" class="tocsection" >
+<span class="sectionnumber">11.6</span><span class="toctitle">&#x2003;Високочастотні джерела плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-589" class="tocsection" >
+<span class="sectionnumber">11.7</span><span class="toctitle">&#x2003;Плазмова обробка матеріалів</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-590" class="tocsection" >
+<span class="sectionnumber">11.8</span><span class="toctitle">&#x2003;Як це вимірюють: оптична емісія і&nbsp;ВЧ-зонди</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-601" class="tocchapter" >
+<span class="sectionnumber">12</span><span class="toctitle">&#x2003;Основні масштаби, режими та межі моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-602" class="tocsection" >
+<span class="sectionnumber">12.1</span><span class="toctitle">&#x2003;Просторові та часові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-606" class="tocsection" >
+<span class="sectionnumber">12.2</span><span class="toctitle">&#x2003;Зіткнювальний та беззіткнювальний режими</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-607" class="tocsection" >
+<span class="sectionnumber">12.3</span><span class="toctitle">&#x2003;Як за масштабами вибирають модель</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-610" class="tocsection" >
+<span class="sectionnumber">12.4</span><span class="toctitle">&#x2003;Типова ієрархія масштабів у магнітному утриманні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-611" class="tocsection" >
+<span class="sectionnumber">12.5</span><span class="toctitle">&#x2003;Від кінетики до МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-612" class="tocsection" >
+<span class="sectionnumber">12.6</span><span class="toctitle">&#x2003;Безрозмірні параметри МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-613" class="tocsection" >
+<span class="sectionnumber">12.7</span><span class="toctitle">&#x2003;Межі простих моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-614" class="tocsection" >
+<span class="sectionnumber">12.8</span><span class="toctitle">&#x2003;Основні масштаби та формули</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-617" class="tocsection" >
+<span class="sectionnumber">12.9</span><span class="toctitle">&#x2003;Що вимірюють на&nbsp;якому масштабі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch14.html#autosec-629" class="tocchapter" >
+Підсумки</a>
+</p>
+
+
+
+<p>
+<a href="ch15.html#autosec-634" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-649" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-650" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Таблиця позначень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-660" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Перехід між СГС і&nbsp;СІ. Константи</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-673" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Шпаргалка: ключові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch17.html#autosec-678" class="tocpart" >
+Словник термінів</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-682" class="tocchapter" >
+Література</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-683" class="tocsection" >
+Підручники та посібники</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-684" class="tocsection" >
+Джерела фактів і результатів</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Плазма: від іонізованого газу до колективного середовища">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Елементи фізики плазми</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\newcommand {\vect }[1]{\mathbf {#1}}\)
+
+\(\newcommand {\Efield }{\vect {E}}\)
+
+\(\newcommand {\Dfield }{\vect {D}}\)
+
+\(\newcommand {\Bfield }{\vect {B}}\)
+
+\(\newcommand {\Hfield }{\vect {H}}\)
+
+\(\newcommand {\rot }{\mathbf {\nabla }\times }\)
+
+\(\newcommand {\divg }{\mathbf {\nabla }\cdot }\)
+
+\(\newcommand {\grad }{\vect {\nabla }}\)
+
+\(\newcommand {\diff }[2]{\frac {\partial #1}{\partial #2}}\)
+
+\(\newcommand {\ddiff }[2]{\frac {\partial ^2 #1}{\partial #2^2}}\)
+
+\(\newcommand {\parttime }[1]{\frac {\partial {#1}}{\partial t}}\)
+
+\(\newcommand {\pparttime }[1]{\frac {\partial ^2{#1}}{\partial t^2}}\)
+
+\(\renewcommand {\phi }{\varphi }\)
+
+\(\renewcommand {\epsilon }{\varepsilon }\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\Div }{div}\)
+
+\(\DeclareMathOperator {\Rot }{rot}\)
+
+\(\DeclareMathOperator {\Grad }{grad}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\renewcommand {\iiint }{\int }\)
+
+\(\renewcommand {\iint }{\int }\)
+
+\(\newcommand {\oiint }{\oint }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Плазма: від іонізованого газу до колективного середовища ......
+-->
+<h3 id="autosec-26"><span class="sectionnumber">1&#x2003;</span>Плазма: від іонізованого газу до колективного середовища</h3>
+<a id="main-html-autopage-26"></a>
+<a id="main-html-autofile-2"></a>
+
+<a id="sec:plasma-basics"></a>
+
+<p>
+<a id="LWR-ht-plasma-basics"></a> <a id="LWR-ht-PlasmaPhysics"></a>
+</p>
+<!--
+...... section Що таке плазма? ......
+-->
+<h4 id="autosec-27"><span class="sectionnumber">&#xA7;&#x202F;1.1&#x2003;</span>Що таке плазма?</h4>
+<a id="main-html-autopage-27"></a>
+
+
+<a id="sec:what-is-plasma"></a>
+
+<p>
+<em><span
+    class="textcolor"
+    style="color:#990000"
+>Плазма</span></em> (від грец. <em><span
+    class="textcolor"
+    style="color:#990000"
+>plasma</span></em>&nbsp;— виліплене, оформлене)&nbsp;— це частково або повністю іонізований газ, у&nbsp;якому густини позитивних і&nbsp;негативних зарядів практично однакові, а&nbsp;заряджені частинки поводяться <em><span
+    class="textcolor"
+    style="color:#990000"
+>колективно</span></em>. Обидва виділені слова мають точний зміст, який ми з’ясуємо поступово в&nbsp;цьому розділі (квазінейтральність&nbsp;— у&nbsp;§&#x202f;<a href="ch2.html#sec:quasineutrality">1.4</a>,
+колективність&nbsp;— у&nbsp;§&#x202f;<a href="ch2.html#sec:debye-sphere">1.6</a>). Термін «плазма» запропонував І.&nbsp;Ленгмюр наприкінці 1920-х років; 1929&nbsp;р. Л.&nbsp;Тонкс і&nbsp;Ленгмюр описали власні коливання
+електронного газу (§&#x202f;<a href="ch2.html#sec:plasma-oscillations">1.4</a>)&nbsp;[<a href="ch18.html#LWR-ht-cite.0@chen2016introduction">4</a>].
+</p>
+
+<p>
+Ступінь іонізації характеризують величиною
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{0}\)</span>
+
+<!--
+
+                                                                                                                        𝑛𝑖
+                                                                                                                𝛼=           ,                                                             (1.1)--><a id="eq:ionization-degree"></a><!--
+                                                                                                                     𝑛𝑖 + 𝑛𝑛
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ionization-degree} \alpha = \frac {n_i}{n_i + n_n},
+\end{equation}
+
+</p>
+
+<p>
+де \(n_i\) і&nbsp;\(n_n\)&nbsp;— концентрації іонів та нейтральних частинок. У&nbsp;плазмі можуть одночасно бути присутніми електрони, кілька сортів іонів і&nbsp;нейтральні атоми чи молекули. Залежно від \(\alpha \) розрізняють
+<em><span
+    class="textcolor"
+    style="color:#990000"
+>слабо іонізовану</span></em> (частки відсотка), <em><span
+    class="textcolor"
+    style="color:#990000"
+>помірно іонізовану</span></em> (кілька відсотків) і&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>повністю іонізовану</span></em> (\(\alpha \to 1\)) плазму.
+</p>
+
+<p>
+<em><span
+    class="textcolor"
+    style="color:#990000"
+>Чим плазма відрізняється від нейтрального газу?</span></em> Не просто наявністю заряджених частинок. У&nbsp;нейтральному газі частинки майже вільні й&nbsp;обмінюються імпульсом у&nbsp;короткочасних зіткненнях. У&nbsp;плазмі
+кулонівська сила спадає повільно (\(\propto r^{-2}\)): кількість частинок у&nbsp;сферичному шарі радіуса \(r\) зростає як \(r^2\), тож сумарний внесок далеких частинок не менший, ніж близьких, і&nbsp;кожна заряджена частинка
+<em>одночасно</em> взаємодіє з&nbsp;великою кількістю інших. Сила, що діє на частинку, формується усередненим полем багатьох частинок, а&nbsp;не парними зіткненнями. Такі «колективні взаємодії» породжують екранування зарядів,
+плазмові коливання, хвилі й&nbsp;нестійкості. Тому плазма не зводиться до сукупності незалежних частинок: її макроскопічні властивості визначаються спільною електромагнітною взаємодією. Ступінь колективності задає число \(N_D\) частинок
+у&nbsp;сфері радіуса \(\lambda _D\) (§&#x202f;<a href="ch2.html#sec:debye-sphere">1.6</a>): поле заряду на відстанях понад дебаївський радіус гасить не найближчий сусід, а&nbsp;спільний внесок цих \(N_D\) частинок (§&#x202f;<a
+href="ch2.html#sec:debye-screening">1.5</a>).
+</p>
+
+<p>
+Друга особливість&nbsp;— тісний зв’язок механіки з&nbsp;електродинамікою. Плазма не лише рухається в&nbsp;зовнішньому електромагнітному полі, а&nbsp;й&nbsp;сама створює макроскопічні поля та струми, які діють назад на її рух.
+</p>
+
+
+<div class="cb-theory">
+
+<p>
+<b>Теоретичні відомості</b> Температура в&nbsp;енергетичних одиницях
+</p>
+
+<p>
+Температуру \(T\) вимірюємо в&nbsp;енергетичних одиницях (\(k_{\mathrm B}=1\), тож \(k_{\mathrm B}T\) пишемо просто як \(T\)); практично \(T\) дають в&nbsp;еВ, \(1\)&nbsp;еВ \(\approx 11\,600\)&nbsp;К. Температура&nbsp;— це
+параметр максвеллівського розподілу \(f\propto \exp (-mv^2/2T)\); середня кінетична енергія поступального руху \(\langle mv^2/2\rangle =\tfrac 32T\). Поки не сказано інакше, мова йде саме про такий розподіл. Для оцінок зручні числа
+(СГС): \(e=4{,}8\times 10^{-10}\)&nbsp;СГС, \(e^2\approx 1{,}44\times 10^{-7}\)&nbsp;еВ\(\cdot \)см, \(1\)&nbsp;СГС напруженості поля \(=300\)&nbsp;В/см.
+</p>
+</div>
+
+<p>
+Плазма виникає різними способами: термічною іонізацією (нагрівання), електричним розрядом, фотоіонізацією, ударною іонізацією, бомбардуванням частинками. Залежно від температури її поділяють на <em><span
+    class="textcolor"
+    style="color:#990000"
+>низькотемпературну</span></em> (\(T\lesssim 10^5\)&nbsp;К, тобто \(\lesssim 10\)&nbsp;еВ) і&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>високотемпературну</span></em> (\(T\gtrsim 10^6\)&nbsp;К, тобто \(\gtrsim 100\)&nbsp;еВ; у&nbsp;термоядерних установках (токамаках&nbsp;— тороїдальних магнітних камерах)&nbsp;— до \(10^8\)&nbsp;К&nbsp;\(\approx
+10\)&nbsp;кеВ і&nbsp;вище). Область між цими межами називають проміжною. Саме високотемпературна плазма потрібна для реакцій <em><span
+    class="textcolor"
+    style="color:#990000"
+>керованого термоядерного синтезу</span></em>. Не варто плутати цей поділ з&nbsp;назвами «холодна» і&nbsp;«гаряча» плазма, які трапляються далі в&nbsp;теорії хвиль: там ідеться не про саме значення \(T\), а&nbsp;про те, чи істотний
+тепловий рух частинок для процесу, що розглядається (це пояснено там, де такі назви з’являються, і&nbsp;в&nbsp;<a href="ch17.html#sec:glossary">Словнику термінів</a>). Діапазон реальних плазм надзвичайно широкий (табл.&nbsp;<a
+href="ch2.html#tab:plasma-types">1.1</a>).
+</p>
+
+<figure id="autoid-1" class="table ">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;1.1. Орієнтовні параметри різних плазм (значення наведено за порядком величини).
+
+</div>
+
+<a id="tab:plasma-types"></a>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr class="hline">
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Плазма</b></span></td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>\(n_e\), \(\mathrm {см}^{-3}\)</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>\(T\), еВ</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>\(\lambda _{De}\), см</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>\(a=n^{-1/3}\), см</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>\(N_D\)</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>\(\Gamma \)</b></span>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Іоносфера
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{5}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(0{,}1\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(0{,}74\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(2{,}2\times 10^{-2}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(1{,}7\times 10^{5}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(7\times 10^{-5}\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Міжзоряний газ
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(1\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(2{,}4\times 10^{2}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(0{,}46\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(5\times 10^{8}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(3\times 10^{-7}\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Сонячна корона
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{8}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{2}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(0{,}74\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(2{,}2\times 10^{-3}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(1{,}7\times 10^{8}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(7\times 10^{-7}\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Ядро Сонця
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{26}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{3}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(2{,}4\times 10^{-9}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(2{,}2\times 10^{-9}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(5\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(7\times 10^{-2}\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Токамак
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{14}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{4}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(7{,}4\times 10^{-3}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(2{,}2\times 10^{-5}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(1{,}7\times 10^{8}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(7\times 10^{-7}\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Сонячний вітер (1&nbsp;а.о.)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(7{,}4\times 10^{2}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(0{,}46\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(1{,}7\times 10^{10}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(3\times 10^{-8}\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Газовий розряд
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{12}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(3\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(1{,}3\times 10^{-3}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{-4}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(9\times 10^{3}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(5\times 10^{-4}\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Електрони в&nbsp;металі
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{23}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+вироджені, \(E_F\sim 8\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+—
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(2\times 10^{-8}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+—
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+—
+</p>
+</td>
+</tr>
+
+<tr class="hline" aria-hidden="true">
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+</tr>
+</table>
+
+</figure>
+
+<p>
+Концентрації в&nbsp;таблиці відрізняються на 25 порядків (від \(10\) до \(10^{26}~\mathrm {см}^{-3}\)). У&nbsp;правих стовпцях наведено похідні величини: дебаївську довжину \(\lambda _{De}\), середню відстань між частинками
+\(a=n^{-1/3}\), число частинок у&nbsp;дебаївській сфері \(N_D\) і&nbsp;параметр зв’язку \(\Gamma \) (їх означено в&nbsp;§&#x202f;<a href="ch2.html#sec:debye-sphere">1.6</a> і&nbsp;§&#x202f;<a
+href="ch2.html#sec:coupling">1.7</a>). Для плазм із&nbsp;\(N_D\gg 1\) маємо \(\lambda _{De}\gg a\), тобто колективність; ядро Сонця (\(N_D\sim 5\), \(\Gamma \sim 0{,}07\)) лежить на межі застосовності (за \(\Gamma \) плазма
+слабкозв’язана, але \(N_D\sim 5\)&nbsp;— «багато» вже сумнівне, див. §&#x202f;<a href="ch2.html#sec:coupling">1.7</a>), а&nbsp;електрони в&nbsp;металі <em><span
+    class="textcolor"
+    style="color:#990000"
+>вироджені</span></em> (їхня енергія визначається не теплом, а&nbsp;принципом Паулі: \(T\ll E_F\)) й&nbsp;потребують квантового опису (§&#x202f;<a href="ch2.html#sec:thomas-fermi">1.8</a>); \(E_F\)&nbsp;— енергія Фермі, тобто
+найбільша енергія електронів при \(T=0\). Діаграму на рис.&nbsp;<a href="ch2.html#fig:plasma-types">1.1</a> читають так: кожна точка&nbsp;— плазма з&nbsp;даними \(n\) і&nbsp;\(T\), а&nbsp;лінії відокремлюють області, де змінюється
+фізика (\(\hbar \)&nbsp;— стала Планка, \(c\)&nbsp;— швидкість світла).
+</p>
+
+<figure id="autoid-2" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-5"
+    class="lateximagesource"
+><!--
+         107
+
+                            𝑇 = 𝑚 𝑒 𝑐2
+         106
+
+
+         105                                                                     релятивістська
+
+                                                           токамак
+         104                                                                                    𝑇 = 𝐸𝐹
+
+                            класична                                                  ядро Сонця
+         103            ідеальна плазма
+𝑇, еВ
+
+
+
+
+         102                               корона
+
+                  сонячний вітер
+         101
+                                               розряд                                   метал
+
+
+         100
+                  міжзоряний газ
+
+                                    𝑁𝐷 = 1 (слабо/сильнозв’язана)
+        10−1                                                                            сильнозв’язана
+                              іоносфера
+                                                                                           плазма
+
+        10−2
+           10−1   102       105          108        1011    1014        1017   1020   1023      1026     1029
+                                                                   −3
+                                                           𝑛, см
+--><img
+   src="main-html-images/image-5.svg"
+   alt="Рис. 1.1. Діаграма n–T видів плазми: лінії N_D1 (орієнтовна межа слабкозв’язаної плазми; практично потрібно N_D100), T=E_F (виродження) та T=m_ec^2 (релятивізм) обмежують область класичної ідеальної плазми \e^2n^1/3,^2n^2/3/m_e\Tm_ec^2"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.1. Діаграма \(\lg n\)–\(\lg T\) видів плазми: лінії \(N_D\sim 1\) (орієнтовна межа слабкозв’язаної плазми; практично потрібно \(N_D\gtrsim 100\)), \(T=E_F\) (виродження) та \(T=m_ec^2\) (релятивізм) обмежують область класичної
+ідеальної плазми \(\max \{e^2n^{1/3},\hbar ^2n^{2/3}/m_e\}\ll T\ll m_ec^2\)
+
+</div>
+
+<a id="fig:plasma-types"></a>
+
+</div>
+
+</figure>
+<!--
+...... section Іонізація: формула Саха ......
+-->
+<h4 id="autosec-32"><span class="sectionnumber">&#xA7;&#x202F;1.2&#x2003;</span>Іонізація: формула Саха</h4>
+<a id="main-html-autopage-32"></a>
+
+
+<a id="sec:saha"></a>
+
+<p>
+Скільки енергії потрібно, щоб газ став плазмою? Енергія іонізації атома водню \(I=13{,}6\)&nbsp;еВ, що відповідає \(1{,}6\times 10^{5}\)&nbsp;К, проте газ іонізується помітно за значно нижчих температур. Пояснює це формула Саха, яка
+визначає ступінь іонізації газу в&nbsp;стані термодинамічної рівноваги.
+</p>
+
+
+<div class="cb-theory">
+
+<p>
+<b>Теоретичні відомості</b> Нагадаємо зі статистичної фізики
+</p>
+
+<p>
+Для ідеального газу з&nbsp;концентрацією \(n\) хімічний потенціал \(\mu =T\ln \bigl (n\lambda _T^3/g\bigr )\), де \(\lambda _T=\sqrt {2\pi \hbar ^2/mT}\)&nbsp;— теплова довжина хвилі де&nbsp;Бройля, \(g\)&nbsp;— статистична
+вага (кратність виродженого внутрішнього стану; для електрона зі&nbsp;спіном \(g_e=2\)). Умова хімічної рівноваги реакції \(\text {атом}\rightleftharpoons \text {іон}+\text {електрон}\): \(\mu _a=\mu _i+\mu _e\). Енергія іонізації
+\(I\) зсуває нуль енергії: атом лежить на \(I\) нижче за пару «іон + електрон», тобто \(\mu _a=T\ln (n_n\lambda _{Ta}^3/g_a)-I\) (\(n_n\)&nbsp;— концентрація атомів). Підставляючи, маємо \(\ln \dfrac {n_e\lambda _{Te}^3}{g_e}+\ln
+\dfrac {n_i\lambda _{Ti}^3}{g_i}=\ln \dfrac {n_n\lambda _{Ta}^3}{g_a}-\dfrac IT\), звідки \(\dfrac {n_en_i}{n_n}=\dfrac {g_eg_i}{g_a}\,\dfrac {\lambda _{Ta}^3}{\lambda _{Te}^3\lambda _{Ti}^3}\,e^{-I/T}\). Оскільки
+\(m_a\approx m_i\), то \(\lambda _{Ta}\approx \lambda _{Ti}\), і&nbsp;залишається \(\dfrac {n_en_i}{n_n}=\dfrac {g_eg_i}{g_a}\,\lambda _{Te}^{-3}\,e^{-I/T}\). Для водню \(g_eg_i/g_a=2\cdot 1/2=1\) (\(g_e=2\) за спіном
+електрона, \(g_i=1\) для протона, \(g_a=2\) для основного стану атома). Тут \(T\)&nbsp;— температура електронів, а&nbsp;газ вважаємо ідеальним і&nbsp;рівноважним. (Врізку можна пропустити при першому читанні: далі важливий лише
+результат&nbsp;— формула Саха.)
+</p>
+</div>
+
+<p>
+Для водню формула Саха&nbsp;[<a href="ch18.html#LWR-ht-cite.0@chen2016introduction">4</a>] має вигляд (\(m\)&nbsp;— маса електрона)
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{1}\)</span>
+
+<!--
+
+
+                                                                                             𝑛𝑒 𝑛𝑖     𝑚𝑇 3/2      𝐼
+                                                                                                   =(      ) exp (− ) ≈ 2,4 × 1015 𝑇 3/2 𝑒−𝐼/𝑇 см−3 ,                                                    (1.2)--><a id="eq:saha"></a><!--
+                                                                                              𝑛𝑛      2𝜋ℏ2         𝑇
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:saha} \frac {n_e n_i}{n_n} = \left (\frac {m T}{2\pi \hbar ^2}\right )^{3/2}\exp \left (-\frac {I}{T}\right ) \approx 2{,}4\times 10^{15}\,T^{3/2}\,e^{-I/T}~\mathrm {см}^{-3},
+\end{equation}
+
+</p>
+
+<p>
+де в&nbsp;числовій формі \(T\) підставляють у&nbsp;кельвінах, а&nbsp;тоді й&nbsp;\(I\) в&nbsp;показнику експоненти треба виразити в&nbsp;кельвінах: \(I/k_{\mathrm B}\approx 1{,}58\times 10^{5}\)&nbsp;К (тут, і&nbsp;лише тут,
+повертаємо \(k_{\mathrm B}\) явно). Для інших елементів у&nbsp;правій частині з’являється відношення статистичних ваг \(g_eg_i/g_a\).
+</p>
+
+<p>
+Дві обставини визначають зміст формули. По-перше, експоненціальний множник: ступінь іонізації стає помітним, коли \(T\) лише у&nbsp;від \(10\) до \(20\) разів менша за \(I\). По-друге, перед експонентою стоїть величина \(n_q=(mT/2\pi
+\hbar ^2)^{3/2}=\lambda _{Te}^{-3}\), обернена до квантового об’єму електрона (\(\lambda _{Te}\)&nbsp;— теплова довжина хвилі де&nbsp;Бройля з&nbsp;врізки вище). Об’єм \(\lambda _{Te}^3\)&nbsp;— це «клітинка», яку займає один
+квантовий стан електрона, тож \(n_q=\lambda _{Te}^{-3}\)&nbsp;— кількість станів, доступних електрону в&nbsp;одиниці об’єму (для \(T=1\)&nbsp;еВ \(n_q\approx 3\times 10^{21}~\mathrm {см}^{-3}\)). Класична статистика застосовна,
+поки \(n_e\ll n_q\). Для типової розрідженої плазми \(n_q/n=1/(n\lambda _{Te}^3)\) лежить від \(10^{6}\) до \(10^{10}\): на кожен електрон припадає величезна кількість вільних станів, тому вільний стан значно вигідніший за зв’язаний
+в&nbsp;атомі (виграш ентропії) і&nbsp;перекриває больцманівський фактор \(e^{-I/T}\) уже за \(T\) від \(I/20\) до \(I/10\). Звідси ще один наслідок: за однакової температури <em>чим розрідженіший газ, тим легше він
+іонізується</em>&nbsp;— менша \(n\) означає більше вільних станів на електрон.
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Іонізація за кімнатної температури.</b> Для контрасту візьмемо кімнатну температуру (\(T\approx 0{,}026\)&nbsp;еВ) і&nbsp;газ з&nbsp;\(I=14{,}6\)&nbsp;еВ при \(n\approx 3\times 10^{19}~\mathrm {см}^{-3}\) (атоми азоту;
+реальний \(\mathrm N_2\) молекулярний, але порядок величини той самий): \(e^{-I/T}\sim 10^{-244}\), тож ступінь іонізації \(\alpha \sim 10^{-122}\), тобто практично нуль. А&nbsp;водень при \(1\)&nbsp;еВ і&nbsp;густині
+\(10^{17}~\mathrm {см}^{-3}\) іонізований уже на&nbsp;\(\sim 20\,\%\).
+</p>
+</div>
+
+<p>
+Щоб знайти \(\alpha \), зауважимо: кожен акт іонізації народжує пару іон\({}+{}\)електрон, тож \(n_e=n_i\). Позначивши повну концентрацію частинок \(n=n_i+n_n\), маємо \(n_e=n_i=\alpha n\), \(n_n=(1-\alpha )n\),
+і&nbsp;рівняння&nbsp;<span class="textup">(<a href="ch2.html#eq:saha">1.2</a>)</span> набуває вигляду \(\alpha ^2/(1-\alpha )=n_q\,e^{-I/T}/n\)&nbsp;— квадратне рівняння відносно \(\alpha \). Для водню з&nbsp;повною
+концентрацією частинок \(n=10^{17}~\mathrm {см}^{-3}\) його розв’язок дає
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{2}\)</span>
+
+<!--
+
+
+                                                                                         𝛼 ≈ 1,3 × 10−4 (0,5 еВ),   𝛼 ≈ 0,18 (1 еВ),    𝛼 ≈ 0,99 (2 еВ).
+
+-->
+
+<p>
+
+\begin{equation*}
+\alpha \approx 1{,}3\times 10^{-4}\ (0{,}5~\text {еВ}),\qquad \alpha \approx 0{,}18\ (1~\text {еВ}),\qquad \alpha \approx 0{,}99\ (2~\text {еВ}).
+\end{equation*}
+
+</p>
+
+<p>
+Газ іонізується у&nbsp;вузькому інтервалі температур (рис.&nbsp;<a href="ch2.html#tikz:saha-curve">1.2</a>): для водню з&nbsp;повною концентрацією \(10^{17}~\mathrm {см}^{-3}\)&nbsp;— між \(0{,}5\) і&nbsp;\(2\)&nbsp;еВ (при
+іншій густині інтервал зсувається логарифмічно). Перехід <em><span
+    class="textcolor"
+    style="color:#990000"
+>плавний</span></em>: \(\alpha (T)\)&nbsp;— гладка функція, розриву немає, тобто це <em><span
+    class="textcolor"
+    style="color:#990000"
+>кросовер</span></em><sup>1</sup>, а&nbsp;не фазовий перехід. Так є в&nbsp;розрідженому газі, де застосовна формула&nbsp;<span class="textup">(<a href="ch2.html#eq:saha">1.2</a>)</span>. У&nbsp;дуже щільній речовині
+(сильнозв’язана плазма) можливий і&nbsp;справжній фазовий перехід, але це вже окреме питання. У&nbsp;розрядах і&nbsp;під дією випромінювання ступінь іонізації може значно відрізнятися від рівноважного, тому формула&nbsp;<span
+class="textup">(<a href="ch2.html#eq:saha">1.2</a>)</span> дає лише орієнтир.
+</p>
+
+<figure id="autoid-3" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-6"
+    class="lateximagesource"
+><!--
+        1
+
+
+
+
+       0.8
+
+
+
+
+       0.6
+𝛼(𝑇)
+
+
+
+
+       0.4
+
+
+
+
+       0.2
+                                                                𝑛0 = 1015 см−3
+                                                                𝑛0 = 1017 см−3
+                                                                𝑛0 = 1019 см−3
+                           𝑇 = 𝐼/10
+        0
+             0   0.5   1   1.5        2    2.5    3   3.5   4        4.5         5
+                                          𝑇, еВ
+--><img
+   src="main-html-images/image-6.svg"
+   alt="Рис. 1.2. Залежність ступеня іонізації водню від температури (формула Саха); пунктиром позначено T=I/101,4 еВ, де іонізація вже переважна (0,75), хоча TI"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.2. Залежність ступеня іонізації водню від температури (формула Саха); пунктиром позначено \(T=I/10\approx 1{,}4\)&nbsp;еВ, де іонізація вже переважна (\(\alpha \approx 0{,}75\)), хоча \(T\ll I\)
+
+</div>
+
+<a id="tikz:saha-curve"></a>
+
+</div>
+
+</figure>
+<div role="note" class="footnotes">
+
+<a id="main-html-autopage-36"></a>
+<p>
+<sup>1</sup>&nbsp;Кросовер&nbsp;— плавний перехід між двома станами системи при зміні параметра (тут температури): без стрибка властивостей і&nbsp;без певної температури переходу, на відміну від фазового переходу, як-от кипіння води
+</p>
+
+
+</div>
+<!--
+...... section Температура плазми та два компоненти ......
+-->
+<h4 id="autosec-37"><span class="sectionnumber">&#xA7;&#x202F;1.3&#x2003;</span>Температура плазми та два компоненти</h4>
+<a id="main-html-autopage-37"></a>
+
+
+<a id="sec:two-temperatures"></a>
+
+<p>
+У&nbsp;плазмі електрони й&nbsp;іони можуть мати різні середні кінетичні енергії, тому взагалі треба вводити дві температури \(T_e\) та&nbsp;\(T_i\). Температуру вимірюють в&nbsp;енергетичних одиницях, зазвичай в&nbsp;еВ
+(співвідношення з&nbsp;кельвінами&nbsp;— у&nbsp;врізці в&nbsp;§&#x202f;<a href="ch2.html#sec:what-is-plasma">1.1</a>).
+</p>
+
+<p>
+У&nbsp;газорозрядній плазмі енергія від зовнішнього поля спершу передається електронам: струм, а&nbsp;отже й&nbsp;джоулеве тепло \(\vect j\cdot \vect E\), переносять переважно вони, бо значно рухливіші за іони. Через велику різницю
+мас (\(m_i\geq 1836\,m_e\)) електрон при пружному зіткненні з&nbsp;іоном передає тому лише частку \(\delta E/E\le 4m_em_i/(m_e+m_i)^2\approx 4m_e/m_i\approx 0{,}2\,\%\) (для протона) своєї енергії&nbsp;— як тенісний м’ячик, що
+відскакує від вантажівки (центральний пружний удар з&nbsp;теоретичної механіки), тому часто \(T_e&gt;T_i\). Лише за достатньо великої густини та тривалого часу електрон-іонні зіткнення вирівнюють температури: \(T_e=T_i=T\). Отже, вираз
+«температура плазми» без уточнення неоднозначний, і&nbsp;в&nbsp;нерівноважній плазмі \(T_e\) та&nbsp;\(T_i\) слід вказувати окремо. Якщо \(T_e\neq T_i\), плазму називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>двотемпературною</span></em>. Яскравий приклад&nbsp;— позитивний стовп тліючого розряду (довга світна однорідна ділянка розряду в&nbsp;трубці між катодом і&nbsp;анодом) за тиску \(\sim 0{,}1\)&nbsp;мм рт.&nbsp;ст.: температура
+електронів досягає \(\sim 1\)–\(3\)&nbsp;еВ (\(\sim 10^4\)–\(3\times 10^4\)&nbsp;К)&nbsp;[<a href="ch18.html#LWR-ht-cite.0@chen2016introduction">4</a>], тоді як іони мають лише кілька сотень кельвінів. Різні часи релаксації
+(розд.&nbsp;<a href="ch5.html#sec:plasma-collisions">4</a>) пояснюють, чому така система існує тривалий час: спочатку встановлюється максвеллівський розподіл електронів, потім іонів, і&nbsp;лише згодом вирівнюються їхні
+температури.
+</p>
+<!--
+...... section Квазінейтральність і-плазмові коливання ......
+-->
+<h4 id="autosec-38"><span class="sectionnumber">&#xA7;&#x202F;1.4&#x2003;</span>Квазінейтральність і&nbsp;плазмові коливання</h4>
+<a id="main-html-autopage-38"></a>
+
+
+<a id="sec:quasineutrality"></a>
+
+<p>
+Якби в&nbsp;плазмі була присутня велика кількість нескомпенсованих зарядів, виникали б сильні поля, які приводили б заряди в&nbsp;рух. Тому на макроскопічних масштабах густини позитивного й&nbsp;негативного зарядів практично
+збігаються.
+</p>
+
+<p>
+Нехай у&nbsp;плазмі з&nbsp;концентраціями \(n_e\) електронів (заряд \(-e\)) та \(n_i\) іонів (заряд \(+Ze\)) виникла просторова локальна різниця густин. За теоремою Гаусса виникне кулонівське поле:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{2}\)</span>
+
+<!--
+
+
+                                                                                                           ∇ ⋅ 𝐄 = 4𝜋𝜌 = 4𝜋𝑒(𝑍𝑛𝑖 − 𝑛𝑒 ).                                                                                               (1.3)
+
+-->
+
+<p>
+
+\begin{equation}
+\nabla \cdot \vect {E} = 4\pi \rho = 4\pi e (Z n_i - n_e).
+\end{equation}
+
+</p>
+
+<p>
+Оскільки питомий заряд електрона \(e/m_e\) величезний, а&nbsp;іони важкі й&nbsp;повільні, це поле за дуже короткий час (його знайдемо нижче) створить потужні сили, які змістять електрони так, щоб знівелювати розділення зарядів. Оцінимо
+силу цього поля.
+</p>
+
+<div class="cb-estimate">
+
+<p>
+<b>Сила поля при розділенні зарядів.</b> Плазма з&nbsp;\(n=10^{12}~\mathrm {см}^{-3}\) і&nbsp;розміром \(L=1\)&nbsp;см, розділення зарядів лише на&nbsp;\(1\,\%\), \(\delta n=10^{10}~\mathrm {см}^{-3}\). Тоді \(E\sim 4\pi
+e\,\delta n\,L\approx 60\)&nbsp;СГС\(\approx 2\times 10^{4}\)&nbsp;В/см, тоді як тепловому руху за \(T=1\)&nbsp;еВ відповідає поле \(T/(eL)\sim 1\)&nbsp;В/см (поле суттєве, якщо його робота \(eEL\) на відстані \(L\) порівнянна
+з&nbsp;тепловою енергією \(T\)). Навіть відхилення \(\delta n/n\sim 10^{-6}\) дає \(E\sim 2\)&nbsp;В/см, тобто порівнянне з&nbsp;тепловим: розділення зарядів стає енергетично невигідним уже на рівні \(10^{-6}\).
+</p>
+</div>
+
+<p>
+Загальну оцінку дано наприкінці §&#x202f;<a href="ch2.html#sec:debye-screening">1.5</a>.
+</p>
+
+<p>
+Тому на макроскопічних масштабах плазма є <em><span
+    class="textcolor"
+    style="color:#990000"
+>квазінейтральною</span></em>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{3}\)</span>
+
+<!--
+
+
+                                                                                                  𝜌 = ∑ 𝑞𝑠 𝑛𝑠 = 𝑒(𝑍𝑛𝑖 − 𝑛𝑒 ) ≈ 0   ⇒   𝑛𝑒 ≈ 𝑍𝑛𝑖 .                                              (1.4)--><a id="eq:quasineutrality"></a><!--
+                                                                                                       𝑠
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:quasineutrality} \rho = \sum _s q_s n_s = e(Z n_i - n_e) \approx 0 \quad \Rightarrow \quad n_e \approx Z n_i.
+\end{equation}
+
+</p>
+
+
+<div class="cb-attention">
+
+<p>
+Квазінейтральність&nbsp;— це не тотожний нуль у&nbsp;кожній точці, а&nbsp;макроскопічне наближення. Локальні відхилення від нейтральності можливі й&nbsp;саме вони лежать в&nbsp;основі екранування та плазмових коливань.
+</p>
+</div>
+<!--
+...... subsection Плазмові коливання ......
+-->
+<h5 id="autosec-39">Плазмові коливання</h5>
+<a id="main-html-autopage-39"></a>
+
+
+<a id="sec:plasma-oscillations"></a>
+
+<p>
+Нехай в&nbsp;плоскому шарі однорідної плазми електрони змістилися як ціле відносно нерухомого іонного фону (іони важкі, \(m_i\gg m_e\)) на&nbsp;невелику відстань \(x\) (рис.&nbsp;<a href="ch2.html#pic:plasma-oscillations">1.3</a>).
+Зміщення однакове для всіх електронів, тому відстані між ними не змінюються, а&nbsp;їхня взаємодія одне з&nbsp;одним (за третім законом Ньютона) не впливає на рух електронів як цілого: його задає лише поле, що виникло через розділення
+зарядів. Хаотичний тепловий рух накладається на цей спільний зсув і&nbsp;поки не розглядається. На краях шару виникають заряди з&nbsp;поверхневою густиною \(\sigma =\mp n_eex\), і&nbsp;між ними&nbsp;— поле плоского конденсатора,
+напрямлене так, щоб повернути електрони назад: \(E=4\pi n_eex\). Рівняння руху електрона (його заряд \(-e\))
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{4}\)</span>
+
+<!--
+
+
+                                                                      𝑚𝑒 𝑥̈ = −𝑒𝐸 = −4𝜋𝑛𝑒 𝑒2 𝑥   ⇒   𝑥̈ + 𝜔2𝑝𝑒 𝑥 = 0,                                                                (1.5)--><a id="eq:plasma-oscillation-eq"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:plasma-oscillation-eq} m_e\ddot x=-eE=-4\pi n_ee^2x \quad \Rightarrow \quad \ddot x+\omega _{pe}^2x=0,
+\end{equation}
+
+</p>
+
+<p>
+де
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{5}\)</span>
+
+<!--
+
+
+                                                                                                              4𝜋𝑛𝑒 𝑒2
+                                                                                                     𝜔𝑝𝑒 =            ≈ 5,64 × 104 √𝑛𝑒 [см−3 ] с−1                                        (1.6)--><a id="eq:plasma-frequency"></a><!--
+                                                                                                             √ 𝑚𝑒
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:plasma-frequency} \tcbhighmath {\omega _{pe}=\sqrt {\frac {4\pi n_ee^2}{m_e}}\approx 5{,}64\times 10^4\sqrt {n_e[\mathrm {см}^{-3}]}~\mathrm {с}^{-1}}
+\end{equation}
+
+</p>
+
+<p>
+називається <em><span
+    class="textcolor"
+    style="color:#990000"
+>електронною плазмовою</span></em> (або <em><span
+    class="textcolor"
+    style="color:#990000"
+>ленгмюрівською</span></em>) <em><span
+    class="textcolor"
+    style="color:#990000"
+>частотою</span></em>, а&nbsp;самі коливання&nbsp;— <em><span
+    class="textcolor"
+    style="color:#990000"
+>плазмовими</span></em>. Тобто \(\omega _{pe}\)&nbsp;— це частота, з&nbsp;якою плазма «відновлює» порушену квазінейтральність, а&nbsp;\(\omega _{pe}^{-1}\)&nbsp;— характерний час цього відновлення (для \(n=10^{12}~\mathrm
+{см}^{-3}\) це \(\sim 2\times 10^{-11}\)&nbsp;с).
+</p>
+
+<figure id="autoid-4" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-41"></a>
+
+<p>
+<span
+    id="lateximage-main-html-7"
+    class="lateximagesource"
+><!--
+      + −+ −     + − + −+ − + − +− −
+ +            +−
+  +   + −+      − − + − +−+            −    −
+            −+ +                 − +
+ +   + + −                +   −   −
+                     − +−
+      −       +− +               + +−       −
+    + −     −+ − − − − + + − −
++       +          + + +         −
++       + − + −+ − − + −           −+ −     −
+    + −              +          +
+ +          +         +       +       − −
+       −       −
+     + + −        +−     − +− − +
+           −                −
+  + + −           + − +− +         −       −
+         + + −                  + + −
+ +           + −        −    −+ −+ −
+      − +−       + − +
+    +                      +                −
+      ++ −                +
+  +   −       + −+ −+ −       − −+ − −
+                              +
+          −      − − +−              + − −
++    +− + +        +       + −+ −
+        +   −    + − −+
+ +
+    + −      + − +            −+− + − −
+       − −           −+      − +    +
+  + + + + −+             − +      − −      −
+  +      + − +−  + −+ + + −+ − −
+     +−                 −     −
+  + +− +−                          −
+            + −+ − +− + − + +− −
+                −+                      − −
+  + + −+     +      − +  −+ −+
+          −                        −+
+ + +− +−+          − +     +        +
+               − +      −     − +−    −   −
+ + +                  +       −
+      − + + −+ −                        −
+          −              −+ + − +          −
+--><img
+   src="main-html-images/image-7.png"
+   alt="Рисунок 3"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-44"></a>
+
+<p>
+<span
+    id="lateximage-main-html-8"
+    class="lateximagesource"
+><!--
+    𝐸⃗
++        −
+
++        −
+
++        −
+
++        −
+
++        −
+
++        −
+
++        −
+
+
+𝑥
+--><img
+   src="main-html-images/image-8.svg"
+   alt="Рис. 1.3. Модель плазмових коливань: усі електрони зміщені однаково відносно нерухомого позитивного фону, виникає повертаюче електричне поле"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.3. Модель плазмових коливань: усі електрони зміщені однаково відносно нерухомого позитивного фону, виникає повертаюче електричне поле
+
+</div>
+
+<a id="pic:plasma-oscillations"></a>
+
+</div>
+
+</figure>
+
+<p>
+Той самий результат дає й&nbsp;опис без уявного конденсатора. З&nbsp;рівняння неперервності \(\partial _t\rho +\nabla \cdot \vect {j}=0\) та&nbsp;рівняння руху \(m_e\partial _t\vect {v}=-e\vect {E}\) при \(\vect
+{j}=-n_ee\vect {v}\) маємо \(\partial _t^2\rho =-\nabla \cdot \partial _t\vect {j}=-(n_ee^2/m_e)\nabla \cdot \vect {E}\), а&nbsp;за теоремою Гаусса \(\nabla \cdot \vect {E}=4\pi \rho \). Тому
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{6}\)</span>
+
+<!--
+
+
+                                                                                                               𝜕2 𝜌
+                                                                                                                    + 𝜔2𝑝𝑒 𝜌 = 0.
+                                                                                                               𝜕𝑡2
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\partial ^2\rho }{\partial t^2}+\omega _{pe}^2\rho =0.
+\end{equation*}
+
+</p>
+
+<p>
+Отже, густина заряду, тобто порушення квазінейтральності, сама коливається з&nbsp;частотою \(\omega _{pe}\).
+</p>
+
+<p>
+З&nbsp;урахуванням руху іонів (заряд \(Ze\), маса \(m_i\)) для довгохвильових поздовжніх коливань \(\omega _p^2=\omega _{pe}^2+\omega _{pi}^2\simeq \omega _{pe}^2\), де \(\omega _{pi}^2=4\pi Z^2e^2n_i/m_i\): іонний внесок
+мізерний (оцінка&nbsp;— у&nbsp;задачі&nbsp;<a href="ch2.html#prb:PlasmaIons">1.4</a>), тому далі \(\omega _p\equiv \omega _{pe}\). Реальні коливання загасають, а&nbsp;за&nbsp;теплового руху їхня частота залежить від хвильового
+числа (§&#x202f;<a href="ch3.html#sec:langmuir-waves">2.3</a>), тож \(\omega _{pe}\) слід розуміти насамперед як базову <em>масштабну</em> частоту плазми.
+</p>
+
+<p>
+Тепловий рух зв’язує цей час із&nbsp;довжиною: за&nbsp;час \(\omega _{pe}^{-1}\) електрон із&nbsp;тепловою швидкістю \(v_{Te}\) проходить відстань
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{6}\)</span>
+
+<!--
+
+
+                                                                                                    𝑣𝑇𝑒               𝑇𝑒
+                                                                                            𝜆𝐷𝑒 =       ,   𝑣𝑇𝑒 =        ≈ 4,2 × 107 √𝑇𝑒 [еВ] см/с .                                       (1.7)--><a id="eq:debye-vT-wp"></a><!--
+                                                                                                    𝜔𝑝𝑒             √ 𝑚𝑒
+
+-->
+<p>
+
+\begin{equation}
+\label {eq:debye-vT-wp} \tcbhighmath {\lambda _{De}=\frac {v_{Te}}{\omega _{pe}},\qquad v_{Te}=\sqrt {\frac {T_e}{m_e}}\approx 4{,}2\times 10^{7}\sqrt {T_e[\text {еВ}]}~\mathrm {см/с}}.
+\end{equation}
+
+</p>
+
+<p>
+Це і&nbsp;є дебаївська довжина (у&nbsp;§&#x202f;<a href="ch2.html#sec:debye-screening">1.5</a> вона виведеться з&nbsp;екранування). Тому плазма на масштабах, менших за&nbsp;\(\lambda _{De}\) «не встигає» колективно
+відповідати: електрон вилітає з&nbsp;такої області раніше, ніж поле встигне його повернути, і&nbsp;тепловий рух розмиває ефект. Отже, колективну реакцію плазми задають два масштаби: час \(\sim \omega _{pe}^{-1}\) і&nbsp;довжина
+\(\sim \lambda _{De}\).
+</p>
+<!--
+...... section Дебаївське екранування ......
+-->
+<h4 id="autosec-48"><span class="sectionnumber">&#xA7;&#x202F;1.5&#x2003;</span>Дебаївське екранування</h4>
+<a id="main-html-autopage-48"></a>
+
+
+<a id="sec:debye-screening"></a>
+
+<p>
+Внесемо в&nbsp;плазму малий пробний заряд \(q\). У&nbsp;вакуумі його поле спадає як \(1/r\) і&nbsp;сягає як завгодно далеко. У&nbsp;плазмі ж є рухливі заряджені частинки, які реагують на це поле: частинки протилежного знака
+притягуються до заряду, однойменного&nbsp;— відштовхуються. Заряд виявляється оточеним «шубою» частинок протилежного знака, і&nbsp;його поле зменшується (рис.&nbsp;<a href="ch2.html#tikz:debye-sphere">1.4</a>). Тому, попри
+далекодійність кулонівської взаємодії, на великих відстанях поле окремого заряду не відчувається. Тепловий рух не дає такій «шубі» стиснутися до точки: вона розмазана на деяку характерну відстань порядку \(\lambda _D\) (повний її заряд
+дорівнює \(-q\), див. нижче). Знайдемо, чому дорівнює \(\lambda _D\).
+</p>
+
+<figure id="autoid-5" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-9"
+    class="lateximagesource"
+><!--
+                +                 +
+                         +
+        +                                 +
+                              +               +        +
+        +           +                 +
+                                               +
+                +                                              +
++           +                                                  +
+            +                 +                        +
+    +                                                      +
++                                                              +
+        +                                          +
+                +                                          +
+                              +       ++
+                        + +
+                                  +
+        +                                  +
+                    +
+--><img
+   src="main-html-images/image-9.png"
+   alt="Рис. 1.4. Пробний додатний заряд оточений електронною «шубою», яка екранує його поле"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.4. Пробний додатний заряд оточений електронною «шубою», яка екранує його поле
+
+</div>
+
+<a id="tikz:debye-sphere"></a>
+
+</div>
+
+</figure>
+
+<p>
+Кожен сорт частинок \(s\) (заряд \(q_s\), концентрація \(n_s\)) перебуває в&nbsp;стаціонарному потенціалі \(\varphi (\vect {r})\) у&nbsp;тепловій рівновазі зі своєю температурою \(T_s\), тому розподіл частинок за Больцманом
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{7}\)</span>
+
+<!--
+
+                                                                                                                                𝑞𝑠 𝜑
+                                                                                                             𝑛𝑠 = 𝑛𝑠0 exp (−         ).
+                                                                                                                                 𝑇𝑠
+
+-->
+
+<p>
+
+\begin{equation*}
+n_s=n_{s0}\exp \left (-\frac {q_s\varphi }{T_s}\right ).
+\end{equation*}
+
+</p>
+
+<p>
+Тут \(n_{s0}\)&nbsp;— незбурена концентрація вдалині від заряду, де \(\varphi \to 0\), а&nbsp;сумарний заряд плазми нульовий: \(\sum _sq_sn_{s0}=0\). Густина заряду плазми
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{7}\)</span>
+
+<!--
+
+                                                                                                                                  𝑞𝑠 𝜑
+                                                                                                           𝜌 = ∑ 𝑞𝑠 𝑛𝑠0 exp (−         ).
+                                                                                                                𝑠
+                                                                                                                                   𝑇𝑠
+
+-->
+
+<p>
+
+\begin{equation*}
+\rho =\sum _sq_sn_{s0}\exp \left (-\frac {q_s\varphi }{T_s}\right ).
+\end{equation*}
+
+</p>
+
+<p>
+Для слабкого поля \(|q_s\varphi |\ll T_s\) розкладемо експоненти. Нульовий доданок зникає завдяки нейтральності, залишається
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{7}\)</span>
+
+<!--
+
+
+                                                                                                                            𝑛𝑠0 𝑞2𝑠
+                                                                                                                𝜌 ≃ −𝜑 ∑            .
+                                                                                                                          𝑠
+                                                                                                                             𝑇𝑠
+
+-->
+
+<p>
+
+\begin{equation*}
+\rho \simeq -\varphi \sum _s\frac {n_{s0}q_s^2}{T_s}.
+\end{equation*}
+
+</p>
+
+<p>
+Підстановка в&nbsp;рівняння Пуассона \(\Delta \varphi =-4\pi (\rho +q\delta (\vect {r}))\) дає (дельта-функція \(\delta (\vect r)\) описує точковий пробний заряд і&nbsp;забезпечує кулонівську поведінку потенціалу при \(r\to 0\))
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{7}\)</span>
+
+<!--
+
+
+                                                                                                        𝜑                       1        𝑛 𝑞2
+                                                                                                Δ𝜑 −       = −4𝜋𝑞 𝛿(𝐫),           = 4𝜋 ∑ 𝑠0 𝑠 .                                            (1.8)--><a id="eq:poisson-screened"></a><!--
+                                                                                                       𝜆2𝐷                      2
+                                                                                                                               𝜆𝐷      𝑠
+                                                                                                                                          𝑇𝑠
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:poisson-screened} \Delta \varphi -\frac {\varphi }{\lambda _D^2}=-4\pi q\,\delta (\vect {r}), \qquad \tcbhighmath {\frac {1}{\lambda _D^2}=4\pi \sum _s\frac {n_{s0}q_s^2}{T_s}}.
+\end{equation}
+
+</p>
+
+<p>
+Величина \(\lambda _D\) називається <em><span
+    class="textcolor"
+    style="color:#990000"
+>дебаївською довжиною</span></em> (радіусом екранування).
+</p>
+
+<p>
+Поле пробного заряду сферично симетричне, \(\varphi =\varphi (r)\), і&nbsp;при \(r&gt;0\) маємо \(\Delta \varphi =\dfrac 1r\dfrac {d^2(r\varphi )}{dr^2}\). Для \(u=r\varphi \) рівняння&nbsp;<span class="textup">(<a
+href="ch2.html#eq:poisson-screened">1.8</a>)</span> спрощується до \(u&apos;&apos;=u/\lambda _D^2\), загальний розв’язок якого \(u=Ae^{-r/\lambda _D}+Be^{r/\lambda _D}\). Умова \(\varphi \to 0\) при \(r\to \infty \) виключає
+зростаючий доданок (\(B=0\)), а&nbsp;близько до заряду потенціал має збігатися з&nbsp;кулонівським \(q/r\), звідки \(A=q\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{8}\)</span>
+
+<!--
+
+                                                                                                                      𝑞         𝑟
+                                                                                                             𝜑(𝑟) =     exp (−    ).                                                     (1.9)--><a id="eq:screened-potential"></a><!--
+                                                                                                                      𝑟        𝜆𝐷
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:screened-potential} \varphi (r)=\frac qr\exp \left (-\frac r{\lambda _D}\right ).
+\end{equation}
+
+</p>
+
+<p>
+Кулонівське поле заряду експоненціально послаблюється на відстанях порядку \(\lambda _D\) (рис.&nbsp;<a href="ch2.html#pic:debye-screening">1.5</a>). Цей результат у&nbsp;1923&nbsp;р. одержали П.&nbsp;Дебай
+і&nbsp;Е.&nbsp;Хюккель для електролітів; плазма&nbsp;— його найчистіший прояв.
+</p>
+
+<figure id="autoid-6" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-10"
+    class="lateximagesource"
+><!--
+𝜙
+
+
+
+
+    𝑒
+    𝑟
+
+
+
+
+         𝑒 −𝑟/𝜆𝐷
+           𝑒
+         𝑟
+
+                                     𝑟
+    𝜆𝐷      2𝜆𝐷    3𝜆𝐷   4𝜆𝐷   5𝜆𝐷
+--><img
+   src="main-html-images/image-10.svg"
+   alt="Рис. 1.5. Дебаївське екранування пробного заряду: потенціал швидко спадає на відстанях порядку _D"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.5. Дебаївське екранування пробного заряду: потенціал швидко спадає на відстанях порядку \(\lambda _D\)
+
+</div>
+
+<a id="pic:debye-screening"></a>
+
+</div>
+
+</figure>
+
+<p>
+Знайдемо заряд «шуби». Густина заряду плазми \(\rho =-\Delta \varphi /4\pi =-\varphi /(4\pi \lambda _D^2)\) при \(r&gt;0\), тому
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{9}\)</span>
+
+<!--
+
+                                                                                                  ˆ                         ˆ ∞
+                                                                                                                       𝑞
+                                                                                                      𝜌 4𝜋𝑟2 𝑑𝑟 = −               𝑟𝑒−𝑟/𝜆𝐷 𝑑𝑟 = −𝑞.
+                                                                                                                      𝜆2𝐷   0
+
+-->
+
+<p>
+
+\begin{equation*}
+\int \rho \,4\pi r^2dr=-\frac q{\lambda _D^2}\int _0^\infty re^{-r/\lambda _D}dr=-q.
+\end{equation*}
+
+</p>
+
+<p>
+Отже, повний заряд оболонки в&nbsp;точності компенсує \(q\), а&nbsp;її характерний радіус&nbsp;— \(\lambda _D\). Для спостерігача на відстані \(\gg \lambda _D\) пробний заряд разом з&nbsp;оболонкою практично нейтральний. Те саме
+стосується кожної зарядженої частинки самої плазми: для решти частинок вона «пробна», тож усюди в&nbsp;плазмі частинка оточена шубою завтовшки \(\lambda _D\) (це використаємо в&nbsp;§&#x202f;<a
+href="ch2.html#sec:debye-sphere">1.6</a>).
+</p>
+<!--
+...... subsection Скільки сортів частинок бере участь в-екрануванні? ......
+-->
+<h5 id="autosec-55">Скільки сортів частинок бере участь в&nbsp;екрануванні?</h5>
+<a id="main-html-autopage-55"></a>
+
+
+<p>
+Для електронів і&nbsp;одноразово заряджених іонів
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{9}\)</span>
+
+<!--
+
+
+                                                                                          1    1   1                    𝑇𝑒                      𝑇𝑖
+                                                                                             = 2 + 2 ,      𝜆𝐷𝑒 =               ,   𝜆𝐷𝑖 =             .
+                                                                                         𝜆2𝐷  𝜆𝐷𝑒 𝜆𝐷𝑖               √ 4𝜋𝑛𝑒 𝑒2               √ 4𝜋𝑛𝑖 𝑒2
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac 1{\lambda _D^2}=\frac 1{\lambda _{De}^2}+\frac 1{\lambda _{Di}^2}, \qquad \lambda _{De}=\sqrt {\frac {T_e}{4\pi n_ee^2}}, \quad \lambda _{Di}=\sqrt {\frac {T_i}{4\pi n_ie^2}}.
+\end{equation*}
+
+</p>
+
+<p>
+При \(T_e=T_i=T\) маємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{9}\)</span>
+
+<!--
+
+
+                                                                                                                    𝑇    𝜆
+                                                                                                         𝜆𝐷 = √         = 𝐷𝑒 .                                                            (1.10)--><a id="eq:debye-radius"></a><!--
+                                                                                                                  8𝜋𝑛𝑒2   √2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:debye-radius} \lambda _D=\sqrt {\frac {T}{8\pi ne^2}}=\frac {\lambda _{De}}{\sqrt 2}.
+\end{equation}
+
+</p>
+
+<p>
+Практично \(\lambda _{De}\approx 743\sqrt {T_e[\text {еВ}]/n_e[\mathrm {см}^{-3}]}\)&nbsp;см.
+</p>
+
+<p>
+Ця довжина збігається з&nbsp;\(v_{Te}/\omega _{pe}\) з&nbsp;<span class="textup">(<a href="ch2.html#eq:debye-vT-wp">1.7</a>)</span>: екранування встановлюється за&nbsp;час відновлення нейтральності, поки тепловий електрон
+проходить \(\lambda _{De}\).
+</p>
+
+<p>
+Формули вище припускають, що <em>обидва</em> сорти встигають перебудуватися в&nbsp;полі заряду, тобто що процес повільний порівняно з&nbsp;часом руху іонів на відстань \(\lambda _D\) (\(\sim \lambda _D/v_{Ti}\), де \(v_{Ti}=\sqrt
+{T_i/m_i}\)). Якщо процес швидкий, іони лишаються практично на місцях, екранують лише електрони, і&nbsp;замість \(\lambda _D\) слід брати \(\lambda _{De}\). Зауважимо: у&nbsp;двотемпературній плазмі з&nbsp;\(T_i\ll T_e\) сума дає
+\(\lambda _D\approx \lambda _{Di}\ll \lambda _{De}\)&nbsp;— холодні іони екранують <em>статичний</em> заряд ефективніше за гарячі електрони, але лише якщо встигли досягти рівноваги з&nbsp;температурою \(T_i\).
+У&nbsp;літературі під «дебаївською довжиною» найчастіше розуміють саме \(\lambda _{De}\), тому в&nbsp;кожній задачі слід перевіряти, які компоненти встигають перебудуватися.
+</p>
+<!--
+...... subsection Умова застосовності ......
+-->
+<h5 id="autosec-56">Умова застосовності</h5>
+<a id="main-html-autopage-56"></a>
+
+
+<p>
+Лінеаризація експонент потребує \(|q_s\varphi |\ll T_s\) принаймні на відстанях \(r\gtrsim \lambda _D\). Для \(q=e\) на \(r=\lambda _D\) це \(e^2/\lambda _D\ll T\), або, підставивши&nbsp;<span class="textup">(<a
+href="ch2.html#eq:poisson-screened">1.8</a>)</span>, \(1/(8\pi n\lambda _D^3)\ll 1\) (для двох сортів \(T=8\pi ne^2\lambda _D^2\)), тобто, з&nbsp;точністю до числового множника, \(1/N_D\ll 1\) (число \(N_D\) означено
+в&nbsp;§&#x202f;<a href="ch2.html#sec:debye-sphere">1.6</a>). Отже, теорія виконується лише тоді, коли <em>в&nbsp;сфері радіуса \(\lambda _D\) міститься багато частинок</em> (докладніше&nbsp;— у&nbsp;§&#x202f;<a
+href="ch2.html#sec:debye-sphere">1.6</a>): за одиниць частинок густина не є гладкою функцією, і&nbsp;усереднювати за Больцманом нічого. Але сама \(\lambda _D\) лишається <em>лінійкою</em>, з&nbsp;якою порівнюють інші масштаби.
+З&nbsp;відстанню між частинками \(a\): чи містить хмара багато частинок (\(\lambda _D\gg a\)) чи ні (\(\lambda _D\lesssim a\), див. §&#x202f;<a href="ch2.html#sec:coupling">1.7</a>). З&nbsp;розміром системи \(L\): чи встигає
+екранування утворитися всередині неї (\(\lambda _D\ll L\)).
+</p>
+
+<p>
+Зовсім близько до пробного заряду (\(r\lesssim e^2/T\)) \(|q\varphi |\gtrsim T\) і&nbsp;лінеаризація порушується, але ця область менша за \(\lambda _D\) у&nbsp;\(\sim 1/N_D\) разів, тож на масштабі екранування формула&nbsp;<span
+class="textup">(<a href="ch2.html#eq:screened-potential">1.9</a>)</span> справедлива.
+</p>
+<!--
+...... subsection Квазінейтральність і розмір системи ......
+-->
+<h5 id="autosec-57">Квазінейтральність і розмір системи</h5>
+<a id="main-html-autopage-57"></a>
+
+
+<p>
+Тепер можна уточнити зміст квазінейтральності. Нехай на масштабі \(L\) виникла локальна неоднорідність концентрації \(\delta n\). З&nbsp;рівняння Пуассона \(\varphi /L^2\sim 4\pi e\,\delta n\), а&nbsp;потенціал не може суттєво
+перевищити \(T/e\): за \(e\varphi \gg T\) електрони з&nbsp;тепловими енергіями \(\sim T\) були б виштовхані або втягнені полем, і&nbsp;відхилення зникло б. Тож \(\varphi \lesssim T/e\) і
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{10}\)</span>
+
+<!--
+
+                                                                                                                              2
+                                                                                                        𝛿𝑛      𝑇        𝜆
+                                                                                                           ≲          = ( 𝐷𝑒 ) .
+                                                                                                         𝑛   4𝜋𝑛𝑒2 𝐿2     𝐿
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\delta n}n\lesssim \frac {T}{4\pi ne^2L^2}=\left (\frac {\lambda _{De}}L\right )^2.
+\end{equation*}
+
+</p>
+
+<p>
+Отже, квазінейтральність виконується тим точніше, чим менша дебаївська довжина порівняно з&nbsp;розміром плазми \(L\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{10}\)</span>
+
+<!--
+
+
+                                                                                                                𝜆𝐷 ≪ 𝐿.                                                                  (1.11)--><a id="eq:size-condition"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:size-condition} \lambda _D\ll L.
+\end{equation}
+
+</p>
+
+<p>
+(У&nbsp;нерівностях такого типу різницею між \(\lambda _D\) і&nbsp;\(\lambda _{De}\) нехтуємо&nbsp;— вона лише в&nbsp;множнику \(\sqrt 2\).) Біля стінок, електродів та інших меж ця умова порушується&nbsp;— там існують
+<em>дебаївські шари</em>, де квазінейтральності немає.
+</p>
+<!--
+...... section Дебаївська сфера. Умова колективності ......
+-->
+<h4 id="autosec-58"><span class="sectionnumber">&#xA7;&#x202F;1.6&#x2003;</span>Дебаївська сфера. Умова колективності</h4>
+<a id="main-html-autopage-58"></a>
+
+
+<a id="sec:debye-sphere"></a>
+
+<p>
+Електричне поле зарядженої частинки в&nbsp;плазмі екранується іншими частинками. Екранування колективне, якщо цих частинок багато. Тому порахуємо їх в&nbsp;області радіуса \(\lambda _{De}\) навколо цієї частинки; її називають
+<em><span
+    class="textcolor"
+    style="color:#990000"
+>дебаївською сферою</span></em>.
+</p>
+
+<p>
+Кількість електронів у&nbsp;такій сфері дорівнює
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{11}\)</span>
+
+<!--
+
+                                                                                                                        4𝜋
+                                                                                                             𝑁𝐷 =          𝑛 𝜆3 .                                                                       (1.12)--><a id="eq:ND"></a><!--
+                                                                                                                         3 𝑒 𝐷𝑒
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ND} N_D=\frac {4\pi }{3}n_e\lambda _{De}^3.
+\end{equation}
+
+</p>
+
+<p>
+Отже, \(N_D\)&nbsp;— це просто число електронів у&nbsp;області, на масштабі якої відбувається дебаївське екранування. Тут береться саме електронна довжина \(\lambda _{De}\); заміна на \(\lambda _D=\lambda _{De}/\sqrt 2\) змінила б
+\(N_D\) лише в&nbsp;\(2^{3/2}\approx 2{,}8\) раза, що для умови \(N_D\gg 1\) несуттєво.
+</p>
+
+<p>
+Якщо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{12}\)</span>
+
+<!--
+
+
+                                                                                                                    𝑁𝐷 ≫ 1,                                                                        (1.13)--><a id="eq:ND-coll"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ND-coll} N_D\gg 1,
+\end{equation}
+
+</p>
+
+<p>
+то в&nbsp;екрануванні бере участь дуже багато частинок. У&nbsp;цьому випадку не можна говорити про взаємодію цієї частинки з&nbsp;одним конкретним сусідом: поле, що виникає унаслідок перерозподілу зарядів, визначається сумарною
+дією великої кількості частинок. Екранування має <em><span
+    class="textcolor"
+    style="color:#990000"
+>колективний</span></em> характер.
+</p>
+
+<p>
+Саме тому умова&nbsp;<span class="textup">(<a href="ch2.html#eq:ND-coll">1.13</a>)</span> є основною умовою колективності плазми.
+</p>
+
+<p>
+Є й&nbsp;спостережуваний наслідок. Парні зіткнення змінюють імпульс частинки з&nbsp;частотою \(\nu \sim \omega _p\ln N_D/N_D\) (орієнтовно, з&nbsp;точністю до множника \(\sim 10\); виведемо в&nbsp;розд.&nbsp;<a
+href="ch5.html#sec:plasma-collisions">4</a>; логарифм дають далекі проліти, а&nbsp;не лише близькі зіткнення), де \(\omega _p=v_{Te}/\lambda _{De}\)&nbsp;— плазмова частота, тобто швидкість колективної відповіді (§&#x202f;<a
+href="ch2.html#sec:plasma-oscillations">1.4</a>). Тому за \(N_D\gg 1\) колективні ефекти домінують над парними зіткненнями: \(\nu \ll \omega _p\). Саме це робить «усереднене поле багатьох частинок» головною силою в&nbsp;плазмі.
+</p>
+
+<p>
+Зрозуміємо тепер, коли ця умова виконується. Концентрація \(n\) визначає характерну відстань між частинками. Оскільки на одну частинку в&nbsp;середньому припадає об’єм порядку \(1/n\), маємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{13}\)</span>
+
+<!--
+
+                                                                                                                  1
+                                                                                                           𝑎3 ∼     ,     𝑎 ∼ 𝑛−1/3 ,
+                                                                                                                  𝑛
+
+-->
+
+<p>
+
+\begin{equation*}
+a^3\sim \frac {1}{n}, \qquad a\sim n^{-1/3},
+\end{equation*}
+
+</p>
+
+<p>
+де \(a\)&nbsp;— характерний масштаб міжчастинкової відстані.
+</p>
+
+<p>
+Тоді
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{13}\)</span>
+
+<!--
+
+                                                                                                                              3
+                                                                                                                          𝜆𝐷
+                                                                                                              𝑁𝐷 ∼ (         ) .
+                                                                                                                           𝑎
+
+-->
+
+<p>
+
+\begin{equation*}
+N_D\sim \left (\frac {\lambda _D}{a}\right )^3.
+\end{equation*}
+
+</p>
+
+<p>
+Отже, умова \(N_D\gg 1\) просто означає
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{13}\)</span>
+
+<!--
+
+
+                                                                                                                    𝜆𝐷 ≫ 𝑎.
+
+-->
+
+<p>
+
+\begin{equation*}
+\lambda _D\gg a.
+\end{equation*}
+
+</p>
+
+<p>
+Інакше кажучи, дебаївська довжина повинна бути набагато більшою за відстань між сусідніми частинками. Тільки тоді в&nbsp;області екранування міститься багато частинок і&nbsp;екранування може бути колективним. Отже, «велика»
+дебаївська сфера означає велике <em>число частинок</em> у&nbsp;ній, а&nbsp;не просто велике значення \(\lambda _D\).
+</p>
+
+
+<div class="cb-attention">
+
+<p>
+<b>Тут інтуїція часто працює навпаки.</b> Здається: «багато частинок у&nbsp;сфері&nbsp;— вони сильно взаємодіють і&nbsp;постійно б’ються одна об&nbsp;одну; а&nbsp;коли сфера майже порожня, поле згасло і&nbsp;частинки вільні».
+Насправді все навпаки.
+</p>
+
+<p>
+<em>Багато частинок у&nbsp;сфері \(\Rightarrow \) кожен окремий сусід діє слабко.</em> Дебаївська сфера велика саме тому, що плазма гаряча і&nbsp;(або) розріджена (\(\lambda _{De}^2=T/4\pi ne^2\)), а&nbsp;це ті самі умови, за яких
+сусіди далеко, а&nbsp;їхня потенціальна енергія \(e^2/a\) набагато менша за&nbsp;теплову&nbsp;\(T\) (тобто \(\Gamma \ll 1\), див.&nbsp;<span class="textup">(<a href="ch2.html#eq:ND-Gamma">1.15</a>)</span>). Поштовх від одного
+сусіда крихітний; сила на частинку&nbsp;— сума сотень таких крихітних внесків, що згладжуються в&nbsp;спільне поле. Сильне «стукання» плюса об&nbsp;мінус вимагає зближення до відстані \(e^2/T\ll a\), а&nbsp;це трапляється рідко. Тому
+ідеальна плазма&nbsp;— не плазма без дальніх сил, а&nbsp;газ майже вільних частинок у&nbsp;гладкому полі всіх інших; парні зіткнення й&nbsp;кореляції дають лише малі поправки \(\sim 1/N_D\).
+</p>
+
+<p>
+<em>Мало частинок у&nbsp;сфері (\(N_D\lesssim 1\)) \(\Rightarrow \) сусід діє сильно:</em> хмари немає, поле сусіда на відстані&nbsp;\(a\) голе кулонівське, \(e^2/a\gtrsim T\) (§&#x202f;<a href="ch2.html#sec:coupling">1.7</a>).
+</p>
+</div>
+
+<p>
+Геометрично це видно так (рис.&nbsp;<a href="ch2.html#fig:debye-overlap">1.6</a>). Коли \(\lambda _D\gg a\), дебаївські сфери сусідніх частинок сильно <em>перекриваються</em>: у&nbsp;кожній точці одночасно «чують» одна одну сотні
+частинок, тому поле в&nbsp;ній є гладким усередненим результатом багатьох слабких внесків&nbsp;— це і&nbsp;є колективна поведінка. Будь-яка точка плазми лежить одразу в&nbsp;\(N_D\) сферах (стільки частинок міститься на відстані
+\(\lambda _D\) від неї). Тож за \(N_D\gg 1\) сфери зливаються в&nbsp;одне суцільне середовище з&nbsp;єдиним узгодженим полем (рис.&nbsp;<a href="ch2.html#fig:debye-volume">1.7</a>&#x202f;а). Самі «сфери» при цьому не є
+предметами. Екранувальна хмара несе заряд \(-e\), тобто надлишок лише <em>однієї</em> частинки протилежного знака серед \(N_D\), тоді як число частинок у&nbsp;сфері випадково коливається на&nbsp;\(\sim \sqrt {N_D}\gg 1\). На
+миттєвому знімку хмари не видно: вона існує лише в&nbsp;середньому, як слабка перевага протилежних зарядів біля цього. Кожна частинка водночас належить \(N_D\) чужим хмарам і&nbsp;вносить у&nbsp;кожну лише \(\sim 1/N_D\). Коли ж
+\(\lambda _D\lesssim a\), сфери окремі, і&nbsp;домінують парні взаємодії (рис.&nbsp;<a href="ch2.html#fig:debye-volume">1.7</a>&#x202f;б)&nbsp;— це область сильного зв’язку (§&#x202f;<a href="ch2.html#sec:coupling">1.7</a>).
+</p>
+
+<figure id="autoid-7" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-11"
+    class="lateximagesource"
+><!--
+збільшений
+ фрагмент
+                     𝜆𝐷               𝜆𝐷
+
+                 +                +
+    𝑎
+
+
+
+
+                          𝑎
+
+             (а) 𝜆𝐷 ≫ 𝑎       (б) 𝜆𝐷 ∼ 𝑎
+--><img
+   src="main-html-images/image-11.svg"
+   alt="Рис. 1.6. Одна й та сама дебаївська сфера (штрихове коло радіуса _D), схематично, за різного числа частинок у ній: (а) багато — поле в центрі є сумою багатьох слабких внесків (тонкі лінії), сфери сусідів перекриваються; (б) лише кілька — пе…"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.6. Одна й&nbsp;та сама дебаївська сфера (штрихове коло радіуса \(\lambda _D\)), схематично, за різного числа частинок у&nbsp;ній: (а)&nbsp;багато&nbsp;— поле в&nbsp;центрі є сумою багатьох слабких внесків (тонкі лінії), сфери
+сусідів перекриваються; (б)&nbsp;лише кілька&nbsp;— переважають парні взаємодії з&nbsp;найближчими сусідами (товсті лінії). Червоні й&nbsp;сині точки&nbsp;— частинки протилежних знаків
+
+</div>
+
+<a id="fig:debye-overlap"></a>
+
+</div>
+
+</figure>
+
+<figure id="autoid-8" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-12"
+    class="lateximagesource"
+><!--
+       𝜆𝐷
+
+
+
+
+(а) 𝜆𝐷 ≫ 𝑎   (б) 𝜆𝐷 ≲ 𝑎
+--><img
+   src="main-html-images/image-12.svg"
+   alt="Рис. 1.7. Об’єм плазми, заповнений дебаївськими сферами одного й того самого радіуса _D (схематично): (а) сфер багато і вони густо перекриваються — у кожній точці N_D1 сфер, плазма поводиться як суцільне колективне середовище; (б) сфери не…"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.7. Об’єм плазми, заповнений дебаївськими сферами одного й&nbsp;того самого радіуса \(\lambda _D\) (схематично): (а)&nbsp;сфер багато і&nbsp;вони густо перекриваються&nbsp;— у&nbsp;кожній точці \(N_D\gg 1\) сфер, плазма
+поводиться як суцільне колективне середовище; (б)&nbsp;сфери не перекриваються&nbsp;— частинки взаємодіють насамперед парами
+
+</div>
+
+<a id="fig:debye-volume"></a>
+
+</div>
+
+</figure>
+<!--
+...... section Слабкозв'язана та сильнозв'язана плазма ......
+-->
+<h4 id="autosec-65"><span class="sectionnumber">&#xA7;&#x202F;1.7&#x2003;</span>Слабкозв’язана та сильнозв’язана плазма</h4>
+<a id="main-html-autopage-65"></a>
+
+
+<a id="sec:coupling"></a>
+
+<p>
+Є ще один спосіб оцінити, наскільки важливою є кулонівська взаємодія між сусідніми частинками. Порівняємо потенціальну енергію їхньої взаємодії
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{13}\)</span>
+
+<!--
+
+
+                                                                                                                           𝑒2
+                                                                                                                   𝑈C ∼
+                                                                                                                           𝑎
+
+-->
+
+<p>
+
+\begin{equation*}
+U_{\mathrm C}\sim \frac {e^2}{a}
+\end{equation*}
+
+</p>
+
+<p>
+з&nbsp;характерною енергією теплового руху
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{13}\)</span>
+
+<!--
+
+
+                                                                                                                   𝑈𝑇 ∼ 𝑇.
+
+-->
+
+<p>
+
+\begin{equation*}
+U_T\sim T.
+\end{equation*}
+
+</p>
+
+<p>
+Їхнє відношення називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>параметром зв’язку</span></em>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{13}\)</span>
+
+<!--
+
+
+                                                                                                              𝑈C   𝑒2
+                                                                                                         Γ=      =    ,         𝑎 = 𝑛−1/3 .                                                            (1.14)--><a id="eq:Gamma"></a><!--
+                                                                                                              𝑈𝑇   𝑎𝑇
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Gamma} \Gamma = \frac {U_{\mathrm C}}{U_T} = \frac {e^2}{a\,T}, \qquad a=n^{-1/3}.
+\end{equation}
+
+</p>
+
+<p>
+Таким чином, \(\Gamma \) безпосередньо показує, наскільки сильна кулонівська взаємодія порівняно з&nbsp;тепловим рухом.
+</p>
+
+<p>
+При
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{14}\)</span>
+
+<!--
+
+
+                                                                                                                      Γ≪1
+
+-->
+
+<p>
+
+\begin{equation*}
+\Gamma \ll 1
+\end{equation*}
+
+</p>
+
+<p>
+теплова енергія значно більша за кулонівську. Частинки взаємодіють слабко, а&nbsp;плазму називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>слабкозв’язаною</span></em>. У&nbsp;цьому режимі
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{14}\)</span>
+
+<!--
+
+
+                                                                                                                   𝑁𝐷 ≫ 1,
+
+-->
+
+<p>
+
+\begin{equation*}
+N_D\gg 1,
+\end{equation*}
+
+</p>
+
+<p>
+і&nbsp;екранування має колективний характер.
+</p>
+
+<p>
+Навпаки, при
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{14}\)</span>
+
+<!--
+
+
+                                                                                                                      Γ≳1
+
+-->
+
+<p>
+
+\begin{equation*}
+\Gamma \gtrsim 1
+\end{equation*}
+
+</p>
+
+<p>
+кулонівська взаємодія між сусідніми частинками стає порівнянною з&nbsp;тепловою або перевищує її. Частинки рухаються вже не як майже незалежні частинки, а&nbsp;їхній рух суттєво корельований. Таку систему називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>сильнозв’язаною</span></em>.
+</p>
+
+<p>
+Для нашого визначення \(a=n^{-1/3}\) зв’язок між \(\Gamma \) та \(N_D\) отримується безпосередньо з&nbsp;формули для дебаївської довжини. Справді, \(T=e^2n^{1/3}/\Gamma \), тож \(\lambda _{De}^2=T/(4\pi ne^2)=1/(4\pi
+n^{2/3}\Gamma )\) і \(N_D=\tfrac {4\pi }{3}n\lambda _{De}^3=\tfrac {4\pi }{3}(4\pi )^{-3/2}\Gamma ^{-3/2}\), тобто
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{14}\)</span>
+
+<!--
+
+                                                                                                                       1
+                                                                                                               𝑁𝐷 =         Γ−3/2 .                                                                 (1.15)--><a id="eq:ND-Gamma"></a><!--
+                                                                                                                      6√𝜋
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ND-Gamma} N_D= \frac {1}{6\sqrt {\pi }}\, \Gamma ^{-3/2}.
+\end{equation}
+
+</p>
+
+<p>
+Тому
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{15}\)</span>
+
+<!--
+
+
+                                                                                                          Γ≪1         ⟺         𝑁𝐷 ≫ 1.
+
+-->
+
+<p>
+
+\begin{equation*}
+\Gamma \ll 1 \qquad \Longleftrightarrow \qquad N_D\gg 1.
+\end{equation*}
+
+</p>
+
+<p>
+Тобто \(\Gamma \) і&nbsp;\(N_D\) відповідають за дві різні проблеми. Ближня: сусід на&nbsp;відстані \(a&lt;\lambda _D\) діє голим полем \(e^2/a\), екранування його не послаблює&nbsp;— слабкість дає лише \(\Gamma \ll 1\). Дальня:
+кулонівський внесок далеких зарядів розбігався б, і&nbsp;його обрізає на&nbsp;\(\lambda _D\) спільна хмара \(N_D\) частинок. Еквівалентність означає, що обидві проблеми зникають одночасно.
+</p>
+
+<p>
+Те саме через відношення довжин: \(\lambda _{De}^2/a^2=Ta/4\pi e^2=1/4\pi \Gamma \), тобто \(\lambda _{De}/a=(4\pi \Gamma )^{-1/2}\). За&nbsp;\(\Gamma \ll 1\) дебаївська довжина набагато більша за&nbsp;\(a\) і&nbsp;справді є
+довжиною екранування. За&nbsp;\(\Gamma \gtrsim 1\) формула дає \(\lambda _{De}\lesssim a\), і&nbsp;дебаївське екранування (колективне, експоненційне) там не працює. Заряд, як і&nbsp;раніше, оточений зарядом протилежного знака,
+сумарно \(-q\), але це вже не плавна хмара з&nbsp;сотень частинок, а&nbsp;шар найближчих сусідів на&nbsp;відстані \(\sim a\) (як перша оболонка сусідів у&nbsp;рідині); \(\lambda _D\) тут лишається лише мірною лінійкою.
+</p>
+
+<p>
+Числові множники тут важливі. У&nbsp;<span class="textup">(<a href="ch2.html#eq:ND-Gamma">1.15</a>)</span> стоїть малий коефіцієнт: \(1/(6\sqrt \pi )\approx 0{,}09\), тому \(N_D\approx 0{,}09\,\Gamma ^{-3/2}\). Підставимо
+кілька значень: \(\Gamma =0{,}01\) дає \(N_D\approx 90\) (тобто близько сотні), \(\Gamma =0{,}07\) дає лише \(N_D\approx 5\), а \(\Gamma =1\) дає \(N_D\approx 0{,}1\). Отже, щоб у&nbsp;дебаївській сфері справді було багато частинок
+(\(N_D\gtrsim 100\)), потрібно не просто \(\Gamma &lt;1\), а&nbsp;\(\Gamma \lesssim 0{,}01\). Саме так на практиці слід читати знак «\(\ll \)» у&nbsp;умові \(\Gamma \ll 1\).
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Ядро Сонця: межа ідеальної плазми.</b> Ядро Сонця: \(\Gamma \approx 0{,}07\), тобто формально \(\Gamma &lt;1\), але \(N_D\approx 5\): у&nbsp;дебаївській сфері лише кілька частинок. Це все ще плазма (речовина повністю іонізована
+і&nbsp;квазінейтральна), проте колективний опис там працює лише наближено: поправки мають порядок \(1/N_D\sim 0{,}2\).
+</p>
+</div>
+
+<p>
+Тому Сонце лежить на межі застосовності теорії ідеальної плазми, а&nbsp;не глибоко всередині неї. Умова \(N_D\gtrsim 100\) каже, коли ця теорія <em>точна</em>, а&nbsp;не коли речовина <em>є</em> плазмою.
+</p>
+
+<p>
+Для слабкозв’язаної плазми, крім того, справедливе наближення ідеального газу (поправка Дебая–Хюккеля: потенціал оболонки в&nbsp;точці самої частинки відрізняється від кулонівського на \(-q/\lambda _D\), тож кореляційна енергія
+\(W_{\text {кор}}\approx -e^2/2\lambda _D\) на частинку, а&nbsp;відносно \(|W_{\text {кор}}|/T\sim e^2/(\lambda _DT)\sim 1/N_D\ll 1\); вона дає лише малу поправку до тиску):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{15}\)</span>
+
+<!--
+
+
+                                                                                                                 𝑝 ≃ ∑ 𝑛𝑠 𝑇𝑠 .                                                               (1.16)--><a id="eq:ideal-pressure"></a><!--
+                                                                                                                      𝑠
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ideal-pressure} p\simeq \sum _s n_s T_s.
+\end{equation}
+
+</p>
+
+<p>
+Нарешті, умова колективності сама по собі ще не гарантує квазінейтральності всієї системи: для цього потрібна ще умова&nbsp;<span class="textup">(<a href="ch2.html#eq:size-condition">1.11</a>)</span>, \(\lambda _D\ll L\). Тоді на
+макроскопічних масштабах, значно більших за \(\lambda _D\), зарядові неоднорідності швидко згладжуються і \(n_e\simeq Zn_i\).
+</p>
+
+<p>
+Отже, маємо три різні умови з&nbsp;різним фізичним змістом:
+</p>
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> \(N_D\gg 1\)&nbsp;— колективність екранування;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> \(\lambda _D\ll L\)&nbsp;— квазінейтральність на масштабі системи;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> \(\omega _p\tau \gg 1\)&nbsp;— плазма поводиться як плазма, а&nbsp;не як нейтральний газ: за&nbsp;час \(1/\omega _p\) плазма встигає колективно відповісти на&nbsp;збурення, а&nbsp;заряджена
+частинка&nbsp;— не зіткнутися з&nbsp;нейтральним атомом (\(\tau \)&nbsp;— середній час між зіткненнями заряджених частинок з&nbsp;нейтральними атомами). У&nbsp;слабко іонізованому газі з&nbsp;частими зіткненнями
+з&nbsp;нейтральними атомами ця умова порушується, і&nbsp;газ веде себе як звичайний, хоч \(N_D\gg 1\). Докладніше&nbsp;— в&nbsp;розд.&nbsp;<a href="ch3.html#sec:plasma-waves">2</a>.
+</p>
+</li>
+</ul>
+
+<p>
+Саме ці властивості дають змогу розглядати плазму як колективне квазінейтральне середовище.
+</p>
+<!--
+...... section Екранування в-виродженому газі: довжина Томаса--Фермі ......
+-->
+<h4 id="autosec-66"><span class="sectionnumber">&#xA7;&#x202F;1.8&#x2003;</span>Екранування в&nbsp;виродженому газі: довжина Томаса–Фермі</h4>
+<a id="main-html-autopage-66"></a>
+
+
+<a id="sec:thomas-fermi"></a>
+
+<p>
+Виведення дебаївського екранування спирається не на закон Больцмана як такий, а&nbsp;лише на чутливість концентрації електронів до потенціалу. Нехай електрони перебувають у&nbsp;рівновазі з&nbsp;хімічним потенціалом \(\mu \)
+(нерухомий іонний фон). У&nbsp;потенціалі \(\varphi \) електрон має додаткову енергію \(-e\varphi \), тому рівновага вимагає, щоб локальна величина \(\mu _{\mathrm {лок}}(n)-e\varphi \) була сталою. Звідси зміна концентрації \(\delta
+n=(\partial n/\partial \mu )\,e\varphi \), густина заряду \(\rho =-e\,\delta n\), і&nbsp;рівняння Пуассона набуває вигляду \(\Delta \varphi =\varphi /\lambda ^2\) з
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{16}\)</span>
+
+<!--
+
+                                                                                                                 1         𝜕𝑛
+                                                                                                                    = 4𝜋𝑒2    .                                                        (1.17)--><a id="eq:screening-general"></a><!--
+                                                                                                                 𝜆2        𝜕𝜇
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:screening-general} \frac 1{\lambda ^2}=4\pi e^2\,\frac {\partial n}{\partial \mu }.
+\end{equation}
+
+</p>
+
+<p>
+Для невиродженого газу \(n\propto e^{\mu /T}\), \(\partial n/\partial \mu =n/T\), і&nbsp;одержуємо \(\lambda _{De}\). Для виродженого електронного газу металу (\(T\ll E_F\)) \(n\propto \mu ^{3/2}\), тобто \(\partial n/\partial
+\mu =3n/2E_F\), і
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{17}\)</span>
+
+<!--
+
+
+                                                                                                   𝐸𝐹                              ℏ2
+                                                                                        𝜆𝑇𝐹 = √         ≈ 0,5√𝑎𝐵 𝑛−1/3 ,    𝑎𝐵 =       = 0,53 × 10−8 см,                                     (1.18)--><a id="eq:thomas-fermi"></a><!--
+                                                                                                  6𝜋𝑛𝑒2                            𝑚𝑒2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:thomas-fermi} \lambda _{TF}=\sqrt {\frac {E_F}{6\pi ne^2}}\approx 0{,}5\sqrt {a_B\,n^{-1/3}},\qquad a_B=\frac {\hbar ^2}{me^2}=0{,}53\times 10^{-8}~\text {см},
+\end{equation}
+
+</p>
+
+<p>
+де використано \(E_F=(\hbar ^2/2m)(3\pi ^2n)^{2/3}\). Тобто в&nbsp;квантовій плазмі металу тепловий масштаб \(T\) замінюється енергією Фермі, а&nbsp;екранування визначається середньою відстанню між електронами.
+</p>
+
+<div class="cb-estimate">
+
+<p>
+<b>Довжина Томаса–Фермі для міді.</b> Для міді (\(n\approx 8{,}5\times 10^{22}~\mathrm {см}^{-3}\), \(E_F\approx 7\)&nbsp;еВ) \(\lambda _{TF}\approx 0{,}55\times 10^{-8}\)&nbsp;см: заряд провідника зосереджений
+у&nbsp;шарі завтовшки з&nbsp;частку міжатомної відстані.
+</p>
+</div>
+
+<p>
+Це й&nbsp;пояснює, чому в&nbsp;електростатиці так добре працює наближення «заряд розподілений по поверхні». Тут важлива не стільки сама оцінка \(\lambda _{TF}\), скільки ідея: <em><span
+    class="textcolor"
+    style="color:#990000"
+>масштаб екранування визначається властивостями розподілу частинок</span></em>, а&nbsp;не самим фактом наявності заряду. Для плазми це не екзотика: у&nbsp;щільних астрофізичних об’єктах (білі карлики, ядра планет) електрони
+вироджені, і&nbsp;для статичного екранування замість \(\lambda _{De}\) працює \(\lambda _{TF}\) (якщо іони нерухомі; за рухомих іонів повна довжина екранування визначається меншою з&nbsp;двох&nbsp;— \(\lambda _{TF}\)
+і&nbsp;іонною \(\lambda _{Di}\)).
+</p>
+<!--
+...... section Шар біля стінки і-зонд Ленгмюра ......
+-->
+<h4 id="autosec-67"><span class="sectionnumber">&#xA7;&#x202F;1.9&#x2003;</span>Шар біля стінки і&nbsp;зонд Ленгмюра</h4>
+<a id="main-html-autopage-67"></a>
+
+
+<a id="sec:bohm-sheath"></a>
+
+<a id="sec:debye-layer"></a>
+
+<p>
+Як виміряти концентрацію й&nbsp;температуру електронів усередині плазми? Найпростіше внести в&nbsp;неї маленький електрод&nbsp;— <em><span
+    class="textcolor"
+    style="color:#990000"
+>зонд</span></em>&nbsp;— і&nbsp;подати на нього напругу відносно стінки камери. Тоді в&nbsp;колі «зонд&nbsp;— плазма&nbsp;— стінка» потече струм, який вимірюють амперметром (рис.&nbsp;<a
+href="ch2.html#pic:probe-circuit">1.10</a>). Змінюючи напругу, знімають залежність струму від неї. Але електрод заряджається, і&nbsp;плазма на це реагує: біля нього утворюється шар об’ємного заряду. Щоб зрозуміти, що саме показує
+зонд, спершу з’ясуємо, як влаштований такий шар.
+</p>
+<!--
+...... subsection Заряджена поверхня: шар екранування ......
+-->
+<h5 id="autosec-68">Заряджена поверхня: шар екранування</h5>
+<a id="main-html-autopage-68"></a>
+
+
+<p>
+Нехай півпростір \(x&gt;0\) заповнено плазмою з&nbsp;електронів і&nbsp;однозарядних іонів (концентрація вдалині \(n\), \(T_e=T_i=T\)), а&nbsp;на межі \(x=0\) розташована площина з&nbsp;поверхневою густиною заряду \(\sigma &gt;0\).
+Електрони притягаються до неї, іони відштовхуються, і&nbsp;біля поверхні виникає шар екрануючого заряду (рис.&nbsp;<a href="ch2.html#pic:debye-layer">1.8</a>). Його заряд компенсує \(\sigma \), а&nbsp;товщина має порядок
+\(\lambda _D\). При \(|e\varphi |\ll T\) це вже знайома лінійна теорія: \(\varphi =\varphi _0e^{-x/\lambda _D}\), \(\varphi _0=4\pi \sigma \lambda _D\). Але біля стінок і&nbsp;зондів потенціал може бути більшим за \(T/e\), і&nbsp;ця
+формула перестає працювати. Що тоді з&nbsp;шаром? Точно задачу можна розв’язати для плоскої поверхні. Зонд, щоправда, зазвичай циліндричний чи сферичний, але для нього плоске наближення цілком доречне: шар тонкий, його товщина
+порядку \(\lambda _D\), а&nbsp;розмір зонда \(r_p\gg \lambda _D\) (ця умова знадобиться нижче). На масштабі шару поверхня майже плоска, як Земля для людини, що йде по&nbsp;ній, тож кривизною можна знехтувати. Для тонких зондів
+із&nbsp;\(r_p\lesssim \lambda _D\) геометрія вже істотна, і&nbsp;цей розділ їх не охоплює.
+</p>
+
+<figure id="autoid-9" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-13"
+    class="lateximagesource"
+><!--
+стінка, 𝜍 > 0
+(а)         +
+            +                                           іони
+            +
+            +                                           електрони
+            +
+
+
+                𝜌
+      (б)
+
+                              екрануючий
+                              ´           заряд
+                                𝜌 𝑑𝑥 = −𝜍
+
+
+            𝑒𝜑/𝑇
+      (в)
+            3
+                          Гуї — Чепмен
+                          лінійна теорія
+
+
+
+
+                                                        𝑥
+                    1𝜆𝐷     2𝜆𝐷            3𝜆𝐷    4𝜆𝐷
+--><img
+   src="main-html-images/image-13.png"
+   alt="Рис. 1.8. Шар екранування біля площини з додатним зарядом при e_0=3T: (а) електрони скупчуються біля поверхні, іони відштовхуються; (б) густина заряду шару; (в) потенціал: точний розв’язок Гуї– Чепмена (1.19) і лінійна теорія _0e^-x/_D. Усі…"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.8. Шар екранування біля площини з&nbsp;додатним зарядом при \(e\varphi _0=3T\): (а)&nbsp;електрони скупчуються біля поверхні, іони відштовхуються; (б)&nbsp;густина заряду шару; (в)&nbsp;потенціал: точний розв’язок Гуї–
+Чепмена&nbsp;<span class="textup">(<a href="ch2.html#eq:gouy-chapman">1.19</a>)</span> і&nbsp;лінійна теорія \(\varphi _0e^{-x/\lambda _D}\). Усі три панелі мають спільну вісь \(x\); шар має товщину порядку \(\lambda _D\)
+
+</div>
+
+<a id="pic:debye-layer"></a>
+
+</div>
+
+</figure>
+
+<p>
+За Больцманом \(n^{\pm }=n\exp (\mp e\varphi /T)\), тому густина заряду \(\rho =e(n^+-n^-)=-2ne\sinh (e\varphi /T)\), а&nbsp;рівняння Пуассона дає (\(E=-d\varphi /dx\))
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{18}\)</span>
+
+<!--
+
+
+                                                                                                         𝑑𝐸                    𝑒𝜑
+                                                                                                            = 4𝜋𝜌 = −8𝜋𝑛𝑒 sinh    .
+                                                                                                         𝑑𝑥                    𝑇
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {dE}{dx}=4\pi \rho =-8\pi ne\sinh \frac {e\varphi }{T}.
+\end{equation*}
+
+</p>
+
+<p>
+Множимо обидві частини на \(2E\): ліворуч \(2E\,E&apos;=(E^2)&apos;\), праворуч \(E\,dx=-d\varphi \), тож \(d(E^2)=16\pi ne\sinh (e\varphi /T)\,d\varphi \). Це «інтеграл енергії», як для \(\ddot x=F(x)\) в&nbsp;механіці (там
+множать на \(2\dot x\)), з&nbsp;\(x\) у&nbsp;ролі часу. Інтегруючи з&nbsp;умовою \(E\to 0\) при \(\varphi \to 0\) (\(x\to \infty \)) і&nbsp;користуючись тотожністю \(\cosh y-1=2\sinh ^2(y/2)\), маємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                𝑒𝜑          𝑑𝜑               𝑒𝜑
+                                                                                             𝐸2 = 32𝜋𝑛𝑇 sinh2      ,    −      = 4√2𝜋𝑛𝑇 sinh
+                                                                                                                2𝑇          𝑑𝑥               2𝑇
+
+-->
+
+<p>
+
+\begin{equation*}
+E^2=32\pi nT\sinh ^2\frac {e\varphi }{2T},\qquad -\frac {d\varphi }{dx}=4\sqrt {2\pi nT}\,\sinh \frac {e\varphi }{2T}
+\end{equation*}
+
+</p>
+
+<p>
+(знак такий, що \(E\) і&nbsp;\(\varphi \) однакового знаку). Змінні розділяються: з&nbsp;\(y=e\varphi /T\) маємо \(dy/\sinh (y/2)=-2\,dx/\lambda _D\), а&nbsp;\(\int dy/\sinh (y/2)=2\ln \tanh (y/4)\) (перевірте диференціюванням).
+Отже (розв’язок Гуї–Чепмена),
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{18}\)</span>
+
+<!--
+
+
+                                                                                                     𝑒𝜑        𝑒𝜑0 −𝑥/𝜆𝐷                    𝑇
+                                                                                              tanh      = tanh    𝑒      ,       𝜆𝐷 = √         ,                                           (1.19)--><a id="eq:gouy-chapman"></a><!--
+                                                                                                     4𝑇        4𝑇                         8𝜋𝑛𝑒2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:gouy-chapman} \tanh \frac {e\varphi }{4T}=\tanh \frac {e\varphi _0}{4T}\,e^{-x/\lambda _D},\qquad \lambda _D=\sqrt {\frac {T}{8\pi ne^2}},
+\end{equation}
+
+</p>
+
+<p>
+де \(\varphi _0=\varphi (0)\), а&nbsp;\(\lambda _D\) збігається з&nbsp;дебаївською довжиною&nbsp;<span class="textup">(<a href="ch2.html#eq:debye-radius">1.10</a>)</span> (обидва сорти, \(T_e=T_i=T\), тобто \(\lambda
+_D=\lambda _{De}/\sqrt 2\)). Зв’язок \(\varphi _0\) з&nbsp;\(\sigma \) дає теорема Гаусса: екрануючий заряд компенсує \(\sigma \), поза площиною поля немає, тому \(E(0)=4\pi \sigma \) і
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{19}\)</span>
+
+<!--
+
+
+                                                                                                                   𝑒𝜑0       𝜋
+                                                                                                            sinh       =𝜍       .
+                                                                                                                   2𝑇     √ 2𝑛𝑇
+
+-->
+
+<p>
+
+\begin{equation*}
+\sinh \frac {e\varphi _0}{2T}=\sigma \sqrt {\frac {\pi }{2nT}}.
+\end{equation*}
+
+</p>
+
+<p>
+При \(e\varphi _0\ll T\) повертаємося до лінійної теорії. При \(e\varphi _0\gg T\) потенціал біля поверхні росте лише логарифмічно, \(\varphi \approx (2T/e)\ln (2\lambda _D/x)\) при \(x\ll \lambda _D\), а&nbsp;далеко від неї спадає
+як \(e^{-x/\lambda _D}\), але з&nbsp;амплітудою \((4T/e)\tanh (e\varphi _0/4T)&lt;\varphi _0\) (потенціал «насичується»). Тож головне таке: сильне поле змінює <em>форму</em> профілю, але не <em>товщину</em> шару, яка лишається
+порядку \(\lambda _D\).
+</p>
+<!--
+...... subsection Шар біля поглинальної стінки ......
+-->
+<h5 id="autosec-72">Шар біля поглинальної стінки</h5>
+<a id="main-html-autopage-72"></a>
+
+
+<p>
+Розв’язок Гуї–Чепмена описує рівновагу з&nbsp;Больцмановим розподілом <em>обох</em> сортів. Біля стінки (або зонда), що поглинає частинки, ситуація інша. Розгляньмо по кроках (рис.&nbsp;<a href="ch2.html#pic:bohm-sheath">1.9</a>).
+</p>
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Електрони значно швидші за іони (\(v_{Te}/v_{Ti}\sim \sqrt {m_i/m_e}\)), тож спочатку на стінку потрапляє більше електронів, і&nbsp;вона заряджається негативно відносно плазми.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Негативна стінка відштовхує електрони від прилеглої області плазми завтовшки \(\sim \lambda _D\). Іони там лишаються, тож \(n_i&gt;n_e\): біля стінки, але <em>всередині плазми</em>, виникає шар
+додатного просторового заряду. Він екранує заряд стінки (як шар електронів на рис.&nbsp;<a href="ch2.html#pic:debye-layer">1.8</a> екранував заряд площини), тож за межами шару плазма знову квазінейтральна.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> Поле між шаром і&nbsp;стінкою напрямлене до стінки, тобто потенціал падає до неї. Це поле відштовхує електрони назад у&nbsp;плазму й&nbsp;прискорює іони до стінки.
+</p>
+</li>
+</ul>
+
+<p>
+Від цього шару залежать струм на зонд і&nbsp;потоки частинок та&nbsp;енергії на будь-яку поверхню в&nbsp;плазмі<sup>2</sup>. Далі з’ясуємо кількісно: з&nbsp;якою швидкістю іони входять у&nbsp;шар (критерій Бома), якого потенціалу
+набуває стінка (плаваючий потенціал) і&nbsp;скільки енергії вона отримує.
+</p>
+
+<figure id="autoid-10" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-14"
+    class="lateximagesource"
+><!--
+      𝜑                                               стінка
+           плазма
+                                                                 𝑥
+                                            шар:          −
+ 𝑇
+− 𝑒                                        𝑛𝑖 > 𝑛 𝑒
+ 2𝑒                                                       −
+                                                          −    іони
+
+              передшар                                    −    електрони
+          (квазінейтральний)
+                                                          −
+                                                          −
+
+ 𝜑𝑓                                                       −
+
+                               межа шару
+--><img
+   src="main-html-images/image-14.svg"
+   alt="Рис. 1.9. Профіль потенціалу біля поглинальної стінки: квазінейтральний передшар, де іони набирають швидкість c_s, і дебаївський шар, у якому n_i&amp;gt;n_e. На фоні схематично показано іони й електрони: біля стінки електронів помітно менше…"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.9. Профіль потенціалу біля поглинальної стінки: квазінейтральний передшар, де іони набирають швидкість \(\gtrsim c_s\), і&nbsp;дебаївський шар, у&nbsp;якому \(n_i&gt;n_e\). На&nbsp;фоні схематично показано іони й&nbsp;електрони:
+біля стінки електронів помітно менше; знаки «\(-\)» позначають негативний заряд стінки
+
+</div>
+
+<a id="pic:bohm-sheath"></a>
+
+</div>
+
+</figure>
+
+<p>
+<em>Критерій Бома.</em> Іони мають увійти в&nbsp;шар зі&nbsp;швидкістю не меншою за <em><span
+    class="textcolor"
+    style="color:#990000"
+>іонно-звукову</span></em> (чому саме так її називають, з’ясуємо в&nbsp;§&#x202f;<a href="ch7.html#sec:ion-acoustic">6.2</a>):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{19}\)</span>
+
+<!--
+
+
+                                                                                                                            𝑇𝑒
+                                                                                                   ᵆ0 ≥ 𝑐 𝑠 ,      𝑐𝑠 =           (𝑇𝑖 ≪ 𝑇𝑒 , 𝑍 = 1).                                        (1.20)--><a id="eq:bohm-criterion"></a><!--
+                                                                                                                          √ 𝑚𝑖
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:bohm-criterion} \tcbhighmath {u_0\ge c_s,\qquad c_s=\sqrt {\frac {T_e}{m_i}}\quad (T_i\ll T_e,\ Z=1).}
+\end{equation}
+
+</p>
+
+<p>
+Це <em><span
+    class="textcolor"
+    style="color:#990000"
+>критерій Бома</span></em>&nbsp;<a id="main-html-autopage-75"></a>[<a href="ch18.html#LWR-ht-cite.0@chen2016introduction">4</a>]. Чому саме так? Шар існує, лише якщо в&nbsp;ньому \(n_i&gt;n_e\), тобто коли до стінки
+густина іонів спадає <em>повільніше</em> за густину електронів. Порівняймо, як вони спадають, коли потенціал падає до стінки.
+</p>
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Електрони розподілені за Больцманом, \(n_e\propto \exp (e\varphi /T_e)\): їхня густина падає з&nbsp;фіксованою швидкістю, яка не залежить ні від чого, окрім \(T_e\).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Іони прискорюються полем, і&nbsp;за збереження потоку \(n_iu=\mathrm {const}\) їхня густина теж падає. Але що повільніше іон входить у&nbsp;шар, то сильніше те саме поле змінює його швидкість,
+а&nbsp;отже, то швидше падає \(n_i\).
+</p>
+</li>
+</ul>
+
+<p>
+Якщо \(u_0&lt;c_s\), густина іонів падає швидше за електронну, виходить \(n_i&lt;n_e\), тобто негативний заряд, і&nbsp;шар існувати не може&nbsp;— суперечність. Межа настає при \(u_0=c_s\), коли швидкості падіння збігаються.
+Кількісний вивід (лінеаризація рівняння Пуассона біля межі шару) пропонуємо провести самостійно в&nbsp;задачі&nbsp;<a href="ch2.html#prb:BohmCriterion">1.11</a>.
+</p>
+
+<p>
+<em>Де іони набирають швидкість.</em> Іони прискорюються в&nbsp;квазінейтральному <em>передшарі</em>: там \(n_i=n_e\) з&nbsp;високою точністю, але потенціал усе ж повільно спадає на масштабі \(L_\mathrm {ps}\gg \lambda _D\)
+(довжина пробігу або розмір плазми). Для \(u_0=c_s\) іони набирають \(\tfrac 12m_iu_0^2=\tfrac 12T_e\), тож падіння потенціалу в&nbsp;передшарі \(\approx T_e/2e\), а&nbsp;електрони за Больцманом дають \(n_\mathrm {sh}=n_0\exp
+(-1/2)\approx 0{,}61\,n_0\) (\(n_0\)&nbsp;— концентрація в&nbsp;незбуреній плазмі). Це оцінка, а&nbsp;не строге виведення: реальний перепад залежить від того, як іони народжуються й&nbsp;гальмуються в&nbsp;передшарі, і&nbsp;не
+менший за \(T_e/2e\).
+</p>
+
+<p>
+<em>Плаваючий потенціал.</em> Ізольований зонд (чи стінка) набуває потенціалу \(\varphi _f\) відносно плазми, за якого сумарний струм дорівнює нулю. Тепер потенціал відлічуємо від незбуреної плазми (а&nbsp;не від межі шару), тож
+перепад \(T_e/2e\) передшару входить у&nbsp;\(\varphi _f\). Потік іонів на стінку \(\Gamma _i=n_\mathrm {sh}c_s=n_0\exp (-1/2)\,c_s\). Електрони розподілені за Больцманом у&nbsp;всьому перепаді від плазми до стінки, тому до стінки
+доходить потік \(\Gamma _e=\tfrac 14n_0\bar v_e\exp (e\varphi _f/T_e)\), де \(\bar v_e=\sqrt {8T_e/\pi m_e}\) (однобічний потік \(\tfrac 14n\bar v\) відомий з&nbsp;молекулярної фізики). Прирівнюючи, маємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{20}\)</span>
+
+<!--
+
+                                                                                                                         𝑇𝑒      𝑚𝑖
+                                                                                                                𝜑𝑓 = −      (ln      + 1) ,                                             (1.21)--><a id="eq:floating-potential"></a><!--
+                                                                                                                         2𝑒     2𝜋𝑚𝑒
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:floating-potential} \varphi _f=-\frac {T_e}{2e}\left (\ln \frac {m_i}{2\pi m_e}+1\right ),
+\end{equation}
+
+</p>
+
+<p>
+що для водню дає \(\varphi _f\approx -3{,}3\,T_e/e\), для дейтерію&nbsp;— \(\approx -3{,}7\,T_e/e\).
+</p>
+
+<p>
+<em>Товщина шару і&nbsp;потік енергії на стінку.</em> З&nbsp;перепаду \(\varphi _f\) приблизно \(T_e/2e\) припадає на передшар, решта (\(\approx 2{,}8\,T_e/e\) для водню)&nbsp;— на дебаївський шар. Якщо вважати, що в&nbsp;шарі
+є лише іони, які падають у&nbsp;потенціалі (закон Чайлда–Ленгмюра, \(\varphi \propto x^{4/3}\); задача&nbsp;<a href="ch2.html#prb:SheathChildLangmuir">1.12</a>; [<a
+href="ch18.html#LWR-ht-cite.0@chen2016introduction">4</a>]), то товщина шару для водню становить близько \(2\lambda _{De}\). Іон, пройшовши весь перепад, приносить на стінку енергію \(|e\varphi _f|\), тобто кілька \(T_e\). Разом
+з&nbsp;електронами (кожен, що подолав бар’єр, приносить в&nbsp;середньому \(\approx 2T_e\)) і&nbsp;початковою тепловою енергією іонів (\(\approx 2{,}5T_i\)) повний потік енергії на стінку \(Q\approx \gamma T_e\,\Gamma _i\)
+з&nbsp;множником \(\gamma \approx 2+e|\varphi _f|/T_e+2{,}5\,T_i/T_e\); для водню за \(T_i\sim T_e\) це \(\gamma \) від 7 до 8.
+</p>
+<div role="note" class="footnotes">
+
+<a id="main-html-autopage-76"></a>
+<p>
+<sup>2</sup>&nbsp;У&nbsp;термоядерному реакторі ці потоки визначають нагрів і&nbsp;розпилення <em>першої стінки</em>&nbsp;— внутрішньої стінки камери, що першою зустрічається з&nbsp;плазмою.
+</p>
+
+
+</div>
+<!--
+...... subsection Зонд Ленгмюра: що він вимірює ......
+-->
+<h5 id="autosec-77">Зонд Ленгмюра: що він вимірює</h5>
+<a id="main-html-autopage-77"></a>
+
+
+<p>
+Нехай зонд&nbsp;— малий електрод площею \(S\) і&nbsp;характерним розміром \(r_p\), потенціал якого \(V\) відраховують від опорного електрода (наприклад, заземленої камери). Потенціал самої плазми щодо опорного електрода позначимо
+\(V_p\), плаваючий потенціал зонда&nbsp;— \(V_f\); тоді \(\varphi _f=V_f-V_p&lt;0\)&nbsp;— та сама величина, що в&nbsp;формулі&nbsp;<span class="textup">(<a href="ch2.html#eq:floating-potential">1.21</a>)</span>. Змінюючи
+\(V\), вимірюють струм \(I\) у&nbsp;колі зонда&nbsp;[<a href="ch18.html#LWR-ht-cite.0@chen2016introduction">4</a>, <a href="ch18.html#LWR-ht-cite.0@bittencourt2004fundamentals">2</a>]. З&nbsp;плазми на зонд потрапляють
+і&nbsp;електрони, і&nbsp;іони, але по&nbsp;дроту й&nbsp;через амперметр течуть лише електрони: електрон, що досяг зонда, іде далі по&nbsp;дроту, а&nbsp;іон, що досяг зонда, забирає з&nbsp;його поверхні електрон і&nbsp;нейтралізується,
+тобто в&nbsp;дроті це потік електронів у&nbsp;протилежний бік. Тому амперметр показує різницю двох потоків: електронний струм з&nbsp;плазми на зонд вважаємо додатним, а&nbsp;іонний&nbsp;— від’ємним. Вольт-амперна характеристика
+(ВАХ; рис.&nbsp;<a href="ch2.html#pic:probe-iv">1.11</a>) має три ділянки, і&nbsp;кожна дає свою величину (табл.&nbsp;<a href="ch2.html#tab:probe-regions">1.2</a>).
+</p>
+<figure id="autoid-11" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-15"
+    class="lateximagesource"
+><!--
+                          амперметр, 𝐼
+
+                                 A
+
+                                         джерело
+                                         напруги 𝑉
+
+
+                          ізолятор
+
+стінка камери
+     (опорний             зонд
+     електрод)    𝑒−             іони
+                 плазма
+--><img
+   src="main-html-images/image-15.svg"
+   alt="Рис. 1.10. Схема вимірювання одиночним зондом: напруга V від джерела прикладена між зондом і стінкою камери (опорним електродом), амперметр вимірює струм I у колі зонд — плазма — стінка. Ізолятор залишає відкритим лише кінчик зонда"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.10. Схема вимірювання одиночним зондом: напруга \(V\) від джерела прикладена між зондом і&nbsp;стінкою камери (опорним електродом), амперметр вимірює струм \(I\) у&nbsp;колі зонд&nbsp;— плазма&nbsp;— стінка. Ізолятор
+залишає відкритим лише кінчик зонда
+
+</div>
+
+<a id="pic:probe-circuit"></a>
+
+</div>
+
+</figure>
+
+<figure id="autoid-12" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-16"
+    class="lateximagesource"
+><!--
+       𝐼
+
+
+
+                         𝐼𝑒𝑠
+
+                               гальмівна             електронне
+                                область              насичення
+
+
+
+
+                                                                  𝑉
+           іонне насичення                 𝑉𝑓   𝑉𝑝
+−𝐼𝑖𝑠
+--><img
+   src="main-html-images/image-16.svg"
+   alt="Рис. 1.11. Вольт-амперна характеристика одиночного зонда Ленгмюра (V_p — потенціал плазми, V_f — плаваючий потенціал)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.11. Вольт-амперна характеристика одиночного зонда Ленгмюра (\(V_p\)&nbsp;— потенціал плазми, \(V_f\)&nbsp;— плаваючий потенціал)
+
+</div>
+
+<a id="pic:probe-iv"></a>
+
+</div>
+
+</figure>
+
+<figure id="autoid-13" class="table ">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;1.2. Ділянки вольт-амперної характеристики зонда Ленгмюра.
+
+</div>
+
+<a id="tab:probe-regions"></a>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr class="hline">
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Ділянка</b></span></td>
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Що відбувається</b></span></td>
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Що отримуємо</b></span></td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(V\ll V_f\): іонне насичення
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+до зонда йдуть лише іони; їхній потік фіксує критерій Бома: \(I_{is}\approx 0{,}6\,e\,n_0c_sS\) (\(0{,}6\approx e^{-1/2}\) з&nbsp;передшару)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(n_0\) (при відомому \(T_e\))
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(V_f&lt;V&lt;V_p\): гальмівна область
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+електрони гальмуються; долітають ті, чия енергія перевищує \(e(V_p-V)\), їхня частка \(\exp [-e(V_p-V)/T_e]\), тож \(I_e\propto \exp \bigl (e(V-V_p)/T_e\bigr )\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(T_e\) з&nbsp;нахилу: \(d\ln I_e/dV=e/T_e\) (беруть \(\ln (I+I_{is})\))
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(V\ge V_p\): електронне насичення
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+зонд збирає весь тепловий потік електронів: \(I_{es}=\tfrac 14en_0\bar v_eS\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(V_p\) (злам характеристики); перевірка \(n_0\)
+</p>
+</td>
+</tr>
+
+<tr class="hline" aria-hidden="true">
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+</table>
+
+</figure>
+
+<p>
+Отже, обробка ВАХ іде в&nbsp;такому порядку: за нахилом \(\ln (I+I_{is})\) знаходять \(T_e\); зі зламу характеристики&nbsp;— \(V_p\); далі за відомим \(T_e\) обчислюють \(c_s=\sqrt {T_e/m_i}\) і&nbsp;з&nbsp;\(I_{is}\) одержують
+\(n_0\) (а&nbsp;\(I_{es}\) дає незалежну перевірку). Так з’являються локальні параметри плазми \(T_e\), \(V_p\) і&nbsp;\(n_0\), яких не знайти іншими простими методами.
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Водень, \(T_e=3\)&nbsp;еВ, \(n=10^{10}~\mathrm {см}^{-3}\): \(c_s\approx 1{,}7\times 10^{6}\)&nbsp;см/с; \(I_{is}/S\approx 0{,}6\,en c_s\approx 1{,}6\)&nbsp;мА/см\(^2\); \(I_{es}/S=\tfrac 14en\bar
+v_e\approx 46\)&nbsp;мА/см\(^2\); \(\varphi _f\approx -3{,}3\,T_e/e\approx -10\)&nbsp;В.
+</p>
+</div>
+<!--
+...... subsection Подвійний зонд і-межі застосовності ......
+-->
+<h5 id="autosec-85">Подвійний зонд і&nbsp;межі застосовності</h5>
+<a id="main-html-autopage-85"></a>
+
+
+<p>
+Одиночний зонд потребує опорного електрода, що торкається плазми, а&nbsp;розряд з&nbsp;високочастотними коливаннями потенціалу спотворює характеристику. Цього уникають <em><span
+    class="textcolor"
+    style="color:#990000"
+>подвійним зондом</span></em>&nbsp;— двома однаковими електродами, між якими прикладено напругу \(V\), а&nbsp;вся система плаває (рис.&nbsp;<a href="ch2.html#pic:double-probe-circuit">1.12</a>): стінка камери в&nbsp;колі не
+бере участі. Що тече в&nbsp;один електрод, те витікає з&nbsp;іншого. Нехай електроди мають потенціали \(V_1\), \(V_2\) відносно плазми, \(V=V_1-V_2\). Кожен збирає іонний струм насичення \(I_{is}\) і&nbsp;електронний \(I_{ek}\propto
+\exp (eV_k/T_e)\), тож \(I=I_{e1}-I_{is}=-(I_{e2}-I_{is})\). Звідси \(I_{e1}+I_{e2}=2I_{is}\) і&nbsp;\(I_{e1}/I_{e2}=\exp (eV/T_e)\), підстановка дає
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{1.}{21}\)</span>
+
+<!--
+
+
+                                                                                                   exp(𝑒𝑉 /𝑇𝑒 ) − 1            𝑒𝑉                  𝑒 𝐼𝑖𝑠
+                                                                                         𝐼 = 𝐼𝑖𝑠                    = 𝐼𝑖𝑠 tanh     ,   𝑇𝑒 =                  .                               (1.22)--><a id="eq:double-probe"></a><!--
+                                                                                                   exp(𝑒𝑉 /𝑇𝑒 ) + 1            2𝑇𝑒            2 (𝑑𝐼/𝑑𝑉 )𝑉 =0
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:double-probe} I=I_{is}\,\frac {\exp (eV/T_e)-1}{\exp (eV/T_e)+1}=I_{is}\tanh \frac {eV}{2T_e}\,,\qquad T_e=\frac {e\,I_{is}}{2\,(dI/dV)_{V=0}}\,.
+\end{equation}
+
+</p>
+
+<p>
+Струм не перевищує \(I_{is}\), тому збурення плазми мале; \(T_e\) дає нахил у&nbsp;нулі (рис.&nbsp;<a href="ch2.html#pic:double-probe">1.13</a>).
+</p>
+
+<figure id="autoid-14" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-17"
+    class="lateximagesource"
+><!--
+                        амперметр, 𝐼
+                                           джерело
+                                 A         напруги 𝑉
+
+
+
+
+стінка камери
+     (в колі не              1            2
+   бере участі)   𝑒−         іони
+
+                                 плазма
+
+                   коло плаває: ніде не заземлене
+--><img
+   src="main-html-images/image-17.svg"
+   alt="Рис. 1.12. Схема подвійного зонда: два однакові електроди з’єднані через амперметр і джерело напруги V; коло ніде не заземлене, тож струм замикається лише через плазму між електродами"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.12. Схема подвійного зонда: два однакові електроди з’єднані через амперметр і&nbsp;джерело напруги \(V\); коло ніде не заземлене, тож струм замикається лише через плазму між електродами
+
+</div>
+
+<a id="pic:double-probe-circuit"></a>
+
+</div>
+
+</figure>
+
+<figure id="autoid-15" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-18"
+    class="lateximagesource"
+><!--
+𝐼
+
+     𝐼𝑖𝑠
+
+                   𝑒𝐼𝑖𝑠
+           нахил
+                   2𝑇𝑒
+                          𝑉
+
+
+
+    −𝐼𝑖𝑠
+--><img
+   src="main-html-images/image-18.svg"
+   alt="Рис. 1.13. Характеристика подвійного зонда (1.22): симетрична, насичується на I_is; нахил у нулі дає T_e"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1.13. Характеристика подвійного зонда&nbsp;<span class="textup">(<a href="ch2.html#eq:double-probe">1.22</a>)</span>: симетрична, насичується на \(\pm I_{is}\); нахил у&nbsp;нулі дає \(T_e\)
+
+</div>
+
+<a id="pic:double-probe"></a>
+
+</div>
+
+</figure>
+
+<p>
+Зонд працює лише тоді, коли він не руйнує плазму, яку вимірює:
+</p>
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> розмір зонда значно більший за товщину шару, \(r_p\gg \lambda _D\) (тоді струм збирається з&nbsp;площі \(S\)), але значно менший за довжину вільного пробігу \(\lambda _{\mathrm {fp}}\)
+(розд.&nbsp;<a href="ch5.html#sec:plasma-collisions">4</a>), інакше струм визначається зіткненнями, а&nbsp;не шаром;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> у&nbsp;магнітному полі потрібно \(r_{Le}\gtrsim r_p\), де \(r_{Le}\)&nbsp;— ларморівський радіус електрона (формула&nbsp;<span class="textup">(<a href="ch4.html#eq:larmor">3.1</a>)</span>
+у&nbsp;розд.&nbsp;<a href="ch4.html#sec:particle-motion">3</a>); практично
+</p>
+<p>
+\[ r_{Le}\approx \frac {2{,}4\sqrt {T_e[\text {еВ}]}}{B[\text {Гс}]}\ \text {см}. \]
+</p>
+<p>
+Якщо \(r_{Le}\ll r_p\), електрони потрапляють на зонд лише вздовж силових ліній, збір струму <em>анізотропний</em> і&nbsp;формули цього розділу не працюють;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> у&nbsp;гарячій плазмі (\(T_e\gtrsim 50\)&nbsp;еВ) зонд перегрівається, тому в&nbsp;токамаках його використовують лише на периферії; за наявності швидких електронів нахил \(\ln I(V)\) зменшується
+за великих гальмівних потенціалів \(e(V_p-V)\gg T_e\), і&nbsp;\(T_e\) виходить завищеною.
+</p>
+</li>
+</ul>
+
+
+<div class="cb-simulation">
+
+<p>
+<b>Інтерактивна симуляція.</b> Зняти ВАХ одиночного й&nbsp;подвійного зонда на віртуальному стенді, підібрати вікно апроксимації й&nbsp;знайти \(T_e\), \(V_p\) і&nbsp;\(n\) для невідомої плазми можна в&nbsp;<a
+href="https://sergiokapone.github.io/plasma-physics/PlasmaBook/sims/basics_probe_lab.html" target="_blank" >віртуальній лабораторній</a>. Там видно, як гарячий хвіст завищує \(T_e\) і&nbsp;чому подвійний зонд не дає \(V_p\).
+</p>
+</div>
+
+
+<div class="cb-summary">
+
+<p>
+<b>Головне в розділі</b>
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Плазма&nbsp;— квазінейтральний частково чи повністю іонізований газ із&nbsp;колективною поведінкою заряджених частинок.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> За формулою Саха газ помітно іонізується вже за \(T\ll I\): вільний електрон має величезний фазовий об’єм, і&nbsp;виграш ентропії компенсує больцманівський множник \(e^{-I/T}\).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Електрони й&nbsp;іони можуть мати різні температури (\(T_e\gg T_i\) у&nbsp;розрядах), бо при зіткненні електрон віддає іону лише частку \(\sim m_e/m_i\) енергії.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Порушена нейтральність відновлюється коливаннями з&nbsp;плазмовою частотою \(\omega _{pe}=\sqrt {4\pi n_ee^2/m_e}\); за&nbsp;час \(\omega _{pe}^{-1}\) тепловий електрон проходить \(\lambda
+_{De}=v_{Te}/\omega _{pe}\).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Дебаївська довжина \(\lambda _D\)&nbsp;— масштаб екранування заряду; на відстанях \(L\gg \lambda _D\) плазма квазінейтральна.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Колективність потребує великого числа частинок у&nbsp;дебаївській сфері, \(N_D\gg 1\); це те саме, що слабка зв’язаність \(\Gamma \ll 1\) (\(N_D\approx 0{,}09\,\Gamma ^{-3/2}\)).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Плазма&nbsp;— це ще й&nbsp;\(\lambda _D\ll L\) (квазінейтральність на масштабі системи) та&nbsp;\(\omega _p\tau \gg 1\) (немає домінування зіткнень з&nbsp;нейтральними атомами).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> У&nbsp;виродженому газі (метали) тепловий масштаб \(T\) замінюється енергією Фермі: екранування задає довжина Томаса–Фермі.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Біля поглинальної стінки іони входять у&nbsp;шар об’ємного заряду зі швидкістю \(u\ge c_s\) (критерій Бома); на цьому ґрунтується зонд Ленгмюра.
+</p>
+</li>
+</ul>
+
+</div>
+<!--
+...... section Задачі ......
+-->
+<h4 id="autosec-92">Задачі</h4>
+<a id="main-html-autopage-92"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-16"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.1.</span></span> <a id="autoid-17" ></a ><a id="LWR-ht-problem:1.{1}"></a><a id="prb:SunTemperature"></a>★☆☆ Виразіть температуру поверхні Сонця
+(\(T\approx 5800\)&nbsp;К) в&nbsp;електронвольтах, ергах і&nbsp;джоулях. <a href="ch15.html#LWR-ht-solution:1.{1}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-18"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.2.</span></span> <a id="autoid-19" ></a ><a id="LWR-ht-problem:1.{2}"></a><a id="prb:PlasmaSaha"></a>★★☆ За формулою Саха знайдіть ступінь іонізації водню
+з&nbsp;повною концентрацією \(10^{17}~\mathrm {см}^{-3}\) при \(T=1\)&nbsp;еВ і&nbsp;оцініть температуру, при якій \(\alpha =1/2\). <a href="ch15.html#LWR-ht-solution:1.{2}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-20"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.3.</span></span> <a id="autoid-21" ></a ><a id="LWR-ht-problem:1.{3}"></a><a id="prb:PlasmaFrequency"></a>★☆☆ Знайдіть плазмову частоту \(\omega _{pe}\),
+частоту \(f=\omega _{pe}/2\pi \) та період коливань для \(n_e=10^{10}~\mathrm {см}^{-3}\). До якого діапазону електромагнітних хвиль належить ця частота? <a href="ch15.html#LWR-ht-solution:1.{3}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-22"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.4.</span></span> <a id="autoid-23" ></a ><a id="LWR-ht-problem:1.{4}"></a><a id="prb:PlasmaIons"></a>★★☆ Покажіть, що відношення іонного та електронного
+внесків у&nbsp;\(\omega _p^2\) для водневої плазми дорівнює \(m_e/m_i\), і&nbsp;оцініть відносну поправку до плазмової частоти. <a href="ch15.html#LWR-ht-solution:1.{4}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-24"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.5.</span></span> <a id="autoid-25" ></a ><a id="LWR-ht-problem:1.{5}"></a><a id="prb:PlasmaRelax"></a>★☆☆ Оцініть час відновлення квазінейтральності
+\(t_\mathrm {rel}\sim \lambda _{De}/v_{Te}\), \(v_{Te}=\sqrt {T_e/m_e}\), для іоносфери та токамака з&nbsp;табл.&nbsp;<a href="ch2.html#tab:plasma-types">1.1</a>. <a href="ch15.html#LWR-ht-solution:1.{5}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-26"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.6.</span></span> <a id="autoid-27" ></a ><a id="LWR-ht-problem:1.{6}"></a><a id="prb:PlasmaTwoTemp"></a>★★☆ Для плазми з&nbsp;\(n=10^{12}~\mathrm
+{см}^{-3}\), \(T_e=3\)&nbsp;еВ, \(T_i=0{,}03\)&nbsp;еВ знайдіть \(\lambda _{De}\), \(\lambda _{Di}\) і&nbsp;\(\lambda _D\). Яку довжину екранування слід брати для швидкого й&nbsp;для повільного (порівняно з&nbsp;\(\lambda
+_D/v_{Ti}\)) процесу? <a href="ch15.html#LWR-ht-solution:1.{6}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-28"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.7.</span></span> <a id="autoid-29" ></a ><a id="LWR-ht-problem:1.{7}"></a><a id="prb:PlasmaThomasFermi"></a>★★☆ Оцініть довжину Томаса–Фермі для міді
+(\(n=8{,}5\times 10^{22}~\mathrm {см}^{-3}\)). Порівняйте з&nbsp;міжатомною відстанню та поясніть, у&nbsp;якому сенсі заряд провідника «розподілений по поверхні». <a href="ch15.html#LWR-ht-solution:1.{7}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-30"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.8.</span></span> <a id="autoid-31" ></a ><a id="LWR-ht-problem:1.{8}"></a><a id="prb:PlasmaDebye"></a>★☆☆ Знайдіть дебаївську довжину \(\lambda _{De}\),
+число частинок у&nbsp;дебаївській сфері \(N_D\) та параметр зв’язку \(\Gamma \) для плазми з&nbsp;\(n_e=10^{12}~\mathrm {см}^{-3}\), \(T_e=2\)&nbsp;еВ. <a href="ch15.html#LWR-ht-solution:1.{8}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-32"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.9.</span></span> <a id="autoid-33" ></a ><a id="LWR-ht-problem:1.{9}"></a><a id="prb:PlasmaCollective"></a>★☆☆ Для \(n=10^{14}~\mathrm {см}^{-3}\),
+\(T=10\)&nbsp;еВ знайдіть \(\lambda _{De}\), \(a\) і&nbsp;\(N_D\). Перевірте співвідношення&nbsp;<span class="textup">(<a href="ch2.html#eq:ND-Gamma">1.15</a>)</span>. Чи виконується умова колективності? <a
+href="ch15.html#LWR-ht-solution:1.{9}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-34"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.10.</span></span> <a id="autoid-35" ></a ><a id="LWR-ht-problem:1.{10}"></a><a id="prb:PlasmaDebyeLayer"></a>★★☆ Плазма з&nbsp;\(n=10^{12}~\mathrm
+{см}^{-3}\), \(T=1\)&nbsp;еВ межує із&nbsp;зарядженою площиною (§&#x202f;<a href="ch2.html#sec:debye-layer">1.9</a>). Знайдіть \(\lambda _D\) і&nbsp;поверхневу густину заряду \(\sigma \), при якій \(e\varphi _0=T\). Покажіть,
+що при малих \(\sigma \) маємо \(\varphi _0=4\pi \sigma \lambda _D\). <a href="ch15.html#LWR-ht-solution:1.{10}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-36"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.11.</span></span> <a id="autoid-37" ></a ><a id="LWR-ht-problem:1.{11}"></a><a id="prb:BohmCriterion"></a>★★★ Виведіть критерій Бома&nbsp;<span
+class="textup">(<a href="ch2.html#eq:bohm-criterion">1.20</a>)</span>. Нехай холодні іони входять у&nbsp;шар (на його межі \(\varphi =0\), концентрація \(n_\mathrm {sh}\)) зі&nbsp;швидкістю \(u_0\) в&nbsp;напрямку стінки,
+а&nbsp;електрони розподілені за Больцманом. (а)&nbsp;Знайдіть \(n_i(\varphi )\) і&nbsp;\(n_e(\varphi )\). (б)&nbsp;Для малого \(\chi =-e\varphi /T_e&gt;0\) запишіть рівняння Пуассона для \(\chi \) і&nbsp;з’ясуйте, за якої умови його
+розв’язок монотонний. <a href="ch15.html#LWR-ht-solution:1.{11}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-38"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.12.</span></span> <a id="autoid-39" ></a ><a id="LWR-ht-problem:1.{12}"></a><a id="prb:SheathChildLangmuir"></a>★★★ Біля стінки, де електрони
+відштовхнуті, у&nbsp;шарі є лише іони (закон Чайлда–Ленгмюра). Іони входять у&nbsp;шар із&nbsp;потоком \(\Gamma _i=n_\mathrm {sh}c_s\) і&nbsp;малою початковою швидкістю (енергією входу \(T_e/2\) грубо нехтуємо), рухаючись
+у&nbsp;падінні потенціалу \(V=-\varphi &gt;0\) (\(V(0)=0\), \(V&apos;(0)=0\)). (а)&nbsp;Виведіть залежність \(V(x)\) і&nbsp;покажіть, що \(V\propto x^{4/3}\). (б)&nbsp;Оцініть товщину шару для водню, якщо повний перепад у&nbsp;шарі
+\(V_\mathrm {sh}\approx 2{,}8\,T_e/e\), і&nbsp;виразіть її через \(\lambda _{De}=\sqrt {T_e/4\pi n_\mathrm {sh}e^2}\). <a href="ch15.html#LWR-ht-solution:1.{12}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-40"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.13.</span></span> <a id="autoid-41" ></a ><a id="LWR-ht-problem:1.{13}"></a><a id="prb:BohmFlux"></a>★★☆ Водневий розряд: \(n_\mathrm
+{sh}=10^{11}~\mathrm {см}^{-3}\), \(T_e=4\)&nbsp;еВ, \(T_i\ll T_e\). Знайдіть мінімальну швидкість іонів на межі шару (критерій Бома), їхню енергію та потік на стінку. <a href="ch15.html#LWR-ht-solution:1.{13}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-42"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.14.</span></span> <a id="autoid-43" ></a ><a id="LWR-ht-problem:1.{14}"></a><a id="prb:PlasmaProbe"></a>★★☆ Зонд Ленгмюра площею
+\(S=0{,}1\)&nbsp;см\(^2\) у&nbsp;водневій плазмі з&nbsp;\(T_e=3\)&nbsp;еВ реєструє струм іонного насичення \(1{,}6\)&nbsp;мА. Знайдіть концентрацію \(n_0\) і&nbsp;плаваючий потенціал відносно плазми. <a
+href="ch15.html#LWR-ht-solution:1.{14}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-44"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.15.</span></span> <a id="autoid-45" ></a ><a id="LWR-ht-problem:1.{15}"></a><a id="prb:DoubleProbe"></a>★★☆ Подвійний зонд (формула&nbsp;<span
+class="textup">(<a href="ch2.html#eq:double-probe">1.22</a>)</span>) показує струм насичення \(0{,}5\)&nbsp;мА, а&nbsp;нахил характеристики в&nbsp;нулі \(dI/dV=0{,}1\)&nbsp;мА/В. Знайдіть \(T_e\). <a
+href="ch15.html#LWR-ht-solution:1.{15}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-46"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 1.16.</span></span> <a id="autoid-47" ></a ><a id="LWR-ht-problem:1.{16}"></a><a id="prb:EdgePlasmaSheath"></a>★★☆ Пристінкова воднева плазма токамака:
+\(n=10^{13}~\mathrm {см}^{-3}\), \(T_e=30\)&nbsp;еВ, \(T_i\ll T_e\). (а)&nbsp;Оцініть \(\lambda _{De}\) і&nbsp;\(N_D\). (б)&nbsp;Знайдіть плаваючий потенціал стінки відносно плазми за формулою&nbsp;<span class="textup">(<a
+href="ch2.html#eq:floating-potential">1.21</a>)</span>. (в)&nbsp;Оцініть теплове навантаження на стінку \(Q\approx \gamma T_e\,\Gamma _i\), де \(\Gamma _i=n_\mathrm {sh}c_s\), \(n_\mathrm {sh}\approx \exp (-1/2)\,n\approx
+0{,}6\,n\) (густина на межі шару), \(\gamma \approx 7\) (оцінка&nbsp;— у&nbsp;тексті §&#x202f;<a href="ch2.html#sec:bohm-sheath">1.9</a>). <a href="ch15.html#LWR-ht-solution:1.{16}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+
+<div class="cb-questions">
+
+<p>
+<b>Контрольні питання</b>
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Чим плазма відрізняється від нейтрального газу? Що означає «колективна» поведінка?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Чому газ іонізується помітно при температурі, набагато меншій за енергію іонізації? Що виражає формула Саха?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> Чому в&nbsp;газовому розряді \(T_e\gg T_i\) і&nbsp;що таке двотемпературна плазма?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">4.</span> Що таке квазінейтральність? Оцініть, наскільки вона порушується на масштабі \(L\).
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">5.</span> Звідки береться плазмова частота \(\omega _{pe}\) і&nbsp;який фізичний зміст мають \(\omega _{pe}^{-1}\) та&nbsp;\(\lambda _{De}=v_{Te}/\omega _{pe}\)?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">6.</span> Виведіть дебаївське екранування. Чому потрібен множник \(e^{-r/\lambda _D}\) і&nbsp;чому відкидається зростаючий розв’язок?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">7.</span> Як змінюється довжина екранування у&nbsp;виродженому електронному газі? Що таке довжина Томаса–Фермі?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">8.</span> Чому в&nbsp;слабкозв’язаній плазмі \(N_D\gg 1\)? Як зв’язані \(N_D\) і&nbsp;\(\Gamma \)?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">9.</span> За яких умов плазма «колективна»? Назвіть три умови, їхній фізичний зміст і&nbsp;співвідношення між \(N_D\) та \(\Gamma \).
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">10.</span> Чому дебаївський шар біля стінки має товщину \(\sim \lambda _D\) навіть при великому потенціалі?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">11.</span> Чому іони мають увійти в&nbsp;шар біля стінки зі&nbsp;швидкістю \(u\ge c_s\)? Звідки береться плаваючий потенціал \(\approx -3\,T_e/e\) і&nbsp;що вимірює зонд Ленгмюра?
+</p>
+<p>
+
+</p>
+</li>
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

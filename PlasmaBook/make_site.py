@@ -176,11 +176,14 @@ TEMPLATE = """<!DOCTYPE html>
             <a href="@PDF@" class="pdf-button pdf-button-primary">
                 <span class="btn-icon">&#8595;</span> Завантажити посібник (PDF)
             </a>
+            <a href="online/" class="pdf-button">
+                <span class="btn-icon">&#9776;</span> Читати онлайн
+            </a>
             <a href="simulations.html" class="pdf-button">
                 <span class="btn-icon">&#9657;</span> Інтерактивні симуляції
             </a>
         </div>
-        <p class="pdf-note">Повна версія у форматі PDF. Пункти змісту нижче відкривають PDF на потрібному місці.</p>
+        <p class="pdf-note">Повна версія у форматі PDF; ту саму книгу можна читати онлайн. Пункти змісту нижче відкривають PDF на потрібному місці.</p>
     </div>
 
     <div class="content">

@@ -1,0 +1,4985 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Елементи фізики плазми — Гідродинамічний та магнітогідродинамічний опис</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-249"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Елементи фізики плазми</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../PlasmaBook/main.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="ch1.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-26" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Плазма: від іонізованого газу до колективного середовища</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-27" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Що таке плазма?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-32" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Іонізація: формула Саха</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-37" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Температура плазми та два компоненти</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-38" class="tocsection" >
+<span class="sectionnumber">1.4</span><span class="toctitle">&#x2003;Квазінейтральність і&nbsp;плазмові коливання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-48" class="tocsection" >
+<span class="sectionnumber">1.5</span><span class="toctitle">&#x2003;Дебаївське екранування</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-58" class="tocsection" >
+<span class="sectionnumber">1.6</span><span class="toctitle">&#x2003;Дебаївська сфера. Умова колективності</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-65" class="tocsection" >
+<span class="sectionnumber">1.7</span><span class="toctitle">&#x2003;Слабкозв’язана та сильнозв’язана плазма</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-66" class="tocsection" >
+<span class="sectionnumber">1.8</span><span class="toctitle">&#x2003;Екранування в&nbsp;виродженому газі: довжина Томаса–Фермі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-67" class="tocsection" >
+<span class="sectionnumber">1.9</span><span class="toctitle">&#x2003;Шар біля стінки і&nbsp;зонд Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-111" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Колективні коливання та хвилі в&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-112" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Діелектрична проникність холодної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-116" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Закон дисперсії. Частота відсікання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-121" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Поздовжні (ленгмюрівські) хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-129" class="tocsection" >
+<span class="sectionnumber">2.4</span><span class="toctitle">&#x2003;Зіткнення й&nbsp;поглинання електромагнітних хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-130" class="tocsection" >
+<span class="sectionnumber">2.5</span><span class="toctitle">&#x2003;Відбиття електромагнітних хвиль від плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-133" class="tocsection" >
+<span class="sectionnumber">2.6</span><span class="toctitle">&#x2003;Іоносфера і&nbsp;далекий радіозв’язок</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-135" class="tocsection" >
+<span class="sectionnumber">2.7</span><span class="toctitle">&#x2003;Як це вимірюють: інтерферометрія і&nbsp;рефлектометрія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-158" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Рух зарядженої частинки в&nbsp;електричному та&nbsp;магнітному полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-159" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Однорідне магнітне поле</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-163" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Дрейфи в&nbsp;схрещених полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-181" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Поляризаційний дрейф</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-185" class="tocsection" >
+<span class="sectionnumber">3.4</span><span class="toctitle">&#x2003;Магнітний момент і&nbsp;адіабатичний інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-198" class="tocsection" >
+<span class="sectionnumber">3.5</span><span class="toctitle">&#x2003;Магнітне дзеркало і&nbsp;конус втрат</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-205" class="tocsection" >
+<span class="sectionnumber">3.6</span><span class="toctitle">&#x2003;Подовжній інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-206" class="tocsection" >
+<span class="sectionnumber">3.7</span><span class="toctitle">&#x2003;Диполь Землі та радіаційні пояси</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-211" class="tocsection" >
+<span class="sectionnumber">3.8</span><span class="toctitle">&#x2003;Як це вимірюють: аналізатор енергій і&nbsp;ECE</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-227" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Зіткнення, провідність та перенос у&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-228" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Кулонівські зіткнення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-233" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Провідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-236" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Теплопровідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-237" class="tocsection" >
+<span class="sectionnumber">4.4</span><span class="toctitle">&#x2003;Дифузія в&nbsp;плазмі. Амбіполярна дифузія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-239" class="tocsection" >
+<span class="sectionnumber">4.5</span><span class="toctitle">&#x2003;Як це вимірюють: температура з&nbsp;опору і&nbsp;з&nbsp;ширини ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-251" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Гідродинамічний та магнітогідродинамічний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-252" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Гідродинамічний опис не є синонімом частих зіткнень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-253" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Дворідинний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-254" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Від дворідинної моделі до однорідинної МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-257" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Основне рівняння магнітної гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-265" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Альвенівська швидкість і&nbsp;число Альвена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-266" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;МГД-рівновага та магнітні поверхні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-271" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Енергія електромагнітного поля та плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-272" class="tocsection" >
+<span class="sectionnumber">5.8</span><span class="toctitle">&#x2003;Діамагнетизм плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-274" class="tocsection" >
+<span class="sectionnumber">5.9</span><span class="toctitle">&#x2003;Вмороженість магнітного поля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-281" class="tocsection" >
+<span class="sectionnumber">5.10</span><span class="toctitle">&#x2003;Перез’єднання силових ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-285" class="tocsection" >
+<span class="sectionnumber">5.11</span><span class="toctitle">&#x2003;Дві мови опису: окремі частинки й&nbsp;суцільне середовище</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-300" class="tocsection" >
+<span class="sectionnumber">5.12</span><span class="toctitle">&#x2003;Як це вимірюють: магнітні виміри</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-327" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-328" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Що в&nbsp;плазмі може бути відновлювальною силою?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-332" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Звукова й&nbsp;іонно-звукова хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-337" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Лінеаризована МГД і&nbsp;загальне дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-338" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Альвенівська хвиля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-344" class="tocsection" >
+<span class="sectionnumber">6.5</span><span class="toctitle">&#x2003;Магнітозвукові хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-351" class="tocsection" >
+<span class="sectionnumber">6.6</span><span class="toctitle">&#x2003;Підсумок: хвилі в&nbsp;рідинному описі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-354" class="tocsection" >
+<span class="sectionnumber">6.7</span><span class="toctitle">&#x2003;Високочастотні хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-362" class="tocsection" >
+<span class="sectionnumber">6.8</span><span class="toctitle">&#x2003;Межі застосовності МГД-хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-383" class="tocchapter" >
+<span class="sectionnumber">7</span><span class="toctitle">&#x2003;Кінетичний опис плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-384" class="tocsection" >
+<span class="sectionnumber">7.1</span><span class="toctitle">&#x2003;Функція розподілу та фазовий простір</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-385" class="tocsection" >
+<span class="sectionnumber">7.2</span><span class="toctitle">&#x2003;Моменти функції розподілу</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-386" class="tocsection" >
+<span class="sectionnumber">7.3</span><span class="toctitle">&#x2003;Кінетичне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-387" class="tocsection" >
+<span class="sectionnumber">7.4</span><span class="toctitle">&#x2003;Максвеллівський розподіл і&nbsp;температура</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-388" class="tocsection" >
+<span class="sectionnumber">7.5</span><span class="toctitle">&#x2003;Від кінетики до гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-389" class="tocsection" >
+<span class="sectionnumber">7.6</span><span class="toctitle">&#x2003;Дворідинна картина та її зв’язок із МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-390" class="tocsection" >
+<span class="sectionnumber">7.7</span><span class="toctitle">&#x2003;Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-391" class="tocsection" >
+<span class="sectionnumber">7.8</span><span class="toctitle">&#x2003;Лінеаризація кінетичного рівняння та хвильовий відгук</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-399" class="tocsection" >
+<span class="sectionnumber">7.9</span><span class="toctitle">&#x2003;Загасання Ландау</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-408" class="tocsection" >
+<span class="sectionnumber">7.10</span><span class="toctitle">&#x2003;Коли потрібен кінетичний опис?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-409" class="tocsection" >
+<span class="sectionnumber">7.11</span><span class="toctitle">&#x2003;Як це вимірюють: томсонівське розсіяння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-434" class="tocchapter" >
+<span class="sectionnumber">8</span><span class="toctitle">&#x2003;Загальний принцип нестійкості плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-435" class="tocsection" >
+<span class="sectionnumber">8.1</span><span class="toctitle">&#x2003;Що означає нестійкість?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-439" class="tocsection" >
+<span class="sectionnumber">8.2</span><span class="toctitle">&#x2003;Лінеаризація: як знайти долю малого збурення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-441" class="tocsection" >
+<span class="sectionnumber">8.3</span><span class="toctitle">&#x2003;Хвиля, що може рости</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-445" class="tocsection" >
+<span class="sectionnumber">8.4</span><span class="toctitle">&#x2003;Дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-449" class="tocsection" >
+<span class="sectionnumber">8.5</span><span class="toctitle">&#x2003;Звідки береться енергія нестійкості?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-453" class="tocsection" >
+<span class="sectionnumber">8.6</span><span class="toctitle">&#x2003;Рівновага та стійкість у&nbsp;магнітному полі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-457" class="tocsection" >
+<span class="sectionnumber">8.7</span><span class="toctitle">&#x2003;Перетяжка як найпростіший приклад нестійкості</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-458" class="tocsection" >
+<span class="sectionnumber">8.8</span><span class="toctitle">&#x2003;Лінійна та нелінійна стадії</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-462" class="tocsection" >
+<span class="sectionnumber">8.9</span><span class="toctitle">&#x2003;Нестійкість Релея–Тейлора та жолобкова нестійкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-469" class="tocsection" >
+<span class="sectionnumber">8.10</span><span class="toctitle">&#x2003;Двопотокова нестійкість та нестійкість пучка</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-473" class="tocsection" >
+<span class="sectionnumber">8.11</span><span class="toctitle">&#x2003;Нестійкості анізотропної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-474" class="tocsection" >
+<span class="sectionnumber">8.12</span><span class="toctitle">&#x2003;Енергетичний принцип</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-475" class="tocsection" >
+<span class="sectionnumber">8.13</span><span class="toctitle">&#x2003;Дрейфові хвилі та аномальний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-476" class="tocsection" >
+<span class="sectionnumber">8.14</span><span class="toctitle">&#x2003;Від загального принципу до конкретних нестійкостей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-479" class="tocsection" >
+<span class="sectionnumber">8.15</span><span class="toctitle">&#x2003;Як це вимірюють: котушки Мірнова і&nbsp;м’який рентген</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-490" class="tocchapter" >
+<span class="sectionnumber">9</span><span class="toctitle">&#x2003;Магнітне утримання плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-491" class="tocsection" >
+<span class="sectionnumber">9.1</span><span class="toctitle">&#x2003;Проблема утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-492" class="tocsection" >
+<span class="sectionnumber">9.2</span><span class="toctitle">&#x2003;Відкриті пастки: магнітне дзеркало</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-493" class="tocsection" >
+<span class="sectionnumber">9.3</span><span class="toctitle">&#x2003;Пінч-ефект</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-497" class="tocsection" >
+<span class="sectionnumber">9.4</span><span class="toctitle">&#x2003;Рівновага \(z\)-пінча. Співвідношення Беннета</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-503" class="tocsection" >
+<span class="sectionnumber">9.5</span><span class="toctitle">&#x2003;Рівновага \(\mittheta \)-пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-504" class="tocsection" >
+<span class="sectionnumber">9.6</span><span class="toctitle">&#x2003;Нестійкості пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-511" class="tocsection" >
+<span class="sectionnumber">9.7</span><span class="toctitle">&#x2003;Тороїдальні системи: токамак і&nbsp;стеларатор</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-515" class="tocsection" >
+<span class="sectionnumber">9.8</span><span class="toctitle">&#x2003;Захоплені частинки й&nbsp;неокласичний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-519" class="tocsection" >
+<span class="sectionnumber">9.9</span><span class="toctitle">&#x2003;Рівновага тора: зсув Шафранова та межа за тиском</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-520" class="tocsection" >
+<span class="sectionnumber">9.10</span><span class="toctitle">&#x2003;Як це вимірюють: магнітна реконструкція рівноваги</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-531" class="tocchapter" >
+<span class="sectionnumber">10</span><span class="toctitle">&#x2003;Керований термоядерний синтез</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-532" class="tocsection" >
+<span class="sectionnumber">10.1</span><span class="toctitle">&#x2003;Реакції та паливо</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">10.2</span><span class="toctitle">&#x2003;Чому потрібна саме така температура: бар’єр і&nbsp;тунелювання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-540" class="tocsection" >
+<span class="sectionnumber">10.3</span><span class="toctitle">&#x2003;Баланс потужностей і&nbsp;критерій Лоусона</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-541" class="tocsection" >
+<span class="sectionnumber">10.4</span><span class="toctitle">&#x2003;Втрати</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-542" class="tocsection" >
+<span class="sectionnumber">10.5</span><span class="toctitle">&#x2003;Дві стратегії: магнітне й&nbsp;інерційне утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-543" class="tocsection" >
+<span class="sectionnumber">10.6</span><span class="toctitle">&#x2003;Від реакції до розетки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-550" class="tocsection" >
+<span class="sectionnumber">10.7</span><span class="toctitle">&#x2003;Що ще треба вирішити</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-551" class="tocsection" >
+<span class="sectionnumber">10.8</span><span class="toctitle">&#x2003;Інерційний шлях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-552" class="tocsection" >
+<span class="sectionnumber">10.9</span><span class="toctitle">&#x2003;Де ми зараз: стан на&nbsp;2026&nbsp;рік</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-555" class="tocsection" >
+<span class="sectionnumber">10.10</span><span class="toctitle">&#x2003;Як це вимірюють: нейтронна діагностика</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-566" class="tocchapter" >
+<span class="sectionnumber">11</span><span class="toctitle">&#x2003;Низькотемпературна плазма та газовий розряд</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-567" class="tocsection" >
+<span class="sectionnumber">11.1</span><span class="toctitle">&#x2003;Елементарні процеси: іонізація і&nbsp;її швидкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-568" class="tocsection" >
+<span class="sectionnumber">11.2</span><span class="toctitle">&#x2003;Пробій газу: механізм Таунсенда і&nbsp;закон Пашена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-572" class="tocsection" >
+<span class="sectionnumber">11.3</span><span class="toctitle">&#x2003;Тліючий розряд і&nbsp;дуга</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-578" class="tocsection" >
+<span class="sectionnumber">11.4</span><span class="toctitle">&#x2003;Приелектродний шар у&nbsp;розряді</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-579" class="tocsection" >
+<span class="sectionnumber">11.5</span><span class="toctitle">&#x2003;Глобальна модель розряду</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-580" class="tocsection" >
+<span class="sectionnumber">11.6</span><span class="toctitle">&#x2003;Високочастотні джерела плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-589" class="tocsection" >
+<span class="sectionnumber">11.7</span><span class="toctitle">&#x2003;Плазмова обробка матеріалів</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-590" class="tocsection" >
+<span class="sectionnumber">11.8</span><span class="toctitle">&#x2003;Як це вимірюють: оптична емісія і&nbsp;ВЧ-зонди</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-601" class="tocchapter" >
+<span class="sectionnumber">12</span><span class="toctitle">&#x2003;Основні масштаби, режими та межі моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-602" class="tocsection" >
+<span class="sectionnumber">12.1</span><span class="toctitle">&#x2003;Просторові та часові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-606" class="tocsection" >
+<span class="sectionnumber">12.2</span><span class="toctitle">&#x2003;Зіткнювальний та беззіткнювальний режими</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-607" class="tocsection" >
+<span class="sectionnumber">12.3</span><span class="toctitle">&#x2003;Як за масштабами вибирають модель</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-610" class="tocsection" >
+<span class="sectionnumber">12.4</span><span class="toctitle">&#x2003;Типова ієрархія масштабів у магнітному утриманні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-611" class="tocsection" >
+<span class="sectionnumber">12.5</span><span class="toctitle">&#x2003;Від кінетики до МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-612" class="tocsection" >
+<span class="sectionnumber">12.6</span><span class="toctitle">&#x2003;Безрозмірні параметри МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-613" class="tocsection" >
+<span class="sectionnumber">12.7</span><span class="toctitle">&#x2003;Межі простих моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-614" class="tocsection" >
+<span class="sectionnumber">12.8</span><span class="toctitle">&#x2003;Основні масштаби та формули</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-617" class="tocsection" >
+<span class="sectionnumber">12.9</span><span class="toctitle">&#x2003;Що вимірюють на&nbsp;якому масштабі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch14.html#autosec-629" class="tocchapter" >
+Підсумки</a>
+</p>
+
+
+
+<p>
+<a href="ch15.html#autosec-634" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-649" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-650" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Таблиця позначень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-660" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Перехід між СГС і&nbsp;СІ. Константи</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-673" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Шпаргалка: ключові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch17.html#autosec-678" class="tocpart" >
+Словник термінів</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-682" class="tocchapter" >
+Література</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-683" class="tocsection" >
+Підручники та посібники</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-684" class="tocsection" >
+Джерела фактів і результатів</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Гідродинамічний та магнітогідродинамічний опис">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Елементи фізики плазми</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\newcommand {\vect }[1]{\mathbf {#1}}\)
+
+\(\newcommand {\Efield }{\vect {E}}\)
+
+\(\newcommand {\Dfield }{\vect {D}}\)
+
+\(\newcommand {\Bfield }{\vect {B}}\)
+
+\(\newcommand {\Hfield }{\vect {H}}\)
+
+\(\newcommand {\rot }{\mathbf {\nabla }\times }\)
+
+\(\newcommand {\divg }{\mathbf {\nabla }\cdot }\)
+
+\(\newcommand {\grad }{\vect {\nabla }}\)
+
+\(\newcommand {\diff }[2]{\frac {\partial #1}{\partial #2}}\)
+
+\(\newcommand {\ddiff }[2]{\frac {\partial ^2 #1}{\partial #2^2}}\)
+
+\(\newcommand {\parttime }[1]{\frac {\partial {#1}}{\partial t}}\)
+
+\(\newcommand {\pparttime }[1]{\frac {\partial ^2{#1}}{\partial t^2}}\)
+
+\(\renewcommand {\phi }{\varphi }\)
+
+\(\renewcommand {\epsilon }{\varepsilon }\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\Div }{div}\)
+
+\(\DeclareMathOperator {\Rot }{rot}\)
+
+\(\DeclareMathOperator {\Grad }{grad}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\renewcommand {\iiint }{\int }\)
+
+\(\renewcommand {\iint }{\int }\)
+
+\(\newcommand {\oiint }{\oint }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Гідродинамічний та магнітогідродинамічний опис ......
+-->
+<h3 id="autosec-251"><span class="sectionnumber">5&#x2003;</span>Гідродинамічний та магнітогідродинамічний опис</h3>
+<a id="main-html-autopage-251"></a>
+<a id="main-html-autofile-6"></a>
+
+<a id="sec:mhd"></a>
+
+<a id="Fluid"></a>
+
+<p>
+<a id="LWR-ht-mhd"></a>
+</p>
+
+<p>
+До цього моменту ми розглядали окремі частинки. Але в&nbsp;багатьох задачах не потрібно знати траєкторію кожної з&nbsp;них: достатньо знати усереднені поля густини, швидкості, тиску та електромагнітного поля.
+</p>
+<!--
+...... section Гідродинамічний опис не є синонімом частих зіткнень ......
+-->
+<h4 id="autosec-252"><span class="sectionnumber">&#xA7;&#x202F;5.1&#x2003;</span>Гідродинамічний опис не є синонімом частих зіткнень</h4>
+<a id="main-html-autopage-252"></a>
+
+
+<p>
+Зіткнення полегшують встановлення локальної рівноваги та ізотропного тиску. Проте великомасштабні низькочастотні рухи плазми можуть описуватися рідинними рівняннями і&nbsp;за рідких зіткнень, якщо швидкі кінетичні ступені вільності
+не визначають основну динаміку. Саме тому в&nbsp;плазмі співіснують два описи: кінетичний, у&nbsp;термінах функцій розподілу, та МГД, у&nbsp;термінах макроскопічних полів.
+</p>
+
+<p>
+Для однорідинної МГД типові умови мають вигляд
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+
+                                                                                                              𝐿 ≫ 𝑟𝐿𝑖 ,   𝜔 ≪ 𝜔𝑐𝑖 ,
+
+-->
+
+<p>
+
+\begin{equation*}
+L\gg r_{Li},\qquad \omega \ll \omega _{ci},
+\end{equation*}
+
+</p>
+
+<p>
+але цього недостатньо саме по собі: потрібні також відповідне замикання рівнянь та, для найпростішої ізотропної моделі, достатньо швидка ізотропізація тиску. Якщо ці умови порушуються, треба повертатися до дворідинної або кінетичної теорії.
+</p>
+<!--
+...... section Дворідинний опис ......
+-->
+<h4 id="autosec-253"><span class="sectionnumber">&#xA7;&#x202F;5.2&#x2003;</span>Дворідинний опис</h4>
+<a id="main-html-autopage-253"></a>
+
+
+
+<div class="cb-theory">
+
+<p>
+<b>Теоретичні відомості</b> Нагадаємо з&nbsp;гідродинаміки
+</p>
+
+<p>
+Для звичайної рідини з&nbsp;густиною \(\rho \) і&nbsp;швидкістю \(\vect v\) маємо рівняння неперервності \(\partial _t\rho +\nabla \cdot (\rho \vect v)=0\) та&nbsp;рівняння Ейлера
+</p>
+
+<p>
+\[\rho \Bigl (\frac {\partial \vect v}{\partial t}+(\vect v\cdot \nabla )\vect v\Bigr )=-\nabla p+\vect f,\]
+</p>
+
+<p>
+де \(\vect f\)&nbsp;— об’ємна сила; в’язкість додає член Нав’є–Стокса \(\eta \nabla ^2\vect v\). Зверніть увагу на <em>проблему замикання</em>: рівняння для \(\rho \) містить \(\vect v\), рівняння для \(\vect v\)&nbsp;— тиск \(p\),
+рівняння для \(p\)&nbsp;— потік тепла і&nbsp;т.&nbsp;д. Ланцюжок обривають моделлю стану (наприклад, \(p\propto \rho ^\gamma \)). Нижче рівняння для електронної та іонної «рідин» читаються як «Ейлер + сила Лоренца + тертя \(\vect R\)».
+</p>
+</div>
+
+<p>
+Найприродніший гідродинамічний крок&nbsp;— не відразу зливати електрони та іони в&nbsp;одну рідину, а&nbsp;описувати їх окремо. Для кожного компонента вводимо концентрацію \(n_s\) і&nbsp;середню швидкість \(\vect v_s\). Рівняння
+неперервності мають вигляд
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+                                                                                                               𝜕𝑛𝑠
+                                                                                                                   + ∇ ⋅ (𝑛𝑠 𝐯𝑠 ) = 0.
+                                                                                                                𝜕𝑡
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\partial n_s}{\partial t} +\nabla \cdot (n_s\vect v_s)=0.
+\end{equation*}
+
+</p>
+
+<p>
+Рівняння руху містять силу Лоренца, градієнт тиску та силу зіткнень:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+
+                                                                                                          𝑑𝐯𝑠             1
+                                                                                                  𝑚𝑠 𝑛𝑠       = 𝑞𝑠 𝑛𝑠 (𝐄 + 𝐯𝑠 × 𝐁) − ∇𝑝𝑠 + 𝐑𝑠 .
+                                                                                                           𝑑𝑡             𝑐
+
+-->
+
+<p>
+
+\begin{equation*}
+m_s n_s\frac {d\vect v_s}{dt} = q_s n_s\left (\vect E+\frac 1c\vect v_s\times \vect B\right ) -\nabla p_s+\vect R_s.
+\end{equation*}
+
+</p>
+
+<p>
+Сума \(\sum _s\vect R_s=0\): зіткнення передають імпульс між компонентами, але не створюють його. Тут ці рівняння записано за аналогією з&nbsp;гідродинамікою; їхній систематичний вивід як моментів кінетичного рівняння (і&nbsp;звідки
+береться тензор тиску замість скалярного \(p_s\)) наведено в&nbsp;розд.&nbsp;<a href="ch8.html#sec:kinetic-moments">7.5</a>.
+</p>
+
+<p>
+Для квазінейтральної водневої плазми \(n_e\simeq n_i=n\) та \(m_e\ll m_i\). Важливо побачити, що однорідинна МГД не вводиться незалежно від дворідинної моделі: її основні рівняння можна отримати безпосередньо, додаючи та віднімаючи
+рівняння для електронів та іонів.
+</p>
+<!--
+...... section Від дворідинної моделі до однорідинної МГД ......
+-->
+<h4 id="autosec-254"><span class="sectionnumber">&#xA7;&#x202F;5.3&#x2003;</span>Від дворідинної моделі до однорідинної МГД</h4>
+<a id="main-html-autopage-254"></a>
+
+
+<p>
+Для однозарядної плазми рівняння руху мають вигляд
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+                                                                                                    𝐷𝑖 𝐯𝑖           1
+                                                                                            𝑚𝑖 𝑛𝑖         = 𝑒𝑛𝑖 (𝐄 + 𝐯𝑖 × 𝐁) − ∇𝑝𝑖 + 𝐑𝑖𝑒 ,
+                                                                                                     𝐷𝑡             𝑐
+
+-->
+
+<p>
+
+\begin{equation*}
+m_i n_i\frac {D_i\vect v_i}{Dt} = en_i\left (\vect E+\frac 1c\vect v_i\times \vect B\right ) -\nabla p_i+\vect R_{ie},
+\end{equation*}
+
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+                                                                                                  𝐷𝑒 𝐯𝑒            1
+                                                                                          𝑚𝑒 𝑛𝑒         = −𝑒𝑛𝑒 (𝐄 + 𝐯𝑒 × 𝐁) − ∇𝑝𝑒 + 𝐑𝑒𝑖 ,
+                                                                                                   𝐷𝑡              𝑐
+
+-->
+
+<p>
+
+\begin{equation*}
+m_e n_e\frac {D_e\vect v_e}{Dt} =-en_e\left (\vect E+\frac 1c\vect v_e\times \vect B\right ) -\nabla p_e+\vect R_{ei},
+\end{equation*}
+
+</p>
+
+<p>
+де \(\vect R_{ei}=-\vect R_{ie}\) виражає взаємну передачу імпульсу під час зіткнень.
+</p>
+<!--
+...... subsection Сума рівнянь: рівняння руху плазми як цілого ......
+-->
+<h5 id="autosec-255">Сума рівнянь: рівняння руху плазми як цілого</h5>
+<a id="main-html-autopage-255"></a>
+
+
+<p>
+Введемо масову густину та масову швидкість плазми:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+                                                                                                                                  𝑚𝑖 𝑛𝑖 𝐯𝑖 + 𝑚𝑒 𝑛𝑒 𝐯𝑒
+                                                                                                    𝜌𝑚 = 𝑚𝑖 𝑛𝑖 + 𝑚𝑒 𝑛𝑒 ,     𝐯=                       .
+                                                                                                                                          𝜌𝑚
+
+-->
+
+<p>
+
+\begin{equation*}
+\rho _m=m_i n_i+m_e n_e, \qquad \vect v= \frac {m_i n_i\vect v_i+m_e n_e\vect v_e}{\rho _m}.
+\end{equation*}
+
+</p>
+
+<p>
+Для \(m_e\ll m_i\) маємо \(\rho _m\simeq m_i n_i\) і&nbsp;\(\vect v\simeq \vect v_i\). Додаючи рівняння руху електронів та іонів, внутрішні сили зіткнень взаємно скорочуються. У&nbsp;квазінейтральній плазмі \(n_e\simeq n_i\)
+скорочується також сумарна електрична сила:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+
+                                                                                                                   𝑒𝑛𝑖 𝐄 − 𝑒𝑛𝑒 𝐄 ≃ 0.
+
+-->
+
+<p>
+
+\begin{equation*}
+en_i\vect E-en_e\vect E\simeq 0.
+\end{equation*}
+
+</p>
+
+<p>
+Магнітні сили, навпаки, не скорочуються, оскільки електрони та іони рухаються з&nbsp;різними швидкостями. Використовуючи
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+
+                                                                                                                  𝐣 = 𝑒𝑛𝑖 𝐯𝑖 − 𝑒𝑛𝑒 𝐯𝑒 ,
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect j=e n_i\vect v_i-e n_e\vect v_e,
+\end{equation*}
+
+</p>
+
+<p>
+їхня сума набуває вигляду
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+                                                                                                           𝑒𝑛𝑖       𝑒𝑛𝑒        1
+                                                                                                               𝐯 ×𝐁−     𝐯 × 𝐁 = 𝐣 × 𝐁.
+                                                                                                            𝑐 𝑖       𝑐 𝑒       𝑐
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {e n_i}{c}\vect v_i\times \vect B - \frac {e n_e}{c}\vect v_e\times \vect B = \frac 1c\vect j\times \vect B.
+\end{equation*}
+
+</p>
+
+<p>
+Якщо нехтувати внеском відносного руху електронів та іонів у&nbsp;потік механічного імпульсу (для звичайної низькочастотної МГД це мала поправка), дістаємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+
+                                                                           𝐷𝐯                 1
+                                                                      𝜌𝑚      = −∇(𝑝𝑖 + 𝑝𝑒 ) + 𝐣 × 𝐁.                                                                (5.1)--><a id="eq:one-fluid-momentum-from-two-fluid"></a><!--
+                                                                           𝐷𝑡                 𝑐
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:one-fluid-momentum-from-two-fluid} \boxed { \rho _m\frac {D\vect v}{Dt} = -\nabla (p_i+p_e) + \frac 1c\vect j\times \vect B. }
+\end{equation}
+
+</p>
+
+<p>
+Позначивши \(p=p_i+p_e\), одержуємо рівняння руху плазми як однієї (однорідинної) рідини.
+</p>
+
+<p>
+Точно так само, додаючи рівняння неперервності двох компонент, отримуємо рівняння неперервності для єдиної рідини:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{1}\)</span>
+
+<!--
+
+
+                                                                           𝜕𝜌𝑚
+                                                                               + ∇ ⋅ (𝜌𝑚 𝐯) = 0.                                                                   (5.2)--><a id="eq:one-fluid-continuity-from-two-fluid"></a><!--
+                                                                            𝜕𝑡
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:one-fluid-continuity-from-two-fluid} \boxed { \frac {\partial \rho _m}{\partial t} + \nabla \cdot (\rho _m\vect v)=0. }
+\end{equation}
+
+</p>
+<!--
+...... subsection Електронне рівняння: закон Ома ......
+-->
+<h5 id="autosec-256">Електронне рівняння: закон Ома</h5>
+<a id="main-html-autopage-256"></a>
+
+
+<p>
+Тепер скористаємося рівнянням для електронів. Для квазінейтральної плазми покладемо \(n_e\simeq n_i=n\) та, для простоти, \(\vect v\simeq \vect v_i\). Тоді
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{2}\)</span>
+
+<!--
+
+
+                                                                                                                              𝐣
+                                                                                                                  𝐯𝑒 = 𝐯 −      .
+                                                                                                                             𝑒𝑛
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect v_e=\vect v-\frac {\vect j}{en}.
+\end{equation*}
+
+</p>
+
+<p>
+Підставимо це у&nbsp;рівняння руху електронів і&nbsp;покладемо \(m_e\to 0\) (інерція електронів нехтовна):
+</p>
+
+<p>
+\[0=-en\Bigl (\vect E+\frac {\vect v_e\times \vect B}c\Bigr )-\nabla p_e+\vect R_{ei},\qquad \vect R_{ei}=\frac {en}{\sigma }\,\vect j.\]
+</p>
+
+<p>
+Зіткнення електронів з&nbsp;іонами дають силу тертя \(\vect R_{ei}=en\vect j/\sigma \) (знак відповідає гальмуванню відносного руху). Підстановка \(\vect v_e=\vect v-\vect j/en\) дає \(-en\bigl (\vect E+\vect v\times \vect
+B/c\bigr )+\vect j\times \vect B/c-\nabla p_e+en\vect j/\sigma =0\), і&nbsp;після ділення на \(en\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{2}\)</span>
+
+<!--
+
+
+                                                                             1     𝐣  𝐣×𝐁    ∇𝑝𝑒
+                                                                        𝐄+     𝐯×𝐁= +      −     .                                                                    (5.3)--><a id="eq:generalized-ohm-from-two-fluid"></a><!--
+                                                                             𝑐     𝜍   𝑒𝑛𝑐   𝑒𝑛
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:generalized-ohm-from-two-fluid} \tcbhighmath { \vect E+\frac 1c\vect v\times \vect B = \frac {\vect j}{\sigma } + \frac {\vect j\times \vect B}{enc} - \frac {\nabla p_e}{en}. }
+\end{equation}
+
+</p>
+
+<p>
+Тут перший доданок праворуч описує опір зіткненням, другий є <em><span
+    class="textcolor"
+    style="color:#990000"
+>холлівським</span></em> доданком, а&nbsp;третій виникає через градієнт електронного тиску. Холлівський доданок важливий на масштабах порядку іонної інерційної довжини \(c/\omega _{pi}\): на менших масштабах іони «відклеюються»
+від поля, а&nbsp;електрони ще ні (токамак, \(n=10^{14}~\mathrm {см}^{-3}\): \(c/\omega _{pi}\approx 2\)–\(3\)&nbsp;см; магнітосфера, \(n\sim 1~\mathrm {см}^{-3}\): \(\approx 230\)&nbsp;км). Саме ці доданки порушують вмороженість
+і&nbsp;уможливлюють перез’єднання силових ліній (розд.&nbsp;<a href="ch6.html#sec:reconnection">5.10</a>). Якщо нехтувати всіма цими поправками, отримуємо закон ідеальної МГД:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{3}\)</span>
+
+<!--
+
+
+                                                                                                                      1
+                                                                                                                 𝐄+     𝐯 × 𝐁 = 0.                                                       (5.4)--><a id="eq:ideal-mhd-ohm"></a><!--
+                                                                                                                      𝑐
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ideal-mhd-ohm} \tcbhighmath { \vect E+\frac 1c\vect v\times \vect B=0. }
+\end{equation}
+
+</p>
+
+<p>
+Таким чином, перехід має чітку фізичну структуру:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+
+                                                                                                       сума рівнянь двох компонент
+                                                                                                                    ⇓
+                                                                                                        рівняння руху однієї рідини
+                                                                                                               електронне рівняння
+                                                                                                                         ⇓
+                                                                                                             узагальнений закон Ома
+                                                                                                                         ⇓
+                                                                                                                   ідеальна МГД
+
+-->
+
+<p>
+
+\begin{equation*}
+\tcbhighmath { \begin{array}{c} \text {сума рівнянь двох компонент} \\[-1mm] \Downarrow \\[-1mm] \text {рівняння руху однієї рідини} \\[1mm] \text {електронне рівняння} \\[-1mm] \Downarrow \\[-1mm] \text
+{узагальнений закон Ома} \\[-1mm] \Downarrow \\[-1mm] \text {ідеальна МГД} \end {array}}
+\end{equation*}
+
+</p>
+
+<p>
+Саме тому МГД слід розглядати як довгохвильову низькочастотну границю більш повного дворідинного опису, а&nbsp;не як незалежну систему рівнянь.
+</p>
+<!--
+...... section Основне рівняння магнітної гідродинаміки ......
+-->
+<h4 id="autosec-257"><span class="sectionnumber">&#xA7;&#x202F;5.4&#x2003;</span>Основне рівняння магнітної гідродинаміки</h4>
+<a id="main-html-autopage-257"></a>
+
+
+<p>
+Перейдемо до макроскопічного опису плазми, розглядаючи її як суцільне провідне середовище з&nbsp;масовою густиною \(\rho _m(\vect r,t)\), гідродинамічною швидкістю \(\vect v(\vect r,t)\) та газокінетичним тиском \(p(\vect r,t)\).
+</p>
+
+<p>
+Виведемо рівняння руху такого середовища, послідовно розглянувши сили, що діють на його елемент. Ми отримаємо те саме рівняння&nbsp;<span class="textup">(<a
+href="ch6.html#eq:one-fluid-momentum-from-two-fluid">5.1</a>)</span>, але тепер&nbsp;— з&nbsp;балансу сил на&nbsp;елементі об’єму, що робить наочним зміст кожного доданка.
+</p>
+<!--
+...... subsection Сила газокінетичного тиску ......
+-->
+<h5 id="autosec-258">Сила газокінетичного тиску</h5>
+<a id="main-html-autopage-258"></a>
+
+
+<p>
+Виділимо в&nbsp;плазмі елементарний об’єм \(dV=dx\,dy\,dz\) (рис.&nbsp;<a href="ch6.html#pic:volume-element">5.1</a>). Перепад тиску на протилежних гранях уздовж осі \(x\) створює силу
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+                                                                                                                                               𝜕𝑝
+                                                                                              𝑑𝑓𝑥 = [𝑝(𝑥, 𝑦, 𝑧) − 𝑝(𝑥 + 𝑑𝑥, 𝑦, 𝑧)] 𝑑𝑦 𝑑𝑧 = −      𝑑𝑉 .
+                                                                                                                                               𝜕𝑥
+
+-->
+
+<p>
+
+\begin{equation*}
+df_x = [p(x,y,z)-p(x+dx,y,z)]\,dy\,dz = -\frac {\partial p}{\partial x}\,dV.
+\end{equation*}
+
+</p>
+
+<p>
+Сумуючи внески вздовж трьох осей координат, дістаємо повну силу тиску, що діє на елемент об’єму:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+
+                                                                                                                 𝑑𝐟𝑝 = −∇𝑝 𝑑𝑉 .
+
+-->
+
+<p>
+
+\begin{equation*}
+d\vect f_p=-\nabla p\,dV.
+\end{equation*}
+
+</p>
+
+<figure id="autoid-125" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-37"
+    class="lateximagesource"
+><!--
+                              𝜕𝑝
+                         (𝑝 + 𝑑𝑧) 𝑑𝑥 𝑑𝑦
+                               𝜕𝑧
+                             𝑧
+
+
+
+                    𝑑𝑥                       𝑝 𝑑𝑦 𝑑𝑧
+                                                           𝜕𝑝
+                                                   (𝑝 +         𝑑𝑦) 𝑑𝑥 𝑑𝑧
+                                                           𝜕𝑦
+
+
+                                        𝑑𝑧
+   𝑝 𝑑𝑥 𝑑𝑧                                             𝑦
+
+       𝜕𝑝
+(𝑝 +        𝑑𝑥) 𝑑𝑦 𝑑𝑧
+       𝜕𝑥
+
+                         𝑑𝑦
+
+        𝑥                     𝑝 𝑑𝑥 𝑑𝑦
+--><img
+   src="main-html-images/image-37.svg"
+   alt="Рис. 5.1. Елемент об’єму в плазмі, на який діють сили газокінетичного тиску"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.1. Елемент об’єму в&nbsp;плазмі, на який діють сили газокінетичного тиску
+
+</div>
+
+<a id="pic:volume-element"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Рівняння руху та сила Лоренца ......
+-->
+<h5 id="autosec-262">Рівняння руху та сила Лоренца</h5>
+<a id="main-html-autopage-262"></a>
+
+
+<p>
+Маса виділеного елемента дорівнює
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+
+                                                                                                                  𝑑𝑚 = 𝜌𝑚 𝑑𝑉 .
+
+-->
+
+<p>
+
+\begin{equation*}
+dm=\rho _m\,dV.
+\end{equation*}
+
+</p>
+
+<p>
+Тому за другим законом Ньютона
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+
+                                                                                                                    𝑑𝐯
+                                                                                                            𝜌𝑚 𝑑𝑉      = 𝑑𝐟𝑝 + 𝑑𝐟em .
+                                                                                                                    𝑑𝑡
+
+-->
+
+<p>
+
+\begin{equation*}
+\rho _m\,dV\,\frac {d\vect v}{dt} = d\vect f_p+d\vect f_{\mathrm {em}}.
+\end{equation*}
+
+</p>
+
+<p>
+Тут
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+
+                                                                                                                 𝑑    𝜕
+                                                                                                                    =    + (𝐯 ⋅ ∇)
+                                                                                                                 𝑑𝑡   𝜕𝑡
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {d}{dt} = \frac {\partial }{\partial t} +(\vect v\cdot \nabla )
+\end{equation*}
+
+</p>
+
+<p>
+— субстанціальна похідна, яка враховує як явну зміну поля швидкості з&nbsp;часом, так і&nbsp;його зміну під час руху разом із плазмою.
+</p>
+
+<p>
+У&nbsp;квазінейтральній плазмі густина нескомпенсованого заряду мала, тому безпосередньою електричною силою \(\rho _q\vect E\) у&nbsp;макроскопічному рівнянні руху нехтуємо. Магнітна складова сили Лоренца при цьому залишається
+істотною:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+                                                                                                                       1
+                                                                                                              𝑑𝐟em =     𝐣 × 𝐁 𝑑𝑉 .
+                                                                                                                       𝑐
+
+-->
+
+<p>
+
+\begin{equation*}
+d\vect f_{\mathrm {em}} = \frac {1}{c}\,\vect j\times \vect B\,dV.
+\end{equation*}
+
+</p>
+
+<p>
+Отже,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+
+                                                                                                                 𝑑𝐯        1
+                                                                                                            𝜌𝑚      = −∇𝑝 + 𝐣 × 𝐁.
+                                                                                                                 𝑑𝑡        𝑐
+
+-->
+
+<p>
+
+\begin{equation*}
+\rho _m\frac {d\vect v}{dt} = -\nabla p + \frac {1}{c}\,\vect j\times \vect B.
+\end{equation*}
+
+</p>
+
+<p>
+Це рівняння має простий фізичний зміст: рух плазми визначається градієнтом газокінетичного тиску та магнітною силою Лоренца.
+</p>
+<!--
+...... subsection Виключення густини струму за законом Ампера ......
+-->
+<h5 id="autosec-263">Виключення густини струму за законом Ампера</h5>
+<a id="main-html-autopage-263"></a>
+
+
+<p>
+Розглянемо повільні макроскопічні процеси, для яких струмом зміщення в&nbsp;законі Ампера можна знехтувати. Тоді
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+                                                                                                                         𝑐
+                                                                                                                   𝐣=      𝛁 × 𝐁.
+                                                                                                                        4𝜋
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect j=\frac {c}{4\pi }\,\rot \vect B.
+\end{equation*}
+
+</p>
+
+<p>
+Це зручно, бо в&nbsp;плазмі струми зазвичай невідомі, а&nbsp;поле&nbsp;— те, що ми задаємо котушками. Підставляючи цей вираз у&nbsp;рівняння руху, отримуємо <em><span
+    class="textcolor"
+    style="color:#990000"
+>основне рівняння магнітної гідродинаміки</span></em> (МГД):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+
+                                                                                                              𝑑𝐯          1
+                                                                                                         𝜌𝑚      = −∇𝑝 +    (𝛁 × 𝐁) × 𝐁 .                                                   (5.5)--><a id="eq:MHD-equation"></a><!--
+                                                                                                              𝑑𝑡         4𝜋
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:MHD-equation} \tcbhighmath { \rho _m\frac {d\vect v}{dt} = -\nabla p + \frac {1}{4\pi }\, (\rot \vect B)\times \vect B}.
+\end{equation}
+
+</p>
+
+<p>
+Отже, на відміну від звичайної гідродинаміки, на рух плазми безпосередньо впливає власне магнітне поле&nbsp;— через створювану ним силу Лоренца.
+</p>
+
+<p>
+Скориставшись векторною тотожністю \((\rot \vect B)\times \vect B=(\vect B\cdot \nabla )\vect B-\nabla (B^2/2)\), перепишемо його. (Тотожність випливає з&nbsp;\(\nabla (B^2/2)=(\vect B\cdot \nabla )\vect B+\vect
+B\times (\rot \vect B)\), або в&nbsp;компонентах: \([(\rot \vect B)\times \vect B]_i=\varepsilon _{ijk}\varepsilon _{jlm}\partial _lB_m\,B_k=B_k\partial _kB_i-B_k\partial _iB_k\).)
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{5}\)</span>
+
+<!--
+
+
+                                                                               𝑑𝐯           𝐵2     1
+                                                                          𝜌𝑚      = −∇ (𝑝 +    )+    (𝐁 ⋅ ∇)𝐁.                                                                     (5.6)--><a id="eq:MHD-pressure-tension"></a><!--
+                                                                               𝑑𝑡           8𝜋    4𝜋
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:MHD-pressure-tension} \rho _m\frac {d\vect v}{dt}=-\nabla \left (p+\frac {B^2}{8\pi }\right )+\frac 1{4\pi }\,(\vect B\cdot \nabla )\vect B.
+\end{equation}
+
+</p>
+
+<p>
+Тут два фізично різні доданки. Перший&nbsp;— <em>магнітний тиск</em> \(B^2/8\pi \), що додається до газового. Другий&nbsp;— <em>натяг силових ліній</em>: вздовж викривленої лінії з&nbsp;радіусом кривизни \(R_c\) діє сила
+\(B^2/(4\pi R_c)\), напрямлена до центра кривизни, ніби лінії&nbsp;— розтягнуті гумові шнури.
+</p>
+<!--
+...... subsection Замикання системи та межі застосовності ......
+-->
+<h5 id="autosec-264">Замикання системи та межі застосовності</h5>
+<a id="main-html-autopage-264"></a>
+
+
+<p>
+Рівняння&nbsp;<span class="textup">(<a href="ch6.html#eq:MHD-equation">5.5</a>)</span> саме по собі не утворює замкненої системи. Для визначення густини, швидкості, тиску та магнітного поля необхідні додаткові рівняння.
+</p>
+
+<p>
+Зокрема, до рівняння руху додають:
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> рівняння неперервності
+</p>
+<span class="hidden"> \(\seteqnumber{0}{5.}{6}\)</span>
+<!--
+
+                                                                                                              𝜕𝜌𝑚
+                                                                                                                  + ∇ ⋅ (𝜌𝑚 𝐯) = 0;
+                                                                                                               𝜕𝑡
+-->
+<p>
+
+\begin{equation*}
+\frac {\partial \rho _m}{\partial t} + \nabla \cdot (\rho _m\vect v) =0;
+\end{equation*}
+
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> рівняння стану, наприклад адіабатичне
+</p>
+<span class="hidden"> \(\seteqnumber{0}{5.}{6}\)</span>
+<!--
+
+                                                                                      𝑑     −𝛾                 −𝛾
+                                                                                         (𝑝𝜌𝑚 ) = 0   (тобто 𝑝𝜌𝑚 = const вздовж руху елемента плазми);
+                                                                                      𝑑𝑡
+-->
+<p>
+
+\begin{equation*}
+\frac {d}{dt}\bigl (p\rho _m^{-\gamma }\bigr )=0 \quad (\text {тобто }p\rho _m^{-\gamma }=\mathrm {const}\text { вздовж руху елемента плазми});
+\end{equation*}
+
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> закон Ома, який пов’язує \(\vect E\), \(\vect B\), \(\vect v\) та&nbsp;\(\vect j\). У&nbsp;простій резистивній МГД електричне поле в&nbsp;системі відліку, що рухається разом із&nbsp;плазмою,
+\(\vect E+\vect v\times \vect B/c\), задає омічну складову струму:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{5.}{6}\)</span>
+<!--
+                                                                                                                            1
+                                                                                                               𝐣 = 𝜍 (𝐄 +     𝐯 × 𝐁) .                                                      (5.7)--><a id="eq:Ohm_law_plasma"></a><!--
+                                                                                                                            𝑐
+-->
+<p>
+
+\begin{equation}
+\label {eq:Ohm_law_plasma} \vect j=\sigma \left (\vect E+\frac {1}{c}\,\vect v\times \vect B\right ).
+\end{equation}
+
+</p>
+<p>
+Це <em>резистивний</em> закон Ома для однорідинної МГД; \(\sigma \) тут&nbsp;— скаляр, тобто \(\sigma _\parallel \): поперек поля опір повністю іонізованої плазми лише приблизно вдвічі більший (\(\eta _\perp \approx 2\eta
+_\parallel \), Спітцер), а&nbsp;не в&nbsp;\((\omega _c/\nu )^2\) разів. Точніший дворідинний закон Ома&nbsp;<span class="textup">(<a href="ch6.html#eq:generalized-ohm-from-two-fluid">5.3</a>)</span> містить також
+холлівський доданок \(\vect j\times \vect B/enc\) і&nbsp;градієнт електронного тиску \(-\nabla p_e/en\), а&nbsp;якщо не нехтувати інерцією електронів&nbsp;— ще й&nbsp;\(-(m_e/e)\,d\vect v_e/dt\). У&nbsp;простій резистивній МГД
+всі ці поправки вважаються малими.
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">4.</span> рівняння Максвелла, зокрема
+</p>
+<span class="hidden"> \(\seteqnumber{0}{5.}{7}\)</span>
+<!--
+
+                                                                                                                        𝜕𝐁
+                                                                                                          ∇ ⋅ 𝐁 = 0,       = −𝑐 𝛁 × 𝐄.
+                                                                                                                        𝜕𝑡
+-->
+<p>
+
+\begin{equation*}
+\nabla \cdot \vect B=0, \qquad \frac {\partial \vect B}{\partial t} = -c\,\rot \vect E.
+\end{equation*}
+
+</p>
+<p>
+
+</p>
+</li>
+</ul>
+
+<p>
+МГД-наближення призначене для великомасштабних (\(L\gg r_{Li}\)) та повільних (\(\omega \ll \omega _{ci}\)) процесів, для яких кінетичні ефекти, пов’язані з&nbsp;індивідуальним рухом частинок, не визначають основну динаміку плазми.
+Пояснення «на пальцях»: «рідина» має сенс, коли частинка за час зміни поля встигає багато разів обернутися (\(\omega \ll \omega _{ci}\)), а&nbsp;ларморівське коло мале порівняно з&nbsp;масштабом неоднорідності (\(L\gg r_{Li}\)): тоді
+частинку «прив’язано» до силової лінії, і&nbsp;поперек \(\vect B\) плазма поводиться як суцільне середовище навіть без зіткнень. Уздовж \(\vect B\) ця прив’язка не працює.
+</p>
+<!--
+...... section Альвенівська швидкість і-число Альвена ......
+-->
+<h4 id="autosec-265"><span class="sectionnumber">&#xA7;&#x202F;5.5&#x2003;</span>Альвенівська швидкість і&nbsp;число Альвена</h4>
+<a id="main-html-autopage-265"></a>
+
+
+<p>
+Рівняння МГД показує, що магнітне поле має не лише тиск, а&nbsp;й&nbsp;натяг. Це означає, що викривлення силових ліній може породжувати хвилю: магнітний натяг \(B^2/4\pi \) відіграє роль натягу струни, а&nbsp;\(\rho _m\)&nbsp;— роль
+лінійної інерції. Така <em>альвенівська хвиля</em> біжить уздовж \(\vect B_0\) зі швидкістю
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{7}\)</span>
+
+<!--
+
+
+                                                                                                                         𝐵0
+                                                                                                                𝑣𝐴 =                                                                              (5.8)--><a id="eq:alfven-wave"></a><!--
+                                                                                                                       √4𝜋𝜌𝑚
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:alfven-wave} \tcbhighmath {v_A=\frac {B_0}{\sqrt {4\pi \rho _m}}}
+\end{equation}
+
+</p>
+
+<p>
+(повне виведення з&nbsp;лінеаризованих рівнянь МГД та інші моди&nbsp;— у&nbsp;розд.&nbsp;<a href="ch7.html#sec:mhd-waves">6</a>).
+</p>
+
+<p>
+Альвенівська швидкість \(v_A\)&nbsp;— один із&nbsp;головних масштабів швидкості в&nbsp;МГД: з&nbsp;нею порівнюють швидкість течії плазми, а&nbsp;час \(L/v_A\) є характерним часом магнітних процесів на масштабі \(L\). Значення
+\(v_A\) для токамака, сонячної корони та сонячного вітру наведено в&nbsp;табл.&nbsp;<a href="ch7.html#tab:alfven-numbers">6.1</a>. Відношення
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{8}\)</span>
+
+<!--
+
+                                                                                                                          𝑣
+                                                                                                                  𝑀𝐴 =
+                                                                                                                         𝑣𝐴
+
+-->
+
+<p>
+
+\begin{equation*}
+M_A=\frac {v}{v_A}
+\end{equation*}
+
+</p>
+
+<p>
+називають числом Альвена. За \(M_A\ll 1\) магнітні сили здатні істотно впливати на рух, тоді як за \(M_A\gg 1\) інерційний рух домінує над альвенівським відновлювальним механізмом. Це порівняння є локальним і&nbsp;не є самостійним
+критерієм застосовності МГД.
+</p>
+
+<p>
+Альвенівська хвиля&nbsp;— лише одна з&nbsp;хвиль замагніченої плазми. Зовнішнє поле \(\vect B_0\) робить реакцію плазми анізотропною: рух уздовж поля та поперек нього фізично різний. У&nbsp;низькочастотній границі \(\omega \ll
+\omega _{ci}\) це дає МГД-хвилі (альвенівську, швидку й&nbsp;повільну магнітозвукові), а&nbsp;при вищих частотах потрібен тензорний опис холодної замагніченої плазми (моди \(R\), \(L\), \(O\), \(X\), резонанси та відсікання). Обидва
+випадки систематично розглянуто в&nbsp;розд.&nbsp;<a href="ch7.html#sec:mhd-waves">6</a>.
+</p>
+<!--
+...... section МГД-рівновага та магнітні поверхні ......
+-->
+<h4 id="autosec-266"><span class="sectionnumber">&#xA7;&#x202F;5.6&#x2003;</span>МГД-рівновага та магнітні поверхні</h4>
+<a id="main-html-autopage-266"></a>
+
+
+<a id="sec:mhd-equilibrium"></a>
+
+<p>
+Розглянемо тепер стаціонарну плазму, в&nbsp;якій \(\vect v=0\). Рівняння руху перетворюється на умову рівноваги:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{8}\)</span>
+
+<!--
+
+                                                                                                                           1
+                                                                                                                   ∇𝑝 =      𝐣 × 𝐁.                                                            (5.9)--><a id="eq:equilibrium"></a><!--
+                                                                                                                           𝑐
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:equilibrium} \nabla p = \frac {1}{c}\,\vect j\times \vect B.
+\end{equation}
+
+</p>
+
+<p>
+Це рівняння показує, що в&nbsp;рівновазі градієнт тиску компенсується магнітною силою Лоренца.
+</p>
+
+<p>
+Корисно мати ще один еквівалентний опис магнітної сили. Використовуючи закон Ампера та \(\nabla \cdot \vect B=0\), можна записати
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{9}\)</span>
+
+<!--
+
+
+                                                                                                                             1          𝐵2
+                                                                                                  𝑓𝑖 = 𝜕𝑗 𝜍𝑖𝑗 ,     𝜍𝑖𝑗 =      (𝐵𝑖 𝐵𝑗 −    𝛿 ).                                           (5.10)--><a id="eq:maxwell-stress"></a><!--
+                                                                                                                            4𝜋          2 𝑖𝑗
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:maxwell-stress} f_i=\partial _j\sigma _{ij}, \qquad \sigma _{ij}= \frac {1}{4\pi } \left (B_iB_j-\frac {B^2}{2}\delta _{ij}\right ).
+\end{equation}
+
+</p>
+
+<p>
+У&nbsp;цьому тензорі перший доданок відповідає натягу вздовж поля, а&nbsp;другий — магнітному тиску. Такий запис особливо зручний для задач про сили на плазмові шнури та магнітні поверхні.
+</p>
+
+<p>
+Скалярно помножимо&nbsp;<span class="textup">(<a href="ch6.html#eq:equilibrium">5.9</a>)</span> на \(\vect B\). Оскільки \(\vect B\cdot (\vect j\times \vect B)=0\), маємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{10}\)</span>
+
+<!--
+
+
+                                                                                                                    𝐁 ⋅ ∇𝑝 = 0.
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect B\cdot \nabla p=0.
+\end{equation*}
+
+</p>
+
+<p>
+Отже, магнітні силові лінії лежать на поверхнях сталого тиску:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{10}\)</span>
+
+<!--
+
+
+                                                                                                                    𝑝 = const.
+
+-->
+
+<p>
+
+\begin{equation*}
+p=\mathrm {const}.
+\end{equation*}
+
+</p>
+
+<p>
+Аналогічно, скалярний добуток&nbsp;<span class="textup">(<a href="ch6.html#eq:equilibrium">5.9</a>)</span> на \(\vect j\) дає
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{10}\)</span>
+
+<!--
+
+
+                                                                                                                    𝐣 ⋅ ∇𝑝 = 0,
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect j\cdot \nabla p=0,
+\end{equation*}
+
+</p>
+
+<p>
+тобто густина струму також лежить у&nbsp;дотичній площині до поверхонь сталого тиску.
+</p>
+
+<p>
+У&nbsp;тороїдальних магнітних системах такі поверхні можуть утворювати вкладені одна в&nbsp;одну магнітні поверхні. Їхня геометрія є основою опису рівноваги плазми в&nbsp;токамаках і&nbsp;стелараторах.
+</p>
+
+<p>
+З&nbsp;<span class="textup">(<a href="ch6.html#eq:equilibrium">5.9</a>)</span> можна також знайти поперечну складову густини струму. Векторно помноживши це рівняння на \(\vect B\), дістаємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{10}\)</span>
+
+<!--
+
+                                                                                                                         𝑐
+                                                                                                                  𝐣⟂ =      𝐁 × ∇𝑝.
+                                                                                                                         𝐵2
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect j_\perp = \frac {c}{B^2}\, \vect B\times \nabla p.
+\end{equation*}
+
+</p>
+
+<p>
+Це саме діамагнітний струм&nbsp;<span class="textup">(<a href="ch6.html#eq:diamagnetic-current">5.14</a>)</span>, який детальніше розглянуто в&nbsp;розд.&nbsp;<a href="ch6.html#sec:diamagnetism">5.8</a>.
+</p>
+<!--
+...... subsection Параметр плазми beta ......
+-->
+<h5 id="autosec-267">Параметр плазми \(\beta \)</h5>
+<a id="main-html-autopage-267"></a>
+
+
+<p>
+Важливим безрозмірним параметром плазми є відношення газокінетичного тиску до магнітного:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{10}\)</span>
+
+<!--
+
+
+                                                                                                                      𝑝     8𝜋𝑝
+                                                                                                            𝛽=             = 2 .                                                                       (5.11)--><a id="eq:beta"></a><!--
+                                                                                                                 𝐵 2 /(8𝜋)   𝐵
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:beta} \tcbhighmath { \beta = \frac {p}{B^2/(8\pi )} = \frac {8\pi p}{B^2}. }
+\end{equation}
+
+</p>
+
+<p>
+Параметр \(\beta \) показує, наскільки сильно тиск плазми порівняно з&nbsp;магнітним полем впливає на рівновагу. Він <em>не</em> є критерієм застосовності МГД: ідеальна МГД справедлива за будь-якого \(\beta \) (за умов \(L\gg r_{Li}\),
+\(\omega \ll \omega _{ci}\)), тоді як \(\beta \) лише вказує, наскільки сильно плазма деформує поле.
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> При \(\beta \ll 1\) магнітний тиск значно перевищує газокінетичний, тому плазма відносно слабо впливає на конфігурацію магнітного поля.
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> При \(\beta \sim 1\) газокінетичний та магнітний тиски порівнянні, тому взаємний вплив плазми та магнітного поля стає істотним.
+</p>
+<p>
+
+</p>
+</li>
+</ul>
+
+<p>
+Таким чином, \(\beta \) характеризує співвідношення двох основних механізмів, що визначають рівновагу плазми&nbsp;— її внутрішнього тиску та магнітного утримання. Для заданого магнітного поля велике значення \(\beta \) відповідає
+великому тиску плазми, однак досягнення такого стану визначається також умовами магнітного утримання та стійкістю плазми. Для порівняння: токамак \(\beta \sim 3\%\), сферичний токамак до \(\sim 40\%\), магнітосфера Землі \(\beta
+\ll 1\), сонячна корона \(\sim 10^{-3}\)–\(10^{-2}\), фотосфера \(\gtrsim 1\), сонячний вітер \(\sim 1\).
+</p>
+
+<p>
+Тиск \(p\) визначається термодинамічним станом плазми; для класичної ідеальної плазми він задається формулою&nbsp;<span class="textup">(<a href="ch2.html#eq:ideal-pressure">1.16</a>)</span>.
+</p>
+
+<figure id="autoid-126" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-38"
+    class="lateximagesource"
+><!--
+𝑝     𝐵 2 /8𝜋   𝑝     𝐵2 /8𝜋   𝑝     𝐵 2 /8𝜋
+
+    𝛽≪1             𝛽∼1            𝛽≳1
+--><img
+   src="main-html-images/image-38.svg"
+   alt="Рис. 5.2. Фізичний зміст параметра : порівняння газокінетичного та магнітного тисків. Баланс тисків вимагає, щоб , обчислене за зовнішнім (вакуумним) полем, не перевищувало 1; локально може бути й більшим (напр., у конфігурації з оберненим…"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.2. Фізичний зміст параметра \(\beta \): порівняння газокінетичного та магнітного тисків. Баланс тисків вимагає, щоб \(\beta \), обчислене за зовнішнім (вакуумним) полем, не перевищувало&nbsp;1; локально \(\beta \) може бути
+й&nbsp;більшим (напр., у&nbsp;конфігурації з&nbsp;оберненим полем). Практичну межу задає стійкість: у&nbsp;токамаках \(\beta \sim \) кілька відсотків
+
+</div>
+
+<a id="pic:plasma-beta"></a>
+
+</div>
+
+</figure>
+<!--
+...... section Енергія електромагнітного поля та плазми ......
+-->
+<h4 id="autosec-271"><span class="sectionnumber">&#xA7;&#x202F;5.7&#x2003;</span>Енергія електромагнітного поля та плазми</h4>
+<a id="main-html-autopage-271"></a>
+
+
+<p>
+Теорема Пойнтінга в&nbsp;системі СГС має вигляд
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{11}\)</span>
+
+<!--
+
+
+                                                                         𝜕 𝐸2 + 𝐵2        𝑐
+                                                                            (      )+∇⋅(    𝐄 × 𝐁) = −𝐣 ⋅ 𝐄.                                                                        (5.12)--><a id="eq:poynting-theorem-plasma"></a><!--
+                                                                         𝜕𝑡   8𝜋         4𝜋
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:poynting-theorem-plasma} \frac {\partial }{\partial t}\left (\frac {E^2+B^2}{8\pi }\right ) +\nabla \cdot \left (\frac {c}{4\pi }\vect E\times \vect B\right ) =-\vect j\cdot \vect E.
+\end{equation}
+
+</p>
+
+<p>
+Ліва частина описує зміну густини енергії поля та її потік, права&nbsp;— локальну передачу енергії від поля до заряджених частинок. Якщо \(\vect j\cdot \vect E&gt;0\), поле віддає плазмі енергію.
+</p>
+
+<p>
+У&nbsp;МГД енергетичний баланс пов’язує рух середовища, магнітне поле та нагрів. Для ідеальної МГД (без дисипації) з&nbsp;адіабатичним замиканням повна густина енергії \(\mathcal E=\rho _mv^2/2+p/(\gamma -1)+B^2/8\pi \) (кінетична,
+теплова й&nbsp;магнітна) зберігається:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{12}\)</span>
+
+<!--
+
+
+                                                               𝜕ℰ         𝜌 𝑣2  𝛾𝑝       𝑐                  𝑐      𝐵 2 𝐯 − (𝐯 ⋅ 𝐁)𝐁
+                                                                  + ∇ ⋅ [( 𝑚 +     )𝐯 +    𝐄 × 𝐁] = 0,        𝐄×𝐁=                  ,                                                                 (5.13)--><a id="eq:mhd-energy"></a><!--
+                                                               𝜕𝑡          2   𝛾−1      4𝜋                 4𝜋             4𝜋
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:mhd-energy} \frac {\partial \mathcal E}{\partial t} +\nabla \cdot \left [\Bigl (\frac {\rho _mv^2}2+\frac {\gamma p}{\gamma -1}\Bigr )\vect v +\frac {c}{4\pi }\,\vect E\times \vect B\right ]=0,
+\qquad \frac {c}{4\pi }\vect E\times \vect B=\frac {B^2\vect v-(\vect v\cdot \vect B)\vect B}{4\pi },
+\end{equation}
+
+</p>
+
+<p>
+де останній вираз&nbsp;— потік Пойнтінга в&nbsp;ідеальній МГД (\(c\vect E=-\vect v\times \vect B\)). З&nbsp;урахуванням скінченної провідності в&nbsp;балансі магнітної й&nbsp;кінетичної енергій з’являється дисипативний член
+\(-j^2/\sigma \) (джоулеве тепло); якщо врахувати й&nbsp;теплову енергію, повна енергія знову зберігається: джоулеве тепло лише переводить магнітну та кінетичну енергії в&nbsp;теплову. Кожен доданок має чітке значення: робота \(\vect
+v\cdot (\vect j\times \vect B)/c\) перекачує енергію між рухом і&nbsp;магнітним полем; поле вморожене, тому розтягування силових ліній збільшує \(B^2/8\pi \) коштом кінетичної енергії, а&nbsp;обмін між кінетичною й&nbsp;тепловою
+енергіями відбувається через роботу стиснення \(p\,\nabla \cdot \vect v\) (у&nbsp;рівнянні для теплової енергії) та&nbsp;\(-\vect v\cdot \nabla p\) (у&nbsp;рівнянні для кінетичної); у&nbsp;сумі вони дають потік \(\nabla \cdot (p\vect
+v)\). Це дає й&nbsp;фізичний спосіб перевіряти наближення: якщо відкидання певного члена порушує очікуваний енергетичний баланс, воно не може бути зроблене безумовно.
+</p>
+<!--
+...... section Діамагнетизм плазми ......
+-->
+<h4 id="autosec-272"><span class="sectionnumber">&#xA7;&#x202F;5.8&#x2003;</span>Діамагнетизм плазми</h4>
+<a id="main-html-autopage-272"></a>
+
+
+<a id="sec:diamagnetism"></a>
+
+<p>
+Кожна заряджена частинка плазми у&nbsp;магнітному полі має орбітальний магнітний момент&nbsp;<span class="textup">(<a href="ch4.html#eq:mu">3.7</a>)</span>, напрямлений проти поля. Якщо в&nbsp;одиниці об’єму є \(n_s\)
+частинок сорту \(s\), то намагніченість
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{13}\)</span>
+
+<!--
+
+                                                                                                                  𝐁         𝑇 𝐁     𝑝
+                                                                                                  𝐌 = − ∑ 𝑛𝑠 𝜇𝑠     = − ∑ 𝑛𝑠 𝑠  = − 2 𝐁,
+                                                                                                         𝑠
+                                                                                                                  𝐵     𝑠
+                                                                                                                            𝐵 𝐵    𝐵
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect M=-\sum _sn_s\mu _s\frac {\vect B}{B}=-\sum _sn_s\frac {T_s}{B}\frac {\vect B}{B}=-\frac p{B^2}\,\vect B,
+\end{equation*}
+
+</p>
+
+<p>
+де враховано \(\langle mv_\perp ^2/2\rangle =T\) (два ступені вільності поперек поля) і&nbsp;\(p=\sum _sn_sT_s\). Намагніченість напрямлена проти поля, тобто плазма <em>діамагнітна</em>: її магнітна сприйнятливість (\(M=\kappa H\),
+\(H\approx B\)) від’ємна, \(\kappa =-p/B^2&lt;0\), тому вона виштовхується з&nbsp;області сильного поля.
+</p>
+
+<p>
+Діамагнетизм виявляється через струми. У&nbsp;неоднорідній плазмі (\(p\) змінюється в&nbsp;просторі) вони дорівнюють \(\vect j=c\,\nabla \times \vect M\), що при \(B=\mathrm {const}\) дає
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{13}\)</span>
+
+<!--
+
+                                                                                                                     𝑐
+                                                                                                              𝐣⟂ =      𝐁 × ∇𝑝.                                                       (5.14)--><a id="eq:diamagnetic-current"></a><!--
+                                                                                                                     𝐵2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:diamagnetic-current} \vect j_\perp =\frac {c}{B^2}\,\vect B\times \nabla p.
+\end{equation}
+
+</p>
+
+<p>
+Той самий результат одержується з&nbsp;умови рівноваги \(\nabla p=\vect j\times \vect B/c\) (див.&nbsp;<span class="textup">(<a href="ch6.html#eq:equilibrium">5.9</a>)</span>). Щоб побачити наслідок, розглянемо плоский шар,
+у&nbsp;якому \(p=p(x)\) і&nbsp;поле \(\vect B=B(x)\vect e_z\). Тоді \(j_y=-(c/4\pi )\,dB/dx\), і&nbsp;умова рівноваги \(dp/dx=j_yB/c\) дає
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{14}\)</span>
+
+<!--
+
+
+                                                                                                                   𝐵2
+                                                                                                             𝑝+       = const.                                                           (5.15)--><a id="eq:pressure-balance"></a><!--
+                                                                                                                   8𝜋
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:pressure-balance} p+\frac {B^2}{8\pi }=\mathrm {const}.
+\end{equation}
+
+</p>
+
+<p>
+Всередині плазми поле послаблене, зовні воно сильніше: плазма «виштовхує» поле, а&nbsp;поле стискає плазму. Рівняння&nbsp;<span class="textup">(<a href="ch6.html#eq:pressure-balance">5.15</a>)</span> формулює баланс
+<em>газокінетичного</em> (\(p\)) і&nbsp;<em>магнітного</em> (\(B^2/8\pi \)) тисків.<sup>1</sup>
+</p>
+<div role="note" class="footnotes">
+
+<a id="main-html-autopage-273"></a>
+<p>
+<sup>1</sup>&nbsp;Строго кажучи, у&nbsp;класичній системі в&nbsp;термодинамічній рівновазі повна намагніченість дорівнює нулю (теорема Бора&nbsp;— ван Левен): діамагнетизм орбіт компенсується струмами частинок, що ковзають
+поблизу стінок. Але в&nbsp;неоднорідній плазмі об’ємні струми \(c\,\nabla \times \vect M\) не компенсуються&nbsp;— саме вони й&nbsp;визначають рівновагу.
+</p>
+
+
+</div>
+<!--
+...... section Вмороженість магнітного поля ......
+-->
+<h4 id="autosec-274"><span class="sectionnumber">&#xA7;&#x202F;5.9&#x2003;</span>Вмороженість магнітного поля</h4>
+<a id="main-html-autopage-274"></a>
+
+
+<p>
+З&nbsp;закону Ома&nbsp;<span class="textup">(<a href="ch6.html#eq:Ohm_law_plasma">5.7</a>)</span>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{15}\)</span>
+
+<!--
+
+
+                                                                                                        𝐄 = −𝐯 × 𝐁/𝑐 + 𝑐 𝛁 × 𝐁/(4𝜋𝜍).
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect E=-\vect v\times \vect B/c+c\,\rot \vect B/(4\pi \sigma ).
+\end{equation*}
+
+</p>
+
+<p>
+Підставляючи в&nbsp;закон індукції \(\partial _t\vect B=-c\,\rot \vect E\) і&nbsp;враховуючи \(\nabla \cdot \vect B=0\), одержуємо <em><span
+    class="textcolor"
+    style="color:#990000"
+>рівняння індукції</span></em>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{15}\)</span>
+
+<!--
+
+
+                                                                                                         𝜕𝐁                  𝑐2
+                                                                                                            = 𝛁 × (𝐯 × 𝐁) +     Δ𝐁.                                                               (5.16)--><a id="eq:induction"></a><!--
+                                                                                                         𝜕𝑡                 4𝜋𝜍
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:induction} \frac {\partial \vect B}{\partial t}=\rot (\vect v\times \vect B)+\frac {c^2}{4\pi \sigma }\Delta \vect B.
+\end{equation}
+
+</p>
+
+<p>
+Перший доданок описує перенесення поля течією, другий&nbsp;— дифузію поля. Їхнє відношення визначає <em><span
+    class="textcolor"
+    style="color:#990000"
+>магнітне число Рейнольдса</span></em>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{16}\)</span>
+
+<!--
+
+                                                                                                                      4𝜋𝜍𝐿𝑣
+                                                                                                               𝑅𝑚 ∼         .
+                                                                                                                        𝑐2
+
+-->
+
+<p>
+
+\begin{equation*}
+R_m\sim \frac {4\pi \sigma Lv}{c^2}.
+\end{equation*}
+
+</p>
+
+<p>
+Для рідких металів у&nbsp;лабораторії (ртуть, галій) \(R_m\) від \(10^{-2}\) до&nbsp;\(1\); для токамака \(R_m\sim 10^{8}\); для сонячної корони \(\sim 10^{12}\). Отже, у&nbsp;космосі вмороженість&nbsp;— майже точний закон,
+а&nbsp;в&nbsp;лабораторних рідких металах&nbsp;— ні.
+</p>
+<!--
+...... subsection Ідеальна провідність () ......
+-->
+<h5 id="autosec-275">Ідеальна провідність (\(R_m\gg 1\))</h5>
+<a id="main-html-autopage-275"></a>
+
+
+<p>
+Нехай у&nbsp;плазмі існує магнітне поле&nbsp;— створене зовнішніми котушками, струмом самої плазми або успадковане від джерела разом із плазмою. Якщо провідність дуже велика, дифузійним доданком у&nbsp;<span class="textup">(<a
+href="ch6.html#eq:induction">5.16</a>)</span> можна знехтувати, і&nbsp;рівняння індукції зводиться до
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{16}\)</span>
+
+<!--
+
+                                                                                                              𝜕𝐁
+                                                                                                                 = 𝛁 × (𝐯 × 𝐁).
+                                                                                                              𝜕𝑡
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\partial \vect B}{\partial t}=\rot (\vect v\times \vect B).
+\end{equation*}
+
+</p>
+
+<p>
+З&nbsp;нього випливає теорема Альвена: магнітний потік крізь будь-який контур, що рухається разом із&nbsp;плазмою, зберігається. Кажуть, що силові лінії «вморожені» в&nbsp;плазму&nbsp;— плазма не перетинає їх, а&nbsp;поле рухається
+разом із&nbsp;нею. Саме ця властивість лежить в&nbsp;основі магнітного утримання: рухаючи плазму, ми переносимо разом із&nbsp;нею і&nbsp;поле.
+</p>
+
+<p>
+Теорема Альвена не каже, звідки взялося поле: вона описує лише його рух, коли поле вже є. На практиці порядок зазвичай зворотний&nbsp;— <em>спершу поле, потім плазма</em>. У&nbsp;токамаку чи стелараторі котушки вмикають до пуску
+(вакуум і&nbsp;нейтральний газ поле не екранують), а&nbsp;потім газ іонізують у&nbsp;готовому полі. У&nbsp;космосі плазма народжується з&nbsp;газу, де вже є слабке поле, а&nbsp;стискання зберігає потік, і&nbsp;поле зростає (\(B\propto
+\rho ^{2/3}\) при ізотропному стисненні). Так, імовірно, виникає поле радіопульсарів (\(\sim 10^{12}\)&nbsp;Гс); для магнетарів (від \(10^{14}\) до&nbsp;\(10^{15}\)&nbsp;Гс) самого стиснення, найпевніше, замало, і&nbsp;вважають, що
+додатково діє динамо.
+</p>
+
+<p>
+<em>Доведення «на пальцях».</em> Потік \(\Phi \) крізь контур, що рухається з&nbsp;плазмою, змінюється з&nbsp;двох причин: (а)&nbsp;через \(\partial \vect B/\partial t\) і&nbsp;(б)&nbsp;через те, що бічна поверхня, яку описує контур
+за час \(dt\), перетинає силові лінії. Другий внесок дорівнює \(-\oint (\vect v\times \vect B)\cdot d\vect l\). З&nbsp;\(\partial _t\vect B=-c\,\rot \vect E\) і&nbsp;теореми Стокса
+</p>
+
+<p>
+\[\frac {d\Phi }{dt}=-c\oint \Bigl (\vect E+\frac 1c\vect v\times \vect B\Bigr )\cdot d\vect l=0,\]
+</p>
+
+<p>
+бо \(\vect E+\vect v\times \vect B/c=0\) (ідеальний закон Ома). Наслідок: \(d(\vect B/\rho )/dt=(\vect B/\rho \cdot \nabla )\vect v\).
+</p>
+
+<p>
+Звідси прості закони стискання, які випливають зі збереження потоку \(\Phi =BS=\mathrm {const}\). При стисненні лише поперек поля площа перерізу \(S\propto 1/\rho \), тому \(B\propto \rho \), тобто \(B/\rho =\mathrm {const}\)
+(\(B^2\propto \rho ^2\), ефективний показник адіабати \(\gamma _\perp =2\)). Вздовж поля площа \(S\) не змінюється, тому \(B=\mathrm {const}\). При ізотропному стисненні всі розміри змінюються однаково: довжина \(\ell \), \(S\propto
+\ell ^2\), \(\rho \propto \ell ^{-3}\), звідки \(B\propto 1/S\propto \ell ^{-2}\propto \rho ^{2/3}\). Тоді тиск поля \(B^2/8\pi \propto \rho ^{4/3}\), тобто \(\gamma =4/3\), як у&nbsp;випромінювання.
+</p>
+<!--
+...... subsection Скінченна провідність: дифузія поля ......
+-->
+<h5 id="autosec-276">Скінченна провідність: дифузія поля</h5>
+<a id="main-html-autopage-276"></a>
+
+
+<p>
+У&nbsp;реальній плазмі провідність скінченна, тому другий доданок у&nbsp;<span class="textup">(<a href="ch6.html#eq:induction">5.16</a>)</span> уже не&nbsp;можна відкинути. Нехай для простоти плазма нерухома (\(\vect v=0\)).
+Тоді рівняння індукції набирає вигляду рівняння дифузії
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{16}\)</span>
+
+<!--
+
+
+                                                                                                                 𝜕𝐁    𝑐2
+                                                                                                                    =     Δ𝐁,
+                                                                                                                 𝜕𝑡   4𝜋𝜍
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\partial \vect B}{\partial t} =\frac {c^2}{4\pi \sigma }\,\Delta \vect B,
+\end{equation*}
+
+</p>
+
+<p>
+тобто наявне неоднорідне поле з&nbsp;часом <em><span
+    class="textcolor"
+    style="color:#990000"
+>розмивається</span></em>: струми, що підтримують неоднорідність, загасають через джоулеві втрати. Характерний час цього розмиття на&nbsp;масштабі&nbsp;\(L\)
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{16}\)</span>
+
+<!--
+
+
+                                                                                                                         4𝜋𝜍𝐿2
+                                                                                                                  𝜏𝑑 =         .
+                                                                                                                           𝑐2
+
+-->
+
+<p>
+
+\begin{equation*}
+\tau _d=\frac {4\pi \sigma L^2}{c^2}.
+\end{equation*}
+
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Лабораторна плазма (\(T_e=1\)&nbsp;кеВ, \(L=1\)&nbsp;м): \(\tau _d\approx 50\)&nbsp;с, тому поле треба весь час підтримувати зовнішніми джерелами. Сонячна корона (\(T\sim 100\)&nbsp;еВ, \(L\sim
+10^{10}\)&nbsp;см): \(\tau _d\sim 10^{16}\)&nbsp;с&nbsp;\(\approx 3\times 10^{8}\)&nbsp;років, що набагато більше за часи коронних процесів (від хвилин до діб). Тому там дифузією можна знехтувати й&nbsp;користуватися
+наближенням вмороженості.
+</p>
+</div>
+
+<p>
+Дифузія діє в&nbsp;обидва боки: поле розтікається від місця, де його більше, до місця, де менше. Поле, яке було в&nbsp;плазмі, повільно виходить назовні; зовнішнє поле так само повільно проникає в&nbsp;плазму, що його не мала, за час \(\tau
+_d\). Тому «вморожене» й&nbsp;«не проникає» зовні&nbsp;— дві сторони однієї властивості: за \(R_m\gg 1\) поле не заходить у&nbsp;плазму й&nbsp;не залишає її, а&nbsp;лише рухається разом із&nbsp;нею. Наприклад, магнітне поле сонячного
+вітру не проникає в&nbsp;магнітосферу Землі, а&nbsp;потрапляє туди лише через перез’єднання (розд.&nbsp;<a href="ch6.html#sec:reconnection">5.10</a>).
+</p>
+<!--
+...... subsection Динамо: як поле підтримується самим рухом ......
+-->
+<h5 id="autosec-277">Динамо: як поле підтримується самим рухом</h5>
+<a id="main-html-autopage-277"></a>
+
+
+<a id="sec:dynamo"></a>
+
+<p>
+<em><span
+    class="textcolor"
+    style="color:#990000"
+>Динамо</span></em>&nbsp;— самопідсилення магнітного поля рухом електропровідного середовища без зовнішнього джерела. Воно потрібне, бо дифузія розпускає поле за час \(\tau _d\): у&nbsp;рідкому залізному ядрі Землі це
+\(10^4\)–\(10^5\)&nbsp;років, набагато менше за&nbsp;її вік (4,5&nbsp;млрд років), тож поле має постійно відновлюватися. Механізм&nbsp;— перший доданок рівняння індукції&nbsp;<span class="textup">(<a
+href="ch6.html#eq:induction">5.16</a>)</span>: течія розтягує, скручує й&nbsp;складає силові лінії, а&nbsp;розтягнута трубка потоку за збереження потоку має сильніше поле, як у&nbsp;законі \(B/\rho =\mathrm {const}\) (рис.&nbsp;<a
+href="ch6.html#fig:dynamo-stf">5.3</a>). Потрібні \(R_m\gg 1\) та&nbsp;несиметрична течія: осесиметричне поле не можна підтримати осесиметричною течією (теорема Каулінга), тому діють обертання й&nbsp;конвекція; на&nbsp;Сонці
+диференціальне обертання витягує полоїдальне поле в&nbsp;тороїдальне (\(\Omega \)-ефект), а&nbsp;закручена конвекція знову породжує полоїдальне (\(\alpha \)-ефект). Енергію поле бере з&nbsp;кінетичної енергії течії, і&nbsp;воно росте,
+доки сила Лоренца не починає гальмувати рух; так діють земне й&nbsp;сонячне (11-річний цикл) динамо, і&nbsp;так, імовірно, посилюється поле магнетарів.
+</p>
+
+<figure id="autoid-127" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-39"
+    class="lateximagesource"
+><!--
+   (1) петля:       (2) розтягнули:    (3) скрутили   (4) склали: дві петлі,
+потік Φ, поле 𝐵   довжина ×2, 𝐵 зро-     у вісімку      потік 2Φ, поле 2𝐵
+                          стає
+--><img
+   src="main-html-images/image-39.svg"
+   alt="Рис. 5.3. Схема «розтягни — скрути — склади»: петля вмороженого потоку розтягується, скручується у вісімку й складається у дві петлі. Потік зберігається, тому після складання поле зростає вдвічі; повторення циклу підсилює поле експоненційно…"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.3. Схема «розтягни&nbsp;— скрути&nbsp;— склади»: петля вмороженого потоку розтягується, скручується у&nbsp;вісімку й&nbsp;складається у&nbsp;дві петлі. Потік \(\Phi \) зберігається, тому після складання поле зростає вдвічі;
+повторення циклу підсилює поле експоненційно.
+
+</div>
+
+<a id="fig:dynamo-stf"></a>
+
+</div>
+
+</figure>
+<!--
+...... section Перез'єднання силових ліній ......
+-->
+<h4 id="autosec-281"><span class="sectionnumber">&#xA7;&#x202F;5.10&#x2003;</span>Перез’єднання силових ліній</h4>
+<a id="main-html-autopage-281"></a>
+
+
+<a id="sec:reconnection"></a>
+
+<p>
+В&nbsp;ідеальній МГД силові лінії вморожені в&nbsp;плазму, тож топологія поля не&nbsp;змінюється. Але в&nbsp;тонкому струмовому шарі, де поле різко змінює знак, градієнт \(B\) великий, і&nbsp;дифузійний доданок у&nbsp;<span
+class="textup">(<a href="ch6.html#eq:induction">5.16</a>)</span> уже не&nbsp;можна відкинути (або стають важливими холлівський доданок та&nbsp;інерція електронів). Там вмороженість порушується, і&nbsp;лінії <em><span
+    class="textcolor"
+    style="color:#990000"
+>перез’єднуються</span></em>.
+</p>
+
+<p>
+<em>На&nbsp;пальцях.</em> Уявіть дві натягнуті гумки, спрямовані в&nbsp;протилежні боки; плазма тримає їх на&nbsp;місці. Їх зближують, і&nbsp;у&nbsp;вузькій зоні контакту вмороженість «вимикається»: замість двох ліній, що минали одна
+одну, утворюються дві нові, обернені на&nbsp;кут (рис.&nbsp;<a href="ch6.html#pic:reconnection">5.4</a>). Нові лінії різко зігнуті, а&nbsp;натяг \(B^2/4\pi \) вздовж лінії випрямляє їх, як відпущену тятиву, і&nbsp;викидає плазму вздовж
+шару зі&nbsp;швидкістю порядку альфвенівської. Магнітна енергія перетворюється на&nbsp;теплову, кінетичну енергію потоків і&nbsp;енергію прискорених частинок.
+</p>
+
+<figure id="autoid-128" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-40"
+    class="lateximagesource"
+><!--
+              X
+      струм
+
+
+
+
+(а)           (б)
+--><img
+   src="main-html-images/image-40.svg"
+   alt="Рис. 5.4. Перез’єднання: (а) протилежно спрямовані лінії стискають струмовий шар; (б) після перез’єднання виникає X-точка, а плазма викидається вздовж шару"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.4. Перез’єднання: (а)&nbsp;протилежно спрямовані лінії стискають струмовий шар; (б)&nbsp;після перез’єднання виникає X-точка, а&nbsp;плазма викидається вздовж шару
+
+</div>
+
+<a id="pic:reconnection"></a>
+
+</div>
+
+</figure>
+
+<p>
+<em>Оцінка швидкості.</em> У&nbsp;моделі Світа–Паркера шар довжиною \(L\) і&nbsp;товщиною \(\delta \): вхідний потік \(v_{\rm in}\) і&nbsp;вихідний \(\sim v_A\) зв’язані збереженням маси, \(v_{\rm in}L\sim v_A\delta \),
+а&nbsp;товщина визначається дифузією, \(\delta \sim \sqrt {(c^2/4\pi \sigma )\,L/v_A}\). Звідси
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{16}\)</span>
+
+<!--
+
+
+                                                                                                        𝑣in                    4𝜋𝜍𝐿𝑣𝐴
+                                                                                                               −1/2
+                                                                                                            ∼ 𝑅𝑚    ,   𝑅𝑚 =          .                                                           (5.17)--><a id="eq:sweet-parker"></a><!--
+                                                                                                        𝑣𝐴                       𝑐2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:sweet-parker} \tcbhighmath {\frac {v_{\rm in}}{v_A}\sim R_{m}^{-1/2},\qquad R_m=\frac {4\pi \sigma Lv_A}{c^2}.}
+\end{equation}
+
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Для сонячної корони \(R_m\sim 10^{12}\), тож \(v_{\rm in}/v_A\sim 10^{-6}\), а&nbsp;час перез’єднання \(\tau \sim (L/v_A)\sqrt {R_m}\) при \(L=10^{10}\)&nbsp;см, \(v_A=7\times 10^{7}\)&nbsp;см/с сягає
+\(\sim 10^{8}\)&nbsp;с (роки), тоді як спалахи тривають хвилини.
+</p>
+</div>
+
+<p>
+Реальне перез’єднання швидше: шар при великому \(R_m\) розпадається на&nbsp;острівці (плазмоїдна нестійкість), а&nbsp;у&nbsp;безсутикових шарах працюють холлівські ефекти (на&nbsp;масштабі \(c/\omega _{pi}\), див.&nbsp;<span
+class="textup">(<a href="ch6.html#eq:generalized-ohm-from-two-fluid">5.3</a>)</span>); швидкість виходить на&nbsp;\(v_{\rm in}\) від \(0{,}01\) до&nbsp;\(0{,}1\,v_A\), незалежно від \(R_m\).
+</p>
+
+
+<div class="cb-attention">
+
+<p>
+Силові лінії не&nbsp;є матеріальними об’єктами. Мова «розриву й&nbsp;зшивання» лише образно описує зміну зв’язності поля: насправді змінюється те, які елементи плазми пов’язані однією лінією.
+</p>
+</div>
+
+<p>
+<em>Де спостерігається.</em> Сонячні спалахи, суббурі в&nbsp;магнітосфері Землі, пилкоподібні релаксації та&nbsp;розривні моди в&nbsp;токамаках (розд.&nbsp;<a href="ch9.html#sec:instability">8</a>,&nbsp;<a
+href="ch10.html#sec:magnetic-confinement">9</a>).
+</p>
+
+<p>
+<em>Проблема нагріву корони.</em> Корона має \(T\sim 10^6\)&nbsp;К, у&nbsp;сотні разів більше за&nbsp;фотосферу (\(\sim 6\times 10^3\)&nbsp;К), хоча енергія тече від холоднішої поверхні. Потрібне джерело \(\sim
+10^{5}\)–\(10^{7}\)&nbsp;ерг/(см\(^2\cdot \)с). Єдиної відповіді досі немає, але картина така. Енергію несе рух фотосфери, який скручує й&nbsp;заплітає силові лінії. Є два шляхи її розсіяння: (1)&nbsp;<em>нанофлеєри</em>&nbsp;— безліч
+малих перез’єднань у&nbsp;тонких струмових шарах, на&nbsp;які розпадається заплетене поле (модель Паркера); (2)&nbsp;<em>хвилі</em>&nbsp;— альфвенівська турбулентність, яку запускають рухи вузлів поля у&nbsp;фотосфері. Огляд
+Клімчука&nbsp;<a id="main-html-autopage-284"></a>[<a href="ch18.html#LWR-ht-cite.0@klimchuk2015key">19</a>] обґрунтовує, що нагрів корони імпульсний, а&nbsp;корона заповнена тонкими струмовими шарами, що мають
+перез’єднуватися; моделювання альфвенівської турбулентності&nbsp;[<a href="ch18.html#LWR-ht-cite.0@vanballegooijen2017heating">20</a>] дає температуру \(\approx 2{,}5\)&nbsp;МК у&nbsp;петлі активної області, але
+не&nbsp;відтворює всіх спостережних обмежень. Нині вважають, що обидва механізми пов’язані: турбулентність створює струмові шари, у&nbsp;яких і&nbsp;відбувається перез’єднання.
+</p>
+<!--
+...... section Дві мови опису: окремі частинки й-суцільне середовище ......
+-->
+<h4 id="autosec-285"><span class="sectionnumber">&#xA7;&#x202F;5.11&#x2003;</span>Дві мови опису: окремі частинки й&nbsp;суцільне середовище</h4>
+<a id="main-html-autopage-285"></a>
+
+
+<a id="sec:two-descriptions"></a>
+
+<p>
+Ми описали плазму двічі. В&nbsp;розд.&nbsp;<a href="ch4.html#sec:particle-motion">3</a> вона&nbsp;— набір частинок, кожна з&nbsp;яких крутиться навколо своєї силової лінії. Вище&nbsp;— суцільне провідне середовище
+з&nbsp;тиском, густиною й&nbsp;швидкістю течії. Чи не суперечать ці картини одна одній? Здавалося б, суперечать. Візьмемо установку керованого синтезу.
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Для \(n=10^{14}~\mathrm {см}^{-3}\), \(T=10\)&nbsp;кеВ маємо \(\nu _{ei}\approx 4{,}4\times 10^{3}~\mathrm {с}^{-1}\) і&nbsp;довжину вільного пробігу
+</p>
+
+<p>
+\[ \lambda _{\mathrm {пр}}\sim \frac {v_{Te}}{\nu _{ei}}\approx \frac {4\times 10^{9}~\text {см/с}}{4{,}4\times 10^{3}~\mathrm {с}^{-1}}\approx 10~\text {км}, \]
+</p>
+
+<p>
+у&nbsp;десять тисяч разів більшу за&nbsp;розмір установки (\(\sim 1\)&nbsp;м).
+</p>
+</div>
+
+<p>
+Зіткнень практично немає, а&nbsp;ми користуємося рівняннями рідини. Але ж рідина, як ми звикли, тримається саме на зіткненнях.
+</p>
+<!--
+...... subsection Що насправді дозволяє перейти до середовища ......
+-->
+<h5 id="autosec-286">Що насправді дозволяє перейти до середовища</h5>
+<a id="main-html-autopage-286"></a>
+
+
+<p>
+У&nbsp;зіткнювальному газі локальна рівновага підтримується зіткненнями. У&nbsp;замагніченій плазмі поперечний рух додатково обмежений гірацією, тому усереднення за ларморівським обертанням може бути осмисленим навіть за великої
+довжини вільного пробігу. Але це <em>не заміна зіткнень</em> взагалі: уздовж&nbsp;\(\vect B\) частинки вільно переміщуються, а&nbsp;розподіл за швидкостями може залишатися далеким від локальної рівноваги. Саме тому однорідинна МГД
+має обмеження.
+</p>
+
+
+<div class="cb-attention">
+
+<p>
+Звідси ключове правило. Якщо \(L\gg r_{Li}\) та \(\omega \ll \omega _{ci}\), макроскопічну динаміку часто можна описувати МГД, але лише за наявності відповідного замикання. Уздовж&nbsp;\(\vect B\), при анізотропному тиску та
+в&nbsp;явищах, чутливих до розподілу частинок за швидкостями (загасання Ландау, захоплені частинки в&nbsp;торі, конус втрат дзеркала), однорідинної МГД вже недостатньо й&nbsp;потрібна кінетика.
+</p>
+</div>
+<!--
+...... subsection Словник: що в-частинковій мові відповідає величині рідини ......
+-->
+<h5 id="autosec-287">Словник: що в&nbsp;частинковій мові відповідає величині рідини</h5>
+<a id="main-html-autopage-287"></a>
+
+
+<p>
+Подальші три підрозділи показують, як «наживо» пов’язані ці описи.
+</p>
+
+<figure id="autoid-129" class="table ">
+<div class="center">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;5.1. Словник між частинковим і&nbsp;гідродинамічним описом.
+
+</div>
+
+<a id="tab:dictionary"></a>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr class="hline">
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Частинки</b></span></td>
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Середовище</b></span></td>
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Зв’язок</b></span></td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Дрейф \(\vect E\times \vect B\) однаковий для всіх частинок
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+швидкість течії \(\vect v\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(\vect E+\vect v\times \vect B/c=0\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(\sum _sn_sm_s\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+масова густина \(\rho _m\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(\sum _sn_sT_s\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+тиск \(p\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Гірація й&nbsp;градієнт густини
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+діамагнітний струм \(\vect j_\perp \)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(\vect j_\perp =c\,\vect B\times \nabla p/B^2\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Сума рівнянь руху електронів та іонів
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+рівняння МГД
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(\rho _m\,d\vect v/dt=-\nabla p+\vect j\times \vect B/c\)
+</p>
+</td>
+</tr>
+
+<tr class="hline" aria-hidden="true">
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+</table>
+
+</div>
+
+</figure>
+<!--
+...... subsection Вмороженість як наслідок дрейфу ......
+-->
+<h5 id="autosec-290">Вмороженість як наслідок дрейфу</h5>
+<a id="main-html-autopage-290"></a>
+
+
+<p>
+Закон Ома ідеальної МГД, \(\vect E+\vect v\times \vect B/c=0\), не є окремим постулатом. Дрейф&nbsp;<span class="textup">(<a href="ch4.html#eq:ExB">3.2</a>)</span> однаковий для електронів і&nbsp;іонів, тож уся плазма поперек
+поля тече зі&nbsp;швидкістю \(\vect v_E=c\vect E\times \vect B/B^2\). Підставимо \(\vect v=\vect v_E\): \(\vect v_E\times \vect B/c=-\vect E_\perp \), тобто \(\vect E_\perp +\vect v\times \vect B/c=0\). А&nbsp;умова
+\(E_\parallel =0\) означає, що електрони, які вільно рухаються вздовж ліній, миттєво замикають будь-яке поздовжнє поле. Отже, «лінії рухаються разом з&nbsp;плазмою» означає лише, що частинки прив’язані до ліній, а&nbsp;самі лінії
+дрейфують зі швидкістю \(\vect v_E\).
+</p>
+<!--
+...... subsection Діамагнітний струм на пальцях ......
+-->
+<h5 id="autosec-291">Діамагнітний струм «на пальцях»</h5>
+<a id="main-html-autopage-291"></a>
+
+
+<p>
+Тут легко помилитися: центри ларморівських кіл не рухаються, а&nbsp;струм є. Звідки він? Нехай \(\vect B=B\vect e_z\) і&nbsp;концентрація залежить від&nbsp;\(x\). Розглянемо позитивні частинки у&nbsp;вертикальній площині \(x=x_0\).
+З&nbsp;рівнянь руху \(x_g=x+v_y/\omega _c\), де \(x_g\)&nbsp;— координата центра кола. Тобто частинки, що проходять через площину <em>вгору</em> (\(v_y&gt;0\)), мають центри <em>праворуч</em>, а&nbsp;частинки, що рухаються
+<em>вниз</em>,&nbsp;— ліворуч. Якщо справа концентрація більша, вгору летить більше частинок, ніж вниз, і&nbsp;потоки не компенсуються:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{17}\)</span>
+
+<!--
+
+                                                                                                  ˆ
+                                                                                                                  𝑣𝑦              𝑛′ 2       𝑛′ 𝑇   𝑐𝑇 ′
+                                                                                           Γ𝑦 =       𝑣𝑦 𝑛(𝑥0 +      ) 𝑓𝑀 𝑑 3 𝑣 ≃    ⟨𝑣𝑦 ⟩ =      =    𝑛.
+                                                                                                                  𝜔𝑐              𝜔𝑐         𝑚 𝜔𝑐   𝑞𝐵
+
+-->
+
+<p>
+
+\begin{equation*}
+\Gamma _y=\int v_y\,n\!\left (x_0+\frac {v_y}{\omega _c}\right )f_M\,d^3v \simeq \frac {n&apos;}{\omega _c}\langle v_y^2\rangle =\frac {n&apos;\,T}{m\,\omega _c} =\frac {c\,T}{qB}\,n&apos;.
+\end{equation*}
+
+</p>
+
+<p>
+Тут \(f_M\)&nbsp;— нормований максвеллівський розподіл за&nbsp;швидкостями, \(n&apos;=dn/dx\), а&nbsp;нульовий доданок розкладу зникає через симетрію. Густина струму \(j_y=q\Gamma _y=c\,T\,n&apos;/B\). Для електронів
+і&nbsp;напрям обертання, і&nbsp;знак заряду протилежні, тож струми <em>додаються</em>: \(j_y=c\,p&apos;/B\), де \(p=n(T_e+T_i)\). У&nbsp;векторному вигляді \(\vect j_\perp =c\,\vect B\times \nabla p/B^2\)&nbsp;— рівно <span
+class="textup">(<a href="ch6.html#eq:diamagnetic-current">5.14</a>)</span>.
+</p>
+
+<figure id="autoid-130" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-41"
+    class="lateximagesource"
+><!--
+           𝑥 = 𝑥0
+
+                     більше
+                    частинок
+
+
+
+                         𝑗𝑦
+
+
+
+ менше
+частинок
+                               𝑥
+--><img
+   src="main-html-images/image-41.svg"
+   alt="Рис. 5.5. Походження діамагнітного струму: центри орбіт нерухомі, але потоки вгору й вниз не компенсуються"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.5. Походження діамагнітного струму: центри орбіт нерухомі, але потоки вгору й&nbsp;вниз не компенсуються
+
+</div>
+
+<a id="fig:diamagnetic-flux"></a>
+
+</div>
+
+</figure>
+
+<p>
+Той самий струм ми отримали ще двічі: з&nbsp;намагніченості \(M=-p/B\) (розд.&nbsp;<a href="ch6.html#sec:diamagnetism">5.8</a>) та&nbsp;з&nbsp;МГД-рівноваги&nbsp;<span class="textup">(<a
+href="ch6.html#eq:equilibrium">5.9</a>)</span>. Три різних шляхи&nbsp;— частинковий, «магнітний» і&nbsp;рідинний&nbsp;— дали один результат. Саме так ми й&nbsp;впевнюємося, що два описи сумісні.
+</p>
+<!--
+...... subsection Як з-частинок отримати рівняння руху ......
+-->
+<h5 id="autosec-295">Як з&nbsp;частинок отримати рівняння руху</h5>
+<a id="main-html-autopage-295"></a>
+
+
+<p>
+Рівняння руху плазми як цілого ми вивели в&nbsp;розд.&nbsp;<a href="ch6.html#sec:mhd">5</a>: електронне та іонне рівняння додаються, тертя скорочується (\(\vect R_e+\vect R_i=0\): зіткнення зберігають сумарний імпульс),
+і&nbsp;лишається
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{17}\)</span>
+
+<!--
+
+
+                                                                                                           𝑑𝐯               1
+                                                                                                      𝜌𝑚      = −∇𝑝 + 𝜌𝑞 𝐄 + 𝐣 × 𝐁.
+                                                                                                           𝑑𝑡               𝑐
+
+-->
+
+<p>
+
+\begin{equation*}
+\rho _m\frac {d\vect v}{dt}=-\nabla p+\rho _q\vect E+\frac 1c\,\vect j\times \vect B.
+\end{equation*}
+
+</p>
+
+<p>
+Тепер можна пояснити, чому ми раніше відкинули \(\rho _q\vect E\). За&nbsp;Гауссом \(\rho _q=\nabla \cdot \vect E/4\pi \sim E/4\pi L\), тому \(\rho _qE\sim E^2/4\pi L\). Натомість \(j\times B/c\sim B^2/4\pi L\). Відношення
+\(E^2/B^2\sim v^2/c^2\ll 1\) (бо \(E\sim vB/c\)): електричною силою можна знехтувати для повільних (\(v\ll c\)) рухів&nbsp;— тієї ж умови, що й&nbsp;для струму зміщення.
+</p>
+<!--
+...... subsection Де МГД чесно спрощує ......
+-->
+<h5 id="autosec-296">Де МГД чесно спрощує</h5>
+<a id="main-html-autopage-296"></a>
+
+
+<p>
+У&nbsp;рівнянні руху простої МГД тиск задається скаляром. Це природне наближення для достатньо частих зіткнень, коли вони встигають ізотропізувати розподіл. У&nbsp;сильно замагніченій беззіткнювальній плазмі збереження першого
+адіабатичного інваріанта приводить до анізотропії: \(p_\perp \) і&nbsp;\(p_\parallel \) можуть відрізнятися. Тоді потрібні кінетичний або щонайменше двотисковий опис; проста однорідинна МГД вже не містить усієї фізики. Водночас для
+довгохвильових мод із майже ізотропним розподілом МГД може залишатися корисним навіть за слабких зіткнень&nbsp;— її застосовність визначається не самим фактом \(\lambda _{\mathrm {пр}}&gt;L\), а&nbsp;замиканням, частотами та
+відношенням характерних масштабів до \(r_L\) і&nbsp;\(\lambda _D\).
+</p>
+<!--
+...... subsection Що це змінює для керованого синтезу ......
+-->
+<h5 id="autosec-297">Що це змінює для керованого синтезу</h5>
+<a id="main-html-autopage-297"></a>
+
+
+<p>
+Кожен із&nbsp;описів «відповідає» за свою частину проблеми (табл.&nbsp;<a href="ch6.html#tab:fusion-link">5.2</a>).
+</p>
+
+<figure id="autoid-131" class="table ">
+<div class="center">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;5.2. Які ефекти й&nbsp;моделі що дають для керованого синтезу.
+
+</div>
+
+<a id="tab:fusion-link"></a>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Ефект
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+Модель
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+Наслідок для КТС
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Дебаївський шар біля стінки й&nbsp;дивертора
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+шар Бома (розд.&nbsp;<a href="ch2.html#sec:bohm-sheath">1.9</a>): \(u\ge c_s\), \(\varphi _f\approx -3T_e/e\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+усе падіння потенціалу зосереджене у&nbsp;шарі завтовшки \(\sim \lambda _D\); він визначає потік тепла \(\sim n c_s(\ldots )T_e\) на матеріал
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Відсікання при \(\omega &lt;\omega _p\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(\varepsilon (\omega )=1-\omega _p^2/\omega ^2\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+хвиля з&nbsp;\(f_{ce}=\omega _{ce}/(2\pi )\approx 1{,}4\times 10^{11}\)&nbsp;Гц для \(B=5\)&nbsp;Тл має \(n_{\mathrm {кр}}\approx 2{,}5\times 10^{14}&gt;10^{14}\), тобто \(O\)-мода проходить у&nbsp;плазму (розд.&nbsp;<a
+href="ch7.html#sec:mhd-waves">6</a>) й&nbsp;нагріває її на циклотронному резонансі
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Провідність Спітцера \(\sigma \propto T^{3/2}\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+кулонівські зіткнення
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+омічний нагрів слабшає з&nbsp;температурою, потрібен додатковий нагрів: пучки нейтралів, ВЧ-хвилі й&nbsp;\(\alpha \)-частинки
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Дрейфи та збереження \(\mu \)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+рух окремої частинки
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+чисто тороїдальне поле не утримує, потрібна закрутка ліній (токамак, стеларатор); дзеркало має конус втрат
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+\(\beta =8\pi p/B^2\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+МГД-рівновага
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+потужність синтезу \(P_f\propto \beta ^2B^4\) (див.&nbsp;нижче), потрібні сильні надпровідні магніти, а&nbsp;\(\beta \) обмежене стійкістю
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft">
+
+<p>
+Класичний і&nbsp;аномальний перенос
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+кінетика, турбулентність
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+класична оцінка дає \(\tau \sim 10^{3}\)&nbsp;с, реально лише секунди; через це установки доводиться робити великими
+</p>
+</td>
+</tr>
+
+</table>
+
+</div>
+
+</figure>
+
+<p>
+Два рядки таблиці варто виписати. По-перше, чому «\(P_f\propto \beta ^2B^4\)». Повна концентрація частинок \(2n\), тому \(p=2nT\), і&nbsp;потужність синтезу
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{17}\)</span>
+
+<!--
+
+
+                                                                                                                1                  𝑝2
+                                                                                                         𝑃𝑓 =       𝑛2 ⟨𝜍𝑣⟩𝐸𝑓 =          ⟨𝜍𝑣⟩𝐸𝑓 .
+                                                                                                                4                 16 𝑇 2
+
+-->
+
+<p>
+
+\begin{equation*}
+P_f=\tfrac 14\,n^2\langle \sigma v\rangle E_f=\frac {p^2}{16\,T^2}\,\langle \sigma v\rangle E_f.
+\end{equation*}
+
+</p>
+
+<p>
+В&nbsp;околі \(10\)–\(20\)&nbsp;кеВ у&nbsp;цьому вузькому інтервалі наведені значення \(\langle \sigma v\rangle \) приблизно зростають як \(T^2\). Лише як локальну оцінку в&nbsp;цьому інтервалі можна тому писати \(P_f\propto
+p^2=(\beta B^2/8\pi )^2\propto \beta ^2B^4\). Це не є універсальним законом реакції для всіх температур. Подвоєння поля при тому самому&nbsp;\(\beta \) дає у&nbsp;\(16\) разів більшу потужність, і&nbsp;це головна причина прагнення
+до сильних полів. Для нашого прикладу \(p=3{,}2\times 10^{6}\)&nbsp;дин/см\(^2\) (\(3{,}2\)&nbsp;бар), магнітний тиск при \(5\times 10^4\)&nbsp;Гс дорівнює \(\approx 100\)&nbsp;бар, тож \(\beta \approx 3\,\%\).
+</p>
+
+<p>
+По-друге, <em>класичний</em> перенос. Поперечну теплопровідність іонів оцінюємо як \(\chi _\perp \sim r_{Li}^2\nu _{ii}\) (крок&nbsp;\(r_L\), частота кроків&nbsp;\(\nu _{ii}\)). Для \(r_{Li}\approx 0{,}3\)&nbsp;см і&nbsp;\(\nu
+_{ii}\approx \nu _{ei}/(40\text {--}60)\approx 10^{2}~\mathrm {с}^{-1}\) маємо \(\chi _\perp \sim 10~\mathrm {см}^2/\mathrm {с}\), а&nbsp;час витоку тепла з&nbsp;шнура розміру \(L\sim 1\)&nbsp;м \(\tau \sim L^2/\chi
+_\perp \sim 10^{3}\)&nbsp;с. Тобто по&nbsp;класиці плазма трималась би сотні секунд (десятки хвилин). Насправді \(\tau _E\) становить секунди&nbsp;— на три порядки менше. Різницю дає <em>аномальний</em> перенос, спричинений
+турбулентністю, і&nbsp;її не можна отримати ні з&nbsp;одно-, ні з&nbsp;дворідинної МГД: потрібен кінетичний (турбулентний) опис. Це оцінка за&nbsp;порядком величини: точні коефіцієнти змінюють результат у&nbsp;1–10 разів, але не на три
+порядки.
+</p>
+<!--
+...... section Як це вимірюють: магнітні виміри ......
+-->
+<h4 id="autosec-300"><span class="sectionnumber">&#xA7;&#x202F;5.12&#x2003;</span>Як це вимірюють: магнітні виміри</h4>
+<a id="main-html-autopage-300"></a>
+
+
+<a id="sec:magnetic-diagnostics"></a>
+
+<p>
+У&nbsp;рідинній картині плазма&nbsp;— провідне середовище зі&nbsp;струмом і&nbsp;тиском, а&nbsp;магнітне поле є її відгуком: струм створює поле за&nbsp;законом Ампера&nbsp;\(\oint \vect B\cdot d\vect l=4\pi I/c\), а&nbsp;тиск
+послаблює поле всередині за&nbsp;<span class="textup">(<a href="ch6.html#eq:pressure-balance">5.15</a>)</span>. Поза плазмою поле можна виміряти звичайною котушкою. Згідно із&nbsp;законом Фарадея, котушка з&nbsp;\(N\)
+витків площі \(S\) у&nbsp;полі \(B(t)\) дає ЕРС \(\varepsilon =-(NS/c)\,dB/dt\); сигнал інтегрують, і&nbsp;\(\int \varepsilon \,dt\propto B\). Різні геометрії котушок дають різні величини: струм, енергію, положення шнура.
+</p>
+<!--
+...... subsection Пояс Роговського: повний струм ......
+-->
+<h5 id="autosec-301">Пояс Роговського: повний струм</h5>
+<a id="main-html-autopage-301"></a>
+
+
+<p>
+Гнучку котушку з&nbsp;рівномірним намотуванням (\(n_c\) витків на&nbsp;одиницю довжини, переріз \(S\)) замикають навколо плазмового шнура (рис.&nbsp;<a href="ch6.html#pic:magnetic-diagnostics">5.6</a>&#x202f;а). Потік крізь
+неї \(\Phi =n_cS\oint B_\theta \,dl=(4\pi n_cS/c)\,I\) за&nbsp;законом Ампера, тому
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{17}\)</span>
+
+<!--
+
+                                                                                                             ˆ
+                                                                                                                            4𝜋𝑛𝑐 𝑆
+                                                                                                                 𝜀 𝑑𝑡 = −          𝐼 .                                                    (5.18)--><a id="eq:rogowski"></a><!--
+                                                                                                                              𝑐2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:rogowski} \tcbhighmath {\int \varepsilon \,dt=-\frac {4\pi n_cS}{c^2}\,I}\ .
+\end{equation}
+
+</p>
+
+<p>
+Результат не залежить ні від розподілу струму по&nbsp;перерізу, ні від форми контуру. Це робить пояс основним датчиком струму плазми.
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Для \(n_c=10\)&nbsp;см\(^{-1}\), \(S=1\)&nbsp;см\(^2\) і&nbsp;наростання струму \(1\)&nbsp;МА за&nbsp;\(0{,}1\)&nbsp;с ЕРС дорівнює \(4\pi n_cS\,\dot I/c^2\approx 4\times
+10^{-3}\)&nbsp;статВ&nbsp;\(\approx 1{,}3\)&nbsp;В (\(1\)&nbsp;статВ&nbsp;\(\approx 300\)&nbsp;В).
+</p>
+</div>
+<!--
+...... subsection Діамагнітна петля: енергія плазми ......
+-->
+<h5 id="autosec-302">Діамагнітна петля: енергія плазми</h5>
+<a id="main-html-autopage-302"></a>
+
+
+<p>
+Петля, що охоплює плазмовий шнур у&nbsp;площині, перпендикулярній до&nbsp;\(\vect B_0\) (там же, де і&nbsp;пояс), вимірює потік поздовжнього поля. З&nbsp;балансу тисків&nbsp;<span class="textup">(<a
+href="ch6.html#eq:pressure-balance">5.15</a>)</span> при \(\beta \ll 1\) поле всередині плазми \(B_z\approx B_0-4\pi p/B_0\) (рис.&nbsp;<a href="ch6.html#pic:magnetic-diagnostics">5.6</a>&#x202f;б), тобто потік зменшується
+на
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{18}\)</span>
+
+<!--
+
+                                                                                                                      ˆ
+                                                                                                                 4𝜋
+                                                                                                        ΔΦ = −            𝑝⟂ 𝑑𝑆 .                                                 (5.19)--><a id="eq:diamagnetic-loop"></a><!--
+                                                                                                                 𝐵0
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:diamagnetic-loop} \tcbhighmath {\Delta \Phi =-\frac {4\pi }{B_0}\int p_\perp \,dS}\ .
+\end{equation}
+
+</p>
+
+<p>
+Для ізотропної плазми у&nbsp;тороїдальній системі з&nbsp;великим радіусом \(R\) повна теплова енергія \(W=\tfrac 32\int p\,dV\approx \tfrac 32\,(2\pi R)\int p\,dS=\tfrac 34\,RB_0|\Delta \Phi |\).
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Для \(R=150\)&nbsp;см, \(a=50\)&nbsp;см, \(B_0=5\times 10^4\)&nbsp;Гс і&nbsp;\(p=3{,}2\times 10^6\)&nbsp;дин/см\(^2\) (задача&nbsp;<a href="ch6.html#prb:PlasmaBeta">5.2</a>) маємо \(\int p\,dS=p\pi
+a^2\) і&nbsp;\(|\Delta \Phi |=4\pi p\,\pi a^2/B_0 \approx 6\times 10^{6}\)&nbsp;Мкс (\(0{,}06\)&nbsp;Вб), тобто лише \(\beta /2\approx 1{,}6\,\%\) повного тороїдального потоку \(B_0\pi a^2\). Звідси \(W\approx
+3{,}5\)&nbsp;МДж.
+</p>
+</div>
+
+<figure id="autoid-132" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-304"></a>
+
+<p>
+<span
+    id="lateximage-main-html-42"
+    class="lateximagesource"
+><!--
+       магнітний зонд
+
+       пояс Роговського
+
+ 𝐼𝑝
+⊙ 𝐁𝑡
+       діамагнітна петля
+--><img
+   src="main-html-images/image-42.svg"
+   alt="(а)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-307"></a>
+
+<p>
+<span
+    id="lateximage-main-html-43"
+    class="lateximagesource"
+><!--
+             𝐵𝑧
+
+                 ´
+          ΔΦ ∝       𝑝 𝑑𝑆
+𝐵0
+
+
+
+
+     −𝑎     плазма          𝑎   𝑥
+--><img
+   src="main-html-images/image-43.svg"
+   alt="(б)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б)
+
+</div>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.6. Магнітні виміри: (а)&nbsp;переріз плазмового шнура з&nbsp;поясом Роговського (струм \(I_p\)), діамагнітною петлею (потік \(B_t\)) і&nbsp;магнітним зондом на&nbsp;стінці; (б)&nbsp;плазма послаблює поле \(B_z\) всередині
+(\(\Delta \Phi \propto \int p\,dS\); ефект перебільшено, вертикальну вісь обрізано)
+
+</div>
+
+<a id="pic:magnetic-diagnostics"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Магнітні зонди ......
+-->
+<h5 id="autosec-310">Магнітні зонди</h5>
+<a id="main-html-autopage-310"></a>
+
+
+<p>
+Невелика котушка біля стінки вимірює локальну похідну \(\dot B\). Для збурення \(\widetilde B\,e^{-i\omega t}\) сигнал \(|\varepsilon |=(NS/c)\,\omega \widetilde B\) зростає з&nbsp;частотою, тому зонди чутливі до&nbsp;швидких
+збурень. Приклад: \(N=100\), \(S=1\)&nbsp;см\(^2\), \(\widetilde B=1\)&nbsp;Гс і&nbsp;\(f=10\)&nbsp;кГц дають \(\approx 60\)&nbsp;мВ. За&nbsp;масивом зондів уздовж обходу шнура визначають також його положення й&nbsp;форму
+(розд.&nbsp;<a href="ch10.html#sec:beta-limits">9.9</a>).
+</p>
+<!--
+...... subsection Межі застосовності ......
+-->
+<h5 id="autosec-311">Межі застосовності</h5>
+<a id="main-html-autopage-311"></a>
+
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Усі котушки вимірюють лише <em>зміни</em> потоку: інтегратор дрейфує, тому тривалі розряди (хвилини) потребують особливої точності. Крім того, котушка вимірює все, що створює потік: пояс Роговського
+дає повний струм, включно з&nbsp;вихровими струмами в&nbsp;камері.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Сигнал діамагнітної петлі становить лише 1–2&#x202f;&percnt; потоку тороїдального поля. Його треба відокремити від зміни \(B_0\) другою, компенсаційною петлею, і&nbsp;точність результату обмежена
+точністю цього віднімання.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Петля вимірює \(p_\perp \), а&nbsp;не повний тиск; у&nbsp;токамаку на&nbsp;нього накладається парамагнітний внесок полоїдального поля струму, який віднімають за&nbsp;незалежними вимірами
+\(I_p\).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Формула&nbsp;<span class="textup">(<a href="ch6.html#eq:diamagnetic-loop">5.19</a>)</span> виведена при \(\beta \ll 1\) й&nbsp;у&nbsp;наближенні балансу тисків; для сильно деформованого
+поля потрібна повна МГД-рівновага.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Металева камера екранує швидкі збурення: час проникнення поля крізь стінку обмежує смугу частот, тому датчики розташовують усередині камери або враховують стінку.
+</p>
+</li>
+</ul>
+
+<p>
+Отже, магнітні виміри безпосередньо застосовують три результати цього розділу: закон Ампера дає струм,
+баланс тисків&nbsp;— енергію, а&nbsp;закон Фарадея перетворює змінне поле на&nbsp;електричний сигнал. Це найпростіші діагностики плазми: вони не потребують лазера, не збурюють плазму й&nbsp;працюють на&nbsp;кожній установці.
+</p>
+
+
+<div class="cb-summary">
+
+<p>
+<b>Головне в розділі</b>
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Рідинний опис оперує усередненими полями \(n\), \(\vect v\), \(p\) і&nbsp;не є синонімом частих зіткнень, але потребує замикання.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Сума рівнянь руху електронів та іонів дає однорідинну МГД; ідеальна МГД визначається рівнянням \(\vect E+\vect v\times \vect B/c=0\).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Магнітне поле «вморожене» в&nbsp;плазму (вмороженість порушується при \(R_m\lesssim 1\) і&nbsp;в&nbsp;тонких струмових шарах, розд.&nbsp;<a href="ch6.html#sec:reconnection">5.10</a>);
+параметр \(\beta =8\pi p/B^2\) порівнює газокінетичний і&nbsp;магнітний тиски.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Діамагнітний струм виникає завдяки градієнту тиску й&nbsp;гірації, хоча центри орбіт нерухомі.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Альвенівська хвиля з&nbsp;швидкістю \(v_A=B/\sqrt {4\pi \rho _m}\)&nbsp;— перша колективна мода замагніченої плазми.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Магнітні виміри ґрунтуються на&nbsp;законах Ампера й&nbsp;Фарадея та&nbsp;балансі тисків: пояс Роговського дає струм, діамагнітна петля&nbsp;— енергію, зонди&nbsp;— швидкі збурення
+(розд.&nbsp;<a href="ch6.html#sec:magnetic-diagnostics">5.12</a>).
+</p>
+</li>
+</ul>
+
+</div>
+<!--
+...... section Задачі ......
+-->
+<h4 id="autosec-312">Задачі</h4>
+<a id="main-html-autopage-312"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-133"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.1.</span></span> <a id="autoid-134" ></a ><a id="LWR-ht-problem:5.{1}"></a><a id="prb:SolenoidPressure"></a>★★☆ Довгим соленоїдом з&nbsp;\(n\) витками
+на одиницю довжини тече струм \(I\). Знайдіть тиск на бічну поверхню соленоїда. <a href="ch15.html#LWR-ht-solution:5.{1}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-135"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.2.</span></span> <a id="autoid-136" ></a ><a id="LWR-ht-problem:5.{2}"></a><a id="prb:PlasmaBeta"></a>★☆☆ Плазма з&nbsp;\(n_e=n_i=10^{14}~\mathrm
+{см}^{-3}\), \(T_e=T_i=10\)&nbsp;кеВ. Знайдіть тиск і&nbsp;поле, при якому \(\beta =1\). Яким буде \(\beta \) при \(B=5\times 10^4\)&nbsp;Гс? <a href="ch15.html#LWR-ht-solution:5.{2}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-137"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.3.</span></span> <a id="autoid-138" ></a ><a id="LWR-ht-problem:5.{3}"></a><a id="prb:PlasmaDiffusion"></a>★★☆ Оцініть час дифузії магнітного поля для
+плазми з&nbsp;\(T_e=1\)&nbsp;кеВ, \(\ln \Lambda =15\), \(L=1\)&nbsp;м. Знайдіть магнітне число Рейнольдса при швидкості руху плазми \(10^5\)&nbsp;см/с. <a href="ch15.html#LWR-ht-solution:5.{3}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-139"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.4.</span></span> <a id="autoid-140" ></a ><a id="LWR-ht-problem:5.{4}"></a><a id="prb:PlasmaAlfven"></a>★☆☆ Знайдіть швидкість Альвена для водневої
+плазми з&nbsp;\(n_i=10^{14}~\mathrm {см}^{-3}\) у&nbsp;полі \(B=10^4\)&nbsp;Гс і&nbsp;порівняйте її з&nbsp;тепловою швидкістю іонів \(v_{Ti}\) при \(T_i=10\)&nbsp;кеВ. <a href="ch15.html#LWR-ht-solution:5.{4}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-141"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.5.</span></span> <a id="autoid-142" ></a ><a id="LWR-ht-problem:5.{5}"></a><a id="prb:MaxwellStress"></a>★★★ Покажіть, що сила на одиницю об’єму \(\vect
+f=\vect j\times \vect B/c\) записується як \(f_i=\partial _j\sigma _{ij}\) з&nbsp;тензором&nbsp;<span class="textup">(<a href="ch6.html#eq:maxwell-stress">5.10</a>)</span>. Знайдіть магнітний тиск при \(B=5{,}3\)&nbsp;Тл
+(у&nbsp;барах) і&nbsp;порівняйте з&nbsp;газовим тиском плазми в&nbsp;задачі&nbsp;<a href="ch6.html#prb:PlasmaBeta">5.2</a>. Чому дорівнює \(\beta \)? <a href="ch15.html#LWR-ht-solution:5.{5}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-143"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.6.</span></span> <a id="autoid-144" ></a ><a id="LWR-ht-problem:5.{6}"></a><a id="prb:AlfvenString"></a>★★☆ Виведіть швидкість альвенівської хвилі,
+розглядаючи силову лінію як струну з&nbsp;натягом \(B^2/4\pi \). Знайдіть \(v_A\) для дейтерієвої плазми \(n_i=10^{14}~\mathrm {см}^{-3}\), \(B=5\times 10^4\)&nbsp;Гс і&nbsp;час, за&nbsp;який хвиля проходить \(L=1\)&nbsp;м. <a
+href="ch15.html#LWR-ht-solution:5.{6}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-145"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.7.</span></span> <a id="autoid-146" ></a ><a id="LWR-ht-problem:5.{7}"></a><a id="prb:FluidScales"></a>★★☆ Для дейтерієвої плазми
+з&nbsp;\(n=10^{14}~\mathrm {см}^{-3}\), \(T=10\)&nbsp;кеВ, \(B=5\times 10^4\)&nbsp;Гс оцініть \(\lambda _{\mathrm {пр}}=v_{Te}/\nu _{ei}\), \(r_{Li}\), відношення \(D_\perp /D_\parallel \). Поясніть, чому МГД застосовна поперек
+поля, хоча довжина пробігу набагато більша за&nbsp;розмір установки. <a href="ch15.html#LWR-ht-solution:5.{7}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-147"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.8.</span></span> <a id="autoid-148" ></a ><a id="LWR-ht-problem:5.{8}"></a><a id="prb:DiamagneticFlux"></a>★★★ Для позитивних частинок у&nbsp;полі
+\(\vect B=B\vect e_z\) з&nbsp;концентрацією \(n(x)\) покажіть, що центр кола має координату \(x_g=x+v_y/\omega _c\). Знайдіть потік \(\Gamma _y\) через площину \(x=x_0\) і&nbsp;густину струму \(j_y\). Перевірте збіг із&nbsp;<span
+class="textup">(<a href="ch6.html#eq:diamagnetic-current">5.14</a>)</span>. <a href="ch15.html#LWR-ht-solution:5.{8}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-149"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.9.</span></span> <a id="autoid-150" ></a ><a id="LWR-ht-problem:5.{9}"></a><a id="prb:FluxTube"></a>★★★ Покажіть, що при поперечному стисненні
+вмороженої силової трубки \(B/\rho =\text {const}\) (довжина трубки не змінюється), а&nbsp;при ізотропному стисненні \(B\propto \rho ^{2/3}\). У&nbsp;скільки разів зросте \(B\) хмари, що колапсує в&nbsp;зорю з&nbsp;ростом густини
+в&nbsp;\(10^{6}\) разів? <a href="ch15.html#LWR-ht-solution:5.{9}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-151"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.10.</span></span> <a id="autoid-152" ></a ><a id="LWR-ht-problem:5.{10}"></a><a id="prb:ParkerSpiral"></a>★★★ Сонце обертається з&nbsp;\(\Omega \approx
+2{,}7\times 10^{-6}\)&nbsp;рад/с, сонячний вітер має швидкість \(400\)&nbsp;км/с. З&nbsp;умови вмороженості знайдіть кут між \(\vect B\) і&nbsp;радіальним напрямом на орбіті Землі (\(r=1{,}5\times 10^{8}\)&nbsp;км): \(\tan \psi
+=\Omega r/v\). <a href="ch15.html#LWR-ht-solution:5.{10}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-153"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.11.</span></span> <a id="autoid-154" ></a ><a id="LWR-ht-problem:5.{11}"></a><a id="prb:DiamagneticLoop"></a>★★☆ Діамагнітна петля зареєструвала
+зменшення потоку тороїдального поля \(|\Delta \Phi |=3\times 10^{6}\)&nbsp;Мкс у&nbsp;токамаку з&nbsp;\(R=150\)&nbsp;см, \(B_0=5\times 10^4\)&nbsp;Гс. Знайдіть теплову енергію плазми \(W\), вважаючи тиск ізотропним. Чи можна
+за&nbsp;цим сигналом визначити окремо \(n\) і&nbsp;\(T\)? <a href="ch15.html#LWR-ht-solution:5.{11}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-155"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.12.</span></span> <a id="autoid-156" ></a ><a id="LWR-ht-problem:5.{12}"></a><a id="prb:Rogowski"></a>★★☆ Пояс Роговського має
+\(n_c=20\)&nbsp;см\(^{-1}\) і&nbsp;\(S=0{,}5\)&nbsp;см\(^2\). Яким буде інтеграл \(\int \varepsilon \,dt\) (в&nbsp;В\(\cdot \)с) при \(I=1\)&nbsp;МА? Чи залежить результат від положення шнура всередині пояса? <a
+href="ch15.html#LWR-ht-solution:5.{12}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+
+<div class="cb-questions">
+
+<p>
+<b>Контрольні питання</b>
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Чому плазма діамагнітна? Який зв’язок між діамагнетизмом і&nbsp;рівнянням&nbsp;<span class="textup">(<a href="ch6.html#eq:pressure-balance">5.15</a>)</span>?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Що таке магнітний тиск і&nbsp;натяг силових ліній? Як вони входять в&nbsp;рівняння МГД?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> Що означає вмороженість поля? Від якого параметра залежить, чи вона виконується?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">4.</span> Як із&nbsp;закону Ампера й&nbsp;сили Лоренца отримати тензор натягів і&nbsp;розкласти силу на тиск і&nbsp;натяг? Чому магнітна сила ніколи не діє вздовж поля?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">5.</span> Чому плазма майже без зіткнень описується рівняннями рідини поперек поля, але не вздовж? Яку роль виконує гірація?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">6.</span> Чому вмороженість поля є наслідком дрейфу \(\vect E\times \vect B\)? Звідки береться діамагнітний струм, якщо центри орбіт нерухомі?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">7.</span> Чому джоулеве тепло не порушує збереження повної енергії?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">8.</span> Коли МГД непридатна (анізотропія тиску, беззіткнювальна плазма вздовж \(\vect B\))?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">9.</span> Чому силові лінії поводяться як натягнуті гумові нитки, що відштовхуються одна від одної?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">10.</span> Чому діамагнітна петля вимірює енергію плазми, а&nbsp;пояс Роговського&nbsp;— струм? Які закони лежать в&nbsp;основі кожного з&nbsp;них?
+</p>
+<p>
+
+</p>
+</li>
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

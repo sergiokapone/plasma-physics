@@ -1,79 +1,84 @@
 ---
 name: html-build
-description: Як збирати й публікувати HTML-варіант книги через lwarp (досвід ElMagConspect) — конвеєр build-html.ps1 → prepare_html.py → lwarp → publish_html.py, MathJax, картинки, пастки lwarp, що вже є в PlasmaBook, а що ще треба перенести з ElMag. Використовуй, коли треба зібрати, налагодити чи портувати HTML-версію («зроби html», «чому не збирається lwarp», «перенеси конвеєр з ElMag»).
+description: Як збирати й публікувати HTML-варіант PlasmaBook через lwarp (online/) — де що лежить (html/), команда html\build-html.ps1, стадії, пастки lwarp/TeX Live 2026, відомі проблеми. Використовуй, коли треба зібрати, налагодити чи оновити HTML-версію («зроби html», «перезбери online», «чому не збирається lwarp»).
 ---
 
-# HTML-варіант книги (lwarp)
+# HTML-варіант книги (lwarp) — стан: конвеєр працює (2026-11-13)
 
-**Стан у PlasmaBook (2026-11-13): HTML-конвеєра ще немає.** Є лише PDF і лендінг `../index.html` (GitHub Pages у корені репозиторію). Робочий зразок — `D:\Projects\LaTeX\ElMag\ElMagConspect\` (там HTML-версія виходить у `docs/`, її читають онлайн). Нижче — що там зроблено й що з цього переносити. Деталі ElMag: `README-html.md`, `.claude/rules/html-build.md` у тій теці.
+Книга публікується як статичний сайт у `D:\Projects\LaTeX\plasma-physics\online\` (поруч з `index.html`, `simulations.html`; GitHub Pages у корені, URL `.../online/`). Кнопка «Читати онлайн» у лендінгу (`make_site.py`, веде на `online/`). Портовано з `D:\Projects\LaTeX\ElMag\ElMagConspect` (його `README-html.md` — довідка про ідеї).
 
-## Конвеєр ElMag (7 стадій `tools/build-html.ps1`)
+## Де що лежить
 
-1. **Підготовка.** `mathjax2lwarp.py` (макроси формул → `lwarp-mathjax.tex`), `prepare_html.py` (див. нижче).
-2. **Друкований прохід** `lualatex -shell-escape main-html` + `biber`; номери для `\tag{\theequation …}` беруться з `main-html.aux` (`prepare_html.py --tags`). `.bbl` копіюється в `main-html_html.bbl`.
-3. **`lwarpmk again` + `lwarpmk html`** — довго (у ElMag ~15 хв на 20 розділів); одна сторінка HTML на розділ (`ch1.html`…), `HTMLFilename={ch}`, `FileDepth=0`.
-4. **Перевірки:** `texlogsieve` журналів, `check-mathjax-html.js` (кожна формула сторінки крізь MathJax; потрібен `npm i mathjax-full@3`).
-5. **Картинки:** `lwarpmk limages` (усе, що lwarp не вміє, — tikz-малюнки, таблиці — стає зображеннями).
-6. **Публікація:** `publish_html.py` переносить сайт у `docs/` (чистить її перед кожним запуском, крім `SITE_OWN`), переписує посилання на `assets/`, додає `book.js`, Pagefind-пошук, `§` у заголовках, `svg_optimize.py` стискає SVG.
-7. **Прибирання** тимчасових файлів (`clwarp-clean.ps1`).
+Усе джерельне — у **`PlasmaBook\html\`**; корінь PlasmaBook після збірки лишається таким, як був.
 
-Усе запускається однією командою (`python elmag.py html` з прапорцями `-SkipPrepare`, `-NoImages`, `-Placeholder`, `-Full`, `-NoPublish`, `-OutDir`). На помилці скрипт пише першу помилку LaTeX із контекстом у `build-error.txt`.
+| Шлях | Що |
+|---|---|
+| `html/build-html.ps1` | єдина команда збірки й чистки |
+| `html/main-html.tex`, `html/ConspectBookHTML.cls` | HTML-варіант `main.tex` і класу (копіюються в корінь на час збірки) |
+| `html/tools/` | `prepare_html.py`, `publish_html.py`, `html_patches.py`, `mathjax2lwarp.py`, `check-mathjax-html.js`, `svg_optimize.py` |
+| `html/assets/` | джерела `book.js`, `conspect.css`, `fonts/` (публікація копіює їх в `online/assets/`) |
+| `html/lwarpmk.conf` | довідковий (збірка пише власний у корені й видаляє) |
+| `html/cache/ext/` | кеш рисунків, зібраних окремо (git-ignored) |
+| `html/logs/` | журнали останньої збірки й `build-error.txt` (git-ignored) |
+| `html/node_modules/` | `mathjax-full@3` для перевірки формул (`cd html; npm i mathjax-full@3`; git-ignored) |
+| `online/` | готова книга: `ch1.html`…, `index.html` (копія `main-html.html`), `assets/`, `main-html-images/`, `pagefind/`, каталоги з рисунками розділів |
 
-## Головні принципи
+`.gitignore` (корінь репозиторію) закриває тимчасове: `PlasmaBook/main-html*`, `_html/`, `lwarp*`, `lateximage*`, `ConspectBookHTML.cls`, `html/logs|cache|node_modules|_test`.
 
-- **Розділи не змінюються.** Усе, що не подобається lwarp, виправляє `prepare_html.py`, записуючи **копії** у `_html/<Розділ>/…`; клас читає копію першою (`\multiinclude`, `\localinput`, `\htmlinput`).
-- **Окремий клас** `ConspectBookHTML.cls` (lwarp), друкований клас не чіпати. Шматки друкованого класу (кольори, tikz-стилі, математичні макроси, `\emphx`, biblatex) **вирізаються з `ConspectBook.cls` автоматично** за заголовками-банерами (`build_shared` у `prepare_html.py` → `_html/shared-*.tex`), тож зміни друкованого класу доходять до HTML самі. Звідси правило: **усе, що додано для друку, має існувати й в HTML-класі** (див. скіл `html-class`).
-- **Згенероване не правити руками.** `docs/*.html` стираються при кожній публікації. Виправлення — у `publish_html.py` / `prepare_html.py` / `html_patches.py` / `docs/assets/{book.js,conspect.css}`. Правка `docs/` напряму — лише як попередній перегляд тієї самої зміни.
-- **Точкові виправлення окремих рисунків** — `html_patches.py` (`IMG_STYLE`, `FIG_CLASS`); застосувати без перезбірки: `python publish_html.py --patch-only`.
+## Команда
 
-## Що робить `prepare_html.py`
+```
+powershell/pwsh -NoProfile -File PlasmaBook\html\build-html.ps1 [-Placeholder] [-NoImages] [-SkipPrepare] [-NoPublish] [-Keep] [-Full] [-OutDir ..\online] [-Chapters Scales -OutDir html\_test]
+```
+Повна збірка ~6 хв (12 розділів, ~13,7 тис. формул, ~75 рисунків). Вивід буферизується файлом, тому запускати у фоні (`run_in_background`) і чекати сповіщення; **не** поллити. Дві збірки одночасно — ніколи. `-Chapters X,Y` — швидка проба (решта посилань «undefined» — норма; публікувати в `html\_test`, не в `online`).
 
-- PDF-картинки → SVG (`lwarpmk pdftosvg`).
-- `*.tikz` із кодом **перед** `\begin{tikzpicture}` (`\tikzset`, `\def`): у HTML-режимі `$` не є math-shift і lwarp ламається. Файл із однією картинкою стає цілим зображенням; код при `subfigure/minipage/figure` виноситься в `lwarp-tikzdefs.tex` (преамбула).
-- Малюнки з `name/.pic={…}` в опціях `tikzpicture` (нові pgf/lwarp падають): збираються **окремо** (`lualatex` → `pdfcrop` → `pdftocairo -svg`) у `_html/ext/pic-<hash>.svg`, вставляються як `\htmlpicture{…}`.
-- `tblr`/`longtblr` → `tabularx` у копіях розділів (справжні HTML-таблиці, формули через MathJax); таблиці, яких конвертер не розуміє, лишаються `tblr` і стають зображеннями (скрипт їх перелічує).
-- Формули: `\tikzmarknode{n}{x}` → `x`, `\tikzmark` та оверлейні `\tikz[...]` прибираються; `\tag{\theequation x}` отримує номер з `.aux`.
-- `\ce` у `\caption` обгортається в `$…$` (lwarp 0.922 інакше падає).
+Після оновлення лендінгу: `python PlasmaBook\make_site.py` (перегенерує `index.html` і `simulations.html`).
 
-## Пастки (з досвіду ElMag)
+## Стадії build-html.ps1
 
-- **Ліґатури моноширинного шрифту** (JetBrains Mono `calt`): lwarp друкує HTML-теги моноширинним шрифтом, а `-->`, `</`, `//` стають ліґатурами, і `pdftotext` пише `^` (у тегах і у формулах). Лікується `RawFeature={-calt,-liga}` у `\setmonofont` HTML-класу.
-- **MathJax 3**, не 4: lwarp 0.922 жорстко зашитий на `mathjax@3/es5/tex-svg.js`. Перенос формул у MathJax 3 не вміє, тому довгі display-формули розбиває `book.js`.
-- **`mathjax-macros.tex`** (генерується окремо) може мовчки втрачати макроси при зміні класу (`\tcbhighmath` так загубився). Те, що MathJax має знати завжди, — у словнику `ALWAYS` у `mathjax2lwarp.py` (`\emf`, `\enquote`, `\allowbreak`, `\mitlambda`, `\tcbhighmath`…). Оператори babel (`\tg`, `\ctg`, `\sh`…) теж додаються там.
-- **`\vect` → `\mathbf`** у MathJax (прямий жирний, як у друці).
-- **lwarp не вміє `\nameref*`** (зірочка): HTML-клас її відкидає. `\phantomsection` у lwarp — порожній `\section*{}`: у HTML замінюється порожнім.
-- **Зірочкова `\chapter*`** відкриває нову сторінку HTML лише після `\ForceHTMLPage` (`\schapterpage`): так зроблено «Відповіді», «Додатки», «Література», «Симуляції».
-- **`\emphx{термін}[індекс]`**: необов'язковий `[…]` у HTML проковтується.
-- **Кольорові колонки** `Q[…,bg=…]` вимкнено (`KEEP_COLUMN_COLORS`): lwarp пише їх як недійсні `<div>` усередині `<p>`.
-- Після зміни класу: `lwarpmk again -p main-html`, інакше `lwarpmk` каже «up to date».
-- Деякі SVG виходять величезними (до ~23 МБ: `pdftocairo` розгортає градієнти) — розглянути PNG для них.
-- Старі `lwarpmk.conf` і `*.lwarpmkconf` перед першим проходом видаляються, щоб `--shell-escape` записався в конфігурацію.
+0. Резерв `<Розділ>/<Розділ>-Answers.tex` (HTML-прохід їх **переписує**, чистка повертає), копіювання `main-html.tex` і класу в корінь, відновлення кешу `_html/ext`.
+1. `prepare_html.py --shared` (шматки `ConspectBook.cls` → `_html/shared-*.tex`), `mathjax2lwarp.py _html/shared-mathmacros.tex lwarp-mathjax.tex`, `prepare_html.py` (копії розділів у `_html/`, tikz, таблиці).
+2. `lualatex -shell-escape main-html` (друкований прохід) → `prepare_html.py --tags` → `biber` → копія `.bbl` у `main-html_html.bbl`.
+3. `lwarpmk again` + `lwarpmk html`.
+4. Перевірки: undefined/rerun у логу, «^» (ліґатури), MathJax-перевірка всіх формул.
+5. `lwarpmk limages` (+ ремонт порожніх SVG).
+6. `publish_html.py --out ..\online` + Pagefind (`npx pagefind`, потрібен інтернет перший раз).
+7. **Чистка (блок `finally`, навіть після помилки; вимикає `-Keep`)**: логи → `html/logs`, кеш → `html/cache`, видаляються `main-html*.*`, `lwarp*`, `lateximage*`, `comment_*.cut`, `sample_project.css`, `ConspectBookHTML.cls`, `_html`, `main-html-images`, SVG з `*/Pictures/*.pdf`; `*-Answers.tex` відновлюються. Перевірка: `git status` має показувати лише `html/`, `online/` та задумані зміни.
 
-## Що в PlasmaBook відрізняється від ElMag (треба врахувати при портуванні)
+## Що робить prepare_html.py (відмінності від ElMag)
 
-| Що | У PlasmaBook | Що робити в HTML |
-|---|---|---|
-| Середовища-бокси | `Theory, Attention, Example, Historical, Estimate, Simulation, Summary, Questions, pict, tornpage, answerbox` (tcolorbox) | у ElMag вже є блоки `cb-*`; **додати `Estimate` і `Summary`** (`cb-estimate`, `cb-summary`) у клас і CSS |
-| Таблиці | єдине середовище `platbl` (`\NewTblrEnviron{platbl}`) і `longtblr` | `prepare_html.py` розуміє `tblr`/`longtblr`; **навчити його `platbl`** або звести до `tblr` у копіях |
-| Рівень задач | `\lvl{1..3}` зірочки FontAwesome | визначити в HTML-класі (символи ★/☆ текстом) |
-| Покажчик | `indextools` + `upmendex`, багато `\index{…}` | в HTML покажчика немає: `\printindex` = порожньо (як в ElMag), `\index` ігнорується |
-| Симуляції | `ConspectSims.sty`, `\simlink`, `sims/*.html` | у ElMag вже спільний `ConspectSims`; у HTML посилання ведуть на `sims/` на сайті; перевірити шляхи при публікації |
-| Розділи | розділ = `\chapter`, підрозділ `\section`; «Задачі» й «Контрольні питання» — `\section*` | `\setcounter{tocdepth}{1}`, перевірити відображення в бічному змісті |
-| Відповіді | `\Writetofile{answer}{…}` у розділах, `<Розділ>-Answers.tex`, `\answers` | у ElMag той самий механізм (`answers`, `\schapterpage{Відповіді}`) |
-| Іменовані точки PDF | `\hypertarget{ch N}`, `s N.M` у `titleformat` | у HTML не потрібні (lwarp робить власні якорі); посилання з лендінгу ведуть у PDF |
-| Графіки | pgfplots зі спільним стилем у `\pgfplotsset` у `ConspectBook.cls` | потрапляє в `shared-tikz.tex`, якщо стоїть у банері «Рисунки: TikZ, PGFPlots, CircuiTikz» |
-| Банери класу | `build_shared` шукає заголовки «Кольори», «Рисування» | у PlasmaBook банер називається **«Рисунки: TikZ, PGFPlots, CircuiTikz»** — змінити якір; перевірити решту якорів (`\RequirePackage{emf}`, `\emphx`, `\ifbiblatex`) |
+- Шматки класу вирізаються за банерами: «Кольори», **«Рисування»** (не «Рисунки»), `\RequirePackage{emf}`…`\AtBeginDocument{}`, `\emphx`, гілка `\ifbiblatex`.
+- Копії в `_html/` роблять: корені `preface`, `Notation`, `SGStoSI`, `cheatsheet`, `Glossary` і розділи; блок «Підсумки/Висновки/Корисні ресурси» **вирізається з `main.tex`** (`\chapter*{Підсумки}` … `\answers`) у `_html/summary.tex`.
+- `platbl` (+`tblr`/`longtblr`) → `tabularx` (шапка на `themecolorlight!28`, сітка); усі 25 таблиць книги конвертуються у справжні `<table>`.
+- `(с.~\pageref{…})` вирізається (у HTML сторінок нема; це Словник і Позначення).
+- `\texorpdfstring{A}{B}`, де B має `_ ^ \ < >`, → B порожнє (lwarp друкує B у текстовому режимі: `R_m >> 1` дає «Missing $»).
+- `\tikzmark*`, `\tag{\theequation}`, `\ce` у підписах — як в ElMag.
 
-## План портування (коли користувач скаже робити)
+## Пастки (нове з PlasmaBook, TeX Live 2026)
 
-1. Скопіювати з ElMag `tools/{build-html.ps1, prepare_html.py, publish_html.py, html_patches.py, mathjax2lwarp.py, check-mathjax-html.js, svg_optimize.py, clwarp-clean.ps1}`, `ConspectBookHTML.cls`, `main-html.tex`, `lwarpmk.conf`, `docs/assets/{book.js, conspect.css}`; усі шляхи й назви (`ElMagConspect`, `elmag-…` у `localStorage`, список розділів, `\nocite`) замінити на PlasmaBook.
-2. Побудувати `main-html.tex` зі списком розділів із `main.tex` (Basics … Scales), `\answers`, додатки `Notation`, `SGStoSI`, `cheatsheet`, `Glossary`, бібліографія.
-3. Додати в HTML-клас `Estimate`, `Summary`, `\lvl`, `platbl`; адаптувати якорі `build_shared`.
-4. Скласти один розділ (найкоротший) і лише потім усю книгу; `-Placeholder` допомагає, коли окремі рисунки не збираються.
-5. Куди публікувати: лендінг лежить у корені (`index.html`, `assets/`); HTML-книгу покласти у `docs/` або в `book/` і додати кнопку «Читати онлайн» у `make_site.py`. Рішення за користувачем.
+- Банер tikz у PlasmaBook називається «Рисування: TikZ, PGFPlots, CircuiTikz».
+- **Величезні SVG**: `pdftocairo` розгортає градієнти (4 рисунки 9–44 МБ). `publish_html.py` (крок 2b) заміняє SVG > 3 МБ на PNG 170 dpi: PDF-сторінка береться з `main-html_html.pdf` за номером із `main-html-images.txt` (`pdfseparate` → `pdfcrop` → `pdftocairo -png -transp`), посилання в сторінках переписуються. Без цього публікація вішається на `svg_optimize` (21 МБ SVG) і сайт важить ~100 МБ; з PNG ~11 МБ.
+- **alt рисунків**: lwarp дає кожному `lateximage` `alt="(-tikz- diagram)"` (або `(-forest- diagram)` для forest, `(figure)`, `(table)`). `fix_alt` у `publish_html.py` бере підпис (`div.figurecaption`/`tablecaption`), що йде за картинкою до `</figure>`/наступного `<img>` (TeX-формули зводяться до тексту, до 240 знаків), інакше «Рисунок N» (N — порядок на сторінці). Жодного «-tikz-» у `online/` лишатись не повинно (перевірка в `html-check`).
+- **`online/index.html`** — копія домашньої сторінки книги (`main-html.html`), рішення користувача: перенаправлення не робити; лендінг веде на `online/`.
+- lwarp на Windows пише в `src` зворотні скісні (`main-html-images\image-7.svg`): `publish_html.py` замінює на `/`.
+- Символи ★☆ (`\lvl`) відсутні в BookmanOldStyle; lwarp читає текст із PDF, і замість них виходить U+FFFD. Клас бере `DejaVu Sans` (`\lvlfont`).
+- `*-Answers.tex` під версіями git: HTML-прохід їх перезаписує, тому резерв/відновлення в скрипті.
+- `lwarpmk` лишає `comment_*.cut`, `sample_project.css` у корені — чистка їх бачить.
+- Сповіщення Windows: `texlogsieve` каже «got confused» на `main-html.log` — це фон, дивитися `grep "^!"`.
+- Помилка «file being read: ./Fluid/tikz/beta.tikz» у `build-error.txt` — лише евристика (останній згаданий файл), реальний рядок дає `l.NNN`.
+- Стандартні: ліґатури JetBrains Mono (`RawFeature={-calt,-liga}`), MathJax 3 (не 4), `\nameref*` відкидається, `\chapter*` потребує `\ForceHTMLPage`, після зміни класу — `lwarpmk again` (скрипт робить сам).
 
-## Правила роботи
+## Відомі проблеми / що не перевірено
 
-- Не запускати дві збірки lwarp одночасно в одній теці; повну збірку лише на прохання (довга).
-- Не читати цілком `main-html_html.log` і `main.log`: `texlogsieve` або `grep -n "^!"` + контекст.
-- Після змін публікації перевіряти скілом `html-check`.
+- Рисунки 5, 7, 9, 13, 19 (tikz/pgfplots із шейдингом) — PNG, а не вектор (дрібний текст на них не масштабується).
+- `publish_html.py --patch-only` застосовує лише `IMG_STYLE`/`FIG_CLASS`; `fix_alt` працює тільки в повній публікації.
+- Посилання на симуляції (`\simlink`) ведуть на повну адресу `https://sergiokapone.github.io/plasma-physics/PlasmaBook/sims/...`; `\simlink[Назва]` з `\simlist` у книзі не вживано.
+- `Questions` у HTML без запису в змісті (`\tocunnum` порожній).
+- Перша сторінка (`ch1` = Передмова) входить у нумерацію `chN.html`: розділи книги — `ch2`…`ch13`, Підсумки `ch14`, Відповіді `ch15`, Додатки `ch16`, Словник `ch17`, Література `ch18`.
+
+## Принципи (як в ElMag)
+
+- Розділи, `ConspectBook.cls`, `main.tex`, `.bib` не змінювати. Виправлення: клас → усе; `prepare_html.py` → патерн у розділах; `html_patches.py` + `publish_html.py --patch-only` → один рисунок; CSS/JS → вигляд.
+- Згенероване (`online/*.html`, `_html/`) руками не правити.
+- Файли з LaTeX/кирилицею правити Edit/Write, не sed/heredoc.
+- Після змін публікації — скіл `html-check`.

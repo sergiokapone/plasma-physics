@@ -1,0 +1,3870 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Елементи фізики плазми — Рух зарядженої частинки в-електричному та-магнітному полях</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-156"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Елементи фізики плазми</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../PlasmaBook/main.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="ch1.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-26" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Плазма: від іонізованого газу до колективного середовища</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-27" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Що таке плазма?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-32" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Іонізація: формула Саха</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-37" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Температура плазми та два компоненти</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-38" class="tocsection" >
+<span class="sectionnumber">1.4</span><span class="toctitle">&#x2003;Квазінейтральність і&nbsp;плазмові коливання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-48" class="tocsection" >
+<span class="sectionnumber">1.5</span><span class="toctitle">&#x2003;Дебаївське екранування</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-58" class="tocsection" >
+<span class="sectionnumber">1.6</span><span class="toctitle">&#x2003;Дебаївська сфера. Умова колективності</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-65" class="tocsection" >
+<span class="sectionnumber">1.7</span><span class="toctitle">&#x2003;Слабкозв’язана та сильнозв’язана плазма</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-66" class="tocsection" >
+<span class="sectionnumber">1.8</span><span class="toctitle">&#x2003;Екранування в&nbsp;виродженому газі: довжина Томаса–Фермі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch2.html#autosec-67" class="tocsection" >
+<span class="sectionnumber">1.9</span><span class="toctitle">&#x2003;Шар біля стінки і&nbsp;зонд Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-111" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Колективні коливання та хвилі в&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-112" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Діелектрична проникність холодної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-116" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Закон дисперсії. Частота відсікання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-121" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Поздовжні (ленгмюрівські) хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-129" class="tocsection" >
+<span class="sectionnumber">2.4</span><span class="toctitle">&#x2003;Зіткнення й&nbsp;поглинання електромагнітних хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-130" class="tocsection" >
+<span class="sectionnumber">2.5</span><span class="toctitle">&#x2003;Відбиття електромагнітних хвиль від плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-133" class="tocsection" >
+<span class="sectionnumber">2.6</span><span class="toctitle">&#x2003;Іоносфера і&nbsp;далекий радіозв’язок</span></a>
+</p>
+
+
+
+<p>
+<a href="ch3.html#autosec-135" class="tocsection" >
+<span class="sectionnumber">2.7</span><span class="toctitle">&#x2003;Як це вимірюють: інтерферометрія і&nbsp;рефлектометрія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-158" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Рух зарядженої частинки в&nbsp;електричному та&nbsp;магнітному полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-159" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Однорідне магнітне поле</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-163" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Дрейфи в&nbsp;схрещених полях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-181" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Поляризаційний дрейф</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-185" class="tocsection" >
+<span class="sectionnumber">3.4</span><span class="toctitle">&#x2003;Магнітний момент і&nbsp;адіабатичний інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-198" class="tocsection" >
+<span class="sectionnumber">3.5</span><span class="toctitle">&#x2003;Магнітне дзеркало і&nbsp;конус втрат</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-205" class="tocsection" >
+<span class="sectionnumber">3.6</span><span class="toctitle">&#x2003;Подовжній інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-206" class="tocsection" >
+<span class="sectionnumber">3.7</span><span class="toctitle">&#x2003;Диполь Землі та радіаційні пояси</span></a>
+</p>
+
+
+
+<p>
+<a href="ch4.html#autosec-211" class="tocsection" >
+<span class="sectionnumber">3.8</span><span class="toctitle">&#x2003;Як це вимірюють: аналізатор енергій і&nbsp;ECE</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-227" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Зіткнення, провідність та перенос у&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-228" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Кулонівські зіткнення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-233" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Провідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-236" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Теплопровідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-237" class="tocsection" >
+<span class="sectionnumber">4.4</span><span class="toctitle">&#x2003;Дифузія в&nbsp;плазмі. Амбіполярна дифузія</span></a>
+</p>
+
+
+
+<p>
+<a href="ch5.html#autosec-239" class="tocsection" >
+<span class="sectionnumber">4.5</span><span class="toctitle">&#x2003;Як це вимірюють: температура з&nbsp;опору і&nbsp;з&nbsp;ширини ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-251" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Гідродинамічний та магнітогідродинамічний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-252" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Гідродинамічний опис не є синонімом частих зіткнень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-253" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Дворідинний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-254" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Від дворідинної моделі до однорідинної МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-257" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Основне рівняння магнітної гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-265" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Альвенівська швидкість і&nbsp;число Альвена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-266" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;МГД-рівновага та магнітні поверхні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-271" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Енергія електромагнітного поля та плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-272" class="tocsection" >
+<span class="sectionnumber">5.8</span><span class="toctitle">&#x2003;Діамагнетизм плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-274" class="tocsection" >
+<span class="sectionnumber">5.9</span><span class="toctitle">&#x2003;Вмороженість магнітного поля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-281" class="tocsection" >
+<span class="sectionnumber">5.10</span><span class="toctitle">&#x2003;Перез’єднання силових ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-285" class="tocsection" >
+<span class="sectionnumber">5.11</span><span class="toctitle">&#x2003;Дві мови опису: окремі частинки й&nbsp;суцільне середовище</span></a>
+</p>
+
+
+
+<p>
+<a href="ch6.html#autosec-300" class="tocsection" >
+<span class="sectionnumber">5.12</span><span class="toctitle">&#x2003;Як це вимірюють: магнітні виміри</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-327" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-328" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Що в&nbsp;плазмі може бути відновлювальною силою?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-332" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Звукова й&nbsp;іонно-звукова хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-337" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Лінеаризована МГД і&nbsp;загальне дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-338" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Альвенівська хвиля</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-344" class="tocsection" >
+<span class="sectionnumber">6.5</span><span class="toctitle">&#x2003;Магнітозвукові хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-351" class="tocsection" >
+<span class="sectionnumber">6.6</span><span class="toctitle">&#x2003;Підсумок: хвилі в&nbsp;рідинному описі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-354" class="tocsection" >
+<span class="sectionnumber">6.7</span><span class="toctitle">&#x2003;Високочастотні хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch7.html#autosec-362" class="tocsection" >
+<span class="sectionnumber">6.8</span><span class="toctitle">&#x2003;Межі застосовності МГД-хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-383" class="tocchapter" >
+<span class="sectionnumber">7</span><span class="toctitle">&#x2003;Кінетичний опис плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-384" class="tocsection" >
+<span class="sectionnumber">7.1</span><span class="toctitle">&#x2003;Функція розподілу та фазовий простір</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-385" class="tocsection" >
+<span class="sectionnumber">7.2</span><span class="toctitle">&#x2003;Моменти функції розподілу</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-386" class="tocsection" >
+<span class="sectionnumber">7.3</span><span class="toctitle">&#x2003;Кінетичне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-387" class="tocsection" >
+<span class="sectionnumber">7.4</span><span class="toctitle">&#x2003;Максвеллівський розподіл і&nbsp;температура</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-388" class="tocsection" >
+<span class="sectionnumber">7.5</span><span class="toctitle">&#x2003;Від кінетики до гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-389" class="tocsection" >
+<span class="sectionnumber">7.6</span><span class="toctitle">&#x2003;Дворідинна картина та її зв’язок із МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-390" class="tocsection" >
+<span class="sectionnumber">7.7</span><span class="toctitle">&#x2003;Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-391" class="tocsection" >
+<span class="sectionnumber">7.8</span><span class="toctitle">&#x2003;Лінеаризація кінетичного рівняння та хвильовий відгук</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-399" class="tocsection" >
+<span class="sectionnumber">7.9</span><span class="toctitle">&#x2003;Загасання Ландау</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-408" class="tocsection" >
+<span class="sectionnumber">7.10</span><span class="toctitle">&#x2003;Коли потрібен кінетичний опис?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch8.html#autosec-409" class="tocsection" >
+<span class="sectionnumber">7.11</span><span class="toctitle">&#x2003;Як це вимірюють: томсонівське розсіяння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-434" class="tocchapter" >
+<span class="sectionnumber">8</span><span class="toctitle">&#x2003;Загальний принцип нестійкості плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-435" class="tocsection" >
+<span class="sectionnumber">8.1</span><span class="toctitle">&#x2003;Що означає нестійкість?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-439" class="tocsection" >
+<span class="sectionnumber">8.2</span><span class="toctitle">&#x2003;Лінеаризація: як знайти долю малого збурення</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-441" class="tocsection" >
+<span class="sectionnumber">8.3</span><span class="toctitle">&#x2003;Хвиля, що може рости</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-445" class="tocsection" >
+<span class="sectionnumber">8.4</span><span class="toctitle">&#x2003;Дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-449" class="tocsection" >
+<span class="sectionnumber">8.5</span><span class="toctitle">&#x2003;Звідки береться енергія нестійкості?</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-453" class="tocsection" >
+<span class="sectionnumber">8.6</span><span class="toctitle">&#x2003;Рівновага та стійкість у&nbsp;магнітному полі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-457" class="tocsection" >
+<span class="sectionnumber">8.7</span><span class="toctitle">&#x2003;Перетяжка як найпростіший приклад нестійкості</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-458" class="tocsection" >
+<span class="sectionnumber">8.8</span><span class="toctitle">&#x2003;Лінійна та нелінійна стадії</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-462" class="tocsection" >
+<span class="sectionnumber">8.9</span><span class="toctitle">&#x2003;Нестійкість Релея–Тейлора та жолобкова нестійкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-469" class="tocsection" >
+<span class="sectionnumber">8.10</span><span class="toctitle">&#x2003;Двопотокова нестійкість та нестійкість пучка</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-473" class="tocsection" >
+<span class="sectionnumber">8.11</span><span class="toctitle">&#x2003;Нестійкості анізотропної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-474" class="tocsection" >
+<span class="sectionnumber">8.12</span><span class="toctitle">&#x2003;Енергетичний принцип</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-475" class="tocsection" >
+<span class="sectionnumber">8.13</span><span class="toctitle">&#x2003;Дрейфові хвилі та аномальний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-476" class="tocsection" >
+<span class="sectionnumber">8.14</span><span class="toctitle">&#x2003;Від загального принципу до конкретних нестійкостей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch9.html#autosec-479" class="tocsection" >
+<span class="sectionnumber">8.15</span><span class="toctitle">&#x2003;Як це вимірюють: котушки Мірнова і&nbsp;м’який рентген</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-490" class="tocchapter" >
+<span class="sectionnumber">9</span><span class="toctitle">&#x2003;Магнітне утримання плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-491" class="tocsection" >
+<span class="sectionnumber">9.1</span><span class="toctitle">&#x2003;Проблема утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-492" class="tocsection" >
+<span class="sectionnumber">9.2</span><span class="toctitle">&#x2003;Відкриті пастки: магнітне дзеркало</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-493" class="tocsection" >
+<span class="sectionnumber">9.3</span><span class="toctitle">&#x2003;Пінч-ефект</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-497" class="tocsection" >
+<span class="sectionnumber">9.4</span><span class="toctitle">&#x2003;Рівновага \(z\)-пінча. Співвідношення Беннета</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-503" class="tocsection" >
+<span class="sectionnumber">9.5</span><span class="toctitle">&#x2003;Рівновага \(\mittheta \)-пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-504" class="tocsection" >
+<span class="sectionnumber">9.6</span><span class="toctitle">&#x2003;Нестійкості пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-511" class="tocsection" >
+<span class="sectionnumber">9.7</span><span class="toctitle">&#x2003;Тороїдальні системи: токамак і&nbsp;стеларатор</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-515" class="tocsection" >
+<span class="sectionnumber">9.8</span><span class="toctitle">&#x2003;Захоплені частинки й&nbsp;неокласичний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-519" class="tocsection" >
+<span class="sectionnumber">9.9</span><span class="toctitle">&#x2003;Рівновага тора: зсув Шафранова та межа за тиском</span></a>
+</p>
+
+
+
+<p>
+<a href="ch10.html#autosec-520" class="tocsection" >
+<span class="sectionnumber">9.10</span><span class="toctitle">&#x2003;Як це вимірюють: магнітна реконструкція рівноваги</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-531" class="tocchapter" >
+<span class="sectionnumber">10</span><span class="toctitle">&#x2003;Керований термоядерний синтез</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-532" class="tocsection" >
+<span class="sectionnumber">10.1</span><span class="toctitle">&#x2003;Реакції та паливо</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">10.2</span><span class="toctitle">&#x2003;Чому потрібна саме така температура: бар’єр і&nbsp;тунелювання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-540" class="tocsection" >
+<span class="sectionnumber">10.3</span><span class="toctitle">&#x2003;Баланс потужностей і&nbsp;критерій Лоусона</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-541" class="tocsection" >
+<span class="sectionnumber">10.4</span><span class="toctitle">&#x2003;Втрати</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-542" class="tocsection" >
+<span class="sectionnumber">10.5</span><span class="toctitle">&#x2003;Дві стратегії: магнітне й&nbsp;інерційне утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-543" class="tocsection" >
+<span class="sectionnumber">10.6</span><span class="toctitle">&#x2003;Від реакції до розетки</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-550" class="tocsection" >
+<span class="sectionnumber">10.7</span><span class="toctitle">&#x2003;Що ще треба вирішити</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-551" class="tocsection" >
+<span class="sectionnumber">10.8</span><span class="toctitle">&#x2003;Інерційний шлях</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-552" class="tocsection" >
+<span class="sectionnumber">10.9</span><span class="toctitle">&#x2003;Де ми зараз: стан на&nbsp;2026&nbsp;рік</span></a>
+</p>
+
+
+
+<p>
+<a href="ch11.html#autosec-555" class="tocsection" >
+<span class="sectionnumber">10.10</span><span class="toctitle">&#x2003;Як це вимірюють: нейтронна діагностика</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-566" class="tocchapter" >
+<span class="sectionnumber">11</span><span class="toctitle">&#x2003;Низькотемпературна плазма та газовий розряд</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-567" class="tocsection" >
+<span class="sectionnumber">11.1</span><span class="toctitle">&#x2003;Елементарні процеси: іонізація і&nbsp;її швидкість</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-568" class="tocsection" >
+<span class="sectionnumber">11.2</span><span class="toctitle">&#x2003;Пробій газу: механізм Таунсенда і&nbsp;закон Пашена</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-572" class="tocsection" >
+<span class="sectionnumber">11.3</span><span class="toctitle">&#x2003;Тліючий розряд і&nbsp;дуга</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-578" class="tocsection" >
+<span class="sectionnumber">11.4</span><span class="toctitle">&#x2003;Приелектродний шар у&nbsp;розряді</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-579" class="tocsection" >
+<span class="sectionnumber">11.5</span><span class="toctitle">&#x2003;Глобальна модель розряду</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-580" class="tocsection" >
+<span class="sectionnumber">11.6</span><span class="toctitle">&#x2003;Високочастотні джерела плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-589" class="tocsection" >
+<span class="sectionnumber">11.7</span><span class="toctitle">&#x2003;Плазмова обробка матеріалів</span></a>
+</p>
+
+
+
+<p>
+<a href="ch12.html#autosec-590" class="tocsection" >
+<span class="sectionnumber">11.8</span><span class="toctitle">&#x2003;Як це вимірюють: оптична емісія і&nbsp;ВЧ-зонди</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-601" class="tocchapter" >
+<span class="sectionnumber">12</span><span class="toctitle">&#x2003;Основні масштаби, режими та межі моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-602" class="tocsection" >
+<span class="sectionnumber">12.1</span><span class="toctitle">&#x2003;Просторові та часові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-606" class="tocsection" >
+<span class="sectionnumber">12.2</span><span class="toctitle">&#x2003;Зіткнювальний та беззіткнювальний режими</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-607" class="tocsection" >
+<span class="sectionnumber">12.3</span><span class="toctitle">&#x2003;Як за масштабами вибирають модель</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-610" class="tocsection" >
+<span class="sectionnumber">12.4</span><span class="toctitle">&#x2003;Типова ієрархія масштабів у магнітному утриманні</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-611" class="tocsection" >
+<span class="sectionnumber">12.5</span><span class="toctitle">&#x2003;Від кінетики до МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-612" class="tocsection" >
+<span class="sectionnumber">12.6</span><span class="toctitle">&#x2003;Безрозмірні параметри МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-613" class="tocsection" >
+<span class="sectionnumber">12.7</span><span class="toctitle">&#x2003;Межі простих моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-614" class="tocsection" >
+<span class="sectionnumber">12.8</span><span class="toctitle">&#x2003;Основні масштаби та формули</span></a>
+</p>
+
+
+
+<p>
+<a href="ch13.html#autosec-617" class="tocsection" >
+<span class="sectionnumber">12.9</span><span class="toctitle">&#x2003;Що вимірюють на&nbsp;якому масштабі</span></a>
+</p>
+
+
+
+<p>
+<a href="ch14.html#autosec-629" class="tocchapter" >
+Підсумки</a>
+</p>
+
+
+
+<p>
+<a href="ch15.html#autosec-634" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-649" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-650" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Таблиця позначень</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-660" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Перехід між СГС і&nbsp;СІ. Константи</span></a>
+</p>
+
+
+
+<p>
+<a href="ch16.html#autosec-673" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Шпаргалка: ключові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="ch17.html#autosec-678" class="tocpart" >
+Словник термінів</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-682" class="tocchapter" >
+Література</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-683" class="tocsection" >
+Підручники та посібники</a>
+</p>
+
+
+
+<p>
+<a href="ch18.html#autosec-684" class="tocsection" >
+Джерела фактів і результатів</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Рух зарядженої частинки в-електричному та-магнітному полях">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Елементи фізики плазми</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\newcommand {\vect }[1]{\mathbf {#1}}\)
+
+\(\newcommand {\Efield }{\vect {E}}\)
+
+\(\newcommand {\Dfield }{\vect {D}}\)
+
+\(\newcommand {\Bfield }{\vect {B}}\)
+
+\(\newcommand {\Hfield }{\vect {H}}\)
+
+\(\newcommand {\rot }{\mathbf {\nabla }\times }\)
+
+\(\newcommand {\divg }{\mathbf {\nabla }\cdot }\)
+
+\(\newcommand {\grad }{\vect {\nabla }}\)
+
+\(\newcommand {\diff }[2]{\frac {\partial #1}{\partial #2}}\)
+
+\(\newcommand {\ddiff }[2]{\frac {\partial ^2 #1}{\partial #2^2}}\)
+
+\(\newcommand {\parttime }[1]{\frac {\partial {#1}}{\partial t}}\)
+
+\(\newcommand {\pparttime }[1]{\frac {\partial ^2{#1}}{\partial t^2}}\)
+
+\(\renewcommand {\phi }{\varphi }\)
+
+\(\renewcommand {\epsilon }{\varepsilon }\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\Div }{div}\)
+
+\(\DeclareMathOperator {\Rot }{rot}\)
+
+\(\DeclareMathOperator {\Grad }{grad}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\renewcommand {\iiint }{\int }\)
+
+\(\renewcommand {\iint }{\int }\)
+
+\(\newcommand {\oiint }{\oint }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Рух зарядженої частинки в-електричному та-магнітному полях ......
+-->
+<h3 id="autosec-158"><span class="sectionnumber">3&#x2003;</span>Рух зарядженої частинки в&nbsp;електричному та&nbsp;магнітному полях</h3>
+<a id="main-html-autopage-158"></a>
+<a id="main-html-autofile-4"></a>
+
+<a id="sec:particle-motion"></a>
+
+<p>
+<a id="LWR-ht-particle-motion"></a>
+</p>
+
+<p>
+Колективний опис не скасовує руху окремих частинок. Щоб зрозуміти магнітне утримання, спочатку треба побачити найпростішу механіку однієї зарядженої частинки. Вона дає природні просторовий і&nbsp;часовий масштаби \(r_L\) та
+\(\omega _c^{-1}\), після чого стають зрозумілими дрейфи, магнітне дзеркало і&nbsp;межі застосовності МГД.
+</p>
+<!--
+...... section Однорідне магнітне поле ......
+-->
+<h4 id="autosec-159"><span class="sectionnumber">&#xA7;&#x202F;3.1&#x2003;</span>Однорідне магнітне поле</h4>
+<a id="main-html-autopage-159"></a>
+
+
+<p>
+У&nbsp;магнітному полі на частинку з&nbsp;зарядом \(q\) діє сила Лоренца \(\vect F=(q/c)\,\vect v\times \vect B\). Вона перпендикулярна швидкості й&nbsp;роботи не виконує, тому \(v\) зберігається. Розкладемо швидкість \(\vect
+v=\vect v_\parallel +\vect v_\perp \). Складова \(v_\parallel \) вздовж поля не змінюється, а&nbsp;перпендикулярна складова обертається по колу з&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>циклотронною частотою</span></em> і&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>ларморівським радіусом</span></em>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{0}\)</span>
+
+<!--
+
+
+                                                                                                             |𝑞|𝐵              𝑣⟂   𝑚𝑐 𝑣⟂
+                                                                                                      𝜔𝑐 =        ,     𝑟𝐿 =      =       .                                                       (3.1)--><a id="eq:larmor"></a><!--
+                                                                                                              𝑚𝑐               𝜔𝑐   |𝑞|𝐵
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:larmor} \tcbhighmath {\omega _c=\frac {|q|B}{mc},\qquad r_L=\frac {v_\perp }{\omega _c}=\frac {mc\,v_\perp }{|q|B}}.
+\end{equation}
+
+</p>
+
+<p>
+Траєкторія&nbsp;— гвинтова лінія (рис.&nbsp;<a href="ch4.html#pic:larmor-motion">3.1</a>). Іони й&nbsp;електрони обертаються в&nbsp;протилежні боки: якщо дивитися з&nbsp;кінця вектора \(\vect B\), позитивні частинки
+обертаються за годинниковою стрілкою, негативні&nbsp;— проти. Частота обертання не залежить від енергії частинки. Для практичних оцінок
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{1}\)</span>
+
+<!--
+
+                                                                                                                                             𝑍
+                                                                                         𝜔𝑐𝑒 ≈ 1,76 × 107 𝐵[Гс] с−1 ,     𝜔𝑐𝑖 ≈ 9,58 × 103     𝐵[Гс] с−1 ,
+                                                                                                                                             𝐴
+
+-->
+
+<p>
+
+\begin{equation*}
+\omega _{ce}\approx 1{,}76\times 10^{7}\,B[\text {Гс}]~\mathrm {с}^{-1},\qquad \omega _{ci}\approx 9{,}58\times 10^{3}\,\frac ZA\,B[\text {Гс}]~\mathrm {с}^{-1},
+\end{equation*}
+
+</p>
+
+<p>
+а&nbsp;ларморівські радіуси при \(v_\perp =\sqrt {T/m}\): \(r_{Le}\approx 2{,}4\,\sqrt {T_e[\text {еВ}]}/B[\text {Гс}]\)&nbsp;см, \(r_{Li}\approx 10^2\,\sqrt {A\,T_i[\text {еВ}]}/(Z\,B[\text {Гс}])\)&nbsp;см. Через малу
+масу електрони мають радіус у&nbsp;\(\sqrt {m_i/m_e}\sim 40\) разів менший за іонний при однакових температурах.
+</p>
+
+<figure id="autoid-71" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-24"
+    class="lateximagesource"
+><!--
+                       𝑧
+
+
+
+
+ 𝑣⃗
+           𝑣⃗ ∥
+                  𝜌⃗
+𝑣⃗ ⟂       +
+
+
+
+
+                           𝑦
+       𝑥
+--><img
+   src="main-html-images/image-24.svg"
+   alt="Рис. 3.1. Гвинтовий рух зарядженої частинки в однорідному магнітному полі: уздовж поля — рівномірний, поперек — обертання з частотою _c"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.1. Гвинтовий рух зарядженої частинки в&nbsp;однорідному магнітному полі: уздовж поля&nbsp;— рівномірний, поперек&nbsp;— обертання з&nbsp;частотою \(\omega _c\)
+
+</div>
+
+<a id="pic:larmor-motion"></a>
+
+</div>
+
+</figure>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Для токамака (\(T=10\)&nbsp;кеВ, \(B=5\times 10^4\)&nbsp;Гс): \(r_{Le}\approx 5\times 10^{-3}\)&nbsp;см, \(r_{Li}\approx 0{,}2\)&nbsp;см (протон), \(0{,}3\)&nbsp;см (дейтрон). Для іоносфери (\(T\approx
+0{,}1\)&nbsp;еВ, \(B\approx 0{,}3\)&nbsp;Гс): \(r_{Le}\) від \(2\) до&nbsp;\(3\)&nbsp;см, \(r_{Li}\approx 1\)&nbsp;м для протона і&nbsp;\(\approx 4\)&nbsp;м для O\(^+\) (основний іон F-шару). Тут \(r_L=v_T/\omega _c\), \(v_T=\sqrt
+{T/m}\).
+</p>
+</div>
+
+<p>
+Плазму називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>замагніченою</span></em>, якщо частинка встигає зробити багато обертів між зіткненнями, \(\omega _c\gg \nu \) (частоту зіткнень \(\nu \) детально розглянуто в&nbsp;розд.&nbsp;<a href="ch5.html#sec:plasma-collisions">4</a>),
+і&nbsp;радіус орбіти малий порівняно з&nbsp;розміром неоднорідності поля, \(r_L\ll L\). Довжину вільного пробігу означимо як \(\lambda _{\mathrm {пр}}=v_T/\nu \). Тоді частинка «прив’язана» до силової лінії, і&nbsp;рух поперек поля
+пригнічений. Оцінимо перенесення. Вздовж поля частинка блукає з&nbsp;кроком \(\lambda _{\mathrm {пр}}\) і&nbsp;\(D_\parallel \sim v^2/\nu \); поперек крок дорівнює \(r_L\), а&nbsp;частота кроків&nbsp;— \(\nu \), тому \(D_\perp
+\sim r_L^2\nu \). Звідси
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{1}\)</span>
+
+<!--
+
+
+                                                                                                       𝐷⟂    𝜈 2                1
+                                                                                                          ∼(    ) ≪ 1,   𝐷⟂ ∝      .
+                                                                                                       𝐷∥    𝜔𝑐                 𝐵2
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {D_\perp }{D_\parallel }\sim \left (\frac \nu {\omega _c}\right )^2\ll 1,\qquad D_\perp \propto \frac 1{B^2}.
+\end{equation*}
+
+</p>
+
+<p>
+Це <em><span
+    class="textcolor"
+    style="color:#990000"
+>класична дифузія</span></em> поперек поля. Вона лежить в&nbsp;основі магнітного утримання: сильне поле різко зменшує поперечні втрати.
+</p>
+<!--
+...... section Дрейфи в-схрещених полях ......
+-->
+<h4 id="autosec-163"><span class="sectionnumber">&#xA7;&#x202F;3.2&#x2003;</span>Дрейфи в&nbsp;схрещених полях</h4>
+<a id="main-html-autopage-163"></a>
+<!--
+...... paragraph Дрейфове наближення. ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-164">Дрейфове наближення.</span>
+<a id="main-html-autopage-164"></a>
+Усю тему можна звести до трьох тверджень. (1)&nbsp;Поля зовнішні й&nbsp;сильні, частинки рухаються незалежно. (2)&nbsp;Якщо \(r_L\ll L\) і&nbsp;\(\omega \ll \omega _c\), рух розпадається на швидке обертання навколо ведучого центру
+й&nbsp;повільний дрейф самого центру. (3)&nbsp;<em>Загальне правило</em>: будь-яка стала сила \(\vect F\perp \vect B\) викликає дрейф \(\vect v_d=c\,\vect F\times \vect B/(qB^2)\). Якщо \(\vect F\) не залежить від заряду
+(гравітація, відцентрова сила, \(-\mu \nabla B\)), дрейф має різний знак для електронів та іонів: виникають струм і&nbsp;розділення зарядів. Якщо \(\vect F=q\vect E\), дрейф однаковий для всіх, і&nbsp;плазма рухається як ціле. Це знімає
+більшу частину труднощів розділу.
+</p>
+
+<p>
+Нехай, окрім \(\vect B\), є однорідне електричне поле \(\vect E\perp \vect B\). Шукатимемо рух у&nbsp;вигляді гвинтового руху на фоні дрейфу \(\vect v_d\) із&nbsp;сталою швидкістю. Для швидкості \(\vect v_d\) сила має зникати:
+\(\vect E+\vect v_d\times \vect B/c=0\). Помножимо векторно на \(\vect B\) і&nbsp;скористаємося \((\vect v_d\times \vect B)\times \vect B=-B^2\vect v_{d\perp }\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{1}\)</span>
+
+<!--
+
+
+                                                                                                                        𝐄×𝐁
+                                                                                                               𝐯𝐸 = 𝑐       .                                                                             (3.2)--><a id="eq:ExB"></a><!--
+                                                                                                                         𝐵2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ExB} \tcbhighmath {\vect v_E=c\,\frac {\vect E\times \vect B}{B^2}}.
+\end{equation}
+
+</p>
+
+<p>
+Швидкість дрейфу <em>не залежить від заряду, маси та енергії частинки</em>, тому електрони й&nbsp;іони дрейфують в&nbsp;один бік, струму й&nbsp;розділення зарядів нема. Фізичний зміст: у&nbsp;системі відліку, що рухається зі
+швидкістю \(\vect v_E\), електричного поля немає (нерелятивістське наближення), і&nbsp;частинка просто гвинтом обертається навколо силової лінії.
+</p>
+
+<p>
+<em>Чому саме перпендикулярно \(\vect E\).</em> На одному півоберті частинка рухається вздовж \(\vect E\) й&nbsp;прискорюється&nbsp;— радіус орбіти зростає; на іншому&nbsp;— проти \(\vect E\) і&nbsp;гальмується, радіус
+зменшується. Різниця радіусів зсуває центр орбіти вбік, перпендикулярно \(\vect E\) (траєкторія&nbsp;— трохоїда, а&nbsp;для частинки, що стартує зі спокою,&nbsp;— циклоїда, рис.&nbsp;<a href="ch4.html#pic:ExB-drift">3.2</a>). Іон
+і&nbsp;електрон обертаються в&nbsp;протилежні боки, але й&nbsp;прискорюються полем \(\vect E\) у&nbsp;протилежні боки, тому зсув однаковий: \(\vect E\times \vect B\) «зносить плазму цілком», без струму.
+</p>
+
+<figure id="autoid-72" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-25"
+    class="lateximagesource"
+><!--
+            𝑦
+
+
+
+
+        𝐄
+
+
+
+
+                            𝑥
+    𝐁
+
+                      𝐄×𝐁
+𝑧               𝐮=𝑐
+                      𝐵2
+--><img
+   src="main-html-images/image-25.svg"
+   alt="Рис. 3.2. Дрейф зарядженої частинки у схрещених електричному та магнітному полях"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.2. Дрейф зарядженої частинки у&nbsp;схрещених електричному та магнітному полях
+
+</div>
+
+<a id="pic:ExB-drift"></a>
+
+</div>
+
+</figure>
+
+<p>
+Узагальнення: на частинку діє довільна стала сила \(\vect F\perp \vect B\) (гравітація, відцентрова сила, сила від градієнта тиску). Вона викликає дрейф
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{2}\)</span>
+
+<!--
+
+                                                                                                                           𝑐 𝐅×𝐁
+                                                                                                                   𝐯𝐹 =          ,                                                           (3.3)--><a id="eq:drift-force"></a><!--
+                                                                                                                           𝑞 𝐵2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:drift-force} \vect v_F=\frac {c}{q}\,\frac {\vect F\times \vect B}{B^2},
+\end{equation}
+
+</p>
+
+<p>
+який уже <em>залежить від знака заряду</em>, і&nbsp;призводить до струмів та розділення зарядів. Для \(\vect F=q\vect E\) маємо&nbsp;<span class="textup">(<a href="ch4.html#eq:ExB">3.2</a>)</span>.
+</p>
+
+<p>
+У&nbsp;неоднорідному полі діють ефективні сили. Усереднена за обертом сила, що виштовхує частинку в&nbsp;область слабшого поля, дорівнює \(-\mu \nabla B\) (див.&nbsp;нижче; \(\mu \)&nbsp;— магнітний момент орбіти), а&nbsp;при русі
+вздовж викривленої силової лінії з&nbsp;радіусом кривизни \(R_c\) діє відцентрова сила \(mv_\parallel ^2\vect R_c/R_c^2\) (вектор \(\vect R_c\) напрямлений від центра кривизни до частинки). За&nbsp;<span class="textup">(<a
+href="ch4.html#eq:drift-force">3.3</a>)</span> вони породжують <em><span
+    class="textcolor"
+    style="color:#990000"
+>градієнтний</span></em> та <em><span
+    class="textcolor"
+    style="color:#990000"
+>відцентровий</span></em> дрейфи
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{3}\)</span>
+
+<!--
+
+
+                                                                                                             𝑐𝜇                      𝑚𝑐𝑣2∥ 𝐑𝑐 × 𝐁
+                                                                                                    𝐯∇𝐵 =        𝐁 × ∇𝐵,     𝐯𝑅 =                   .                                        (3.4)--><a id="eq:gradB-drift"></a><!--
+                                                                                                            𝑞𝐵 2                     𝑞𝐵2    𝑅𝑐2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:gradB-drift} \vect v_{\nabla B}=\frac {c\mu }{qB^2}\,\vect B\times \nabla B,\qquad \vect v_{R}=\frac {mcv_\parallel ^2}{qB^2}\,\frac {\vect R_c\times \vect B}{R_c^2}.
+\end{equation}
+
+</p>
+
+<p>
+За порядком величини \(v_d\sim cT/(|q|BL)=v_T\,r_L/L\ll v_T\). Умова \(r_L\ll L\) є умовою застосовності дрейфового наближення, а&nbsp;знак швидкості залежить від знака заряду.
+</p>
+<!--
+...... paragraph Градієнтний дрейф: чому він виникає. ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-168">Градієнтний дрейф: чому він виникає.</span>
+<a id="main-html-autopage-168"></a>
+У&nbsp;ділянці сильнішого поля радіус орбіти менший (рис.&nbsp;<a href="ch4.html#pic:grad-drift">3.3</a>). Орбіта складається з&nbsp;двох «півкіл»: у&nbsp;слабшому полі&nbsp;— більшого радіуса \(r_1\), у&nbsp;сильнішому&nbsp;—
+меншого \(r_2\). Тому вона не замикається: за оберт центр зсувається на \(\approx 2(r_1-r_2)\) у&nbsp;напрямку, перпендикулярному і&nbsp;до \(\nabla B\), і&nbsp;до \(\vect B\). Іони й&nbsp;електрони обертаються в&nbsp;протилежні
+боки, тому зсуваються <em>в&nbsp;протилежних напрямках</em>, і&nbsp;виникає струм \(\vect j_{\nabla B}=n\,(q_i\vect v_{\nabla B,i}+q_e\vect v_{\nabla B,e})\ne 0\).
+</p>
+
+<figure id="autoid-73" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-26"
+    class="lateximagesource"
+><!--
+          𝑦
+      ⃗
+     ∇𝐵
+
+                  +
+
+              𝑣⃗ ∇𝐵   𝑣⃗ ∇𝐵   𝑥
+𝐵⃗
+
+𝑧
+--><img
+   src="main-html-images/image-26.svg"
+   alt="Рис. 3.3. Градієнтний дрейф: радіус орбіти більший там, де поле слабше. Іон (синя траєкторія) і електрон (червона) зсуваються в протилежні боки поперек B"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.3. Градієнтний дрейф: радіус орбіти більший там, де поле слабше. Іон (синя траєкторія) і&nbsp;електрон (червона) зсуваються в&nbsp;протилежні боки поперек \(\nabla B\)
+
+</div>
+
+<a id="pic:grad-drift"></a>
+
+</div>
+
+</figure>
+<!--
+...... paragraph Дрейф кривизни. ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-172">Дрейф кривизни.</span>
+<a id="main-html-autopage-172"></a>
+Частинка, що рухається вздовж викривленої силової лінії, відчуває відцентрову силу \(\vect F_c\) (рис.&nbsp;<a href="ch4.html#pic:curvature-drift">3.4</a>), і&nbsp;згідно з&nbsp;<span class="textup">(<a
+href="ch4.html#eq:drift-force">3.3</a>)</span> дрейфує поперек площини кривизни. Знак швидкості залежить від знака заряду.
+</p>
+
+<figure id="autoid-74" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-27"
+    class="lateximagesource"
+><!--
+                         𝐅𝑐
+     𝐯𝑅 (іони) ×
+
+𝐯𝑅 (електрони) ⋅            +   𝐁
+
+
+                       𝐑𝑐
+
+
+
+                   центр кривизни
+--><img
+   src="main-html-images/image-27.svg"
+   alt="Рис. 3.4. Дрейф кривизни: відцентрова сила F_c спрямована від центра кривизни, дрейф перпендикулярний і до B, і до F_c; іони й електрони дрейфують у протилежні боки"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.4. Дрейф кривизни: відцентрова сила \(\vect F_c\) спрямована від центра кривизни, дрейф перпендикулярний і&nbsp;до \(\vect B\), і&nbsp;до \(\vect F_c\); іони й&nbsp;електрони дрейфують у&nbsp;протилежні боки
+
+</div>
+
+<a id="pic:curvature-drift"></a>
+
+</div>
+
+</figure>
+<!--
+...... paragraph Сумарний дрейф у-вакуумному полі. ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-176">Сумарний дрейф у&nbsp;вакуумному полі.</span>
+<a id="main-html-autopage-176"></a>
+У&nbsp;вакуумі (\(\nabla \times \vect B=0\)) модуль поля змінюється на масштабі кривизни. Справді, для поля з&nbsp;круговими силовими лініями у&nbsp;циліндричних координатах \((R,\theta ,z)\) маємо \((\nabla \times \vect
+B)_z=\dfrac 1R\,\partial _R(RB_\theta )=0\), тобто \(B_\theta =C/R\), і&nbsp; \(\nabla B=-\dfrac {C}{R^2}\hat {\vect R}=-B\,\dfrac {\hat {\vect R}}{R}=-B\,\dfrac {\vect R_c}{R_c^2}\) (тут \(R_c=R\), а&nbsp;\(\vect R_c\)
+напрямлений від центра кривизни до частинки). Тоді \(\vect B\times \nabla B=B\,(\vect R_c\times \vect B)/R_c^2\), і&nbsp;\(\vect v_{\nabla B}=\dfrac {mcv_\perp ^2}{2qB^2}\dfrac {\vect R_c\times \vect B}{R_c^2}\) має той
+самий напрям, що й&nbsp;\(\vect v_R\) з&nbsp;<span class="textup">(<a href="ch4.html#eq:gradB-drift">3.4</a>)</span>. Обидва дрейфи додаються:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{4}\)</span>
+
+<!--
+
+
+                                                                                                           𝑚𝑐      𝑣2 𝐑 × 𝐁
+                                                                                                    𝐯𝑑 =      (𝑣2 + ⟂ ) 𝑐 2 .                                                        (3.5)--><a id="eq:total-drift"></a><!--
+                                                                                                           𝑞𝐵2 ∥    2    𝑅𝑐
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:total-drift} \vect v_d=\frac {mc}{qB^2}\left (v_\parallel ^2+\frac {v_\perp ^2}2\right )\frac {\vect R_c\times \vect B}{R_c^2}.
+\end{equation}
+
+</p>
+
+<p>
+Саме цей вираз визначає дрейф у&nbsp;тороїдальному полі (розд.&nbsp;<a href="ch10.html#sec:magnetic-confinement">9</a>) і&nbsp;в&nbsp;диполі Землі.
+</p>
+<!--
+...... paragraph Гравітаційний дрейф. ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-177">Гравітаційний дрейф.</span>
+<a id="main-html-autopage-177"></a>
+Для сили тяжіння \(\vect F=m\vect g\) з&nbsp;<span class="textup">(<a href="ch4.html#eq:drift-force">3.3</a>)</span> одержуємо \(\vect v_g=(mc/qB^2)\,\vect g\times \vect B\). Він залежить від знака заряду й&nbsp;маси,
+а&nbsp;за величиною \(v_g=g/\omega _c\), тому в&nbsp;лабораторній плазмі мізерний. В&nbsp;екваторіальній іоносфері (іони O\(^+\), \(B\approx 0{,}3\)&nbsp;Гс, \(\omega _{ci}\approx 2\times 10^2\)&nbsp;с\(^{-1}\)) \(v_g\approx
+5\)&nbsp;см/с&nbsp;— цього досить, щоб розвинулась гравітаційна (релей-тейлорівська) нестійкість (розд.&nbsp;<a href="ch9.html#sec:instability">8</a>). У&nbsp;викривленому полі роль \(\vect g\) відіграє відцентрове прискорення
+\(v_\parallel ^2/R_c\).
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Для протона з&nbsp;\(T=10\)&nbsp;кеВ у&nbsp;тороїдальному полі \(B=5\times 10^4\)&nbsp;Гс на великому радіусі \(R=6\times 10^2\)&nbsp;см середнє значення \(v_\parallel ^2+v_\perp ^2/2=2T/m\),
+і&nbsp;за&nbsp;<span class="textup">(<a href="ch4.html#eq:total-drift">3.5</a>)</span>
+</p>
+
+<p>
+\[v_d\approx \frac {2cT}{eBR}\approx 7\times 10^{4}~\text {см/с}.\]
+</p>
+
+<p>
+Це лише \(10^{-3}\) від теплової швидкості (\(v_T\sim 10^8\)&nbsp;см/с), але в&nbsp;тороїді з&nbsp;малим радіусом \(a\sim 2\times 10^2\)&nbsp;см частинка досягла б стінки менш ніж за \(10^{-2}\)&nbsp;с, якщо б нічого не заважало
+дрейфу (розд.&nbsp;<a href="ch10.html#sec:magnetic-confinement">9</a>).
+</p>
+</div>
+
+<p>
+Це головна причина, чому чисто тороїдальне поле не утримує плазму. Дрейфи \(\nabla B\) і&nbsp;кривизни розводять іони вгору, електрони вниз (рис.&nbsp;<a href="ch4.html#fig:toroidal-drift">3.5</a>); виникає вертикальне електричне
+поле \(\vect E\), і&nbsp;дрейф \(\vect E\times \vect B\) виносить усю плазму <em>назовні</em> (у&nbsp;бік більшого \(R\)) за час \(\sim a/v_E\). Звідси мотивація обертального перетворення: полоїдальне поле (токамак, стеларатор) закорочує
+розділення зарядів, бо силова лінія переходить від верху до низу (розд.&nbsp;<a href="ch10.html#sec:magnetic-confinement">9</a>).
+</p>
+
+<figure id="autoid-75" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-28"
+    class="lateximagesource"
+><!--
+                           вісь тора
+                                𝐁
+
+
+               іон
+
+
+
+
+     +++             електрон                   +++
+𝐯𝐸                                                    𝐯𝐸
+     𝐄     ⊙                                ⊗     𝐄
+
+     −−−                                        −−−
+
+
+                                       ∇𝐵
+
+                                       𝑅
+--><img
+   src="main-html-images/image-28.svg"
+   alt="Рис. 3.5. Дрейф у чисто тороїдальному полі (тор розрізано площиною, що проходить через його вісь). Ларморівські гвинти рухаються вздовж B, а B-дрейф і дрейф кривизни зміщують іон вгору, електрон — вниз. На перерізах: розділення зарядів ство…"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.5. Дрейф у&nbsp;чисто тороїдальному полі (тор розрізано площиною, що проходить через його вісь). Ларморівські гвинти рухаються вздовж \(\vect B\), а&nbsp;\(\nabla B\)-дрейф і&nbsp;дрейф кривизни зміщують іон вгору,
+електрон&nbsp;— вниз. На перерізах: розділення зарядів створює поле \(\vect E\), і&nbsp;дрейф \(\vect E\times \vect B\) виносить плазму назовні
+
+</div>
+
+<a id="fig:toroidal-drift"></a>
+
+</div>
+
+</figure>
+<!--
+...... section Поляризаційний дрейф ......
+-->
+<h4 id="autosec-181"><span class="sectionnumber">&#xA7;&#x202F;3.3&#x2003;</span>Поляризаційний дрейф</h4>
+<a id="main-html-autopage-181"></a>
+
+
+<p>
+Дрейф у&nbsp;сталому електричному полі є особливим: електрони та іони рухаються в&nbsp;одному напрямку. Якщо ж електричне поле змінюється з&nbsp;часом, інерція частинки створює додатковий дрейф. Виведемо його ітерацією.
+У&nbsp;нульовому наближенні \(\vect v=\vect v_E=c\,\vect E\times \vect B/B^2\), але \(\vect v_E\) тепер залежить від часу, і&nbsp;прискорення \(d\vect v_E/dt\) вимагає сили. У&nbsp;системі, що рухається з&nbsp;\(\vect v_E\), на
+частинку діє сила інерції \(\vect F=-m\,d\vect v_E/dt\); підставляючи її в&nbsp;загальне правило&nbsp;<span class="textup">(<a href="ch4.html#eq:drift-force">3.3</a>)</span>, отримуємо додатковий дрейф \(\vect v_{\rm
+pol}=\dfrac cq\dfrac {\vect F\times \vect B}{B^2}=-\dfrac {mc}{qB^2}\,\dfrac {d\vect v_E}{dt}\times \vect B\). Оскільки \(d\vect v_E/dt=c\,(\partial _t\vect E\times \vect B)/B^2\) і&nbsp;\((\vect A\times \vect
+B)\times \vect B=-B^2\vect A_\perp \), маємо \(\vect v_{\rm pol}=\dfrac {mc^2}{qB^2}\,\partial _t\vect E_\perp \). Для повільно змінного поля \(|\partial _t\vect E|\ll \omega _c E\) (щоб ітерація збігалась) остаточно
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{5}\)</span>
+
+<!--
+
+
+                                                                                                             𝑚𝑐2 𝜕𝐄⟂    𝑞   𝑐 𝜕𝐄⟂
+                                                                                                    𝐯pol =           =             .                                                (3.6)--><a id="eq:polarization-drift"></a><!--
+                                                                                                             𝑞𝐵2 𝜕𝑡    |𝑞| 𝜔𝑐 𝐵 𝜕𝑡
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:polarization-drift} \tcbhighmath { \vect v_{\mathrm {pol}} =\frac {mc^2}{qB^2}\frac {\partial \vect E_\perp }{\partial t} =\frac {q}{|q|}\,\frac {c}{\omega _c B}\frac {\partial \vect E_\perp
+}{\partial t}. }
+\end{equation}
+
+</p>
+
+<p>
+На відміну від \(\vect E\times \vect B\)-дрейфу, цей дрейф залежить від знака заряду і&nbsp;маси: іони й&nbsp;електрони дрейфують у&nbsp;протилежні боки, тому виникає <em>поляризаційний струм</em> \(\vect j_{\mathrm
+{pol}}=\dfrac {\rho _mc^2}{B^2}\,\dfrac {\partial \vect E_\perp }{\partial t}\) (в&nbsp;ньому домінують іони, бо \(\rho _m\approx n m_i\)). Фізично: іон «запізнюється» за полем, поки набирає швидкість \(v_E\). Поперек \(\vect
+B\) плазма поводиться як <em>діелектрик</em> з&nbsp;проникністю \(\varepsilon _\perp =1+4\pi \rho _mc^2/B^2\gg 1\); звідси швидкість альфвенівських хвиль \(v_A=c/\sqrt {\varepsilon _\perp }\approx B/\sqrt {4\pi \rho _m}\)
+(розд.&nbsp;<a href="ch7.html#sec:mhd-waves">6</a>). Отже, поляризаційний дрейф важливий, коли електричне поле змінюється повільно порівняно з&nbsp;гірообертанням (\(\omega \ll \omega _c\)), але не є строго сталим.
+</p>
+
+<figure id="autoid-76" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-29"
+    class="lateximagesource"
+><!--
+𝑦 (∥ 𝐄 × 𝐁)
+
+
+
+                     𝐯𝐸
+
+
+
+
+ 𝐄
+
+
+
+
+                ⊗𝐁
+
+
+                          𝑥 (∥ 𝐄)
+старт
+
+        Δ𝑥pol
+--><img
+   src="main-html-images/image-29.svg"
+   alt="Рис. 3.6. Поляризаційний зсув: іон, що стартує зі спокою в момент вмикання поля E, спершу зміщується вздовж E на x_pol, а далі дрейфує зі швидкістю v_E"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.6. Поляризаційний зсув: іон, що стартує зі спокою в&nbsp;момент вмикання поля \(\vect E\), спершу зміщується вздовж \(\vect E\) на \(\Delta x_{\rm pol}\), а&nbsp;далі дрейфує зі швидкістю \(\vect v_E\)
+
+</div>
+
+<a id="fig:polarization"></a>
+
+</div>
+
+</figure>
+<!--
+...... section Магнітний момент і-адіабатичний інваріант ......
+-->
+<h4 id="autosec-185"><span class="sectionnumber">&#xA7;&#x202F;3.4&#x2003;</span>Магнітний момент і&nbsp;адіабатичний інваріант</h4>
+<a id="main-html-autopage-185"></a>
+
+
+<p>
+Обертання частинки по колу&nbsp;— це кільцевий струм \(I=|q|\omega _c/2\pi \) з&nbsp;площею контуру \(\pi r_L^2\), тобто магнітний момент (у&nbsp;СГС \(\mu =IS/c\))
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{6}\)</span>
+
+<!--
+
+
+                                                                                                            |𝑞|𝜔𝑐       𝑚𝑣2⟂
+                                                                                                       𝜇=           2
+                                                                                                                  𝜋𝑟𝐿 =      .                                                                     (3.7)--><a id="eq:mu"></a><!--
+                                                                                                             2𝜋𝑐        2𝐵
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:mu} \mu =\frac {|q|\omega _c}{2\pi c}\,\pi r_L^2=\frac {mv_\perp ^2}{2B}.
+\end{equation}
+
+</p>
+
+<p>
+Момент орбіти напрямлений <em>проти</em> поля для частинок обох знаків (вони обертаються в&nbsp;протилежні боки, але заряди теж протилежні; рис.&nbsp;<a href="ch4.html#fig:magnetic-moment">3.7</a>). Це джерело діамагнетизму
+плазми (розд.&nbsp;<a href="ch10.html#sec:magnetic-confinement">9</a>).
+</p>
+
+<figure id="autoid-77" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-30"
+    class="lateximagesource"
+><!--
+          𝐁                  𝐁
+
+                             𝛀
+                         −
+
+          +
+
+
+
+
+      𝛀
+
+ 𝝁               𝝁
+
+іон           електрон
+--><img
+   src="main-html-images/image-30.svg"
+   alt="Рис. 3.7. Ларморівське обертання іона й електрона в полі B: кутові швидкості =-qB/(mc) протилежні, а магнітні моменти обох частинок напрямлені проти B"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.7. Ларморівське обертання іона й&nbsp;електрона в&nbsp;полі \(\vect B\): кутові швидкості \(\vect \Omega =-q\vect B/(mc)\) протилежні, а&nbsp;магнітні моменти \(\vect \mu \) обох частинок напрямлені проти \(\vect B\)
+
+</div>
+
+<a id="fig:magnetic-moment"></a>
+
+</div>
+
+</figure>
+
+
+<div class="cb-theory">
+
+<p>
+<b>Теоретичні відомості</b> Нагадаємо з&nbsp;теоретичної механіки
+</p>
+
+<p>
+Для періодичного руху з&nbsp;повільно змінним параметром \(\lambda (t)\) (час зміни \(\gg \) період руху) величина \(J=\oint p\,dq\) (дія) <em>адіабатично інваріантна</em>. Приклад: маятник, нитку якого повільно вкорочують; \(J\propto
+E/\omega =\mathrm {const}\), тож енергія росте разом з&nbsp;частотою. Для ларморівського руху \(\oint (m\vect v+q\vect A/c)\cdot d\vect l\) дає \(2\pi mv_\perp r_L-\pi r_L^2|q|B/c=\pi mv_\perp r_L=(2\pi mc/|q|)\,\mu \),
+тому \(\mu =\mathrm {const}\). Так само \(J_\parallel =\oint p_\parallel \,ds\) зберігається для руху між точками відбиття, а&nbsp;магнітний потік \(\Phi \) через оболонку дрейфу&nbsp;— для азимутального дрейфу: три інваріанти
+однієї ідеї.
+</p>
+</div>
+
+<p>
+Якщо поле змінюється повільно (за час обороту \(2\pi /\omega _c\) воно змінюється мало; в&nbsp;просторі це означає \(r_L\ll L\)), величина \(\mu \) <em>зберігається</em>. Це легко побачити, помітивши, що потік поля крізь орбіту \(\Phi
+=\pi r_L^2B=\pi m^2c^2v_\perp ^2/(q^2B)\propto \mu \). При збільшенні \(B\) виникає вихрове електричне поле, яке прискорює частинку так, щоб потік крізь орбіту залишився сталим (як у&nbsp;надпровідному кільці; рис.&nbsp;<a
+href="ch4.html#fig:gradb-force">3.8</a>б). Інакше кажучи, \(\mu \)&nbsp;— <em>адіабатичний інваріант</em> (строге обґрунтування&nbsp;— збереження дії \(\oint p\,dq\), див. вставку вище): його відносна зміна за час повільної зміни
+поля мала за параметром \(\varepsilon \sim r_L/L\sim \omega _c^{-1}/\tau _B\) (де \(\tau _B\)&nbsp;— час зміни поля), а&nbsp;для аналітичних (гладких) полів вона навіть <em>експоненціально</em> мала, \(\Delta \mu /\mu \sim
+e^{-\mathrm {const}/\varepsilon }\) (Крускал). Інваріантність порушується, коли \(r_L\sim L\) (наприклад, у&nbsp;нейтральному шарі поля чи біля нульової точки), а&nbsp;також за поля, що змінюється з&nbsp;частотою, близькою до
+\(\omega _c\) (циклотронний резонанс).
+</p>
+
+<p>
+Статичне магнітне поле не виконує роботи, тому повна кінетична енергія зберігається. З&nbsp;урахуванням \(\mu =\mathrm {const}\)
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{7}\)</span>
+
+<!--
+
+
+                                                                                                   𝑚𝑣2∥                          𝑑𝑣∥      𝜕𝐵
+                                                                                                          + 𝜇𝐵 = const   ⇒   𝑚       = −𝜇    ,                                                     (3.8)--><a id="eq:energy-mu"></a><!--
+                                                                                                    2                            𝑑𝑡       𝜕𝑠
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:energy-mu} \frac {mv_\parallel ^2}2+\mu B=\mathrm {const}\quad \Rightarrow \quad m\frac {dv_\parallel }{dt}=-\mu \frac {\partial B}{\partial s},
+\end{equation}
+
+</p>
+
+<p>
+де \(s\)&nbsp;— координата вздовж силової лінії. У&nbsp;області зростання \(B\) поздовжня швидкість зменшується: енергія переходить від поздовжнього руху до поперечного. Результат&nbsp;— сила \(-\mu \nabla B\), яка штовхає частинку
+в&nbsp;бік слабшого поля (рис.&nbsp;<a href="ch4.html#fig:gradb-force">3.8</a>).
+</p>
+
+<figure id="autoid-78" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-190"></a>
+
+<p>
+<span
+    id="lateximage-main-html-31"
+    class="lateximagesource"
+><!--
+   𝐅           𝐯∥
+                            𝐁
+           +
+
+
+
+
+𝐵 слабше            𝐵 сильніше
+--><img
+   src="main-html-images/image-31.svg"
+   alt="(а)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-193"></a>
+
+<p>
+<span
+    id="lateximage-main-html-32"
+    class="lateximagesource"
+><!--
+           𝐯∥
+                            𝐁
+                +
+    +
+
+
+
+
+𝐵 слабше            𝐵 сильніше
+--><img
+   src="main-html-images/image-32.svg"
+   alt="(б)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б)
+
+</div>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.8. Ларморівське кільце в&nbsp;збіжному магнітному полі: (а)&nbsp;сила \(\vect F=-\mu \nabla B\) напрямлена в&nbsp;бік слабшого поля, проти \(\vect v_\parallel \); (б)&nbsp;потік крізь орбіту зберігається, тому в&nbsp;сильнішому
+полі кільце менше (\(r_L^2B=\mathrm {const}\))
+
+</div>
+
+<a id="fig:gradb-force"></a>
+
+</div>
+
+</figure>
+<!--
+...... paragraph Вивід сили . ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-196">Вивід сили \(-\mu \nabla B\).</span>
+<a id="main-html-autopage-196"></a>
+<em>Градієнт поперек поля.</em> Нехай \(\vect B=B(x)\hat {\vect z}\), \(B(x)\approx B_0+x\,\partial _xB\). Сила Лоренца вздовж \(x\): \(F_x=(q/c)\,v_yB(x)\). Для положення відносно ведучого центру \(x=x_{\rm gc}+r_L\cos
+\varphi \) (для \(q&gt;0\) швидкість \(v_x=v_\perp \sin \varphi \), \(v_y=-v_\perp \cos \varphi \)) після усереднення по оберту \(\langle v_y\rangle =0\), \(\langle \cos ^2\varphi \rangle =\tfrac 12\), тому
+</p>
+
+<p>
+\[\langle F_x\rangle =\frac qc\,\partial _xB\,\langle v_y\,r_L\cos \varphi \rangle =-\frac {q\,v_\perp r_L}{2c}\,\partial _xB=-\frac {mv_\perp ^2}{2B}\,\partial _xB=-\mu \,\partial _xB\]
+</p>
+
+<p>
+(підставлено \(r_L=mcv_\perp /qB\); для \(q&lt;0\) одночасно змінюються знак \(q\) й&nbsp;напрям обертання, результат той самий).
+</p>
+
+<p>
+<em>Градієнт уздовж поля.</em> Вісесиметричне поле з&nbsp;\(\nabla \cdot \vect B=0\): \(\dfrac 1r\partial _r(rB_r)=-\partial _zB_z\Rightarrow B_r\approx -\dfrac r2\,\partial _zB_z\). Поздовжню силу дає азимутальна
+швидкість \(v_\theta =\mp v_\perp \) (для \(q\gtrless 0\)) на радіусі \(r=r_L\): \(F_z=-(q/c)\,v_\theta B_r=-\dfrac {|q|v_\perp r_L}{2c}\,\partial _zB_z=-\mu \,\partial _zB_z\). Разом \(\vect F=-\mu \nabla B\) (збігається
+з&nbsp;<span class="textup">(<a href="ch4.html#eq:energy-mu">3.8</a>)</span>).
+</p>
+<!--
+...... paragraph Діамагнетизм. ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-197">Діамагнетизм.</span>
+<a id="main-html-autopage-197"></a>
+Ларморівське кільце&nbsp;— це струм, магнітний момент якого напрямлений проти \(\vect B\). Сума моментів кілець дає намагніченість плазми
+</p>
+
+<p>
+\[\vect M=-n\langle \mu \rangle \frac {\vect B}{B}=-\frac {p_\perp }{B^2}\,\vect B,\qquad p_\perp =\frac {nm\langle v_\perp ^2\rangle }2,\]
+</p>
+
+<p>
+тобто \(\chi &lt;0\): плазма виштовхується з&nbsp;області сильного поля (ідея магнітного утримання Тамма–Сахарова). Застереження: для <em>однорідної</em> рівноважної плазми в&nbsp;обмеженому об’ємі макроскопічний струм намагнічення
+компенсується струмом частинок, що відбиваються від стінки (теорема Бора&nbsp;— ван&nbsp;Левен). Спостережуваний діамагнетизм зумовлений <em>градієнтом</em> тиску: струм \(\vect j_M=c\nabla \times \vect M\) не зникає там, де
+\(p_\perp \) змінюється (розд.&nbsp;<a href="ch6.html#sec:diamagnetism">5.8</a>).
+</p>
+<!--
+...... section Магнітне дзеркало і-конус втрат ......
+-->
+<h4 id="autosec-198"><span class="sectionnumber">&#xA7;&#x202F;3.5&#x2003;</span>Магнітне дзеркало і&nbsp;конус втрат</h4>
+<a id="main-html-autopage-198"></a>
+
+
+<a id="sec:magnetic-mirror"></a>
+
+<p>
+Розглянемо магнітне поле, слабше в&nbsp;центрі (\(B_{\min }\)) та сильніше на кінцях (\(B_{\max }\)) (рис.&nbsp;<a href="ch4.html#pic:magnetic-mirror">3.10</a>). Нехай у&nbsp;центрі швидкість частинки \(v\) утворює
+з&nbsp;напрямком поля кут \(\theta \) (<em><span
+    class="textcolor"
+    style="color:#990000"
+>пітч-кут</span></em>), \(v_\perp =v\sin \theta \). Зі збереження \(\mu \) та енергії
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{8}\)</span>
+
+<!--
+
+
+                                                                                                    𝑣2⟂
+                                                                                                        = const,    𝑣2∥ + 𝑣2⟂ = 𝑣2 = const.
+                                                                                                    𝐵
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {v_\perp ^2}{B}=\mathrm {const},\qquad v_\parallel ^2+v_\perp ^2=v^2=\mathrm {const}.
+\end{equation*}
+
+</p>
+
+<p>
+Поперечна швидкість росте за законом \(v_\perp ^2=v^2\sin ^2\theta \,B/B_{\min }\). Частинка відіб’ється (де \(v_\parallel =0\)), якщо \(v_\perp ^2\) досягне \(v^2\) раніше, ніж частинка досягне області \(B_{\max }\), тобто за умови
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{8}\)</span>
+
+<!--
+
+
+                                                                                                                          𝐵min
+                                                                                                               sin2 𝜃 ≥        .                                                          (3.9)--><a id="eq:mirror-condition"></a><!--
+                                                                                                                          𝐵max
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:mirror-condition} \tcbhighmath {\sin ^2\theta \geq \frac {B_{\min }}{B_{\max }}}.
+\end{equation}
+
+</p>
+
+<p>
+Частинки з&nbsp;малим пітч-кутом (\(\sin \theta &lt;\sqrt {B_{\min }/B_{\max }}\)) не відбиваються й&nbsp;вилітають з&nbsp;пастки. Область цих кутів у&nbsp;просторі швидкостей називається <em><span
+    class="textcolor"
+    style="color:#990000"
+>конусом втрат</span></em>. Для ізотропного розподілу швидкостей частка частинок, що потрапляють в&nbsp;обидва конуси втрат, дорівнює
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{9}\)</span>
+
+<!--
+
+
+                                                                                                           𝐵      𝐵
+                                                                                                  1−    1 − min ≈ min        (𝐵max ≫ 𝐵min ),
+                                                                                                       √   𝐵max  2𝐵max
+
+-->
+
+<p>
+
+\begin{equation*}
+1-\sqrt {1-\frac {B_{\min }}{B_{\max }}}\approx \frac {B_{\min }}{2B_{\max }}\quad (B_{\max }\gg B_{\min }),
+\end{equation*}
+
+</p>
+
+<p>
+і&nbsp;вона зменшується з&nbsp;ростом пробкового відношення \(B_{\max }/B_{\min }\).
+</p>
+
+<figure id="autoid-79" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-33"
+    class="lateximagesource"
+><!--
+                    𝑣⟂
+
+
+
+
+                         захоплені
+
+
+
+
+                              𝜃𝑐
+                                             𝑣∥
+конус                                конус
+втрат                                втрат
+
+
+
+
+        захоплені
+--><img
+   src="main-html-images/image-33.svg"
+   alt="Рис. 3.9. Конус втрат у просторі швидкостей (v_,v_): частинки в червоних секторах (&amp;lt;_c) залишають пастку"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.9. Конус втрат у&nbsp;просторі швидкостей \((v_\parallel ,v_\perp )\): частинки в&nbsp;червоних секторах (\(\theta &lt;\theta _c\)) залишають пастку
+
+</div>
+
+<a id="fig:loss-cone"></a>
+
+</div>
+
+</figure>
+
+<p>
+Після виходу частинок із&nbsp;конуса в&nbsp;розподілі лишається «порожній» конус: анізотропія стає джерелом кінетичних нестійкостей (розд.&nbsp;<a href="ch9.html#sec:instability">8</a>).
+</p>
+
+<p>
+Принципове зауваження: однорідне магнітне поле не «тримає» частинку вздовж силової лінії. Утримання в&nbsp;дзеркалі виникає завдяки неоднорідності поля й&nbsp;збереженню \(\mu \). Зіткнення, які розсіюють частинки в&nbsp;конус
+втрат, і&nbsp;нестійкості призводять до того, що відкриті пастки «протікають» (розд.&nbsp;<a href="ch10.html#sec:magnetic-confinement">9</a>). Природним магнітним дзеркалом є поле Землі (розд.&nbsp;<a
+href="ch4.html#sec:dipole">3.7</a>).
+</p>
+
+<figure id="autoid-80" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-34"
+    class="lateximagesource"
+><!--
+              𝑣⃗
+𝑣⃗ ⟂
+
+               𝑣⃗ ∥
+       𝜃min
+--><img
+   src="main-html-images/image-34.svg"
+   alt="Рис. 3.10. Принцип магнітного дзеркала: у міру зростання B поперечна енергія збільшується за рахунок поздовжньої, і за умови (3.9) частинка відбивається"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.10. Принцип магнітного дзеркала: у&nbsp;міру зростання \(B\) поперечна енергія збільшується за рахунок поздовжньої, і&nbsp;за умови&nbsp;<span class="textup">(<a href="ch4.html#eq:mirror-condition">3.9</a>)</span>
+частинка відбивається
+
+</div>
+
+<a id="pic:magnetic-mirror"></a>
+
+</div>
+
+</figure>
+<!--
+...... section Подовжній інваріант ......
+-->
+<h4 id="autosec-205"><span class="sectionnumber">&#xA7;&#x202F;3.6&#x2003;</span>Подовжній інваріант</h4>
+<a id="main-html-autopage-205"></a>
+
+
+<a id="sec:longitudinal-invariant"></a>
+
+<p>
+Якщо частинка захоплена між двома точками відбиття \(s_1\) і&nbsp;\(s_2\), вона здійснює періодичні коливання вздовж силової лінії з&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>частотою відбиття</span></em> \(\omega _b\sim v_\parallel /L\). Для такого руху існує ще один адіабатичний інваріант&nbsp;— <em><span
+    class="textcolor"
+    style="color:#990000"
+>подовжній</span></em>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{9}\)</span>
+
+<!--
+
+                                                                                                           ˛                 ˆ 𝑠2
+                                                                                                      𝐽=       𝑚𝑣∥ 𝑑𝑠 = 2𝑚          𝑣∥ 𝑑𝑠 = const,                                                (3.10)--><a id="eq:J-invariant"></a><!--
+                                                                                                                              𝑠1
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:J-invariant} J=\oint m v_\parallel \,ds=2m\int _{s_1}^{s_2}v_\parallel \,ds=\mathrm {const},
+\end{equation}
+
+</p>
+
+<p>
+який зберігається, якщо поле змінюється за час, значно більший за період відбиття \(\tau _b=2\pi /\omega _b\). Якщо \(\mu \) пов’язаний з&nbsp;гірацією, то \(J\)&nbsp;— з&nbsp;поздовжніми коливаннями. У&nbsp;статичному
+осесиметричному полі \(J\) визначає, які силові лінії (<em>дрейфова оболонка</em>) частинка «відвідує» під час дрейфу: частинка завжди повертається на ту саму оболонку. Інакше кажучи, дрейф навколо осі відбувається по замкненій поверхні
+сталого \(J\).
+</p>
+
+<p>
+<em>Фермі-прискорення.</em> Якщо дзеркала зближуються, довжина \(L\) зменшується, і&nbsp;з&nbsp;\(J=\oint v_\parallel \,ds\approx 2v_\parallel L=\mathrm {const}\) маємо \(v_\parallel \propto 1/L\): частинка прискорюється,
+поки не потрапить у&nbsp;конус втрат. Це один із&nbsp;механізмів прискорення космічних променів (задача&nbsp;<a href="ch4.html#prb:FermiAcceleration">3.5</a>).
+</p>
+
+<p>
+Коли поле змінюється з&nbsp;часом, кожен інваріант зберігається, лише поки частота змін \(\omega \) мала порівняно з&nbsp;частотою «свого» періодичного руху. Тому першим (уже за \(\omega \sim \omega _d\), наприклад під час магнітних
+бур) порушується третій інваріант&nbsp;— магнітний потік \(\Phi \) через оболонку дрейфу; за \(\omega \gtrsim \omega _b\) порушується \(J\); і&nbsp;лише за \(\omega \gtrsim \omega _c\)&nbsp;— найстійкіший інваріант \(\mu \).
+</p>
+<!--
+...... section Диполь Землі та радіаційні пояси ......
+-->
+<h4 id="autosec-206"><span class="sectionnumber">&#xA7;&#x202F;3.7&#x2003;</span>Диполь Землі та радіаційні пояси</h4>
+<a id="main-html-autopage-206"></a>
+
+
+<a id="sec:dipole"></a>
+
+<p>
+Поле Землі в&nbsp;першому наближенні&nbsp;— диполь:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{10}\)</span>
+
+<!--
+
+
+                                                                                                                    𝑅𝐸 3
+                                                                                                         𝐵 = 𝐵0 (      ) √1 + 3 sin2 𝜆,
+                                                                                                                     𝑟
+
+-->
+
+<p>
+
+\begin{equation*}
+B=B_0\left (\frac {R_E}{r}\right )^3\sqrt {1+3\sin ^2\lambda },
+\end{equation*}
+
+</p>
+
+<p>
+де \(\lambda \)&nbsp;— магнітна широта, \(B_0\approx 0{,}31\)&nbsp;Гс&nbsp;— поле на екваторі біля поверхні. Силова лінія задається рівнянням \(r=L\,R_E\cos ^2\lambda \), де параметр \(L\) (<em>оболонка Мак-Ілвайна</em>) дорівнює
+відстані до екватора в&nbsp;радіусах Землі. Поле на екваторі силової лінії \(B_{\rm eq}=B_0/L^3\). На силовій лінії воно зростає до полюсів, тому в&nbsp;диполі працює пастка-дзеркало (рис.&nbsp;<a href="ch4.html#pic:dipole">3.11</a>).
+</p>
+
+<figure id="autoid-81" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-35"
+    class="lateximagesource"
+><!--
+вісь диполя
+
+
+
+
+              точка відбиття
+
+                               гвинтовий рух
+                               навколо силової лінії
+
+
+
+  Земля
+
+
+
+                               азимутальний дрейф:
+                               іони — на захід,
+                               електрони — на схід
+
+
+
+              точка відбиття
+--><img
+   src="main-html-images/image-35.svg"
+   alt="Рис. 3.11. Захоплена частинка в магнітному диполі: гвинтовий рух навколо силової лінії, відбиття між дзеркальними точками й азимутальний дрейф навколо Землі. Ларморівський радіус і крок гвинта зменшуються до точок відбиття; помаранчевий елі…"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.11. Захоплена частинка в&nbsp;магнітному диполі: гвинтовий рух навколо силової лінії, відбиття між дзеркальними точками й&nbsp;азимутальний дрейф навколо Землі. Ларморівський радіус і&nbsp;крок гвинта зменшуються до точок
+відбиття; помаранчевий еліпс&nbsp;— дрейфова оболонка в&nbsp;екваторіальній площині (штрихова частина&nbsp;— за Землею)
+
+</div>
+
+<a id="pic:dipole"></a>
+
+</div>
+
+</figure>
+
+<p>
+Рух захоплених частинок складається з&nbsp;трьох рухів з&nbsp;різними часовими масштабами, з&nbsp;якими пов’язано три адіабатичні інваріанти:
+</p>
+<figure id="autoid-82" class="table ">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;3.1. Три рухи захоплених у&nbsp;диполі частинок і&nbsp;відповідні адіабатичні інваріанти.
+
+</div>
+
+<a id="tab:three-motions"></a>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr class="hline">
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+   class="textcolor"
+   style="color:#002E64"
+><b>Рух</b></span></td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>Частота</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>Інваріант</b></span>
+</p>
+</td>
+<td colspan="1" class="tdc" style="background:#B8D4E7"><span
+    class="textcolor"
+    style="color:#002E64"
+><b>Масштаб&#x202f;(\(E\sim 1\)&nbsp;МеВ, \(L=4\))</b></span></td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Гірація
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\omega _c\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\mu \)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(\sim 10^{-4}\)&nbsp;с
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Відбиття між полюсами
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\omega _b\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(J\)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(\sim 0{,}3\)&nbsp;с
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Азимутальний дрейф
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\omega _d\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+потік \(\Phi \)
+</p>
+</td>
+<td class="tdp tdleft">
+
+<p>
+\(\sim 10^{3}\)&nbsp;с
+</p>
+</td>
+</tr>
+
+<tr class="hline" aria-hidden="true">
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdleft">
+
+</td>
+</tr>
+</table>
+
+</figure>
+
+<p>
+Ієрархія \(\omega _c\gg \omega _b\gg \omega _d\) дозволяє розглядати кожний рух окремо, а&nbsp;отже, визначає глибину адіабатичного наближення. Азимутальний дрейф обумовлений сумою градієнтного й&nbsp;відцентрового
+дрейфів&nbsp;<span class="textup">(<a href="ch4.html#eq:total-drift">3.5</a>)</span>; для електрона з&nbsp;поперечною енергією \(W_\perp \) на екваторі \(v_d\simeq 3cW_\perp /(eB_{\rm eq}r)\) (в&nbsp;диполі \(\nabla
+B/B=3/r\)); електрони дрейфують на схід, а&nbsp;іони&nbsp;— на захід, що створює кільцевий струм навколо Землі. Ця формула справедлива для частинок із&nbsp;пітч-кутом \(90^\circ \) (відбиваються на екваторі); для інших є множник
+порядку одиниці (усереднення по баунсу).
+</p>
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> Електрон 30&nbsp;кеВ на \(L=5\) (\(B_{\rm eq}\approx 2{,}5\times 10^{-3}\)&nbsp;Гс, \(r\approx 3\times 10^{9}\)&nbsp;см): \(v_d\approx 1\times 10^{6}\)&nbsp;см/с, період обходу Землі \(2\pi r/v_d\sim
+2\times 10^4\)&nbsp;с (кілька годин). Для протона з&nbsp;енергією \(1\)&nbsp;еВ \(v_d\sim 40\)&nbsp;см/с&nbsp;— дрейфу фактично нема.
+</p>
+</div>
+
+<p>
+Пастка не ідеальна. Частинка, що відбивається в&nbsp;точці з&nbsp;широтою \(\lambda _m\), має на екваторі пітч-кут, що задовольняє
+</p>
+
+<p>
+\[\sin ^2\alpha _{\rm eq}=\frac {\cos ^6\lambda _m}{\sqrt {1+3\sin ^2\lambda _m}}.\]
+</p>
+
+<p>
+Якщо точка відбиття лежить нижче \(\sim 100\)&nbsp;км над поверхнею, частинка втрачається в&nbsp;щільній атмосфері. Силова лінія \(r=LR_E\cos ^2\lambda \) перетинає поверхню при \(\cos ^2\lambda =1/L\); точка відбиття лежить під
+поверхнею, якщо \(L\cos ^2\lambda _m\le 1\), тобто \(\cos ^2\lambda _m\le 1/L\) (широта точки відбиття вища за широту виходу лінії з&nbsp;атмосфери). Звідси кут конуса втрат
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{10}\)</span>
+
+<!--
+
+
+                                                                                                                 𝐿−3
+                                                                                                   sin2 𝛼𝑐 =              ,   𝛼𝑐 ≈ 5∘ (𝐿 = 4).
+                                                                                                               √4 − 3/𝐿
+
+-->
+
+<p>
+
+\begin{equation*}
+\sin ^2\alpha _c=\frac {L^{-3}}{\sqrt {4-3/L}},\qquad \alpha _c\approx 5^\circ \ (L=4).
+\end{equation*}
+
+</p>
+
+<p>
+Існування двох поясів (внутрішнього, протонного, і&nbsp;зовнішнього, електронного), відкритих Дж.&nbsp;Ван Алленом у&nbsp;1958&nbsp;р., пов’язано з&nbsp;балансом між захопленням (інжекція під час магнітних бур) і&nbsp;втратами
+(зіткнення з&nbsp;атмосферою, розсіювання хвилями).
+</p>
+<!--
+...... section Як це вимірюють: аналізатор енергій і-ECE ......
+-->
+<h4 id="autosec-211"><span class="sectionnumber">&#xA7;&#x202F;3.8&#x2003;</span>Як це вимірюють: аналізатор енергій і&nbsp;ECE</h4>
+<a id="main-html-autopage-211"></a>
+
+
+<a id="sec:motion-diagnostics"></a>
+
+<p>
+Гвинтовий рух у&nbsp;магнітному полі дає два прості способи виміряти розподіл частинок.
+</p>
+
+<p>
+<em>Аналізатор із&nbsp;гальмівним потенціалом.</em> Сітка під потенціалом \(\varphi \) пропускає лише іони, для яких \(\tfrac 12Mv_\parallel ^2&gt;Ze\varphi \); колектор за&nbsp;сіткою вимірює струм \(I(\varphi )\propto \int
+_{v_{\min }}^\infty v_\parallel f_\parallel \,dv_\parallel \). Для максвеллівського розподілу \(I\propto \exp (-Ze\varphi /T_i)\), тож \(T_i\) дорівнює оберненому нахилу \(\ln I(\varphi )\), а&nbsp;похідна \(dI/d\varphi \)
+відтворює саму \(f(v_\parallel )\). Аналізатор вимірює лише швидкості вздовж осі, тому його ставлять уздовж \(\vect B\), щоб відсікти ларморівське обертання.
+</p>
+
+<p>
+<em>Електронно-циклотронне випромінювання</em> (англ. <em>electron cyclotron emission</em>; далі скорочено <em>ECE</em>, латинськими літерами, як у&nbsp;літературі).
+</p>
+
+<p>
+Електрон обертається з&nbsp;частотою
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{10}\)</span>
+
+<!--
+
+
+                                                                                                              𝑒𝐵
+                                                                                                      𝜔𝑐𝑒 =        ≈ 1,76 × 107 𝐵[Гс] с−1                                                  (3.11)--><a id="eq:ece-frequency"></a><!--
+                                                                                                              𝑚𝑒 𝑐
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ece-frequency} \tcbhighmath {\omega _{ce}=\frac {eB}{m_ec}\approx 1{,}76\times 10^{7}\,B[\text {Гс}]~\mathrm {с}^{-1}}
+\end{equation}
+
+</p>
+
+<p>
+і&nbsp;випромінює на&nbsp;гармоніках \(n\omega _{ce}\). У&nbsp;токамаку \(B\propto 1/R\), тож кожна частота виходить з&nbsp;певного радіуса: \(R=R_0\,\omega _{ce}(R_0)/\omega \) (для \(n=1\)). Якщо плазма оптично товста
+на&nbsp;другій гармоніці, інтенсивність дорівнює рівноважній (релеївсько-джинсівській) \(I_\omega =\omega ^2T_e/(8\pi ^3c^2)\) (для однієї поляризації), тобто вимір \(I_\omega \) дає \(T_e(R)\) без зовнішнього джерела.
+</p>
+
+<div class="cb-estimate">
+
+<p>
+<b>Числова оцінка.</b> При \(B=5\)&nbsp;Тл \(=5\times 10^4\)&nbsp;Гс: \(\omega _{ce}\approx 8{,}8\times 10^{11}\)&nbsp;с\(^{-1}\), \(f_{ce}\approx 140\)&nbsp;ГГц, друга гармоніка&nbsp;— \(280\)&nbsp;ГГц (мм-діапазон).
+</p>
+</div>
+
+<p>
+Межі застосовності: потрібна оптична товщина (високі \(n_eT_e\)) і&nbsp;відсутність відсічки, \(\omega _{pe}&lt;\omega _{ce}\) (пор. розд.&nbsp;<a href="ch3.html#sec:wave-diagnostics">2.7</a>); релятивістський зсув частоти змішує
+сигнали сусідніх радіусів.
+</p>
+
+
+<div class="cb-summary">
+
+<p>
+<b>Головне в розділі</b>
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Заряджена частинка в&nbsp;однорідному полі гвинтово рухається: ларморівський радіус \(r_L\) і&nbsp;циклотронна частота \(\omega _c\) залежать від знака заряду лише напрямком обертання.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Дрейф у&nbsp;схрещених \(\vect E\) і&nbsp;\(\vect B\) не залежить від заряду та маси, а&nbsp;градієнтний дрейф і&nbsp;дрейф кривизни залежать від них і&nbsp;розділяють заряди.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Магнітний момент \(\mu \)&nbsp;— адіабатичний інваріант: у&nbsp;повільно змінному полі \(v_\perp ^2/B=\mathrm {const}\).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Магнітне дзеркало відбиває частинки з&nbsp;великим пітч-кутом; решта потрапляє в&nbsp;конус втрат, тож відкрита пастка «протікає».
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> У&nbsp;диполі Землі діють три інваріанти (\(\mu \), \(J\), \(\Phi \)) з&nbsp;ієрархією частот \(\omega _c\gg \omega _b\gg \omega _d\).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Гальмівний аналізатор дає \(T_i\) з&nbsp;нахилу \(\ln I(\varphi )\), а&nbsp;ECE на&nbsp;частотах \(n\omega _{ce}(R)\) ставить у&nbsp;відповідність частоту й&nbsp;радіус і&nbsp;дає \(T_e(R)\)
+(розд.&nbsp;<a href="ch4.html#sec:motion-diagnostics">3.8</a>).
+</p>
+</li>
+</ul>
+
+</div>
+<!--
+...... section Задачі ......
+-->
+<h4 id="autosec-212">Задачі</h4>
+<a id="main-html-autopage-212"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-83"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.1.</span></span> <a id="autoid-84" ></a ><a id="LWR-ht-problem:3.{1}"></a><a id="prb:PlasmaLarmor"></a>★☆☆ Електрон з&nbsp;енергією 100&nbsp;еВ
+рухається перпендикулярно полю \(B=10^4\)&nbsp;Гс. Знайдіть ларморівський радіус і&nbsp;порівняйте його з&nbsp;\(\lambda _{De}\) для \(n_e=10^{12}~\mathrm {см}^{-3}\), \(T_e=100\)&nbsp;еВ. <a
+href="ch15.html#LWR-ht-solution:3.{1}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-85"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.2.</span></span> <a id="autoid-86" ></a ><a id="LWR-ht-problem:3.{2}"></a><a id="prb:PlasmaExB"></a>★☆☆ У&nbsp;схрещених полях \(E=1\)&nbsp;В/см
+і&nbsp;\(B=10^3\)&nbsp;Гс (в&nbsp;СГС \(1~\text {В/см}=1/300\)&nbsp;СГС) знайдіть швидкість дрейфу. Чи залежить вона від того, чи рухається електрон, чи протон? <a href="ch15.html#LWR-ht-solution:3.{2}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-87"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.3.</span></span> <a id="autoid-88" ></a ><a id="LWR-ht-problem:3.{3}"></a><a id="prb:DipoleBelts"></a>★★★ Електрон з&nbsp;енергією 1&nbsp;МеВ перебуває
+на силовій лінії \(L=4\) земного диполя (\(B_{\rm eq}\approx 5\times 10^{-3}\)&nbsp;Гс на екваторі), пітч-кут на екваторі \(\alpha _{\rm eq}=30^\circ \). Оцініть: ларморівський радіус, період обертання навколо силової лінії, час відбиття
+між дзеркальними точками і&nbsp;період дрейфу навколо Землі. Перевірте ієрархію \(\omega _c\gg \omega _b\gg \omega _d\). <a href="ch15.html#LWR-ht-solution:3.{3}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-89"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.4.</span></span> <a id="autoid-90" ></a ><a id="LWR-ht-problem:3.{4}"></a><a id="prb:DriftCurrent"></a>★★★ Плазма з&nbsp;тисками \(p_\perp \),
+\(p_\parallel \) перебуває в&nbsp;слабко неоднорідному полі, \(\beta \ll 1\) (так що поле близьке до вакуумного). (а)&nbsp;Знайдіть густину струму \(\nabla B\)- і&nbsp;кривизного дрейфів. (б)&nbsp;Додайте струм намагнічення: густина
+магнітного моменту \(\vect M=-p_\perp \vect B/B^2\), \(\vect j_M=c\,\nabla \times \vect M\). (в)&nbsp;Покажіть, що для ізотропного тиску \(p_\perp =p_\parallel =p\) повний поперечний струм дорівнює \(\vect j_\perp =c\,\vect
+B\times \nabla p/B^2\) (діамагнітний). <em>Вказівка:</em> струм дрейфів сам по собі діамагнітного не дає.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-91"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.5.</span></span> <a id="autoid-92" ></a ><a id="LWR-ht-problem:3.{5}"></a><a id="prb:FermiAcceleration"></a>★★★ Протон з&nbsp;енергією \(1\)&nbsp;кеВ
+і&nbsp;пітч-кутом \(45^\circ \) (у&nbsp;центрі пастки) захоплено між двома магнітними дзеркалами з&nbsp;пробковим відношенням \(R_m=5\), що наближаються одне до одного зі швидкістю \(10\)&nbsp;км/с кожне (початкова відстань
+\(L=10^{10}\)&nbsp;км). Використайте інваріантність \(J=\oint v_\parallel \,ds\) і&nbsp;пружне відбиття від рухомої стінки: за який час частинка потрапить у&nbsp;конус втрат і&nbsp;якою буде її енергія? <a
+href="ch15.html#LWR-ht-solution:3.{5}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-93"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.6.</span></span> <a id="autoid-94" ></a ><a id="LWR-ht-problem:3.{6}"></a><a id="prb:PlasmaMirror"></a>★★☆ У&nbsp;магнітній пастці \(B_{\min }=2\times
+10^4\)&nbsp;Гс, \(B_{\max }=8\times 10^4\)&nbsp;Гс. Знайдіть критичний пітч-кут конуса втрат і&nbsp;частку частинок ізотропного розподілу, що потрапляють у&nbsp;конуси втрат. <a
+href="ch15.html#LWR-ht-solution:3.{6}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-95"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.7.</span></span> <a id="autoid-96" ></a ><a id="LWR-ht-problem:3.{7}"></a><a id="prb:IonThruster"></a>★☆☆ Для іонного двигуна потрібен дрейф
+\(v_E=1000\)&nbsp;км/с у&nbsp;полі \(B=1\)&nbsp;Тл. Яке електричне поле для цього потрібне? Виразіть відповідь у&nbsp;СГС (де \(B=10^4\)&nbsp;Гс) і&nbsp;у&nbsp;В/см. Чи залежить результат від сорту іонів? <a
+href="ch15.html#LWR-ht-solution:3.{7}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-97"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.8.</span></span> <a id="autoid-98" ></a ><a id="LWR-ht-problem:3.{8}"></a><a id="prb:ExBRotation"></a>★★☆ Плазмовий стовп радіуса \(a=10\)&nbsp;см
+у&nbsp;полі \(B=1\)&nbsp;кГс має параболічний потенціал \(\varphi (r)=\varphi _0\,r^2/a^2\) відносно осі, \(\varphi _0=1\)&nbsp;кВ. Знайдіть кутову швидкість \(\mathrm E\times \mathrm B\)-обертання \(\omega =cE_r/(Br)\). Чому
+стовп обертається як тверде тіло? <a href="ch15.html#LWR-ht-solution:3.{8}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-99"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.9.</span></span> <a id="autoid-100" ></a ><a id="LWR-ht-problem:3.{9}"></a><a id="prb:ToroidalDriftEstimate"></a>★★☆ Електрон з&nbsp;енергією
+1&nbsp;кеВ у&nbsp;токамаку з&nbsp;\(R=1\)&nbsp;м, \(B=1\)&nbsp;Тл. Оцініть швидкість тороїдального дрейфу \(v_d\simeq v^2/(\omega _c R)\) і&nbsp;час, за який електрон без обертального перетворення досяг би стінки на відстані
+\(0{,}3\)&nbsp;м. Як цей результат пояснює необхідність полоїдальної складової поля? <a href="ch15.html#LWR-ht-solution:3.{9}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-101"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.10.</span></span> <a id="autoid-102" ></a ><a id="LWR-ht-problem:3.{10}"></a><a id="prb:ECERadius"></a>★★☆ У&nbsp;токамаку \(R_0=1{,}65\)&nbsp;м,
+\(B(R_0)=5\)&nbsp;Тл. На якому радіусі ECE-приймач, налаштований на другу гармоніку \(252\)&nbsp;ГГц, бачить плазму? Куди зсунеться ця точка, якщо \(B(R_0)\) зросте на&nbsp;10&#x202f;&percnt;? <a
+href="ch15.html#LWR-ht-solution:3.{10}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-103"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.11.</span></span> <a id="autoid-104" ></a ><a id="LWR-ht-problem:3.{11}"></a><a id="prb:RetardingAnalyzer"></a>★★☆ Струм колектора гальмівного
+аналізатора спадає в&nbsp;\(e\) разів при зростанні потенціалу сітки на&nbsp;\(20\)&nbsp;В. Знайдіть \(T_i\) однозарядних іонів. <a href="ch15.html#LWR-ht-solution:3.{11}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+
+<a id="autoid-105"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.12.</span></span> <a id="autoid-106" ></a ><a id="LWR-ht-problem:3.{12}"></a><a id="prb:BorisPusher"></a>★★★ <em>Комп’ютерне завдання.</em>
+Проінтегруйте чисельно рівняння руху частинки в&nbsp;полях \(\vect E\) і&nbsp;\(\vect B\) методом Боріса (на кроці \(\Delta t\ll \omega _c^{-1}\) половинне прискорення від \(\vect E\), поворот у&nbsp;\(\vect B\), друге половинне
+прискорення). Перевірте чисельно: (а)&nbsp;\(\vect E\times \vect B\)-дрейф \(v_E=cE/B\) для електрона й&nbsp;протона; (б)&nbsp;градієнтний дрейф у&nbsp;полі \(B(x)=B_0(1+x/L)\) і&nbsp;його знак залежно від заряду;
+(в)&nbsp;збереження \(\mu =mv_\perp ^2/2B\) у&nbsp;пробкотроні.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+
+<div class="cb-questions">
+
+<p>
+<b>Контрольні питання</b>
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Які фізичні величини визначають ларморівський радіус і&nbsp;циклотронну частоту? Чому іони й&nbsp;електрони обертаються в&nbsp;протилежні боки?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Чому дрейф у&nbsp;схрещених \(\vect E\) і&nbsp;\(\vect B\) не залежить від заряду та маси, а&nbsp;градієнтний дрейф залежить?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> Що таке магнітний момент частинки? Чому він є адіабатичним інваріантом? Коли порушується?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">4.</span> Як працює магнітне дзеркало? Що таке конус втрат? Чому зіткнення призводять до «протікання» відкритих пасток?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">5.</span> Чому градієнтний дрейф і&nbsp;дрейф кривизни в&nbsp;вакуумному полі додаються? Від чого залежить напрям дрейфу?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">6.</span> Які три адіабатичні інваріанти характеризують рух у&nbsp;диполі Землі? Як вони співвідносяться за частотами?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">7.</span> Чому за&nbsp;ECE можна локалізувати вимір \(T_e\) у&nbsp;токамаку? Що обмежує метод?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">8.</span> Чому чисто тороїдальне магнітне поле не утримує плазму? Яку роль відіграє полоїдальна складова?
+</p>
+<p>
+
+</p>
+</li>
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>
