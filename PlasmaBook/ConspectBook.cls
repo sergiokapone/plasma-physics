@@ -954,6 +954,8 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 	% Анотація (поле annotation у .bib): з нового рядка, дрібнішим шрифтом, кольором теми книги;
 	% \foreignlanguage: анотація українська, а langid запису може бути англійським
 	\DeclareFieldFormat{annotation}{\par\small\color{themecolormain}\foreignlanguage{ukrainian}{#1}}
+	% Довгі записи (назва + «—» + видавець) інакше дають Overfull у списку літератури
+	\AtBeginBibliography{\emergencystretch=3em}
 	\renewbibmacro*{finentry}{%
 		\finentry
 		\iffieldundef{annotation}{}{\printfield{annotation}}}
