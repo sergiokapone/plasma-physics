@@ -41,7 +41,8 @@ def page_texts(p: Path):
     """Список текстів сторінок (індекс 0 = сторінка 1). Порожні рядки, якщо текстового шару нема."""
     if is_pdf(p):
         with _fitz().open(p) as d:
-            return [pg.get_text() for pg in d]
+            # \x0c усередині тексту сторінки зламав би розбиття кешу по сторінках (зсув номерів)
+            return [pg.get_text().replace('\x0c', ' ') for pg in d]
     raw = subprocess.run([DJVUTXT, str(p)], capture_output=True).stdout.decode('utf-8', errors='replace')
     pages = raw.split('\x0c')
     n = page_count(p)
