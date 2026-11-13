@@ -51,8 +51,8 @@
 			% силові лінії B: ближчі (нижчі) яскравіші й товстіші, дальні блідіші
 			\foreach \s/\e/\o/\w in {0.7/-1.3/0.45/0.3, 0.35/-1.4/0.6/0.4, 0/-1.5/0.75/0.5,
 					-0.35/-1.5/0.9/0.6, -0.7/-1.5/1/0.7} {
-				\draw[Bcol, opacity=\o, line width=\w pt, decoration={markings, mark=at position 0.6 with {\arrow[line width=0.5pt]{Stealth[length=6pt,width=5pt]}}}, postaction={decorate}]
-					(0,{\s*\R}) -- ({\L+\e},{\s*\R});
+				\draw[Bcol, opacity=\o, line width=\w pt, decoration={markings, mark=at position 0.4 with {\arrow[line width=0.5pt]{Stealth[length=6pt,width=5pt]}}}, postaction={decorate}]
+					({\L+\e},{\s*\R}) -- (0,{\s*\R});   % від зрізу до торця: B напрямлене до читача
 			}
 		\end{scope}
 		% контури: твірні, рваний обрив і тонка лінія товщини зрізу
