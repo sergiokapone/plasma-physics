@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
-import re, sys
-sys.path.insert(0, r'D:\Projects\LaTeX\plasma-physics\Presentations2\Basics\video\work')
+import os, re, sys
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
 
-SCRIPT = r'D:\Projects\LaTeX\plasma-physics\Presentations2\Basics\Basics_script.md'
+SCRIPT = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'Basics_script.md')
 
 def norm_words(text):
     text = text.lower().replace('’', "'").replace('ʼ', "'")
     return re.findall(r"[\w'\-]+", text)
+
+def _read_text(block):
+    body = block.split('**Текст для читання:**', 1)[1].split('🖱', 1)[0]
+    lines = [l for l in body.splitlines() if l.strip() and not l.lstrip().startswith('>')]
+    return ' '.join(lines)
 
 def slide_texts():
     src = open(SCRIPT, encoding='utf-8').read()
@@ -17,9 +23,22 @@ def slide_texts():
         n = int(m.group(1))
         if '**Текст для читання:**' not in p:
             continue
-        body = p.split('**Текст для читання:**', 1)[1].split('🖱', 1)[0]
-        lines = [l for l in body.splitlines() if l.strip() and not l.lstrip().startswith('>')]
-        out[n] = ' '.join(lines)
+        out[n] = _read_text(p)
+    return out
+
+def unit_texts():
+    """Одиниці озвучення: '01'…'39', але слайд 18 → '18a'…'18d' (чотири кроки; файли audio/18a.wav…)."""
+    src = open(SCRIPT, encoding='utf-8').read()
+    parts = re.split(r'^## Слайд ', src, flags=re.M)[1:]
+    out = {}
+    for p in parts:
+        n = int(re.match(r'(\d+)', p).group(1))
+        if n == 18:
+            steps = re.split(r'^### Крок ', p, flags=re.M)[1:]
+            for k, st in enumerate(steps):
+                out['18' + 'abcd'[k]] = _read_text(st)
+        elif '**Текст для читання:**' in p:
+            out[f'{n:02d}'] = _read_text(p)
     return out
 
 def phrase_index(words, phrase, start=0):
@@ -30,13 +49,6 @@ def phrase_index(words, phrase, start=0):
     return None
 
 if __name__ == '__main__':
-    from cues import CUES
-    T = slide_texts()
-    for n in range(1, 14):
-        w = norm_words(T[n])
-        last = -1
-        for ph, pts in CUES[n]:
-            i = phrase_index(w, ph, max(last, 0))
-            flag = '' if (i is not None and i >= last) else '  <-- ПРОБЛЕМА'
-            print(n, len(w), ph, i, flag)
-            if i is not None: last = i
+    U = unit_texts()
+    print(len(U), 'одиниць:', ' '.join(U))
+    print('слів усього:', sum(len(norm_words(t)) for t in U.values()))

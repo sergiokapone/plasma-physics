@@ -1,36 +1,31 @@
 # -*- coding: utf-8 -*-
-"""Озвучення слайдів клонованим голосом (OmniVoice k2-fsa, мова uk, CPU).
-Запуск: D:/Programs/Utility/xtts/venv_ov/Scripts/python.exe -X utf8 tts_synth.py 11 12 13
-Результат: work/tts/NN.wav (24 кГц) і work/tts/NN.json (речення, час, word_times — час кожного слова
-сценарію, 1:1 з norm_words). Зразок голосу: work/tts/ref_*.wav (вирізки з audio/, див. make_refs).
+"""Озвучення лекції клонованим голосом автора (OmniVoice k2-fsa, мова uk, GPU).
+Запуск (з папки work):
+  D:/Programs/Utility/omnivoice/venv/Scripts/python.exe -X utf8 tts_synth.py 01 02 18a      # окремі одиниці
+  D:/Programs/Utility/omnivoice/venv/Scripts/python.exe -X utf8 tts_synth.py all            # уся лекція (42 одиниці)
+Результат: work/tts/<ід>.wav (24 кГц, моно) і work/tts/<ід>.json (речення, час, word_times — час початку кожного
+слова сценарію, 1:1 з norm_words). Проміжні файли речень — work/tts/s/<ід>_kk.wav (кеш: наявні не перераховуються).
+Зразок голосу: work/tts/ref_05.wav (14 с із audio/05.wav).
+Параметри середовища: OV_STEPS (за замовч. 32), OV_DTYPE (float16|float32).
 """
-import os, sys, re, json, wave, subprocess
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-os.environ.setdefault('HF_HOME', 'D:/Programs/Utility/xtts/hf_cache')  # кеш моделей на D (портабельність)
-from scriptparse import slide_texts, norm_words
+import os, sys, re, json, wave, time
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+os.environ.setdefault('HF_HOME', 'D:/Programs/Utility/omnivoice/hf_cache')   # кеш моделей поруч із venv (портабельно)
+from scriptparse import unit_texts, norm_words
 
-WORK = os.path.dirname(os.path.abspath(__file__))
-BASE = os.path.dirname(os.path.dirname(WORK))
-OUT = os.path.join(WORK, 'tts')
+OUT = os.path.join(HERE, 'tts')
+SENT = os.path.join(OUT, 's')
+REF = os.path.join(OUT, 'ref_05.wav')
 GAP = 0.40     # пауза між реченнями, с
-LEAD = 0.50    # тиша на початку слайда, с
-
-def make_refs():
-    """3 вирізки по 14 с із різних слайдів: нормалізовані, моно, 24 кГц."""
-    refs = []
-    for name, ss in (('05', 4), ('09', 6), ('12', 8)):
-        dst = os.path.join(OUT, f'ref_{name}.wav')
-        if not os.path.exists(dst):
-            subprocess.run(['ffmpeg', '-y', '-v', 'error', '-ss', str(ss), '-t', '14', '-i', os.path.join(BASE, 'audio', f'{name}.wav'),
-                            '-af', 'loudnorm=I=-18:TP=-2', '-ar', '24000', '-ac', '1', dst], check=True)
-        refs.append(dst)
-    return refs
+LEAD = 0.50    # тиша на початку, с
+STEPS = int(os.environ.get('OV_STEPS', '32'))
 
 def split_sentences(text):
     sents = re.split(r'(?<=[.!?…])\s+', text.strip())
     out = []
     for s in sents:
-        while len(s) > 230:  # XTTS краще на коротких фрагментах
+        while len(s) > 230:   # довгі речення краще на коротких фрагментах
             cut = max(s.rfind(', ', 0, 230), s.rfind('; ', 0, 230), s.rfind(': ', 0, 230), s.rfind(' — ', 0, 230))
             if cut < 80:
                 cut = s.rfind(' ', 0, 230)
@@ -41,52 +36,53 @@ def split_sentences(text):
     return out
 
 def clean(s):
-    return s.replace('*', '').replace('«', '').replace('»', '').replace('—', ' - ')
+    s = s.replace('*', '').replace('«', '').replace('»', '').replace('—', ' - ').replace('↔', ' і навпаки ')
+    return re.sub(r'\s+', ' ', s).strip()
 
-def main(slides):
-    os.makedirs(OUT, exist_ok=True)
-    refs = make_refs()
+def main(units):
     import torch, soundfile as sf
     from omnivoice import OmniVoice
-    model = OmniVoice.from_pretrained('k2-fsa/OmniVoice', device_map='cpu', dtype=torch.float32)
-    texts = slide_texts()
-    for sl in slides:
-        sents = split_sentences(texts[sl])
-        frames, t, sent_info, word_times = [], LEAD, [], []
-        params = None
-        pieces = [(b'', LEAD)]
-        wavs = []
+    os.makedirs(SENT, exist_ok=True)
+    dtype = torch.float16 if os.environ.get('OV_DTYPE', 'float16') == 'float16' else torch.float32
+    t0 = time.time()
+    model = OmniVoice.from_pretrained('k2-fsa/OmniVoice', device_map='cuda:0', dtype=dtype)
+    prompt = model.create_voice_clone_prompt(ref_audio=REF)
+    print(f'model+prompt {time.time() - t0:.1f} s, steps={STEPS}, dtype={dtype}', flush=True)
+    texts = unit_texts()
+    if units == ['all']:
+        units = list(texts)
+    for u in units:
+        tu = time.time()
+        sents = split_sentences(texts[u])
+        files = []
         for k, s in enumerate(sents):
-            f = os.path.join(OUT, f'{sl:02d}_{k:02d}.wav')
+            f = os.path.join(SENT, f'{u}_{k:02d}.wav')
             if not os.path.exists(f):
-                out = model.generate(text=clean(s), ref_audio=refs[0], language='uk')
+                torch.manual_seed(1000 + k)
+                out = model.generate(text=clean(s), voice_clone_prompt=prompt, language='uk', num_step=STEPS)
                 sf.write(f, out[0], 24000, subtype='PCM_16')
-                print('slide', sl, 'sentence', k + 1, '/', len(sents), flush=True)
-            wavs.append(f)
-        out_path = os.path.join(OUT, f'{sl:02d}.wav')
-        with wave.open(out_path, 'wb') as out:
-            for k, (s, f) in enumerate(zip(sents, wavs)):
+            files.append(f)
+        rate = 24000
+        t, info, word_times = LEAD, [], []
+        with wave.open(os.path.join(OUT, f'{u}.wav'), 'wb') as o:
+            o.setnchannels(1); o.setsampwidth(2); o.setframerate(rate)
+            o.writeframes(b'\x00' * int(LEAD * rate) * 2)
+            for s, f in zip(sents, files):
                 with wave.open(f) as w:
-                    if k == 0:
-                        out.setnchannels(w.getnchannels()); out.setsampwidth(w.getsampwidth()); out.setframerate(w.getframerate())
-                        rate, width = w.getframerate(), w.getsampwidth()
-                        out.writeframes(b'\x00' * int(LEAD * rate) * width)
-                    data = w.readframes(w.getnframes())
-                    d = w.getnframes() / w.getframerate()
-                out.writeframes(data)
-                out.writeframes(b'\x00' * int(GAP * rate) * width)
+                    assert w.getframerate() == rate and w.getnchannels() == 1
+                    data = w.readframes(w.getnframes()); d = w.getnframes() / rate
+                o.writeframes(data)
+                o.writeframes(b'\x00' * int(GAP * rate) * 2)
                 words = norm_words(s)
                 lens = [len(x) + 1 for x in words]
-                tot = float(sum(lens))
-                acc = 0
-                for x, ln in zip(words, lens):
-                    word_times.append(round(t + d * acc / tot, 3))
-                    acc += ln
-                sent_info.append({'text': s, 'start': round(t, 3), 'dur': round(d, 3)})
+                tot, acc = float(sum(lens)), 0
+                for ln in lens:
+                    word_times.append(round(t + d * acc / tot, 3)); acc += ln
+                info.append({'text': s, 'start': round(t, 3), 'dur': round(d, 3)})
                 t += d + GAP
-        json.dump({'sentences': sent_info, 'word_times': word_times, 'total': round(t, 3)},
-                  open(os.path.join(OUT, f'{sl:02d}.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-        print('slide', sl, 'done', round(t, 1), 's', flush=True)
+        json.dump({'sentences': info, 'word_times': word_times, 'total': round(t, 3)},
+                  open(os.path.join(OUT, f'{u}.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        print(f'{u}: {len(sents)} реч., {t:.1f} с звуку, обчислення {time.time() - tu:.1f} с', flush=True)
 
 if __name__ == '__main__':
-    main([int(a) for a in sys.argv[1:]])
+    main(sys.argv[1:] or ['all'])
