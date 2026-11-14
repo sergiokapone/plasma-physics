@@ -1,0 +1,15 @@
+\providecommand{\midarrow}{\tikz \draw[-latex] (0,0) -- +(.1,0);}
+\begin{tikzpicture}[scale=0.62]
+	\pgfmathsetseed{3}
+	\foreach \x in {1,...,4} {
+		\foreach \y in {1,...,3} {
+			\node[circle, ball color=gray, inner sep=2.5pt] (a\x-\y) at ({1.4*\x+rnd}, {1.2*\y+0.5*rnd}) {};
+		}
+	}
+	\draw[very thick] (-0.5, 2.6) -- node[sloped] {\midarrow} (a1-1.north)
+	-- node[sloped] {\midarrow} (a2-3.south)
+	-- node[sloped, below=1pt] {$\ell$} node[sloped] {\midarrow} (a3-2.north)
+	-- node[sloped] {\midarrow} (a4-3.south)
+	-- node[sloped] {\midarrow} ++(-30:3);
+	\fill (-0.5, 2.6) circle (2pt);
+\end{tikzpicture}

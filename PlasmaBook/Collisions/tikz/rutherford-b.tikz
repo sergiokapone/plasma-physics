@@ -1,0 +1,22 @@
+% згенеровано gen2.py: розсіяння електрона на іоні, прицільна відстань b, b90 і кільце [b, b+db]
+\begin{tikzpicture}[scale=0.8, >=latex]
+  \tikzset{ion/.style={circle,ball color=blue!70,inner sep=0pt,minimum size=11pt,text=white,font=\small}}
+  \fill[even odd rule, orange!35] (0,0) circle (3.15) circle (2.8);
+  \draw[orange!70!black, thin] (0,0) circle (2.8);
+  \draw[orange!70!black, thin] (0,0) circle (3.15);
+  \draw[gray, dashed] (0,0) circle (1);
+  \draw[gray, dashed] (-5,2.8) -- (5.6,2.8);
+  \draw[gray, dashed] (-5,-1) -- (-0.0,-1);
+  \draw[very thick, postaction={decorate, decoration={markings, mark=at position 0.2 with {\arrow{latex}}}}] plot[smooth] coordinates {(-4.97,2.73) (-4.44,2.71) (-3.90,2.68) (-3.36,2.65) (-2.81,2.62) (-2.25,2.57) (-1.67,2.51) (-1.08,2.42) (-0.47,2.31) (0.14,2.16) (0.75,1.95) (1.34,1.70) (1.90,1.41) (2.42,1.10) (2.92,0.77) (3.39,0.43) (3.85,0.10) (4.29,-0.24) (4.71,-0.58) (5.13,-0.92)};
+  \draw[very thick, postaction={decorate, decoration={markings, mark=at position 0.2 with {\arrow{latex}}}}] plot[smooth] coordinates {(-4.93,-0.97) (-4.48,-0.96) (-4.03,-0.95) (-3.57,-0.94) (-3.09,-0.93) (-2.60,-0.91) (-2.09,-0.89) (-1.55,-0.85) (-0.97,-0.78) (-0.30,-0.64) (0.41,-0.16) (0.66,0.60) (0.71,1.24) (0.72,1.81)};
+  \node[ion] at (0,0) {+};
+  \draw[<->] (0,0.35) -- node[right] {$b$} (0,2.78);
+  \draw[<->] (0,-0.3) -- (0,-0.98);
+  \node[anchor=west] at (0.1,-1.3) {$b_{90}$};
+  \draw[gray, dashed] (5.13,-0.92) -- +(1.3,0);
+  \draw[gray] (5.13,-0.92) ++(1.0,0) arc (0:-39.3:1.0);
+  \node[gray] at (6.55,-1.37) {$\theta$};
+  \node[orange!60!black, font=\small, anchor=west] at (1.9,3.6) {кільце $[b,\,b+db]$};
+  \node[font=\small] at (-3.4,-1.6) {$b=b_{90}$: $\theta\sim\pi/2$};
+  \node[font=\small] at (-3.4,3.25) {$b\gg b_{90}$: $\theta\approx2b_{90}/b$};
+\end{tikzpicture}

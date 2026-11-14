@@ -9,7 +9,7 @@
 
 \section{Таблиця позначень}\label{sec:notation}\hypertarget{app-notation}{}
 
-Нижче зібрано позначення, що вживаються в~розд.~\ref{sec:plasma-basics}, \ref{sec:plasma-waves} і~\ref{sec:mhd-waves}, у~порядку
+Нижче зібрано позначення, що вживаються в~розд.~\ref{sec:plasma-basics}, \ref{sec:plasma-waves}, \ref{sec:mhd-waves} і~\ref{sec:plasma-collisions}, у~порядку
 їхнього введення. Усі формули подано в~системі СГС (гаусовій), як у~розд.~\ref{sec:plasma-basics}; температури $T$
 (у~тому числі $T_e$, $T_i$) записано в~енергетичних одиницях, $k_{\mathrm B}=1$, а~числові значення дають
 в~електронвольтах: $1~\text{еВ}\approx1{,}16\times10^{4}$~К. Одиниці СГС потенціалу й~поля відповідають
@@ -155,9 +155,36 @@ $R_c$ & радіус кривизни силової лінії; сила нат
 $\gamma_\perp$ & ефективний показник адіабати при стисканні поперек $\vect B$ ($=2$) & --- & розд.~\ref{sec:mhd} \\
 $n_c$ & кількість витків на~одиницю довжини пояса Роговського & см$^{-1}$ & розд.~\ref{sec:mhd} \\
 \end{longtblr}
+
+\par\Needspace{7\baselineskip}\medskip\noindent\textbf{Зіткнення, провідність і перенос (розд.~\ref{sec:plasma-collisions})}\par\nobreak\smallskip
+\noindent\begin{longtblr}{colspec={X[0.9,c,m]X[3.4,l,m]X[1.5,c,m]X[1.5,c,m]}}
+Символ & Значення & Одиниця (СГС) & Де \\
+$\sigma_{\mathrm{зіт}}$ & переріз зіткнення в~газі (літеру $\sigma$ без індексу зарезервовано для провідності) & см$^{2}$ & розд.~\ref{sec:plasma-collisions} \\
+$v_T$, $\tau$, $\ell$ & теплова швидкість; час між зіткненнями $\tau=1/(nv_T\sigma_{\mathrm{зіт}})$; довжина вільного пробігу $\ell=v_T\tau$ & см/с; с; см & розд.~\ref{sec:plasma-collisions} \\
+$D$, $\eta$, $\kappa$ & коефіцієнти дифузії, в'язкості й~теплопровідності в~газі (за порядком величини $D\sim v_T^2\tau$, $\eta\sim nT\tau$, $\kappa\sim nT\tau/m$) & см$^{2}/$с; --- ; --- & розд.~\ref{sec:plasma-collisions} \\
+$b$, $b_{90}$ & прицільна відстань; $b_{90}=e^2/m_ev^2\sim e^2/T$~--- відстань, при якій електрон відхиляється на~$\sim\pi/2$ & см & рис.~\ref{fig:rutherford} \\
+$\theta$ & кут розсіяння на~одному іоні, $\operatorname{tg}(\theta/2)=b_{90}/b$ & рад & рис.~\ref{fig:rutherford} \\
+$\ln\Lambda$ & кулонівський логарифм $\ln(\lambda_D/b_{90})\sim\ln N_D$ & --- & табл.~\ref{tab:coulomb-log} \\
+$\nu_{ei}$, $\nu_{ee}$, $\nu_{ii}$ & частоти електрон-іонних, електрон-електронних, іон-іонних зіткнень; $\nu\equiv\nu_{ei}=1/\tau_e$ & с$^{-1}$ & \eqref{eq:nu-ei} \\
+$\tau_e$ & час між електрон-іонними зіткненнями $1/\nu_{ei}$ & с & \eqref{eq:nu-ei} \\
+$\lambda_{\mathrm{пр}}$ & довжина вільного пробігу $v_T/\nu$ ($=\ell$; у~розд.~\ref{sec:plasma-basics} її позначено $\lambda_{\mathrm{fp}}$) & см & \eqref{eq:collisionless} \\
+$\nu_{en}$, $\sigma_{en}$ & частота й~переріз зіткнень електрона з~нейтральним атомом, $\nu_{en}=n_n\sigma_{en}v_{Te}$ & с$^{-1}$; см$^{2}$ & розд.~\ref{sec:plasma-collisions} \\
+$\sigma_0$, $\sigma(\omega)$ & провідність у~сталому полі $n_ee^2/m_e\nu$; частотна провідність $\sigma_0/(1-i\omega/\nu)$ & с$^{-1}$ & \eqref{eq:drude} \\
+$\sigma_\parallel$, $\sigma_\perp$ & провідність вздовж і~поперек $\vect B$ (за Спітцером $\sigma_\parallel\approx1{,}96\,n_ee^2/m_e\nu_{ei}\propto T_e^{3/2}/\ln\Lambda$) & с$^{-1}$ & \eqref{eq:spitzer} \\
+$\eta_\parallel$, $\eta_\perp$ & питомий опір вздовж і~поперек $\vect B$ ($\eta_\perp\approx2\eta_\parallel$ у~повністю іонізованій плазмі) & с & розд.~\ref{sec:plasma-collisions} \\
+$Z_{\mathrm{eff}}$ & ефективний заряд іонів (збільшує опір) & --- & §\,\ref{sec:collision-diagnostics}\,(с.\,\pageref{sec:collision-diagnostics}) \\
+$\vect j$, $q$ & густина струму; питома потужність джоулевих втрат $\tfrac12\operatorname{Re}\sigma E_0^2$ & СГСЕ$/($см$^{2}\cdot$с$)$; ерг$/($см$^{3}\cdot$с$)$ & \eqref{eq:drude} \\
+$E_D$, $v_c$ & поле Драйсера $4\pi e^3n\ln\Lambda/T_e$; критична швидкість втікання $v_{Te}\sqrt{E_D/E}$ & СГС (поле); см/с & \eqref{eq:dreicer} \\
+$\kappa_e$, $\kappa_\parallel$, $\kappa_\perp$ & теплопровідність електронів; вздовж і~поперек $\vect B$, $\kappa_\perp\sim\kappa_\parallel(\nu/\omega_c)^2$ & см$^{-1}\cdot$с$^{-1}$ ($T$ в~енергетичних одиницях) & розд.~\ref{sec:plasma-collisions} \\
+$D_s$, $\mu_s$ & коефіцієнт дифузії й~рухливість сорту $s$, $D_s=\mu_sT_s/e$ (співвідношення Ейнштейна) & см$^{2}/$с; СГС (рухливість) & §\,\ref{sec:ambipolar}\,(с.\,\pageref{sec:ambipolar}) \\
+$D_a$ & амбіполярний коефіцієнт дифузії $\approx D_i(1+T_e/T_i)$ & см$^{2}/$с & \eqref{eq:ambipolar} \\
+$D_\perp$, $D_\parallel$, $D_{a\perp}$ & коефіцієнти дифузії поперек і~вздовж $\vect B$, $D_\perp\sim r_L^2\nu$; амбіполярний поперек $\vect B$ & см$^{2}/$с & §\,\ref{sec:ambipolar}\,(с.\,\pageref{sec:ambipolar}) \\
+$D_B$ & бомівська дифузія $cT/16eB$ & см$^{2}/$с & §\,\ref{sec:ambipolar}\,(с.\,\pageref{sec:ambipolar}) \\
+$M$, $\lambda_0$, $\Delta\lambda$ & маса іона; довжина хвилі лінії; повна ширина лінії на~половині висоти (допплерівська $\Delta\lambda/\lambda_0=\sqrt{8\ln2\,T_i/Mc^2}$) & г; нм; нм & \eqref{eq:doppler-width} \\
+\end{longtblr}
 }
 
-\paragraph{Символи з кількома значеннями.} У~розд.~\ref{sec:plasma-basics} і~\ref{sec:mhd-waves} деякі літери означають різні величини;
+\paragraph{Символи з кількома значеннями.} У~розд.~\ref{sec:plasma-basics}, \ref{sec:mhd-waves} і~\ref{sec:plasma-collisions} деякі літери означають різні величини;
 значення визначається контекстом та індексами.
 \begin{itemize}
 	\item $I$~--- енергія іонізації (\S\,\ref{sec:saha}) і~струм на зонд (\S\,\ref{sec:bohm-sheath});
@@ -173,6 +200,12 @@ $n_c$ & кількість витків на~одиницю довжини по�
 	\item $S$~--- площа зонда (розд.~\ref{sec:plasma-basics}) і~елемент тензора Стікса (розд.~\ref{sec:mhd-waves});
 	\item $\lambda$~--- довжина екранування (розд.~\ref{sec:plasma-basics}) і~довжина хвилі в~обертанні Фарадея (розд.~\ref{sec:mhd-waves});
 	\item $c_s$~--- $\sqrt{T_e/m_i}$ у~розд.~\ref{sec:plasma-basics} (межа $T_i\ll T_e$) і~загальна швидкість звуку в~розд.~\ref{sec:mhd-waves};
-	\item $\rho_m$~--- масова густина (розд.~\ref{sec:mhd-waves}), на~відміну від густини заряду $\rho$.
+	\item $\rho_m$~--- масова густина (розд.~\ref{sec:mhd-waves}), на~відміну від густини заряду $\rho$;
+	\item $\sigma$ без індексу~--- провідність (розд.~\ref{sec:mhd}, \ref{sec:plasma-collisions}) і~поверхнева густина заряду (\S\,\ref{sec:debye-layer}); переріз зіткнення позначено $\sigma_{\mathrm{зіт}}$, $\sigma_{en}$;
+	\item $\eta$~--- питомий опір $1/\sigma$ (розд.~\ref{sec:mhd}, \ref{sec:plasma-collisions}); у~вступі розд.~\ref{sec:plasma-collisions} за~порядком величини $\eta\sim nT\tau$~--- в'язкість газу;
+	\item $\theta$~--- кут між $\vect k$ і~$\vect B_0$ (розд.~\ref{sec:mhd-waves}) і~кут розсіяння на~іоні (розд.~\ref{sec:plasma-collisions});
+	\item $\mu$~--- хімічний потенціал (\S\,\ref{sec:saha}) і~рухливість $\mu_s$ (розд.~\ref{sec:plasma-collisions});
+	\item $q$~--- пробний заряд (розд.~\ref{sec:plasma-basics}) і~питома потужність джоулевих втрат (розд.~\ref{sec:plasma-collisions});
+	\item $\nu$ без індексу~--- частота зіткнень електрона з~іонами $\nu_{ei}$; магнітну в'язкість позначено $\nu_m$.
 \end{itemize}
 
