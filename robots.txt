@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sergiokapone.github.io/plasma-physics/sitemap.xml
