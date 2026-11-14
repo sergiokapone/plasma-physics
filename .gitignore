@@ -49,3 +49,8 @@ Presentations2/**/video/work/aud/
 Presentations2/**/video/work/all.wav
 Presentations2/**/video/work/frames/
 Presentations2/**/video/work/dbg/
+
+Presentations2/**/video/work/tts/
+Presentations2/**/video/work/aud_tts/
+Presentations2/**/video/work/all_tts.wav
+Presentations2/**/video/*.mp4

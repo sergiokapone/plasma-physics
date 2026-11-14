@@ -13,24 +13,29 @@ from scriptparse import slide_texts, norm_words, phrase_index
 BASE = r'D:\Projects\LaTeX\plasma-physics\Presentations2\Basics'
 WORK = os.path.join(BASE, 'video', 'work')
 W, H, FPS = 1280, 960, 25
+TTS = False  # True: аудіо й час слів із work/tts/ (синтез голосу)
 REF_W, REF_H = 503.0, 378.0
 SX, SY = W / REF_W, H / REF_H
 
-def render_pages(n):
+def render_pages(slides):
     d = fitz.open(os.path.join(BASE, 'Basics.pdf'))
     m = fitz.Matrix(W / d[0].rect.width, H / d[0].rect.height)
     out = {}
-    for i in range(n):
-        pix = d[i].get_pixmap(matrix=m, alpha=False)
-        out[i + 1] = Image.frombytes('RGB', (pix.width, pix.height), pix.samples).resize((W, H))
+    for s in slides:
+        pix = d[s - 1].get_pixmap(matrix=m, alpha=False)
+        out[s] = Image.frombytes('RGB', (pix.width, pix.height), pix.samples).resize((W, H))
     return out
 
 def cue_times(slide):
     """список (час, [точки]) для слайда."""
     T = slide_texts()[slide]
     sw = norm_words(T)
-    tr = json.load(open(os.path.join(WORK, 'tr', f'{slide:02d}.json'), encoding='utf-8'))['transcription']
-    ww = [seg['offsets']['from'] / 1000.0 for seg in tr if any(c.isalnum() for c in seg['text'])]
+    if TTS:
+        ww = json.load(open(os.path.join(WORK, 'tts', f'{slide:02d}.json'), encoding='utf-8'))['word_times']
+        assert len(ww) == len(sw), (slide, len(ww), len(sw))
+    else:
+        tr = json.load(open(os.path.join(WORK, 'tr', f'{slide:02d}.json'), encoding='utf-8'))['transcription']
+        ww = [seg['offsets']['from'] / 1000.0 for seg in tr if any(c.isalnum() for c in seg['text'])]
     res, last = [], 0
     for ph, pts in CUES[slide]:
         i = phrase_index(sw, ph, last)
@@ -86,12 +91,13 @@ def make_cursor():
     d.line(poly + [poly[0]], fill=(255, 255, 255, 255), width=S)
     return im.resize((sz, sz), Image.LANCZOS), (24, 24)
 
-def prep_audio(n):
-    os.makedirs(os.path.join(WORK, 'aud'), exist_ok=True)
+def prep_audio(slides):
+    adir = 'aud_tts' if TTS else 'aud'
+    os.makedirs(os.path.join(WORK, adir), exist_ok=True)
     durs = {}
-    for i in range(1, n + 1):
-        src = os.path.join(BASE, 'audio', f'{i:02d}.wav')
-        dst = os.path.join(WORK, 'aud', f'{i:02d}.wav')
+    for i in slides:
+        src = os.path.join(WORK, 'tts', f'{i:02d}.wav') if TTS else os.path.join(BASE, 'audio', f'{i:02d}.wav')
+        dst = os.path.join(WORK, adir, f'{i:02d}.wav')
         if not os.path.exists(dst):
             af = ('areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.3,areverse,'
                   'loudnorm=I=-16:TP=-1.5:LRA=11,apad=pad_dur=0.9')
@@ -100,11 +106,11 @@ def prep_audio(n):
             durs[i] = w.getnframes() / w.getframerate()
     return durs
 
-def concat_audio(n, path):
+def concat_audio(slides, path):
     with wave.open(path, 'wb') as out:
         out.setnchannels(1); out.setsampwidth(2); out.setframerate(48000)
-        for i in range(1, n + 1):
-            with wave.open(os.path.join(WORK, 'aud', f'{i:02d}.wav')) as w:
+        for i in slides:
+            with wave.open(os.path.join(WORK, 'aud_tts' if TTS else 'aud', f'{i:02d}.wav')) as w:
                 out.writeframes(w.readframes(w.getnframes()))
 
 def debug(n):
@@ -129,17 +135,17 @@ def debug(n):
             sheet.paste(t, ((idx % cols) * 640, (idx // cols) * 480))
         sheet.save(os.path.join(WORK, 'dbg', f'sheet{g + 1}.png'))
 
-def build(n, out):
-    pages = render_pages(n)
-    durs = prep_audio(n)
-    audio = os.path.join(WORK, 'all.wav')
-    concat_audio(n, audio)
+def build(slides, out):
+    pages = render_pages(slides)
+    durs = prep_audio(slides)
+    audio = os.path.join(WORK, 'all_tts.wav' if TTS else 'all.wav')
+    concat_audio(slides, audio)
     cur, (hx, hy) = make_cursor()
     ff = subprocess.Popen(['ffmpeg', '-y', '-v', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS),
                            '-i', '-', '-i', audio, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p',
                            '-c:a', 'aac', '-b:a', '160k', '-shortest', out], stdin=subprocess.PIPE)
     pos = (W * 0.55, H * 0.95)
-    for s in range(1, n + 1):
+    for s in slides:
         dur = durs[s]
         kf = keyframes(s, pos, dur)
         nf = int(round(dur * FPS))
@@ -156,8 +162,13 @@ def build(n, out):
 
 if __name__ == '__main__':
     mode = sys.argv[1]
-    n = int(sys.argv[2]) if len(sys.argv) > 2 else 13
+    args = [a for a in sys.argv[2:] if not a.startswith('--')]
+    TTS = '--tts' in sys.argv
     if mode == 'debug':
-        debug(n)
+        debug(int(args[0]) if args else 13)
     else:
-        build(n, os.path.join(BASE, 'video', f'Basics_1-{n}.mp4'))
+        # build N  -> слайди 1..N;  build A-B -> слайди A..B
+        a = args[0] if args else '13'
+        lo, hi = (int(x) for x in a.split('-')) if '-' in a else (1, int(a))
+        name = f'Basics_{lo}-{hi}' + ('_tts' if TTS else '') + '.mp4'
+        build(list(range(lo, hi + 1)), os.path.join(BASE, 'video', name))
