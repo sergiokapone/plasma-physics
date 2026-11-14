@@ -41,3 +41,11 @@ PlasmaBook/lateximage*
 PlasmaBook/ConspectBookHTML.cls
 PlasmaBook/build-error.txt
 PlasmaBook/html/_test/
+
+# Presentations2: озвучення, відео та проміжні файли збірки відео не в git
+Presentations2/**/audio/
+Presentations2/**/video/*.mp4
+Presentations2/**/video/work/aud/
+Presentations2/**/video/work/all.wav
+Presentations2/**/video/work/frames/
+Presentations2/**/video/work/dbg/
