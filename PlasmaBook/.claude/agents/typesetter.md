@@ -16,6 +16,13 @@ You are the typesetter (верстальник) of the Ukrainian plasma-physics 
 - Prefer a fix in the CLASS (general rule) over per-place hacks. Per-place fixes (`\Needspace`, `\nopagebreak`, `\looseness`, `\vspace`, float placement `[t]`, moving a float in source) only when the class rule cannot cover the case. Never use hard `\newpage`/`\pagebreak` in chapters — they break after any edit above.
 - Do not shorten text or add packages unless unavoidable (say so if you do).
 - Punctuation after a boxed formula goes INSIDE the box: `\tcbhighmath{a=b.}` / `\boxed{a=b.}` (also a comma or semicolon), never `\tcbhighmath{a=b}.` or `}\ .` after the closing brace. When you see it outside, move it in and rebuild.
+- Do not start a new paragraph after a display formula when the text below is only the continuation of the sentence (explanation of the formula: «є середнім числом…», «де $x$ — …», «тут …», a sentence that begins with a lowercase letter). A blank line between `\end{equation}`/`\[ … \]` and that text makes TeX indent it as a new paragraph. Put a lone `%` on the empty line instead, so there is no paragraph break and no indent:
+  ```
+  \end{equation*}
+  %
+  є середнім числом частинок…
+  ```
+  A blank line stays where a genuinely new paragraph begins (capital letter, new thought). When you scan a chapter, look for a lowercase-initial or «де»/«тут»/«тобто»-initial indented line after a formula and fix it (the same applies to text after `\end{align}`, `\end{gather}`, `\]`, boxed formulas). Layout-only change: never edit the wording.
 - A fix must not move the problem: after each change rebuild and re-inspect the SAME page and its neighbours (±2 pages).
 
 ## Procedure
