@@ -1,0 +1,72 @@
+% Рис.: об'єм плазми, заповнений дебаївськими сферами.
+% (а) N_D >> 1: сфери густо перекриваються -> суцільне колективне середовище;
+% (б) сфери менші за міжчастинкову відстань -> окремі частинки, важливі парні зіткнення.
+\begin{tikzpicture}[
+		ion/.style={circle, fill=blue!70, inner sep=0pt, minimum size=3.6pt},
+		el/.style={circle, fill=red!75, inner sep=0pt, minimum size=3.6pt},
+		lab/.style={font=\footnotesize, anchor=north},
+	]
+	\def\R{1.0}
+	\def\W{2.5}
+	\def\H{1.7}
+	%% ---------- (а) густо: сфери зливаються ----------
+	\begin{scope}
+		\def\sp{0.46}
+		\begin{scope}
+			\clip (-\W,-\H) rectangle (\W,\H);
+			\pgfmathsetseed{11}
+			\foreach \ix in {-8,...,8}{
+				\foreach \iy in {-6,...,6}{
+					\pgfmathsetmacro{\px}{\ix*\sp+(rnd-0.5)*0.7*\sp}
+					\pgfmathsetmacro{\py}{\iy*\sp+(rnd-0.5)*0.7*\sp}
+					\fill[blue!55, opacity=0.045] (\px,\py) circle(\R);
+				}
+			}
+		\end{scope}
+		\draw[thick] (-\W,-\H) rectangle (\W,\H);
+		\pgfmathsetseed{11}
+		\foreach \ix in {-8,...,8}{
+			\foreach \iy in {-6,...,6}{
+				\pgfmathsetmacro{\px}{\ix*\sp+(rnd-0.5)*0.7*\sp}
+				\pgfmathsetmacro{\py}{\iy*\sp+(rnd-0.5)*0.7*\sp}
+				\ifdim\px cm<\W cm \ifdim\px cm>-\W cm \ifdim\py cm<\H cm \ifdim\py cm>-\H cm
+					\pgfmathtruncatemacro{\sgn}{mod(\ix+\iy+20,2)}
+					\ifnum\sgn=0 \node[el] at (\px,\py) {}; \else \node[ion] at (\px,\py) {}; \fi
+				\fi\fi\fi\fi
+			}
+		}
+		% одна виділена сфера
+		\draw[very thick, black!75, dashed] (0.1,0) circle(\R);
+		\draw[<->, thick] (0.1,0)--(-40:\R) node[midway, below, font=\footnotesize, xshift=2pt] {$\lambda_D$};
+		\node[lab] at (0,-\H-0.15) {\textbf{(а)} $\lambda_D\gg a$};
+	\end{scope}
+	%% ---------- (б) рідко: сфери окремі ----------
+	\begin{scope}[xshift=6.2cm]
+		\def\sp{2.0}
+		\begin{scope}
+			\clip (-\W,-\H) rectangle (\W,\H);
+			\pgfmathsetseed{5}
+			\foreach \ix in {-3,...,3}{
+				\foreach \iy in {-2,...,2}{
+					\pgfmathsetmacro{\px}{\ix*\sp+(rnd-0.5)*0.35*\sp}
+					\pgfmathsetmacro{\py}{\iy*\sp+(rnd-0.5)*0.35*\sp}
+					\fill[blue!55, opacity=0.07] (\px,\py) circle(\R);
+					\draw[blue!55!black, thin, dashed] (\px,\py) circle(\R);
+				}
+			}
+		\end{scope}
+		\draw[thick] (-\W,-\H) rectangle (\W,\H);
+		\pgfmathsetseed{5}
+		\foreach \ix in {-3,...,3}{
+			\foreach \iy in {-2,...,2}{
+				\pgfmathsetmacro{\px}{\ix*\sp+(rnd-0.5)*0.35*\sp}
+				\pgfmathsetmacro{\py}{\iy*\sp+(rnd-0.5)*0.35*\sp}
+				\ifdim\px cm<\W cm \ifdim\px cm>-\W cm \ifdim\py cm<\H cm \ifdim\py cm>-\H cm
+					\pgfmathtruncatemacro{\sgn}{mod(\ix+\iy+20,2)}
+					\ifnum\sgn=0 \node[el] at (\px,\py) {}; \else \node[ion] at (\px,\py) {}; \fi
+				\fi\fi\fi\fi
+			}
+		}
+		\node[lab] at (0,-\H-0.15) {\textbf{(б)} $\lambda_D\lesssim a$};
+	\end{scope}
+\end{tikzpicture}

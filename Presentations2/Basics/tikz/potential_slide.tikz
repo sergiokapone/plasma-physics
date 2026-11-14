@@ -1,0 +1,19 @@
+% Версія рис. потенціалу для слайда: r у одиницях lambda_D, підписи без налізання.
+\begin{tikzpicture}
+	\begin{axis}[
+		width=6.2cm, height=5.6cm,
+		axis lines=middle, clip=false,
+		xmin=0, xmax=3.6, ymin=0, ymax=5,
+		xtick={1,2,3}, xticklabels={$\lambda_D$,$2\lambda_D$,$3\lambda_D$},
+		ytick=\empty,
+		xlabel={$r$}, ylabel={$\varphi$},
+		every axis x label/.style={at={(current axis.right of origin)},anchor=west},
+		every axis y label/.style={at={(current axis.north west)},above=1mm},
+		]
+		\addplot[red!70!black, dashed, thick, domain=0.2:3.4, samples=100] {1/x};
+		\addplot[blue!70!black, thick, domain=0.2:3.4, samples=200] {exp(-x)/x};
+		\node[red!70!black, anchor=west] at (axis cs:0.75,4.3) {$\dfrac qr$ (вакуум)};
+		\node[blue!70!black, anchor=west] at (axis cs:1.25,2.0) {$\dfrac qr\,e^{-r/\lambda_D}$};
+		\fill[red, opacity=0.4] (axis cs:0,0) circle (3pt);
+	\end{axis}
+\end{tikzpicture}

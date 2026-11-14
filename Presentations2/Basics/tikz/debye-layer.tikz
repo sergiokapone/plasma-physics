@@ -1,0 +1,69 @@
+% Шар біля зарядженої площини при e*phi_0 = 3T: (а) заряди, (б) густина заряду, (в) потенціал.
+% Спільна вісь x у одиницях lambda_D (1 lambda_D = 1.6 см).
+\begin{tikzpicture}[>=latex, font=\small,
+		ions/.style={circle, ball color=blue!50, inner sep=1.5pt, blue},
+		electrons/.style={circle, ball color=red, inner sep=1.5pt, red}]
+	\def\L{1.6}   % см на lambda_D
+	\def\W{4.2}   % ширина області, у lambda_D
+	% ---------- (а) заряди ----------
+	\begin{scope}[shift={(0,6.5)}]
+		\node[anchor=north east, font=\footnotesize] at (-0.7,1.9) {(а)};
+		\fill[pattern=north east lines, pattern color=gray] (-0.6,-0.1) rectangle (0,1.9);
+		\draw[thick] (0,-0.1) -- (0,1.9);
+		\foreach \y in {0.1,0.45,0.8,1.15,1.5} {
+			\node[font=\footnotesize, anchor=east] at (-0.08,\y+0.1) {$+$};
+		}
+		\node[above, align=center, font=\footnotesize] at (-0.3,1.95) {стінка, $\sigma>0$};
+		\pgfmathsetseed{11}
+		% іони: рідше біля стінки
+		\foreach \i in {1,...,110} {
+			\pgfmathsetmacro{\px}{\W*\L*rnd}
+			\pgfmathsetmacro{\py}{0.05+1.7*rnd}
+			\pgfmathsetmacro{\keep}{(rnd<1-0.8*exp(-\px/(0.6*\L)))?1:0}
+			\ifnum\keep=1 \node[ions] at (\px,\py) {}; \fi
+		}
+		% електрони: рівномірний фон
+		\foreach \i in {1,...,50} {
+			\pgfmathsetmacro{\px}{\W*\L*rnd}
+			\pgfmathsetmacro{\py}{0.05+1.7*rnd}
+			\node[electrons] at (\px,\py) {};
+		}
+		% електрони: надлишок біля стінки
+		\foreach \i in {1,...,32} {
+			\pgfmathsetmacro{\px}{-ln(1-0.95*rnd)*0.8*\L}
+			\pgfmathsetmacro{\py}{0.05+1.7*rnd}
+			\node[electrons] at (\px,\py) {};
+		}
+		\node[font=\footnotesize, blue!60!black, anchor=west] at (\W*\L+0.15,1.3) {іони};
+		\node[font=\footnotesize, red!70!black, anchor=west] at (\W*\L+0.15,0.5) {електрони};
+	\end{scope}
+	% ---------- (б) густина заряду ----------
+	\begin{scope}[shift={(0,4.7)}]
+		\node[anchor=north east, font=\footnotesize] at (-0.3,0.7) {(б)};
+		\draw[->] (0,-1.15) -- (0,0.7) node[above] {$\rho$};
+		\draw[->] (0,0) -- (\W*\L+0.3,0);
+		\draw[very thick, red!70!black, domain=0:\W, samples=80, smooth]
+			plot ({\x*\L}, {-1.1*sinh(2*ln((1+0.6351*exp(-\x))/(1-0.6351*exp(-\x))))/10.02});
+		\draw[dashed, gray] (\L,-1.2) -- (\L,0.5);
+		\node[font=\footnotesize, align=left, anchor=west] at (1.9*\L,-0.55)
+			{екрануючий заряд\\ $\int\rho\,dx=-\sigma$};
+	\end{scope}
+	% ---------- (в) потенціал ----------
+	\begin{scope}
+		\node[anchor=north east, font=\footnotesize] at (-0.3,2.8) {(в)};
+		\draw[->] (0,0) -- (0,2.8) node[above] {$e\varphi/T$};
+		\draw[->] (0,0) -- (\W*\L+0.3,0) node[right] {$x$};
+		\foreach \k in {1,2,3,4} {
+			\draw (\k*\L,0.05) -- (\k*\L,-0.05) node[below, font=\footnotesize] {$\k\lambda_D$};
+		}
+		\draw[dashed, gray] (\L,0) -- (\L,2.6);
+		\draw[thick, red!70!black, dashed, domain=0:\W, samples=60, smooth]
+			plot ({\x*\L}, {0.8*3*exp(-\x)});
+		\draw[very thick, blue!70!black, domain=0:\W, samples=80, smooth]
+			plot ({\x*\L}, {0.8*2*ln((1+0.6351*exp(-\x))/(1-0.6351*exp(-\x)))});
+		\node[font=\footnotesize, blue!70!black, anchor=west] at (1.5*\L,2.1) {Гуї~--- Чепмен};
+		\node[font=\footnotesize, red!70!black, anchor=west] at (1.5*\L,1.6) {лінійна теорія};
+		\node[font=\footnotesize, anchor=east] at (0,2.4) {$3$};
+		\draw (-0.05,2.4) -- (0.05,2.4);
+	\end{scope}
+\end{tikzpicture}
