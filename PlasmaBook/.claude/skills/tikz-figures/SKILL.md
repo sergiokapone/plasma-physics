@@ -8,7 +8,8 @@ description: Як малювати й перемальовувати TikZ-рис
 ## Де що лежить
 - Рисунок — окремий файл `<Розділ>/tikz/<ім'я>.tikz` (лише `tikzpicture`, без преамбули). У тексті:
   `\begin{figure}[ht]\centering \localinput{ім'я.tikz} \caption{…}\label{fig:…} \end{figure}`
-  (мітки: `fig:` для нових, `pic:` у старих; підрисунки — `subfigure` із `0.5\linewidth`).
+  (мітки: `fig:` для нових, `pic:` у старих; підрисунки — `subfigure` із `0.5\linewidth` і `\subcaption`).
+  **Кожен рисунок мусить мати посилання в тексті** (`рис.~\ref{fig:…}`) — додай його в той самий абзац, де рисунок пояснюється.
 - Усе потрібне підключає `ConspectBook.cls`: `tikz, pgfplots, tikz-3dplot, circuitikz`; бібліотеки `decorations.markings/text/pathmorphing, arrows.meta, shapes.*, shadows, shadings, calc, fit, positioning, patterns, angles, quotes, intersections, backgrounds, spy`. **Немає** `fadings`, `3d`, `perspective` — не покладатись на них; нову бібліотеку додавати в клас лише за потреби (і тоді оновити HTML-версію, скіл `html-class`).
 - Глобально: `every picture/.style={font=\small}`; готові стилі `contact`, `magarrow`, `midarrow`, `arrowpos`, `partial ellipse`.
 - Макроси: `\vect{B}` (жирний вектор), `\rot`, `\Delta`; текст українською всередині `\text{}` / вузла, нерозривний пробіл `~`.

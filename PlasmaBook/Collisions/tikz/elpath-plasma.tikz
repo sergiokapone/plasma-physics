@@ -1,0 +1,49 @@
+% згенеровано: випадкове блукання малими кутами, сума поворотів = 90 градусів
+\begin{tikzpicture}[scale=0.62, >=latex]
+  \tikzset{ion/.style={circle,ball color=blue!70,inner sep=0pt,minimum size=7pt,text=white,font=\fontsize{5}{5}\selectfont},
+           el/.style={circle,ball color=red!75,inner sep=0pt,minimum size=7pt,text=white,font=\fontsize{5}{5}\selectfont}}
+  \node[ion] at (0.53,2.39) {+};
+  \node[ion] at (2.16,3.94) {+};
+  \node[el] at (1.16,3.83) {$-$};
+  \node[ion] at (6.98,-1.88) {+};
+  \node[el] at (6.91,-0.72) {$-$};
+  \node[el] at (-0.92,1.66) {$-$};
+  \node[ion] at (3.70,2.99) {+};
+  \node[ion] at (0.23,3.45) {+};
+  \node[ion] at (6.43,3.86) {+};
+  \node[ion] at (0.83,1.36) {+};
+  \node[ion] at (1.95,1.43) {+};
+  \node[el] at (4.38,2.30) {$-$};
+  \node[el] at (1.56,2.97) {$-$};
+  \node[ion] at (5.46,3.75) {+};
+  \node[ion] at (-0.00,-1.03) {+};
+  \node[ion] at (0.98,0.46) {+};
+  \node[ion] at (1.22,0.30) {+};
+  \node[el] at (1.32,-1.36) {$-$};
+  \node[el] at (1.98,0.45) {$-$};
+  \node[el] at (2.03,-1.51) {$-$};
+  \node[ion] at (2.65,0.30) {+};
+  \node[el] at (3.03,-1.83) {$-$};
+  \node[el] at (3.19,0.54) {$-$};
+  \node[ion] at (3.75,-1.40) {+};
+  \node[ion] at (4.00,0.31) {+};
+  \node[ion] at (4.22,0.59) {+};
+  \node[ion] at (4.39,0.67) {+};
+  \node[el] at (5.81,-1.16) {$-$};
+  \node[ion] at (5.00,0.59) {+};
+  \node[ion] at (4.95,1.16) {+};
+  \node[ion] at (5.05,1.28) {+};
+  \node[el] at (6.84,0.59) {$-$};
+  \node[ion] at (7.33,0.79) {+};
+  \node[ion] at (7.17,1.26) {+};
+  \node[el] at (7.75,1.40) {$-$};
+  \node[ion] at (6.15,2.57) {+};
+  \draw[gray, dashed] (0.00,0.00) -- +(-20.0:2.6);
+  \draw[gray, dashed] (6.98,2.63) -- +(70.0:1.2);
+  \draw[very thick, postaction={decorate, decoration={markings, mark=at position 0.5 with {\arrow{latex}}}}] plot[smooth, tension=0.8] coordinates {(0.00,0.00) (1.44,-0.45) (2.95,-0.63) (4.46,-0.47) (5.74,0.31) (6.51,1.60) (6.98,2.63)};
+  \fill (0.00,0.00) circle (2pt);
+  \draw[gray] (6.98,2.63) ++(-20.0:0.9) arc (-20.0:70.0:0.9);
+  \node[gray, font=\small] at (8.79,3.48) {$\sim\pi/2$};
+  \draw[gray, dashed] (6.98,2.63) -- +(-20.0:1.4);
+  \node[font=\small] at (4.97,-0.86) {$\ell$};
+\end{tikzpicture}
