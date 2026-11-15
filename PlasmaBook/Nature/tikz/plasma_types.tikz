@@ -10,8 +10,8 @@
 		\addplot[red!70!black, very thick, domain=1e-1:1e29, samples=2] {3.65e-15*x^(2/3)};
 		\node[red!70!black, font=\footnotesize, fill=white, inner sep=1pt] at (axis cs:2e26,1.2e4) {$T=E_F$};
 		% N_D = 1
-		\addplot[blue!70!black, very thick, domain=1e-1:1e29, samples=2] {6.95e-7*x^(1/3)};
-		\node[blue!70!black, font=\footnotesize, fill=white, inner sep=1pt] at (axis cs:1e12,2e-1) {$N_D=1$ (слабо/сильнозв'язана)};
+		\addplot[blue!70!black, very thick, domain=1e-1:1e29, samples=2] {6.95e-7*x^(1/3)}
+			node[pos=0.6, sloped, above=1pt, blue!70!black, font=\footnotesize] {$N_D=1$ (слабо/сильнозв'язана)};
 		% T = m c^2 (релятивізм)
 		\draw[green!50!black, very thick] (axis cs:1e-1,5.11e5) -- (axis cs:1e29,5.11e5);
 		\node[green!50!black, font=\footnotesize, fill=white, inner sep=1pt] at (axis cs:1e6,1.6e6) {$T=m_ec^2$};

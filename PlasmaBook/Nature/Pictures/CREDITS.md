@@ -15,8 +15,6 @@
 - `plasma-etching.jpg` — PolinLinB; ліцензія: CC BY 4.0; https://commons.wikimedia.org/wiki/File:Plasma_chemical_etching_of_Si.jpg
 - `hall-thruster.jpg` — Jet Propulsion Laboratory; ліцензія: Public domain; https://commons.wikimedia.org/wiki/File:Xenon_hall_thruster.jpg
 - `cmb-wmap.jpg` — NASA / WMAP Science Team; ліцензія: Public domain; https://commons.wikimedia.org/wiki/File:WMAP_2012.png
-- `campfire.jpg` — Titus Tscharntke; ліцензія: Public domain; https://commons.wikimedia.org/wiki/File:Campfire_flames.jpg
+- `kerosene-flame.jpg` — Arivumathi (кадровано); ліцензія: CC0; https://commons.wikimedia.org/wiki/File:%22kerosene_lamp_flame.jpg
 - `bh-m87.jpg` — Event Horizon Telescope, uploader cropped and converted TIF to JPG; ліцензія: CC BY 4.0; https://commons.wikimedia.org/wiki/File:Black_hole_-_Messier_87_crop_max_res.jpg
-- `bh-m87-pol.jpg` — EHT Collaboration; ліцензія: CC BY 4.0; https://commons.wikimedia.org/wiki/File:A_view_of_the_M87_supermassive_black_hole_in_polarised_light.tif
-- `bh-sgra.jpg` — EHT Collaboration; ліцензія: CC BY 4.0; https://commons.wikimedia.org/wiki/File:Sag_A*.jpg
 - `bh-jet.jpg` — Credit: F. Duccio Macchetto/NASA/ESA; ліцензія: Public domain; https://commons.wikimedia.org/wiki/File:Optical_Jet_in_Galaxy_M87_(1992-07-56).jpg
