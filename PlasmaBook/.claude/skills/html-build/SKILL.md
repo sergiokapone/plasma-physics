@@ -21,7 +21,7 @@ description: Як збирати й публікувати HTML-варіант P
 | `html/cache/ext/` | кеш рисунків, зібраних окремо (git-ignored) |
 | `html/logs/` | журнали останньої збірки й `build-error.txt` (git-ignored) |
 | `html/node_modules/` | `mathjax-full@3` для перевірки формул (`cd html; npm i mathjax-full@3`; git-ignored) |
-| `online/` | готова книга: `ch1.html`…, `index.html` (копія `main-html.html`), `assets/`, `main-html-images/`, `pagefind/`, каталоги з рисунками розділів |
+| `online/` | готова книга: `preface.html`, `nature.html`, `basics.html`…, `index.html` (копія `main-html.html`), `assets/`, `main-html-images/`, `pagefind/`, каталоги з рисунками розділів |
 
 `.gitignore` (корінь репозиторію) закриває тимчасове: `PlasmaBook/main-html*`, `_html/`, `lwarp*`, `lateximage*`, `ConspectBookHTML.cls`, `html/logs|cache|node_modules|_test`.
 
@@ -74,7 +74,7 @@ powershell/pwsh -NoProfile -File PlasmaBook\html\build-html.ps1 [-Placeholder] [
 - `publish_html.py --patch-only` застосовує лише `IMG_STYLE`/`FIG_CLASS`; `fix_alt` працює тільки в повній публікації.
 - Посилання на симуляції (`\simlink`) ведуть на повну адресу `https://sergiokapone.github.io/plasma-physics/PlasmaBook/sims/...`; `\simlink[Назва]` з `\simlist` у книзі не вживано.
 - `Questions` у HTML без запису в змісті (`\tocunnum` порожній).
-- Перша сторінка (`ch1` = Передмова) входить у нумерацію `chN.html`: розділи книги — `ch2`…`ch13`, Підсумки `ch14`, Відповіді `ch15`, Додатки `ch16`, Словник `ch17`, Література `ch18`.
+- Імена сторінок: `publish_html.py` (крок 5b, список `PAGE_NAMES`) перейменовує lwarp-ові `ch1…ch19.html` за порядком `main-html.tex` і переписує посилання: `preface`, розділи за іменами папок малими літерами (`nature`, `basics`, `waves`, `motion`, `collisions`, `fluid`, `linearwaves`, `kinetics`, `instability`, `confinement`, `fusion`, `discharge`, `scales`), `summary`, `answers`, `appendices`, `glossary`, `bibliography`. Змінився порядок/кількість сторінок — виправити `PAGE_NAMES` (інакше імена лишаються `chN`, є попередження).
 
 ## Принципи (як в ElMag)
 

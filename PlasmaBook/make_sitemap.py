@@ -23,8 +23,10 @@ def chapter_key(p: Path) -> int:
 def collect() -> list[str]:
     urls = [SITE, SITE + "simulations.html", SITE + "online/"]
     online = ROOT / "online"
-    for p in sorted(online.glob("ch*.html"), key=chapter_key):
-        urls.append(SITE + "online/" + p.name)
+    # сторінки книги (preface.html, nature.html, …); index.html і службова копія main-html.html пропускаються
+    for p in sorted(online.glob("*.html")):
+        if p.name not in ("index.html", "main-html.html"):
+            urls.append(SITE + "online/" + p.name)
     sims = HERE / "sims"
     for p in sorted(sims.glob("*.html")):
         if p.stem.endswith("_"):          # робочі копії

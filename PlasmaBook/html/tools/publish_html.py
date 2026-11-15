@@ -370,6 +370,29 @@ for name in pages:
 home = os.path.join(OUT, 'main-html.html')
 if os.path.isfile(home):
     shutil.copy2(home, os.path.join(OUT, 'index.html'))
+# --- 5b. meaningful page names: chN.html -> nature.html, basics.html, ... (as the chapter folders of the book) ----
+# lwarp numbers pages in the order of main-html.tex: preface, 13 chapters (multiinclude order), summary, answers,
+# appendices, glossary, bibliography. Edit PAGE_NAMES here if that order changes; a different count skips the renaming.
+PAGE_NAMES = ['preface', 'nature', 'basics', 'waves', 'motion', 'collisions', 'fluid', 'linearwaves', 'kinetics',
+              'instability', 'confinement', 'fusion', 'discharge', 'scales', 'summary', 'answers', 'appendices',
+              'glossary', 'bibliography']
+CH_PAGE = re.compile(r'ch(\d+)\.html')
+ch_files = sorted((n for n in os.listdir(OUT) if CH_PAGE.fullmatch(n)), key=lambda n: int(CH_PAGE.fullmatch(n).group(1)))
+if len(ch_files) == len(PAGE_NAMES) and [int(CH_PAGE.fullmatch(n).group(1)) for n in ch_files] == list(range(1, len(PAGE_NAMES) + 1)):
+    new_name = {n: PAGE_NAMES[int(CH_PAGE.fullmatch(n).group(1)) - 1] + '.html' for n in ch_files}
+    LINK_CH = re.compile(r'(?<![\w-])(ch\d+\.html)')
+    for name in os.listdir(OUT):
+        if not name.endswith('.html') or is_site_own(name): continue
+        p = os.path.join(OUT, name)
+        t = open(p, 'rb').read().decode('utf-8')
+        t2 = LINK_CH.sub(lambda m: new_name.get(m.group(1), m.group(1)), t)
+        if t2 != t: open(p, 'wb').write(t2.encode('utf-8'))
+    for old, new in new_name.items():
+        os.replace(os.path.join(OUT, old), os.path.join(OUT, new))
+    print('  pages renamed: ch1..ch%d.html -> %s.html .. %s.html' % (len(PAGE_NAMES), PAGE_NAMES[0], PAGE_NAMES[-1]))
+else:
+    print('  WARNING: %d pages chN.html (expected %d, numbered 1..%d): names left as is, update PAGE_NAMES in publish_html.py'
+          % (len(ch_files), len(PAGE_NAMES), len(PAGE_NAMES)))
 for rel in ASSET_FILES:
     if not os.path.isfile(os.path.join(OUT, ASSET_DIR, rel)):
         print('  WARNING: %s/%s not found: the pages link to it' % (ASSET_DIR, rel))
