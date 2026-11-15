@@ -1,22 +1,38 @@
+% Рис. 1.2(б): еквівалентний конденсатор із нескомпенсованих зарядів.
+% Спільна система координат і рамка з панеллю (а) (plasma_ions.tikz).
 \begin{tikzpicture}[scale=0.75,
-		ions/.style={
-				circle, ball color=blue!50, font=\tiny, inner sep=0, blue
-			},
-		electrons/.style={
-				circle, ball color=red, font=\tiny, inner sep=0, red
-			},
+		ions/.style={circle, ball color=blue!50, font=\tiny, inner sep=0, blue},
+		electrons/.style={circle, ball color=red, font=\tiny, inner sep=0, red},
 	]
+	\useasboundingbox (-0.4,-1.8) rectangle (5.45,9.8);
 
-	\draw[xshift=0.75cm, fill=gray!50] (0,0) rectangle ++(4,8);
-	\draw[dashed] (0,0) rectangle ++(4,8);
+	% шари нескомпенсованого заряду (ті самі прямокутники, що в панелі (а))
+	\fill[blue!15] (-0.05,-0.15) rectangle (0.75,8.45);
+	\fill[red!15]  (4.3,-0.15)   rectangle (5.1,8.45);
+	\draw[blue!70!black, thick] (-0.05,-0.15) rectangle (0.75,8.45);
+	\draw[red!70!black, thick]  (4.3,-0.15)   rectangle (5.1,8.45);
+	\foreach \j in {0,...,7} {
+		\node[ions]      at (0.35,{0.5+\j*1.0}) {$+$};
+		\node[electrons] at (4.7,{0.5+\j*1.0}) {$-$};
+	}
 
-	\foreach \y in {1,...,7} {
-			\node at (0.3, \y) {$+$};
-			\node at (4.3, \y) {$-$};
-			\draw[-latex, red] (0.75, \y) -- (4, \y) \ifnum\y=7 node[above, pos=0.5] {$\vec{E}$} \fi ;
-		}
+	% поле E від «+» до «−» у проміжку
+	\foreach \y in {1.5,3,6,7.5} {
+		\draw[-latex', thick] (0.95,\y) -- (4.1,\y);
+	}
+	\node[font=\footnotesize, inner sep=1pt] at (2.5,8.1) {$\vect{E}$};
 
-	\draw[decorate,decoration={brace,amplitude=5pt,mirror,raise=0ex}] (0,-0.1)  -- (0.75,-0.1)
+	% електрон і повертаюча сила
+	\node[electrons] (el) at (3.3,4.1) {$-$};
+	\draw[-latex', very thick, red!70!black] (el.west) -- ++(-1.8,0)
+		node[midway, above=1pt, font=\footnotesize] {$-e\vect{E}$};
+
+	% позначка x і формула
+	\draw[decorate,decoration={brace,amplitude=5pt,mirror,raise=0ex}] (-0.05,-0.3) -- (0.75,-0.3)
 	node[midway, yshift=-2ex] {$x$};
+	\draw[decorate,decoration={brace,amplitude=5pt,mirror,raise=0ex}] (4.3,-0.3) -- (5.1,-0.3)
+	node[midway, yshift=-2ex] {$x$};
+	\node[font=\footnotesize] at (2.5,9.1) {$E=4\pi n_e e x$};
 
+	\node[font=\small] at (2.5,-1.5) {(б)};
 \end{tikzpicture}

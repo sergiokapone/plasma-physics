@@ -68,12 +68,13 @@
 	\node[font=\footnotesize, align=center] at (-8.1,4.3) {сонячний\\ вітер};
 	\node[font=\footnotesize, orange!80!black, anchor=south, align=center] (bs) at (-4.2,5.7) {ударна хвиля};
 	\draw[orange!80!black, thin] (bs.south) ++(0.4,0) -- (-3.6,{\ybs*sqrt(1.8)/sqrt(1.8+\cbs)}) ;
-	\node[font=\footnotesize, align=center] at (-5.3,2.9) {перехідна\\ область};
+	\node[font=\footnotesize] (tr) at (2.2,5.0) {перехідна область};
+	\draw[thin] (1.4,4.7) -- (1.0,3.4);
 	\node[font=\footnotesize, anchor=south east, align=center] (mp) at (-1.5,4.1) {магнітопауза};
 	\draw[thin] (mp.south east) ++(-0.2,0) -- (-2.9,{\ymp*sqrt(1.1)/sqrt(1.1+\cmp)});
-	\node[font=\footnotesize, green!40!black, align=center] (rb) at (-2.2,-3.6) {радіаційні\\ пояси};
-	\draw[green!40!black, thin] (-2.5,-3.1) -- (-2.0,-0.9);
-	\draw[green!40!black, thin] (-1.9,-3.1) -- (-0.85,-0.45);
+	\node[font=\footnotesize, green!40!black, align=center] (rb) at (1.6,-4.5) {радіаційні\\ пояси};
+	\draw[green!40!black, thin] (1.0,-4.0) -- (0.85,-0.45);
+	\draw[green!40!black, thin] (1.9,-4.0) -- (1.75,-0.8);
 	\node[font=\footnotesize, align=center] at (6.8,2.75) {хвіст магнітосфери};
 	\node[font=\footnotesize, black!70, anchor=north east] at (\xend,-0.1) {нейтральний шар};
 	\node[font=\footnotesize, anchor=north, fill=white, inner sep=1pt] at (0,-0.5) {Земля};

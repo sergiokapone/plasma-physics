@@ -1,3 +1,5 @@
+% Рис. 1.2(а): іонний фон і зміщений на x електронний газ; області надлишкового заряду виділено прямокутниками.
+% Спільна система координат і рамка з панеллю (б) (condensator.tikz).
 \begin{tikzpicture}[scale=0.75,
 		ions/.style={
 				circle, ball color=blue!50, font=\tiny, inner sep=0, blue
@@ -6,9 +8,13 @@
 				circle, ball color=red, font=\tiny, inner sep=0, red
 			},
 	]
+	\useasboundingbox (-0.4,-1.8) rectangle (5.45,9.8);
 
-	%        \draw[xshift=0.5cm, fill=gray!50] (0,0) rectangle ++(4,8);
-	%        \draw[dashed] (0,0) rectangle ++(4,8);
+	% області надлишкового заряду: «+» ліворуч, «−» праворуч
+	\fill[blue!15] (-0.05,-0.15) rectangle (0.75,8.45);
+	\fill[red!15]  (4.3,-0.15)   rectangle (5.1,8.45);
+	\draw[blue!70!black, thick] (-0.05,-0.15) rectangle (0.75,8.45);
+	\draw[red!70!black, thick]  (4.3,-0.15)   rectangle (5.1,8.45);
 
 	\foreach \x in {0,0.5,...,4} {
 			\foreach \y in {0,0.5,...,8} {
@@ -16,4 +22,9 @@
 					\node[electrons] at ({\x+0.75+0.3*rnd},\y+0.3*rnd) {$-$};
 				}
 		}
+
+	\draw[decorate,decoration={brace,amplitude=5pt,mirror,raise=0ex}] (-0.05,-0.3) -- (0.75,-0.3)
+	node[midway, yshift=-2ex] {$x$};
+
+	\node[font=\small] at (2.5,-1.5) {(а)};
 \end{tikzpicture}
