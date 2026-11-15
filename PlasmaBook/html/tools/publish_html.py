@@ -317,7 +317,7 @@ def fix_emf(text):
     comes out as U+FFFD), so mathjax2lwarp.py writes \\mathcal{E} and the character is put in here. Safe to run again."""
     return EMF_MACRO.sub('\\1\u2130\\2', text)
 
-BAD_ALT = re.compile(r'<img\b([^>]*?)\balt="\((?:-[a-z]+-&nbsp;diagram|figure|table|-table-)[^"]*\)"', re.S)
+BAD_ALT = re.compile(r'<img\b([^>]*?)\balt="\((?:-[a-z]+-&nbsp;diagram|figure|image|table|-table-)[^"]*\)"', re.S)
 CAPTION = re.compile(r'<div class="(?:figurecaption|tablecaption|caption)[^"]*"[^>]*>(.*?)</div>', re.S)
 
 def plain_caption(c):

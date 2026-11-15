@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мапа плазм</title>
+<script src="shared/theme.js"></script>
+<link rel="stylesheet" href="shared/sim.css">
+<script src="shared/sim.js"></script>
+<script src="shared/physics.js"></script>
+<style>
+  #card { display: flex; flex-direction: column; gap: .5em; }
+  #card img { width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--line); display: block; }
+  #card h3 { margin: 0; font-size: 1.05em; }
+  #card p { margin: 0; font-size: .92em; }
+  #card .src { color: var(--muted); font-size: .82em; }
+  #objs .grp { margin: .5em 0 .2em; font-size: .8em; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  #objs .presets button.b { font-size: .82em; padding: .3em .6em; }
+  #objs .presets button.b::before { content: attr(data-sym) " "; }
+  .sw { display: inline-block; width: 1.4em; text-align: center; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Мапа плазм: від міжгалактичного газу до токамака</h1>
+  <span class="ref">Розд. 0, розд. 1: табл. 1.1, рис. 1.1</span>
+  <span id="theme-slot"></span>
+</header>
+<div id="app">
+  <div id="panel">
+    <section><h2>Вибраний об'єкт</h2><div id="card"></div><div id="s-out" style="margin-top:.6em"></div></section>
+    <section><h2>Мій об'єкт</h2><div id="s-ctl"></div>
+      <p class="hint">Або клацніть (чи потягніть) по порожньому місцю мапи.</p></section>
+    <section><h2>Показати</h2><div id="s-lay"></div></section>
+    <section><h2>Об'єкти</h2><div id="objs"></div></section>
+    <details class="observe" open><summary><h2>Що спостерігати</h2></summary>
+      <ol>
+        <li>Концентрації відрізняються на <b>31 порядок</b> (від міжгалактичного газу до ядра Сонця), температури — на <b>10 порядків</b>, а характер плазми визначають лише <i class="m">n</i> і <i class="m">T</i>.</li>
+        <li>Потягніть «мій об'єкт» під лінію <i class="m">N<sub>D</sub> = 1</i>: колективної поведінки більше немає, плазма в сенсі книги зникає. Права частина мапи, де <i class="m">N<sub>D</sub> ≫ 1</i>, — «ідеальна» плазма.</li>
+        <li>Токамак і ядро Сонця: різниця в 12 порядків за <i class="m">n</i>, але обидва — гаряча плазма синтезу. Ядро Сонця лежить поблизу <i class="m">Γ = 1</i> — на межі застосовності теорії.</li>
+        <li>Електрони в металі лежать <b>нижче</b> лінії <i class="m">T = E<sub>F</sub></i>: вони вироджені, потрібна квантова теорія.</li>
+        <li>Розрядна трубка й дуга мають однакову <i class="m">T<sub>e</sub> ~ 1 еВ</i>, але різні <i class="m">n</i> на 5–6 порядків; і температури іонів у них різні (на мапі показано <i class="m">T<sub>e</sub></i>).</li>
+        <li>Полум'я лежить глибоко праворуч від лінії <i class="m">N<sub>D</sub> = 1</i>, тобто формально колективне, але мало іонізоване й зіткнювальне (розд. 0).</li>
+      </ol>
+    </details>
+    <section class="note">
+      <p>Мапа — діаграма <i class="m">lg n – lg T</i> з рис. 1.1 розд. 1, розширена об'єктами розд. 0. Усі значення — <b>порядки величини</b>; <i class="m">T</i> — електронна температура. Прямокутники показують розкид параметрів. Значення з табл. 1.1 і розд. 0 позначено «книга»; значення «оцінка» наведено за типовими літературними порядками й у книзі не виводяться.</p>
+      <p>Формули (СГС, <i class="m">k<sub>B</sub> = 1</i>, <i class="m">T</i> в еВ, <i class="m">n</i> у см<sup>−3</sup>): <i class="m">λ<sub>De</sub> = 743√(T/n)</i> см, <i class="m">N<sub>D</sub> = (4π/3) n λ<sub>De</sub><sup>3</sup></i>, <i class="m">Γ = e²n<sup>1/3</sup>/T</i>, <i class="m">e² = 1,44·10<sup>−7</sup></i> еВ·см, <i class="m">ω<sub>pe</sub> = 5,64·10<sup>4</sup>√n</i> с<sup>−1</sup>, <i class="m">E<sub>F</sub> = 3,65·10<sup>−15</sup> n<sup>2/3</sup></i> еВ. Лінії: <i class="m">N<sub>D</sub> = 1</i> і <i class="m">100</i> (орієнтовна й практична межі колективності), <i class="m">Γ = 1</i>, <i class="m">T = E<sub>F</sub></i> (виродження), <i class="m">T = m<sub>e</sub>c²</i> (релятивізм).</p>
+      <p>Книга: розд. 1 «Що таке плазма?», табл. 1.1, рис. 1.1; розд. 0 «Плазма довкола нас».</p>
+    </section>
+  </div>
+  <div id="stage"><div class="view" id="v-map" role="img" aria-label="Діаграма lg n – lg T видів плазми з об'єктами природи й техніки"></div></div>
+</div>
+<script>
+/* Мапа плазм: діаграма lg n – lg T (СГС, T у еВ, n у см^-3).
+   λ_De = 743·√(T/n) см;  N_D = (4π/3)·n·λ³;  Γ = e²·n^{1/3}/T, e² = 1,44e-7 еВ·см;
+   ω_pe = 5,64e4·√n;  f_pe = 8,98e3·√n Гц;  E_F = 3,65e-15·n^{2/3} еВ (при T = 0). */
+(function () {
+  var $ = PSim.$, fmt = PSim.fmt, C = PSim.C;
+  var P = { n: 1e16, T: 100, lnd1: true, lnd100: true, lgam: true, lef: true, lrel: true, boxes: true, names: true };
+  var K_PER_EV = 11604.5;
+  var E2 = 1.44e-7, MEC2 = 5.11e5;
+
+  function phys(n, T) {
+    var lam = 743 * Math.sqrt(T / n);
+    return { lam: lam, ND: 4 * Math.PI / 3 * n * lam * lam * lam, G: E2 * Math.cbrt(n) / T,
+             wp: 5.64e4 * Math.sqrt(n), fp: 8.98e3 * Math.sqrt(n), EF: 3.65e-15 * Math.pow(n, 2 / 3) };
+  }
+  function Tnd(N, n) { return Math.pow(N * Math.sqrt(n) / 1.72e9, 2 / 3); }
+  function regime(n, T) {
+    var q = phys(n, T);
+    if (T < q.EF) return ['вироджена: T < E_F, потрібна квантова теорія', 'bad'];
+    if (T > MEC2) return ['релятивістська: T > m_e c²', 'bad'];
+    if (q.G > 1) return ['сильнозв’язана: Γ > 1', 'bad'];
+    if (q.ND < 1) return ['N_D < 1: колективності немає', 'bad'];
+    if (q.ND < 100) return ['межа колективності: 1 < N_D < 100', ''];
+    return ['класична ідеальна плазма', 'good'];
+  }
+
+  // ---------- об'єкти ----------
+  // g: space | near | lab | fusion;  src: книга | оцінка;  box: [n0, n1, T0, T1];  lx, ly, al — зсув підпису
+  var OBJ = [
+    { id: 'igm', name: 'Міжгалактичний газ', n: 1e-5, T: 100, g: 'space', src: 'книга, розд. 0', box: [1e-6, 1e-5, 1, 1e3],
+      text: 'Газ між галактиками: вкрай розріджений (n ≲ 10⁻⁵ см⁻³) і гарячий (10⁴–10⁷ К). Іонізований випромінюванням перших зір.', lx: 10, ly: -12, al: 'left' },
+    { id: 'cmb', name: 'Первинна плазма (рекомбінація)', n: 2.7e2, T: 0.3, g: 'space', src: 'книга, розд. 0', img: 'map-cmb-wmap',
+      text: 'Воднево-гелієва плазма раннього Всесвіту в момент рекомбінації (T ≈ 3000 К). Її залишок — реліктове випромінювання.', lx: 10, ly: 14, al: 'left' },
+    { id: 'bh', name: 'Акреційний диск M87*', n: 1e5, T: 1e6, g: 'space', src: 'оцінка', img: 'map-bh-m87-pol',
+      text: 'Гаряча намагнічена плазма в околі надмасивної чорної діри. T_e ~ 10¹⁰ К — вище за m_e c², тож плазма релятивістська (порядок величини).', lx: 10, ly: 0, al: 'left' },
+    { id: 'ism', name: 'Міжзоряний газ', n: 10, T: 1, g: 'space', src: 'книга, табл. 1.1', box: [1e-3, 1e3, 1e-3, 1e2], img: 'map-crab-nebula',
+      text: 'Розріджена плазма Галактики: від 10⁻³ до 10³ частинок/см³, від 10 до 10⁶ К. Зіткнень мало, температури e та i можуть різнитися.', lx: -10, ly: 14, al: 'right' },
+    { id: 'wind', name: 'Сонячний вітер (1 а.о.)', n: 10, T: 10, g: 'space', src: 'книга, табл. 1.1',
+      text: 'Потік плазми від Сонця: 300–800 км/с, T ~ 10⁵ К, n ~ 10 см⁻³. Несе вморожене магнітне поле.', lx: -10, ly: -4, al: 'right' },
+    { id: 'corona', name: 'Корона Сонця', n: 1e8, T: 1e2, g: 'space', src: 'книга, табл. 1.1', img: 'map-sun-corona',
+      text: 'Верхня атмосфера Сонця, T ~ 10⁶ К. Яскраві петлі повторюють силові лінії магнітного поля.', lx: 10, ly: -4, al: 'left' },
+    { id: 'core', name: 'Ядро Сонця', n: 1e26, T: 1e3, g: 'fusion', src: 'книга, табл. 1.1',
+      text: 'Гравітаційно утримана плазма синтезу: N_D ~ 5, Γ ≈ 0,07 — на межі застосовності теорії ідеальної плазми.', lx: -10, ly: 0, al: 'right' },
+    { id: 'iono', name: 'Іоносфера', n: 1e5, T: 0.1, g: 'near', src: 'книга, табл. 1.1', img: 'map-aurora',
+      text: 'Верхня атмосфера Землі, іонізована Сонцем: n ~ 10⁵–10⁶ см⁻³ на 250–400 км. Відбиває радіохвилі з f < f_p ≈ 9 МГц.', lx: 10, ly: 0, al: 'left' },
+    { id: 'lightning', name: 'Блискавка (канал)', n: 1e17, T: 2.6, g: 'near', src: 'оцінка (T — книга)', img: 'map-lightning',
+      text: 'Тонкий шнур плазми з T ~ 3·10⁴ К і струмом 10⁴–10⁵ А. Концентрацію електронів тут наведено за типовим літературним порядком.', lx: 10, ly: -12, al: 'left' },
+    { id: 'flame', name: 'Полум’я', n: 1e10, T: 0.17, g: 'lab', src: 'книга, розд. 0', img: 'map-campfire',
+      text: 'Гранична слабоіонізована плазма: α ~ 10⁻⁹, T ≈ 2000 К. Критерії колективності виконано, але частота зіткнень ν ≫ ω_p.', lx: -10, ly: 12, al: 'right' },
+    { id: 'tube', name: 'Розрядна трубка (T_e)', n: 1e10, T: 1, g: 'lab', src: 'книга, розд. 0', img: 'map-discharge-tubes',
+      text: 'Слабоіонізований розряд низького тиску: T_e ~ 1 еВ, T_i ~ 300 К, n_e ~ 10¹⁰ см⁻³ — нерівноважна плазма.', lx: -10, ly: -4, al: 'right' },
+    { id: 'discharge', name: 'Газовий розряд (табл. 1.1)', n: 1e12, T: 3, g: 'lab', src: 'книга, табл. 1.1',
+      text: 'Типовий газовий розряд із таблиці розд. 1. Розрядна трубка, ВЧ-розряд і дуга нижче — його конкретні варіанти з різними n і T.', lx: 0, ly: 16, al: 'center' },
+    { id: 'qm', name: 'Q-машина', n: 1e11, T: 0.2, g: 'lab', src: 'книга, розд. 0',
+      text: 'Спокійна майже повністю іонізована плазма цезію на розжареній пластині: n ~ 10⁹–10¹³ см⁻³, T ~ 0,2 еВ.', lx: 10, ly: 12, al: 'left' },
+    { id: 'etch', name: 'ВЧ-розряд для травлення', n: 1e10, T: 3, g: 'lab', src: 'книга, розд. 0', box: [1e9, 1e11, 1, 10], img: 'map-plasma-etching',
+      text: 'Розряд низького тиску (1–100 мТор): T_e кілька еВ, n_e ~ 10⁹–10¹¹ см⁻³, а газ майже холодний.', lx: -10, ly: -14, al: 'right' },
+    { id: 'arc', name: 'Дуга', n: 1e16, T: 1, g: 'lab', src: 'книга, розд. 0', box: [1e15, 1e17, 0.7, 2], img: 'map-welding-arc',
+      text: 'Дуга високого тиску: T_e ≈ T_i ~ 1 еВ, n_e ~ 10¹⁵–10¹⁷ см⁻³ — ізотермічна плазма (зварювання, плазмотрони).', lx: 10, ly: 8, al: 'left' },
+    { id: 'tokamak', name: 'Токамак', n: 1e14, T: 1e4, g: 'fusion', src: 'книга, табл. 1.1', img: 'map-tokamak-mast',
+      text: 'Гаряча плазма синтезу, T ~ 10⁸ К, утримана магнітним полем. У видимому світлі світиться лише холодніша периферія.', lx: 10, ly: -4, al: 'left' },
+    { id: 'metal', name: 'Електрони в металі', n: 1e23, T: 0.026, g: 'lab', src: 'книга, табл. 1.1',
+      text: 'Вироджений електронний газ: T (кімнатна) ≪ E_F ≈ 8 еВ. Це не класична плазма, потрібна квантова статистика.', lx: -10, ly: 0, al: 'right' }
+  ];
+  var GROUP = {
+    space:  { name: 'Космос', sym: '●', color: 'c1', shape: 'circle' },
+    near:   { name: 'Земля й навколоземний простір', sym: '◆', color: 'c5', shape: 'diamond' },
+    lab:    { name: 'Лабораторія й техніка', sym: '■', color: 'c2', shape: 'square' },
+    fusion: { name: 'Синтез', sym: '▲', color: 'c3', shape: 'triangle' }
+  };
+  var ME = { id: 'me', name: 'Мій об’єкт', text: 'Задайте n і T повзунками або клацанням по мапі й подивіться, який це режим плазми.', src: '', g: 'me' };
+  var sel = 'tokamak', hover = null, drag = false, map = null;
+  function byId(id) { return id === 'me' ? { id: 'me', name: ME.name, n: P.n, T: P.T, text: ME.text, src: '', g: 'me' } : OBJ.filter(function (o) { return o.id === id; })[0]; }
+
+  // ---------- керування ----------
+  var ctl = PSim.controls('#s-ctl', [
+    { key: 'n', label: 'Концентрація <i class="m">n</i>, см⁻³', min: 1e-6, max: 1e28, log: true, fmt: function (v) { return fmt(v, 2); } },
+    { key: 'T', label: 'Температура <i class="m">T</i>, еВ', min: 1e-3, max: 1e7, log: true, fmt: function (v) { return fmt(v, 2); } }
+  ], P, function () { sel = 'me'; update(); });
+  PSim.controls('#s-lay', [
+    { key: 'lnd1', label: 'лінія <i class="m">N<sub>D</sub> = 1</i>', type: 'check' },
+    { key: 'lnd100', label: 'лінія <i class="m">N<sub>D</sub> = 100</i>', type: 'check' },
+    { key: 'lgam', label: 'лінія <i class="m">Γ = 1</i>', type: 'check' },
+    { key: 'lef', label: 'лінія <i class="m">T = E<sub>F</sub></i> (виродження)', type: 'check' },
+    { key: 'lrel', label: 'лінія <i class="m">T = m<sub>e</sub>c²</i> (релятивізм)', type: 'check' },
+    { key: 'boxes', label: 'діапазони (прямокутники)', type: 'check' },
+    { key: 'names', label: 'підписи об’єктів', type: 'check' }
+  ], P, function () { view.redraw(); });
+
+  // список об'єктів (клавіатурний шлях до вибору)
+  (function () {
+    var box = $('#objs');
+    Object.keys(GROUP).forEach(function (g) {
+      var h = document.createElement('div'); h.className = 'grp'; h.textContent = GROUP[g].name; box.appendChild(h);
+      var d = document.createElement('div'); d.className = 'presets'; box.appendChild(d);
+      OBJ.filter(function (o) { return o.g === g; }).forEach(function (o) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'b'; b.dataset.sym = GROUP[g].sym; b.dataset.id = o.id;
+        b.textContent = o.name; b.onclick = function () { sel = o.id; update(); };
+        d.appendChild(b);
+      });
+    });
+  })();
+
+  // ---------- картка й величини ----------
+  var set = PSim.readout('#s-out', [
+    ['n', '<i class="m">n</i>, см⁻³'], ['T', '<i class="m">T</i>, еВ (К)'], ['lam', '<i class="m">λ<sub>De</sub></i>, см'],
+    ['ND', '<i class="m">N<sub>D</sub></i>'], ['G', '<i class="m">Γ</i>'], ['wp', '<i class="m">ω<sub>pe</sub></i>, с⁻¹'],
+    ['EF', '<i class="m">E<sub>F</sub></i>, еВ'], ['reg', 'Режим']
+  ]);
+  function card(o) {
+    var el = $('#card');
+    el.innerHTML = '';
+    if (o.img) { var im = document.createElement('img'); im.src = 'pictures/' + o.img + '.jpg'; im.alt = o.name; im.loading = 'lazy'; el.appendChild(im); }
+    var h = document.createElement('h3'); h.textContent = o.name; el.appendChild(h);
+    var p = document.createElement('p'); p.textContent = o.text; el.appendChild(p);
+    if (o.src) { var s = document.createElement('p'); s.className = 'src'; s.textContent = 'Джерело значень: ' + o.src; el.appendChild(s); }
+    var n = o.n, T = o.T, q = phys(n, T), r = regime(n, T);
+    set('n', fmt(n, 2)); set('T', fmt(T, 2) + ' (' + fmt(T * K_PER_EV, 2) + ' К)'); set('lam', fmt(q.lam, 2));
+    set('ND', fmt(q.ND, 2), q.ND < 1 ? 'bad' : ''); set('G', fmt(q.G, 2), q.G > 1 ? 'bad' : '');
+    set('wp', fmt(q.wp, 2) + ' (f = ' + fmt(q.fp, 2) + ' Гц)'); set('EF', fmt(q.EF, 2), T < q.EF ? 'bad' : '');
+    set('reg', r[0], r[1]);
+  }
+  function update() {
+    var o = byId(sel);
+    card(o);
+    Array.prototype.forEach.call(document.querySelectorAll('#objs button'), function (b) { b.classList.toggle('on', b.dataset.id === sel); b.setAttribute('aria-pressed', b.dataset.id === sel); });
+    ctl.sync(); view.redraw();
+  }
+
+  // ---------- малювання ----------
+  function lgs(a, b, k) { var out = []; for (var i = 0; i <= k; i++) out.push(Math.pow(10, a + (b - a) * i / k)); return out; }
+  var SUP = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+  function pow10(e) { return '10' + String(e).replace(/./g, function (c) { return SUP[c]; }).replace('-', '⁻'); }
+  function marker(ctx, shape, x, y, r) {
+    ctx.beginPath();
+    if (shape === 'circle') ctx.arc(x, y, r, 0, 6.2832);
+    else if (shape === 'square') ctx.rect(x - r, y - r, 2 * r, 2 * r);
+    else if (shape === 'diamond') { ctx.moveTo(x, y - r * 1.25); ctx.lineTo(x + r * 1.25, y); ctx.lineTo(x, y + r * 1.25); ctx.lineTo(x - r * 1.25, y); ctx.closePath(); }
+    else { ctx.moveTo(x, y - r * 1.2); ctx.lineTo(x + r * 1.15, y + r * 0.9); ctx.lineTo(x - r * 1.15, y + r * 0.9); ctx.closePath(); }
+  }
+  // Підпис із підкладкою; «_x» — нижній індекс; текст обрізається межами осей.
+  function lab(ctx, text, x, y, st) {
+    st = st || {};
+    var size = st.size || 13, f = (st.bold ? '600 ' : ''), parts = text.split(/(_\w)/), wid = 0;
+    ctx.save();
+    var ws = parts.filter(function (p) { return p !== ''; }).map(function (p) {
+      var sub = p.length === 2 && p.charAt(0) === '_', s = sub ? p.charAt(1) : p;
+      ctx.font = f + (sub ? size * 0.72 : size) + 'px system-ui, sans-serif';
+      var w = ctx.measureText(s).width; wid += w; return { s: s, sub: sub, w: w };
+    });
+    var x0 = st.align === 'right' ? x - wid : st.align === 'center' ? x - wid / 2 : x;
+    if (map) x0 = Math.max(map.l + 3, Math.min(map.r - 3 - wid, x0));
+    ctx.textAlign = 'left'; ctx.textBaseline = st.base || 'middle'; ctx.lineWidth = 4; ctx.lineJoin = 'round';
+    var cx = x0;
+    ws.forEach(function (p) {
+      ctx.font = f + (p.sub ? size * 0.72 : size) + 'px system-ui, sans-serif';
+      var yy = y + (p.sub ? size * 0.28 : 0);
+      ctx.strokeStyle = PSim.C.bg; ctx.strokeText(p.s, cx, yy);
+      ctx.fillStyle = st.color || PSim.C.fg; ctx.fillText(p.s, cx, yy);
+      cx += p.w;
+    });
+    ctx.restore();
+  }
+  function draw(ctx, w, h) {
+    var C = PSim.C;
+    map = PSim.frame(ctx, { x: 0, y: 0, w: w, h: h }, {
+      x0: 1e-6, x1: 1e28, y0: 1e-3, y1: 1e7, logx: true, logy: true, grid: true,
+      xlabel: 'Концентрація електронів n, см⁻³', ylabel: 'Температура T, еВ', padL: 64, padB: 40,
+      xfmt: function (v) { var e = Math.round(Math.log10(v)); return (e % 4 === 0 || w > 900) && (e % 2 === 0) ? pow10(e) : ''; },
+      yfmt: function (v) { var e = Math.round(Math.log10(v)); return pow10(e); }
+    });
+    var xs = lgs(-6, 28, 340);
+    var T_nd = function (N) { return xs.map(function (n) { return Math.pow(N * Math.sqrt(n) / 1.72e9, 2 / 3); }); };
+    var T_ef = xs.map(function (n) { return 3.65e-15 * Math.pow(n, 2 / 3); });
+    var T_g = xs.map(function (n) { return E2 * Math.cbrt(n); });
+    PSim.clip(ctx, map);
+    // заливки: N_D < 1 (під лінією), виродження (під E_F), релятивізм (над m_e c²)
+    function fillBelow(Ts, col) {
+      ctx.beginPath(); ctx.moveTo(map.X(xs[0]), map.b);
+      for (var i = 0; i < xs.length; i++) ctx.lineTo(map.X(xs[i]), Math.max(map.t, Math.min(map.b, map.Y(Ts[i]))));
+      ctx.lineTo(map.X(xs[xs.length - 1]), map.b); ctx.closePath(); ctx.fillStyle = col; ctx.fill();
+    }
+    fillBelow(T_nd(1), PSim.alpha(C.c5, 0.14));
+    fillBelow(T_ef, PSim.alpha(C.c4, 0.16));
+    ctx.fillStyle = PSim.alpha(C.c2, 0.1); ctx.fillRect(map.l, map.t, map.r - map.l, Math.max(0, map.Y(MEC2) - map.t));
+    // лінії
+    if (P.lnd1) PSim.curve(ctx, map, xs, T_nd(1), { color: C.c5, width: 2 });
+    if (P.lnd100) PSim.curve(ctx, map, xs, T_nd(100), { color: C.c5, width: 1.4, dash: [6, 4] });
+    if (P.lgam) PSim.curve(ctx, map, xs, T_g, { color: C.c1, width: 1.8, dash: [2, 3] });
+    if (P.lef) PSim.curve(ctx, map, xs, T_ef, { color: C.c4, width: 2 });
+    if (P.lrel) PSim.curve(ctx, map, [1e-6, 1e28], [MEC2, MEC2], { color: C.c2, width: 2 });
+    // діапазони
+    if (P.boxes) OBJ.forEach(function (o) {
+      if (!o.box) return;
+      var col = C[GROUP[o.g].color], x0 = map.X(o.box[0]), x1 = map.X(o.box[1]), y1 = map.Y(o.box[2]), y0 = map.Y(o.box[3]);
+      ctx.save(); ctx.fillStyle = PSim.alpha(col, 0.1); ctx.strokeStyle = PSim.alpha(col, 0.8); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.2;
+      ctx.fillRect(x0, y0, x1 - x0, y1 - y0); ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); ctx.restore();
+    });
+    ctx.restore();
+    // підписи ліній (поза clip, з підкладкою)
+    var small = { size: 12 };
+    if (P.lnd1) lab(ctx, 'N_D = 1', map.X(3e12), map.Y(Tnd(1, 3e12)) + 14, { color: C.c5, size: 12, bold: true, align: 'center' });
+    if (P.lnd100 && w >= 600) lab(ctx, 'N_D = 100', map.X(1e18), map.Y(Tnd(100, 1e18)) - 12, { color: C.c5, size: 12, align: 'center' });
+    if (P.lef) lab(ctx, 'T = E_F (виродження)', map.X(1e20), map.Y(3.65e-15 * Math.pow(1e20, 2 / 3)) + 16, { color: C.c4, size: 12, bold: true });
+    if (P.lgam && w >= 600) lab(ctx, 'Γ = 1', map.X(3e18), map.Y(E2 * Math.cbrt(3e18)) + 14, { color: C.c1, size: 12, align: 'center' });
+    if (P.lrel) lab(ctx, 'T = m_e c² (релятивізм)', map.X(1e-5), map.Y(MEC2) - 11, { color: C.c2, size: 12, bold: true, align: 'left' });
+    if (w >= 600) lab(ctx, 'класична ідеальна плазма', map.X(1e6), map.Y(2e2), { color: C.muted, size: 13, align: 'center' });
+    if (w >= 600) lab(ctx, 'N_D < 1', map.X(1e15), map.Y(4e-3), { color: C.c5, size: 12, align: 'center' });
+    // об'єкти
+    OBJ.forEach(function (o) {
+      var g = GROUP[o.g], col = C[g.color], x = map.X(o.n), y = map.Y(o.T);
+      var on = o.id === sel, hv = o.id === hover, r = on || hv ? 8 : 6;
+      ctx.save();
+      marker(ctx, g.shape, x, y, r); ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = on ? 3 : 1.5; ctx.strokeStyle = on ? C.fg : C.bg; ctx.stroke();
+      ctx.restore();
+      if ((P.names && w >= 600) || on || hv) lab(ctx, o.name, x + o.lx, y + o.ly, { color: on ? C.fg : C.ax, size: on || hv ? 13 : 12, bold: on, align: o.al });
+    });
+    // мій об'єкт
+    var mx = map.X(P.n), my = map.Y(P.T);
+    ctx.save(); ctx.strokeStyle = C.accent; ctx.fillStyle = C.accent; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(mx - 10, my); ctx.lineTo(mx + 10, my); ctx.moveTo(mx, my - 10); ctx.lineTo(mx, my + 10); ctx.stroke();
+    ctx.beginPath(); ctx.arc(mx, my, 4, 0, 6.2832); ctx.fill(); ctx.restore();
+    lab(ctx, 'мій об’єкт', mx + 10, my - 12, { color: C.accent, size: 12, bold: sel === 'me' });
+    // легенда груп
+    var lx = map.l + 8, ly = map.b - 8 - 4 * 17;
+    if (w >= 600) Object.keys(GROUP).forEach(function (k, i) {
+      var g = GROUP[k], yy = ly + i * 17;
+      ctx.save(); marker(ctx, g.shape, lx + 6, yy, 5); ctx.fillStyle = C[g.color]; ctx.fill(); ctx.restore();
+      lab(ctx, g.name, lx + 17, yy, { size: 12, color: C.ax });
+    });
+  }
+
+  var view = PSim.canvas('#v-map', draw);
+
+  // ---------- миша / дотик ----------
+  function pos(e) { var r = view.cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+  function nearest(px, py) {
+    var best = null, bd = 24 * 24;
+    OBJ.forEach(function (o) { var dx = map.X(o.n) - px, dy = map.Y(o.T) - py, d = dx * dx + dy * dy; if (d < bd) { bd = d; best = o.id; } });
+    return best;
+  }
+  function inPlot(px, py) { return px >= map.l && px <= map.r && py >= map.t && py <= map.b; }
+  function setMine(px, py) {
+    P.n = Math.min(1e28, Math.max(1e-6, map.invX(Math.min(map.r, Math.max(map.l, px)))));
+    P.T = Math.min(1e7, Math.max(1e-3, map.invY(Math.min(map.b, Math.max(map.t, py)))));
+    sel = 'me'; update();
+  }
+  view.cv.addEventListener('pointermove', function (e) {
+    if (!map) return;
+    var p = pos(e);
+    if (drag) { setMine(p[0], p[1]); return; }
+    var h = inPlot(p[0], p[1]) ? nearest(p[0], p[1]) : null;
+    if (h !== hover) { hover = h; view.cv.style.cursor = h ? 'pointer' : 'crosshair'; view.redraw(); }
+  });
+  view.cv.addEventListener('pointerleave', function () { if (hover) { hover = null; view.redraw(); } });
+  view.cv.addEventListener('pointerdown', function (e) {
+    if (!map) return;
+    var p = pos(e);
+    if (!inPlot(p[0], p[1])) return;
+    var h = nearest(p[0], p[1]);
+    if (h) { sel = h; update(); return; }
+    drag = true; view.cv.setPointerCapture(e.pointerId); setMine(p[0], p[1]);
+  });
+  view.cv.addEventListener('pointerup', function () { drag = false; });
+  view.cv.addEventListener('pointercancel', function () { drag = false; });
+  view.cv.style.cursor = 'crosshair';
+
+  update();
+})();
+</script>
+</body>
+</html>

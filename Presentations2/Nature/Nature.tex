@@ -1,0 +1,433 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !TeX spellcheck = uk_UA
+%
+% Лекція 0 «Плазма довкола нас»
+% За розд. 0 книги PlasmaBook (PlasmaBook/Nature/Nature.tex). Знімки pictures/ --- копії з PlasmaBook/Nature/Pictures,
+% джерела й ліцензії --- у pictures/CREDITS.md.
+
+\documentclass[]{beamer}
+\usetheme{PlasmaPhysics}
+\usepackage{PlasmaPhysics}
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+\setbeamercovered{transparent=25}
+\graphicspath{{pictures/}}
+
+\title[Лекції з фізики плазми]{\bfseries\huge Плазма довкола нас}
+\subtitle{\bfseries Лекції з фізики плазми. Лекція 0}
+\author{Пономаренко С. М.}
+\date{}
+
+% --- допоміжні команди ---
+\newcommand{\pic}[3][0.95\linewidth]{\centering\includegraphics[width=#1,height=#2]{#3}}
+\newcommand{\credit}[1]{{\par\tiny\color{gray}#1\par}}
+
+\begin{document}
+
+\usebackgroundtemplate{
+	\tikz\node[opacity=0.1]{\includegraphics[width=\paperwidth,height=\paperheight]{background}};%
+}
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+%% ============================================================
+\begin{frame}{План лекції}
+	\begin{enumerate}\justifying
+		\item Всесвіт як плазма: рекомбінація і реліктове випромінювання.
+		\item Природна плазма: Сонце, вітер, магнітосфера, іоносфера, блискавка, міжзоряний газ.
+		\item Лабораторна й технічна плазма: розряди, дуга, технології, синтез.
+		\item Схожі на вигляд, різні за природою: вогонь, дуга, Сонце й токамак.
+		\item Що об'єднує всі ці об'єкти.
+	\end{enumerate}
+\end{frame}
+
+%% ============================================================
+\section{Всесвіт як плазма}
+%% ============================================================
+
+\begin{frame}{Плазма~--- стан більшості речовини}
+	\begin{block}{}\justifying\small
+		За оцінками, понад \alert{99\,\%} видимої речовини у~Всесвіті~--- зірки, туманності, міжзоряний газ~--- перебуває в~стані плазми.
+		На Землі плазма трапляється рідше, але значно ближче до нас:
+		\begin{itemize}
+			\item блискавка і~полярне сяйво,
+			\item лампа на стелі, зварювальна дуга,
+			\item травлення мікросхем.
+		\end{itemize}
+	\end{block}
+	\begin{alertblock}{Мета лекції}\justifying\small
+		Нічого не виводимо: дивимось на знімки й~вчимося бачити фізику, яку з'ясуємо в~наступних розділах.
+		Кожен об'єкт~--- точка на діаграмі $n$--$T$ з~розд.~1.
+	\end{alertblock}
+\end{frame}
+
+\begin{frame}{Рання плазма і рекомбінація}
+	\begin{block}{Перші 380 тисяч років}\justifying\small
+		Всесвіт заповнювала гаряча \alert{воднево-гелієва плазма}: протони, ядра гелію, електрони й~фотони.
+		Фотони безперервно розсіювалися на вільних електронах, тож Всесвіт був \alert{непрозорий}.
+	\end{block}
+	\begin{block}{Рекомбінація}\justifying\small
+		Коли розширення охолодило плазму до $T\sim3\times10^{3}$~К ($\approx0{,}3$~еВ), електрони об'єдналися з~ядрами в~атоми.
+		Світло полетіло вільно й~дійшло до нас як \alert{реліктове випромінювання} ($2{,}725$~К).
+	\end{block}
+\end{frame}
+
+\begin{frame}{Коли Всесвіт рекомбінував}
+	\begin{exampleblock}{Оцінка за формулою Саха}\justifying\small
+		Сьогодні $n_H\approx2\times10^{-7}~\mathrm{см}^{-3}$. Під час рекомбінації $1+z\approx1100$:
+		\[ n\approx2\times10^{-7}\cdot1100^{3}\approx2{,}7\times10^{2}~\mathrm{см}^{-3}. \]
+		За Саха $\alpha=1/2$ при $T\approx3{,}7\times10^{3}$~К ($0{,}32$~еВ); при $3\times10^{3}$~К $\alpha\sim5\times10^{-3}$.
+		Температура реліктового випромінювання тоді: $2{,}725\cdot1101\approx3\times10^{3}$~К.
+	\end{exampleblock}
+	\begin{block}{}\justifying\small
+		Водень рекомбінує за $T\approx0{,}3$~еВ, а~не $13{,}6$~еВ: на один атом припадає близько $10^{9}$ фотонів,
+		і~навіть рідкісні фотони з~<<хвоста>> розподілу іонізують атоми.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Реліктове випромінювання}
+	\begin{columns}[T]
+		\begin{column}{0.62\textwidth}
+			\pic[\linewidth]{0.55\textheight}{cmb-wmap}
+			\credit{WMAP (дев'ятирічні дані), NASA/WMAP Science Team, суспільне надбання}
+		\end{column}
+		\begin{column}{0.36\textwidth}
+			\begin{block}{}\justifying\footnotesize
+				Відхилення $\pm2\times10^{-4}$~К від $2{,}725$~К, тобто $\sim10^{-5}$.
+			\end{block}
+		\end{column}
+	\end{columns}
+	\begin{block}{}\justifying\small
+		Це відбитки \alert{звукових хвиль у~первинній плазмі}: гравітація стискала, тиск випромінювання розпрямляв.
+		З~цих згущень виросли галактики.
+	\end{block}
+\end{frame}
+
+%% ============================================================
+\section{Природна плазма}
+%% ============================================================
+
+\begin{frame}{Чорні діри та джети}
+	\begin{columns}[T]
+		\begin{column}{0.48\textwidth}
+			\pic[\linewidth]{0.36\textheight}{bh-m87-pol}
+			\credit{M87$^{*}$ у поляризованому світлі; EHT Collaboration, CC BY 4.0}
+		\end{column}
+		\begin{column}{0.48\textwidth}
+			\pic[\linewidth]{0.36\textheight}{bh-jet}
+			\credit{Джет M87; Hubble, NASA/ESA, F.~D.~Macchetto}
+		\end{column}
+	\end{columns}
+	\begin{block}{}\justifying\footnotesize
+		Сама діра не є плазмою, але довкола неї~--- \alert{акреційний диск} з~намагніченої плазми ($T$ від мільйонів до мільярдів кельвінів). Кільце на знімку~--- її випромінювання, темна пляма~--- \alert{тінь} діри.
+		Маса M87$^{*}$ $\approx6{,}5\times10^{9}M_\odot$, радіус Шварцшильда $\approx130$~а.о.
+	\end{block}
+	\begin{block}{}\justifying\footnotesize
+		\alert{Джети}~--- вузькі потоки плазми зі~швидкостями, близькими до швидкості світла, вздовж осі обертання, до 4~тис.\ світлових років. Їх колімує магнітне поле, закручене разом із~диском.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Міжзоряний газ. Крабоподібна туманність}
+	\begin{columns}[T]
+		\begin{column}{0.5\textwidth}
+			\pic[\linewidth]{0.55\textheight}{crab-nebula}
+			\credit{Hubble; NASA, ESA, J.~Hester, A.~Loll (ASU)}
+		\end{column}
+		\begin{column}{0.48\textwidth}
+			\begin{block}{}\justifying\footnotesize
+				Від $\sim10^{-3}$ до $10^{3}$ частинок в~см$^{3}$; $T$ від $10$~К до $10^{6}$~К; газ не врівноважений із~випромінюванням, а~за фронтами ударних хвиль $T_e\ne T_i$.
+			\end{block}
+			\begin{block}{}\justifying\footnotesize
+				Залишок наднової 1054~р., розліт газу на кілька світлових років. Волокна тримає вморожене поле; блакитне світіння~--- синхротронне випромінювання релятивістських електронів.
+			\end{block}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+%% ============================================================
+
+\begin{frame}{Сонце і корона}
+	\begin{columns}[T]
+		\begin{column}{0.5\textwidth}
+			\pic[\linewidth]{0.6\textheight}{sun-corona}
+			\credit{SDO/AIA, 171~\AA, 14.05.2024, NASA/SDO}
+		\end{column}
+		\begin{column}{0.48\textwidth}
+			\begin{block}{}\justifying\footnotesize
+				Ядро: $T\sim1{,}5\times10^{7}$~К, термоядерні реакції.\\
+				Фотосфера: $T\approx5800$~К.\\
+				\alert{Корона}: $T\sim10^{6}$~К, $n\sim10^{8}~\mathrm{см}^{-3}$ --- гарячіша на два порядки!
+			\end{block}
+			\begin{alertblock}{}\justifying\footnotesize
+				Яскраві петлі~--- плазма, утримана в~магнітних трубках (пучках силових ліній $\vec B$): частинки легко рухаються вздовж поля й~майже не рухаються впоперек.
+			\end{alertblock}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Сонячний вітер}
+	\begin{block}{}\justifying\small
+		Корона не утримується: потік заряджених частинок \alert{сонячний вітер} має біля Землі $300$--$800$~км/с,
+		кілька частинок в~одному кубічному сантиметрі, $T\sim10^{5}$~К.
+		Вітер несе \alert{вморожене} магнітне поле Сонця; через обертання силові лінії закручуються в~спіраль.
+	\end{block}
+	\begin{exampleblock}{Скільки маси Сонце втрачає на вітер}\justifying\footnotesize
+		$\dot M=4\pi r^2 n m_p v$ при $r=1$~а.о., $n\approx9~\mathrm{см}^{-3}$, $v\approx470$~км/с:
+		$\dot M\approx2\times10^{9}$~кг/с, за рік $6\times10^{16}$~кг $\approx3\times10^{-14}$ маси Сонця.
+		До Землі вітер летить $\approx4$ доби, корональний викид маси ($\sim10^{3}$~км/с)~--- $\approx1{,}7$ доби.
+	\end{exampleblock}
+\end{frame}
+
+\begin{frame}{Магнітосфера і полярне сяйво}
+	\begin{columns}[T]
+		\begin{column}{0.5\textwidth}
+			\pic[\linewidth]{0.5\textheight}{aurora}
+			\credit{Знімок з борту МКС, NASA}
+		\end{column}
+		\begin{column}{0.48\textwidth}
+			\begin{block}{}\justifying\footnotesize
+				Поле Землі ($\sim0{,}5$~Гс) стискає вітер з~боку Сонця й~витягує хвіст \alert{магнітосфери}.
+				Перед нею~--- ударна хвиля без зіткнень.
+			\end{block}
+		\end{column}
+	\end{columns}
+	\begin{block}{}\justifying\small
+		Частинки, спіймані полем, накопичуються в~\alert{радіаційних поясах}; під час бур електрони з~хвоста магнітосфери, прискорені до кількох кеВ, висипаються вздовж силових ліній
+		на висоти $80$--$150$~км, і~виникає сяйво (зелена лінія кисню 557,7~нм). Передбачення таких подій~--- \alert{космічна погода}.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Іоносфера і радіозв'язок}
+	\begin{block}{}\justifying\small
+		З~висот $\sim60$~км атмосфера іонізована Сонцем: шари D, E, F. Максимум концентрації електронів $10^{5}$--$10^{6}~\mathrm{см}^{-3}$ --- на висотах $250$--$400$~км.
+	\end{block}
+	\begin{exampleblock}{Хвилі нижче плазмової частоти відбиваються}\justifying\small
+		\[ f_p\approx9\sqrt{n}\ \text{кГц},\qquad n=10^{6}~\mathrm{см}^{-3}\;\Rightarrow\;f_p\approx9~\text{МГц}. \]
+		Короткі хвилі відбиваються від іоносфери й~приймаються за тисячі кілометрів, ультракороткі проходять крізь неї.
+	\end{exampleblock}
+\end{frame}
+
+\begin{frame}{Блискавка}
+	\begin{columns}[T]
+		\begin{column}{0.5\textwidth}
+			\pic[\linewidth]{0.5\textheight}{lightning}
+			\credit{Техас, NOAA, суспільне надбання}
+		\end{column}
+		\begin{column}{0.48\textwidth}
+			\begin{block}{}\justifying\footnotesize
+				Хмара~--- електричний диполь. Поле десь стає достатнім для пробою~$\to$ електронна лавина~$\to$ \alert{лідер} (кроки в~десятки метрів)
+				$\to$ зворотний розряд $10^{4}$--$10^{5}$~А.
+			\end{block}
+			\begin{block}{}\justifying\footnotesize
+				Канал: $T$ до $3\times10^{4}$~К; грім~--- ударна хвиля розігрітого газу. Плазма живе соті--десяті частки секунди.
+			\end{block}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+%% ============================================================
+\section{Лабораторна й технічна плазма}
+%% ============================================================
+
+\begin{frame}{Газові розряди}
+	\begin{columns}[T]
+		\begin{column}{0.48\textwidth}
+			\pic[\linewidth]{0.4\textheight}{discharge-tubes}
+			\credit{He, Ne, Ar, Kr, Xe; Alchemist-hp, CC BY-SA 2.0 DE}
+		\end{column}
+		\begin{column}{0.48\textwidth}
+			\pic[\linewidth]{0.4\textheight}{plasma-globe}
+			\credit{Плазмова куля; Supportstorm, суспільне надбання}
+		\end{column}
+	\end{columns}
+	\begin{block}{}\justifying\footnotesize
+		Розряд низького тиску: електрони набирають енергію від поля, а~важкі іони майже ні: $T_e\sim1$~еВ, $T_i\sim300$~К, $n_e\sim10^{10}~\mathrm{см}^{-3}$.
+		Колір дає лінійчатий спектр збуджених атомів. У~плазмовій кулі канали~--- \alert{стримери}.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Дуга і плазмотрони}
+	\begin{columns}[T]
+		\begin{column}{0.48\textwidth}
+			\pic[\linewidth]{0.45\textheight}{welding-arc}
+			\credit{Дугове зварювання; W.~M.~Plate~Jr., суспільне надбання}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{block}{}\justifying\footnotesize
+				Дуга високого тиску: частих зіткнень вистачає, щоб вирівняти $T_e\approx T_i\sim1$~еВ~--- \alert{ізотермічна} плазма, $n_e\sim10^{15}$--$10^{17}~\mathrm{см}^{-3}$.
+			\end{block}
+			\begin{block}{}\justifying\footnotesize
+				\alert{Плазмотрон}: струмінь плазми з~$T=(1$--$3)\times10^{4}$~К, потужність від десятків ват до десятків мегават. Безелектродні розряди дають чисту плазму.
+			\end{block}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Технології: різання і напилення}
+	\begin{columns}[T]
+		\begin{column}{0.48\textwidth}
+			\pic[\linewidth]{0.4\textheight}{plasma-cutting}
+			\credit{Плазмове різання; D.~Baron Carral, CC0}
+		\end{column}
+		\begin{column}{0.48\textwidth}
+			\pic[\linewidth]{0.4\textheight}{plasma-spray}
+			\credit{Напилення; Optimi3e, CC BY-SA 4.0}
+		\end{column}
+	\end{columns}
+	\begin{block}{}\justifying\footnotesize
+		Дугу стискає сопло й~потік газу: струмінь $\sim2\times10^{4}$~К розплавляє метал і~здуває розплав (листи до кількох сантиметрів).
+		У~струмінь вдувають порошок~--- метал чи кераміка розплавляються й~утворюють покриття.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Технології: плазмове травлення}
+	\begin{columns}[T]
+		\begin{column}{0.46\textwidth}
+			\pic[\linewidth]{0.5\textheight}{plasma-etching}
+			\credit{Поверхня кремнію після травлення, електронний мікроскоп; PolinLinB, CC BY 4.0}
+		\end{column}
+		\begin{column}{0.52\textwidth}
+			\begin{block}{}\justifying\footnotesize
+				Газ низького тиску ($1$--$100$~мТор), ВЧ-розряд: $T_e$ --- кілька еВ, $n_e\sim10^{9}$--$10^{11}~\mathrm{см}^{-3}$, сам газ майже холодний.
+			\end{block}
+			\begin{block}{}\justifying\footnotesize
+				Електрони розкладають молекули на \alert{радикали}, поле розганяє \alert{іони} перпендикулярно до пластини: радикали реагують, іони задають напрям~--- вузькі глибокі канавки. Так травлять кремній, алюміній, скло.
+			\end{block}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Плазмові двигуни}
+	\begin{columns}[T]
+		\begin{column}{0.5\textwidth}
+			\pic[\linewidth]{0.5\textheight}{hall-thruster}
+			\credit{Двигун Холла, 6~кВт; NASA/JPL}
+		\end{column}
+		\begin{column}{0.48\textwidth}
+			\begin{block}{}\justifying\footnotesize
+				Іони ксенону розганяє електричне поле в~кільцевому каналі; електрони утримує радіальне $\vec B$ і~вони дрейфують у~схрещених полях $\vec E\times\vec B$.
+				Швидкість витікання $10$--$30$~км/с~--- у~кілька разів більша, ніж у~хімічних ракет.
+			\end{block}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Гаряча плазма для синтезу}
+	\begin{columns}[T]
+		\begin{column}{0.5\textwidth}
+			\pic[\linewidth]{0.5\textheight}{tokamak-mast}
+			\credit{Токамак MAST, Culham; Eye Steel Film, CC BY 2.0}
+		\end{column}
+		\begin{column}{0.48\textwidth}
+			\begin{block}{}\justifying\footnotesize
+				Стінка не витримає десятків мільйонів кельвінів, тому плазму \alert{утримує магнітне поле}. У~видимому світлі світиться холодніша периферія, гаряче ядро майже не світить.
+			\end{block}
+			\begin{block}{}\justifying\footnotesize
+				Інерційний шлях: лазерне стиснення мішені. NIF (грудень 2022) --- вихід синтезу вперше перевищив енергію лазера; JET --- рекордні 69~МДж.
+			\end{block}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+%% ============================================================
+\section{Схожі на вигляд, різні за природою}
+%% ============================================================
+
+\begin{frame}{Вогонь і плазма}
+	\begin{columns}[T]
+		\begin{column}{0.4\textwidth}
+			\pic[\linewidth]{0.42\textheight}{campfire}
+			\credit{Багаття; T.~Tscharntke, суспільне надбання}
+		\end{column}
+		\begin{column}{0.58\textwidth}
+			\begin{exampleblock}{Чи є полум'я плазмою?}\justifying\scriptsize
+				$T\approx2000$~К, $n_e\sim10^{10}~\mathrm{см}^{-3}$, $n\approx3{,}6\times10^{18}~\mathrm{см}^{-3}$: $\alpha\sim3\times10^{-9}$.\\
+				$\lambda_{De}\approx3\times10^{-3}$~см $\ll\ell\sim10$~см; $N_D\sim1{,}5\times10^{3}$.\\
+				$\omega_p\approx6\times10^{9}~\mathrm{с}^{-1}$, але $\nu\sim10^{11}~\mathrm{с}^{-1}$.
+			\end{exampleblock}
+		\end{column}
+	\end{columns}
+	\begin{alertblock}{}\justifying\small
+		Критерії колективності виконано, але $\nu\gg\omega_p$: електрон стикається з~нейтралом частіше, ніж робить плазмове коливання. Полум'я~--- гранична слабоіонізована плазма: світіння визначає хімія горіння.
+	\end{alertblock}
+\end{frame}
+
+\begin{frame}{Розрядна трубка й дуга}
+	\begin{block}{}\justifying\small
+		Обидві світяться й~є газовим розрядом, але плазми різні: у~трубці електрони рідко стикаються з~важкими частинками, у~дузі~--- часто.
+	\end{block}
+	\begin{center}\small
+		\begin{tabular}{lcc}
+			& Розрядна трубка & Дуга \\ \hline
+			Тиск & $\sim0{,}1$--$10$~Тор & $\gtrsim1$~атм \\
+			$T_e$ & $\sim1$~еВ & $\sim1$~еВ \\
+			$T_i$ & $\sim300$~К & $\sim1$~еВ \\
+			$n_e$, см$^{-3}$ & $\sim10^{10}$ & $10^{15}$--$10^{17}$ \\
+			Ступінь іонізації & $\lesssim10^{-6}$ & відсотки й~більше \\
+			Рівновага & $T_e\gg T_i$ & ізотермічна \\
+		\end{tabular}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Сонце й токамак}
+	\begin{block}{}\justifying\small
+		І~те, й~те~--- гаряча плазма з~термоядерним синтезом. Сонце тримає \alert{гравітація}, токамак~--- \alert{магнітне поле}.
+	\end{block}
+	\begin{exampleblock}{Скільки потужності дає кубометр Сонця}\justifying\small
+		$L\approx3{,}8\times10^{26}$~Вт у~ядрі радіусом $0{,}2R_\odot\approx1{,}4\times10^{8}$~м, $V\approx1{,}1\times10^{25}~\mathrm{м}^3$:
+		$L/V\approx30$~Вт/м$^3$, як у~купі компосту. Реактору потрібно близько мегавата на кубометр~--- у~десятки тисяч разів більше.
+	\end{exampleblock}
+	\begin{block}{}\justifying\small
+		Тому на Землі плазма мусить бути гарячішою ($\sim10^{8}$~К проти $1{,}5\times10^{7}$~К) і~горіти на суміші дейтерію з~тритієм.
+	\end{block}
+\end{frame}
+
+%% ============================================================
+\section{Підсумок}
+%% ============================================================
+
+\begin{frame}{Що об'єднує всі ці об'єкти}
+	\begin{block}{Три властивості}\justifying\small
+		\begin{itemize}
+			\item \alert{Колективність і~квазінейтральність}: екранування, власні коливання (розд.~1, 2).
+			\item \alert{Магнітне поле}: дрейфи, пастки, вморожене поле (розд.~3, 5, 9).
+			\item \alert{Рідкісні зіткнення, звичайні хвилі й~нестійкості}: кінетика, теорія нестійкостей (розд.~4, 7, 8).
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Підсумок}
+	\begin{block}{}\justifying\footnotesize
+		\begin{itemize}
+			\item Понад 99\,\% видимої речовини~--- плазма: від первинної плазми (рекомбінація за $T\approx0{,}3$~еВ) до зір і~міжгалактичного газу.
+			\item Природна плазма: $n$ від $10^{-5}$ до $10^{26}~\mathrm{см}^{-3}$, розміри від кілометрів до світлових років; структури задає магнітне поле.
+			\item Лабораторна: розряд низького тиску нерівноважний ($T_e\gg T_i$), дуга ізотермічна; різання, напилення, травлення, двигуни, синтез.
+			\item Полум'я~--- гранична плазма ($\alpha\sim10^{-9}$): $\nu\gg\omega_p$.
+			\item Об'єкти розрізняють за $n$, $T_e$, $T_i$, ступенем іонізації та способом утримання.
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Контрольні питання}
+	\begin{enumerate}\justifying\small
+		\item Чому Всесвіт був непрозорим до рекомбінації й~став прозорим після неї?
+		\item Чому водень рекомбінує за $T\sim0{,}3$~еВ, а~не $13{,}6$~еВ?
+		\item Чому петлі в~короні повторюють силові лінії?
+		\item Чим розрядна трубка відрізняється від дуги за $T_e$, $T_i$, ступенем іонізації?
+		\item Чому полум'я~--- слабка плазма? Яка величина це показує?
+		\item Чому реактору на Землі потрібна вища температура, ніж у~ядрі Сонця?
+		\item Чому іоносфера відбиває короткі хвилі, а~ультракороткі проходять?
+		\item Чому в~міжзоряному газі $T_e\ne T_i$?
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}
+	\centering
+	\vspace{1.5cm}
+	{\bfseries\huge Дякую за увагу!}
+\end{frame}
+
+\end{document}
