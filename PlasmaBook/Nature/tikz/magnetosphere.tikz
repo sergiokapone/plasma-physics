@@ -1,0 +1,82 @@
+% Магнітосфера Землі, вид збоку, Сонце ліворуч. Одиниця довжини: 1 см ~ 2,5 R_E (схематично).
+\begin{tikzpicture}[scale=0.75, >=latex']
+	\def\RE{0.4}      % радіус Землі
+	\def\xnose{-4}    % носик магнітопаузи
+	\def\ymp{3.4}     % напівширина хвоста магнітопаузи
+	\def\cmp{1.5}
+	\def\xbs{-5.4}    % носик ударної хвилі
+	\def\ybs{4.8}
+	\def\cbs{4}
+	\def\xend{9}      % кінець хвоста
+	\pgfmathsetmacro{\umpmax}{sqrt(\xend-\xnose)}
+	\pgfmathsetmacro{\ubsmax}{sqrt(\xend-\xbs)}
+
+	% ударна хвиля
+	\draw[orange!80!black, very thick, dashed]
+		plot[domain=-\ubsmax:\ubsmax, samples=60]
+		({\xbs+\x*\x}, {\ybs*\x/sqrt(\x*\x+\cbs)});
+	% магнітопауза
+	\draw[very thick, fill=blue!8]
+		plot[domain=-\umpmax:\umpmax, samples=60]
+		({\xnose+\x*\x}, {\ymp*\x/sqrt(\x*\x+\cmp)});
+
+	% радіаційні пояси (перерізи торів): між L1 і L2
+	\foreach \sgn in {1,-1}{
+		\fill[green!50!black, opacity=0.35] plot[domain=-30:30, samples=20]
+			({\sgn*0.8*cos(\x)^3},{0.8*cos(\x)^2*sin(\x)})
+			-- plot[domain=30:-30, samples=20]
+			({\sgn*1.2*cos(\x)^3},{1.2*cos(\x)^2*sin(\x)}) -- cycle;
+		\fill[green!50!black, opacity=0.35] plot[domain=-28:28, samples=20]
+			({\sgn*1.8*cos(\x)^3},{1.8*cos(\x)^2*sin(\x)})
+			-- plot[domain=28:-28, samples=20]
+			({\sgn*2.4*cos(\x)^3},{2.4*cos(\x)^2*sin(\x)}) -- cycle;
+	}
+
+	% дипольні силові лінії: замкнені (L=1,5) і денний бік лінії L=3
+	\draw[blue, thick] plot[domain=-90:90, samples=60]
+		({1.5*cos(\x)^3},{1.5*cos(\x)^2*sin(\x)});
+	\draw[blue, thick] plot[domain=-90:90, samples=60]
+		({-1.5*cos(\x)^3},{1.5*cos(\x)^2*sin(\x)});
+	\draw[blue, thick] plot[domain=-68.6:68.6, samples=60]
+		({-3*cos(\x)^3},{3*cos(\x)^2*sin(\x)});
+	% нічний бік: витягнута замкнена лінія
+	\draw[blue, thick] (0.146,0.372) .. controls (1,2.6) and (4,1.3) .. (5.5,0)
+		.. controls (4,-1.3) and (1,-2.6) .. (0.146,-0.372);
+	% відкриті лінії хвоста
+	\draw[blue, thick] (0.08,0.392) .. controls (0.2,2.4) and (3,2.2) .. (\xend,2.0);
+	\draw[blue, thick] (0.08,-0.392) .. controls (0.2,-2.4) and (3,-2.2) .. (\xend,-2.0);
+	\draw[blue, thick] (0.04,0.398) .. controls (0.1,1.5) and (3,1.1) .. (\xend,1.0);
+	\draw[blue, thick] (0.04,-0.398) .. controls (0.1,-1.5) and (3,-1.1) .. (\xend,-1.0);
+	% стрілки на лініях (північ: до Землі, південь: від Землі)
+	\draw[blue, thick, ->] (6.1,2.1) -- (5.9,2.1);
+	\draw[blue, thick, ->] (6.0,-2.1) -- (6.2,-2.1);
+	\draw[blue, thick, ->] (6.1,1.05) -- (5.9,1.05);
+	\draw[blue, thick, ->] (6.0,-1.05) -- (6.2,-1.05);
+
+	% нейтральний шар
+	\draw[densely dashed, black!70] (5.9,0) -- (\xend,0);
+
+	% Земля
+	\draw[thick, fill=blue!30] (0,0) circle (\RE);
+
+	% сонячний вітер
+	\foreach \y in {-3.6,-2.4,-1.2,0,1.2,2.4,3.6}{
+		\draw[very thick, ->] (-9.2,\y) -- (-7,\y);
+	}
+
+	% підписи
+	\node[font=\footnotesize, align=center] at (-8.1,4.3) {сонячний\\ вітер};
+	\node[font=\footnotesize, orange!80!black, anchor=south, align=center] (bs) at (-4.2,5.7) {ударна хвиля};
+	\draw[orange!80!black, thin] (bs.south) ++(0.4,0) -- (-3.6,{\ybs*sqrt(1.8)/sqrt(1.8+\cbs)}) ;
+	\node[font=\footnotesize, align=center] at (-5.3,2.9) {перехідна\\ область};
+	\node[font=\footnotesize, anchor=south east, align=center] (mp) at (-1.5,4.1) {магнітопауза};
+	\draw[thin] (mp.south east) ++(-0.2,0) -- (-2.9,{\ymp*sqrt(1.1)/sqrt(1.1+\cmp)});
+	\node[font=\footnotesize, green!40!black, align=center] (rb) at (-2.2,-3.6) {радіаційні\\ пояси};
+	\draw[green!40!black, thin] (-2.5,-3.1) -- (-2.0,-0.9);
+	\draw[green!40!black, thin] (-1.9,-3.1) -- (-0.85,-0.45);
+	\node[font=\footnotesize, align=center] at (6.8,2.75) {хвіст магнітосфери};
+	\node[font=\footnotesize, black!70, anchor=north east] at (\xend,-0.1) {нейтральний шар};
+	\node[font=\footnotesize, anchor=north, fill=white, inner sep=1pt] at (0,-0.5) {Земля};
+	% масштабна позначка
+	\draw[<->, thin] (\xnose,-5.0) -- (0,-5.0) node[midway, above, font=\footnotesize] {$\sim10\,R_E$};
+\end{tikzpicture}
