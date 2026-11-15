@@ -1,0 +1,3329 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Елементи фізики плазми — Плазма довкола нас</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-24"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Елементи фізики плазми</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../PlasmaBook/main.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="preface.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+
+<p>
+<a href="nature.html#autosec-26" class="tocchapter" >
+<span class="sectionnumber">0</span><span class="toctitle">&#x2003;Плазма довкола нас</span></a>
+</p>
+
+
+
+<p>
+<a href="nature.html#autosec-27" class="tocsection" >
+<span class="sectionnumber">0.1</span><span class="toctitle">&#x2003;Природна плазма</span></a>
+</p>
+
+
+
+<p>
+<a href="nature.html#autosec-46" class="tocsection" >
+<span class="sectionnumber">0.2</span><span class="toctitle">&#x2003;Лабораторна й&nbsp;технічна плазма</span></a>
+</p>
+
+
+
+<p>
+<a href="nature.html#autosec-60" class="tocsection" >
+<span class="sectionnumber">0.3</span><span class="toctitle">&#x2003;Схожі на вигляд, різні за природою</span></a>
+</p>
+
+
+
+<p>
+<a href="nature.html#autosec-66" class="tocsection" >
+<span class="sectionnumber">0.4</span><span class="toctitle">&#x2003;Що об’єднує всі ці об’єкти</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-69" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Плазма: від іонізованого газу до колективного середовища</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-70" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Що таке плазма?</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-75" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Іонізація: формула Саха</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-80" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Температура плазми та два компоненти</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-81" class="tocsection" >
+<span class="sectionnumber">1.4</span><span class="toctitle">&#x2003;Квазінейтральність і&nbsp;плазмові коливання</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-91" class="tocsection" >
+<span class="sectionnumber">1.5</span><span class="toctitle">&#x2003;Дебаївське екранування</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-101" class="tocsection" >
+<span class="sectionnumber">1.6</span><span class="toctitle">&#x2003;Дебаївська сфера. Умова колективності</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-108" class="tocsection" >
+<span class="sectionnumber">1.7</span><span class="toctitle">&#x2003;Слабкозв’язана та сильнозв’язана плазма</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-109" class="tocsection" >
+<span class="sectionnumber">1.8</span><span class="toctitle">&#x2003;Екранування у&nbsp;виродженому газі: довжина Томаса–Фермі</span></a>
+</p>
+
+
+
+<p>
+<a href="basics.html#autosec-110" class="tocsection" >
+<span class="sectionnumber">1.9</span><span class="toctitle">&#x2003;Шар біля стінки і&nbsp;зонд Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="waves.html#autosec-154" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Колективні коливання та хвилі в&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="waves.html#autosec-155" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Діелектрична проникність холодної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="waves.html#autosec-159" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Закон дисперсії. Частота відсікання</span></a>
+</p>
+
+
+
+<p>
+<a href="waves.html#autosec-164" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Поздовжні (ленгмюрівські) хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="waves.html#autosec-172" class="tocsection" >
+<span class="sectionnumber">2.4</span><span class="toctitle">&#x2003;Зіткнення й&nbsp;поглинання електромагнітних хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="waves.html#autosec-173" class="tocsection" >
+<span class="sectionnumber">2.5</span><span class="toctitle">&#x2003;Відбиття електромагнітних хвиль від плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="waves.html#autosec-176" class="tocsection" >
+<span class="sectionnumber">2.6</span><span class="toctitle">&#x2003;Іоносфера і&nbsp;далекий радіозв’язок</span></a>
+</p>
+
+
+
+<p>
+<a href="waves.html#autosec-178" class="tocsection" >
+<span class="sectionnumber">2.7</span><span class="toctitle">&#x2003;Як це вимірюють: інтерферометрія і&nbsp;рефлектометрія</span></a>
+</p>
+
+
+
+<p>
+<a href="motion.html#autosec-201" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Рух зарядженої частинки в&nbsp;електричному та&nbsp;магнітному полях</span></a>
+</p>
+
+
+
+<p>
+<a href="motion.html#autosec-202" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Однорідне магнітне поле</span></a>
+</p>
+
+
+
+<p>
+<a href="motion.html#autosec-206" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Дрейфи в&nbsp;схрещених полях</span></a>
+</p>
+
+
+
+<p>
+<a href="motion.html#autosec-224" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Поляризаційний дрейф</span></a>
+</p>
+
+
+
+<p>
+<a href="motion.html#autosec-228" class="tocsection" >
+<span class="sectionnumber">3.4</span><span class="toctitle">&#x2003;Магнітний момент і&nbsp;адіабатичний інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="motion.html#autosec-241" class="tocsection" >
+<span class="sectionnumber">3.5</span><span class="toctitle">&#x2003;Магнітне дзеркало і&nbsp;конус втрат</span></a>
+</p>
+
+
+
+<p>
+<a href="motion.html#autosec-248" class="tocsection" >
+<span class="sectionnumber">3.6</span><span class="toctitle">&#x2003;Подовжній інваріант</span></a>
+</p>
+
+
+
+<p>
+<a href="motion.html#autosec-249" class="tocsection" >
+<span class="sectionnumber">3.7</span><span class="toctitle">&#x2003;Диполь Землі та радіаційні пояси</span></a>
+</p>
+
+
+
+<p>
+<a href="motion.html#autosec-254" class="tocsection" >
+<span class="sectionnumber">3.8</span><span class="toctitle">&#x2003;Як це вимірюють: аналізатор енергій і&nbsp;ECE</span></a>
+</p>
+
+
+
+<p>
+<a href="collisions.html#autosec-270" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Зіткнення, провідність та перенос у&nbsp;плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="collisions.html#autosec-271" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Кулонівські зіткнення</span></a>
+</p>
+
+
+
+<p>
+<a href="collisions.html#autosec-283" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Провідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="collisions.html#autosec-286" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Теплопровідність плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="collisions.html#autosec-287" class="tocsection" >
+<span class="sectionnumber">4.4</span><span class="toctitle">&#x2003;Дифузія в&nbsp;плазмі. Амбіполярна дифузія</span></a>
+</p>
+
+
+
+<p>
+<a href="collisions.html#autosec-289" class="tocsection" >
+<span class="sectionnumber">4.5</span><span class="toctitle">&#x2003;Як це вимірюють: температура з&nbsp;опору і&nbsp;з&nbsp;ширини ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-301" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Гідродинамічний та магнітогідродинамічний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-302" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Гідродинамічний опис не є синонімом частих зіткнень</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-303" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Дворідинний опис</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-307" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Від дворідинної моделі до однорідинної МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-313" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Основне рівняння магнітної гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-319" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Альвенівська швидкість і&nbsp;число Альвена</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-320" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;МГД-рівновага та магнітні поверхні</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-328" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Енергія електромагнітного поля та плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-329" class="tocsection" >
+<span class="sectionnumber">5.8</span><span class="toctitle">&#x2003;Діамагнетизм плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-331" class="tocsection" >
+<span class="sectionnumber">5.9</span><span class="toctitle">&#x2003;Вмороженість магнітного поля</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-338" class="tocsection" >
+<span class="sectionnumber">5.10</span><span class="toctitle">&#x2003;Пересполучення силових ліній</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-342" class="tocsection" >
+<span class="sectionnumber">5.11</span><span class="toctitle">&#x2003;Дві мови опису: окремі частинки й&nbsp;суцільне середовище</span></a>
+</p>
+
+
+
+<p>
+<a href="fluid.html#autosec-361" class="tocsection" >
+<span class="sectionnumber">5.12</span><span class="toctitle">&#x2003;Як це вимірюють: магнітні виміри</span></a>
+</p>
+
+
+
+<p>
+<a href="linearwaves.html#autosec-389" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="linearwaves.html#autosec-390" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Що в&nbsp;плазмі може бути відновлювальною силою?</span></a>
+</p>
+
+
+
+<p>
+<a href="linearwaves.html#autosec-391" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Звукова й&nbsp;іонно-звукова хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="linearwaves.html#autosec-396" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Лінеаризована МГД і&nbsp;загальне дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="linearwaves.html#autosec-397" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Альвенівська хвиля</span></a>
+</p>
+
+
+
+<p>
+<a href="linearwaves.html#autosec-403" class="tocsection" >
+<span class="sectionnumber">6.5</span><span class="toctitle">&#x2003;Магнітозвукові хвилі</span></a>
+</p>
+
+
+
+<p>
+<a href="linearwaves.html#autosec-410" class="tocsection" >
+<span class="sectionnumber">6.6</span><span class="toctitle">&#x2003;Підсумок: хвилі в&nbsp;рідинному описі</span></a>
+</p>
+
+
+
+<p>
+<a href="linearwaves.html#autosec-413" class="tocsection" >
+<span class="sectionnumber">6.7</span><span class="toctitle">&#x2003;Високочастотні хвилі в&nbsp;замагніченій плазмі</span></a>
+</p>
+
+
+
+<p>
+<a href="linearwaves.html#autosec-421" class="tocsection" >
+<span class="sectionnumber">6.8</span><span class="toctitle">&#x2003;Межі застосовності МГД-хвиль</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-442" class="tocchapter" >
+<span class="sectionnumber">7</span><span class="toctitle">&#x2003;Кінетичний опис плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-443" class="tocsection" >
+<span class="sectionnumber">7.1</span><span class="toctitle">&#x2003;Функція розподілу та фазовий простір</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-444" class="tocsection" >
+<span class="sectionnumber">7.2</span><span class="toctitle">&#x2003;Моменти функції розподілу</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-445" class="tocsection" >
+<span class="sectionnumber">7.3</span><span class="toctitle">&#x2003;Кінетичне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-446" class="tocsection" >
+<span class="sectionnumber">7.4</span><span class="toctitle">&#x2003;Максвеллівський розподіл і&nbsp;температура</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-447" class="tocsection" >
+<span class="sectionnumber">7.5</span><span class="toctitle">&#x2003;Від кінетики до гідродинаміки</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-448" class="tocsection" >
+<span class="sectionnumber">7.6</span><span class="toctitle">&#x2003;Перший міст між кінетикою та рідинним описом: дисперсія Ленгмюра</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-449" class="tocsection" >
+<span class="sectionnumber">7.7</span><span class="toctitle">&#x2003;Лінеаризація кінетичного рівняння та хвильовий відгук</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-457" class="tocsection" >
+<span class="sectionnumber">7.8</span><span class="toctitle">&#x2003;Загасання Ландау</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-466" class="tocsection" >
+<span class="sectionnumber">7.9</span><span class="toctitle">&#x2003;Коли потрібен кінетичний опис?</span></a>
+</p>
+
+
+
+<p>
+<a href="kinetics.html#autosec-467" class="tocsection" >
+<span class="sectionnumber">7.10</span><span class="toctitle">&#x2003;Як це вимірюють: томсонівське розсіяння</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-492" class="tocchapter" >
+<span class="sectionnumber">8</span><span class="toctitle">&#x2003;Загальний принцип нестійкості плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-493" class="tocsection" >
+<span class="sectionnumber">8.1</span><span class="toctitle">&#x2003;Що означає нестійкість?</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-497" class="tocsection" >
+<span class="sectionnumber">8.2</span><span class="toctitle">&#x2003;Лінеаризація: як знайти долю малого збурення</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-499" class="tocsection" >
+<span class="sectionnumber">8.3</span><span class="toctitle">&#x2003;Хвиля, що може рости</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-503" class="tocsection" >
+<span class="sectionnumber">8.4</span><span class="toctitle">&#x2003;Дисперсійне рівняння</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-507" class="tocsection" >
+<span class="sectionnumber">8.5</span><span class="toctitle">&#x2003;Звідки береться енергія нестійкості?</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-511" class="tocsection" >
+<span class="sectionnumber">8.6</span><span class="toctitle">&#x2003;Рівновага та стійкість у&nbsp;магнітному полі</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-515" class="tocsection" >
+<span class="sectionnumber">8.7</span><span class="toctitle">&#x2003;Перетяжка як найпростіший приклад нестійкості</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-516" class="tocsection" >
+<span class="sectionnumber">8.8</span><span class="toctitle">&#x2003;Лінійна та нелінійна стадії</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-520" class="tocsection" >
+<span class="sectionnumber">8.9</span><span class="toctitle">&#x2003;Нестійкість Релея–Тейлора та жолобкова нестійкість</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-527" class="tocsection" >
+<span class="sectionnumber">8.10</span><span class="toctitle">&#x2003;Двопотокова нестійкість та нестійкість пучка</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-531" class="tocsection" >
+<span class="sectionnumber">8.11</span><span class="toctitle">&#x2003;Нестійкості анізотропної плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-532" class="tocsection" >
+<span class="sectionnumber">8.12</span><span class="toctitle">&#x2003;Енергетичний принцип</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">8.13</span><span class="toctitle">&#x2003;Дрейфові хвилі та аномальний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-534" class="tocsection" >
+<span class="sectionnumber">8.14</span><span class="toctitle">&#x2003;Від загального принципу до конкретних нестійкостей</span></a>
+</p>
+
+
+
+<p>
+<a href="instability.html#autosec-537" class="tocsection" >
+<span class="sectionnumber">8.15</span><span class="toctitle">&#x2003;Як це вимірюють: котушки Мірнова і&nbsp;м’який рентген</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-548" class="tocchapter" >
+<span class="sectionnumber">9</span><span class="toctitle">&#x2003;Магнітне утримання плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-549" class="tocsection" >
+<span class="sectionnumber">9.1</span><span class="toctitle">&#x2003;Проблема утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-550" class="tocsection" >
+<span class="sectionnumber">9.2</span><span class="toctitle">&#x2003;Відкриті пастки: магнітне дзеркало</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-551" class="tocsection" >
+<span class="sectionnumber">9.3</span><span class="toctitle">&#x2003;Пінч-ефект</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-555" class="tocsection" >
+<span class="sectionnumber">9.4</span><span class="toctitle">&#x2003;Рівновага \(z\)-пінча. Співвідношення Беннета</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-561" class="tocsection" >
+<span class="sectionnumber">9.5</span><span class="toctitle">&#x2003;Рівновага \(\mittheta \)-пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-562" class="tocsection" >
+<span class="sectionnumber">9.6</span><span class="toctitle">&#x2003;Нестійкості пінча</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-569" class="tocsection" >
+<span class="sectionnumber">9.7</span><span class="toctitle">&#x2003;Тороїдальні системи: токамак і&nbsp;стеларатор</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-573" class="tocsection" >
+<span class="sectionnumber">9.8</span><span class="toctitle">&#x2003;Захоплені частинки й&nbsp;неокласичний перенос</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-577" class="tocsection" >
+<span class="sectionnumber">9.9</span><span class="toctitle">&#x2003;Рівновага тора: зсув Шафранова та межа за тиском</span></a>
+</p>
+
+
+
+<p>
+<a href="confinement.html#autosec-578" class="tocsection" >
+<span class="sectionnumber">9.10</span><span class="toctitle">&#x2003;Як це вимірюють: магнітна реконструкція рівноваги</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-589" class="tocchapter" >
+<span class="sectionnumber">10</span><span class="toctitle">&#x2003;Керований термоядерний синтез</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-590" class="tocsection" >
+<span class="sectionnumber">10.1</span><span class="toctitle">&#x2003;Реакції та паливо</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-591" class="tocsection" >
+<span class="sectionnumber">10.2</span><span class="toctitle">&#x2003;Чому потрібна саме така температура: бар’єр і&nbsp;тунелювання</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-598" class="tocsection" >
+<span class="sectionnumber">10.3</span><span class="toctitle">&#x2003;Баланс потужностей і&nbsp;критерій Лоусона</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-599" class="tocsection" >
+<span class="sectionnumber">10.4</span><span class="toctitle">&#x2003;Втрати</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-600" class="tocsection" >
+<span class="sectionnumber">10.5</span><span class="toctitle">&#x2003;Дві стратегії: магнітне й&nbsp;інерційне утримання</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-601" class="tocsection" >
+<span class="sectionnumber">10.6</span><span class="toctitle">&#x2003;Від реакції до розетки</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-608" class="tocsection" >
+<span class="sectionnumber">10.7</span><span class="toctitle">&#x2003;Що ще треба вирішити</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-609" class="tocsection" >
+<span class="sectionnumber">10.8</span><span class="toctitle">&#x2003;Інерційний шлях</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-610" class="tocsection" >
+<span class="sectionnumber">10.9</span><span class="toctitle">&#x2003;Де ми зараз: стан на&nbsp;2026&nbsp;рік</span></a>
+</p>
+
+
+
+<p>
+<a href="fusion.html#autosec-613" class="tocsection" >
+<span class="sectionnumber">10.10</span><span class="toctitle">&#x2003;Як це вимірюють: нейтронна діагностика</span></a>
+</p>
+
+
+
+<p>
+<a href="discharge.html#autosec-624" class="tocchapter" >
+<span class="sectionnumber">11</span><span class="toctitle">&#x2003;Низькотемпературна плазма та газовий розряд</span></a>
+</p>
+
+
+
+<p>
+<a href="discharge.html#autosec-625" class="tocsection" >
+<span class="sectionnumber">11.1</span><span class="toctitle">&#x2003;Елементарні процеси: іонізація і&nbsp;її швидкість</span></a>
+</p>
+
+
+
+<p>
+<a href="discharge.html#autosec-626" class="tocsection" >
+<span class="sectionnumber">11.2</span><span class="toctitle">&#x2003;Пробій газу: механізм Таунсенда і&nbsp;закон Пашена</span></a>
+</p>
+
+
+
+<p>
+<a href="discharge.html#autosec-630" class="tocsection" >
+<span class="sectionnumber">11.3</span><span class="toctitle">&#x2003;Тліючий розряд і&nbsp;дуга</span></a>
+</p>
+
+
+
+<p>
+<a href="discharge.html#autosec-636" class="tocsection" >
+<span class="sectionnumber">11.4</span><span class="toctitle">&#x2003;Приелектродний шар у&nbsp;розряді</span></a>
+</p>
+
+
+
+<p>
+<a href="discharge.html#autosec-637" class="tocsection" >
+<span class="sectionnumber">11.5</span><span class="toctitle">&#x2003;Глобальна модель розряду</span></a>
+</p>
+
+
+
+<p>
+<a href="discharge.html#autosec-638" class="tocsection" >
+<span class="sectionnumber">11.6</span><span class="toctitle">&#x2003;Високочастотні джерела плазми</span></a>
+</p>
+
+
+
+<p>
+<a href="discharge.html#autosec-647" class="tocsection" >
+<span class="sectionnumber">11.7</span><span class="toctitle">&#x2003;Плазмова обробка матеріалів</span></a>
+</p>
+
+
+
+<p>
+<a href="discharge.html#autosec-648" class="tocsection" >
+<span class="sectionnumber">11.8</span><span class="toctitle">&#x2003;Як це вимірюють: оптична емісія і&nbsp;ВЧ-зонди</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-659" class="tocchapter" >
+<span class="sectionnumber">12</span><span class="toctitle">&#x2003;Основні масштаби, режими та межі моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-660" class="tocsection" >
+<span class="sectionnumber">12.1</span><span class="toctitle">&#x2003;Просторові та часові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-664" class="tocsection" >
+<span class="sectionnumber">12.2</span><span class="toctitle">&#x2003;Зіткнювальний та беззіткнювальний режими</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-665" class="tocsection" >
+<span class="sectionnumber">12.3</span><span class="toctitle">&#x2003;Як за масштабами вибирають модель</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-668" class="tocsection" >
+<span class="sectionnumber">12.4</span><span class="toctitle">&#x2003;Типова ієрархія масштабів у магнітному утриманні</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-669" class="tocsection" >
+<span class="sectionnumber">12.5</span><span class="toctitle">&#x2003;Від кінетики до МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-670" class="tocsection" >
+<span class="sectionnumber">12.6</span><span class="toctitle">&#x2003;Безрозмірні параметри МГД</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-671" class="tocsection" >
+<span class="sectionnumber">12.7</span><span class="toctitle">&#x2003;Межі простих моделей</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-672" class="tocsection" >
+<span class="sectionnumber">12.8</span><span class="toctitle">&#x2003;Основні масштаби та формули</span></a>
+</p>
+
+
+
+<p>
+<a href="scales.html#autosec-675" class="tocsection" >
+<span class="sectionnumber">12.9</span><span class="toctitle">&#x2003;Що вимірюють на&nbsp;якому масштабі</span></a>
+</p>
+
+
+
+<p>
+<a href="summary.html#autosec-687" class="tocchapter" >
+Підсумки</a>
+</p>
+
+
+
+<p>
+<a href="answers.html#autosec-692" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+
+<p>
+<a href="appendices.html#autosec-707" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+
+<p>
+<a href="appendices.html#autosec-708" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Таблиця позначень</span></a>
+</p>
+
+
+
+<p>
+<a href="appendices.html#autosec-720" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Перехід між СГС і&nbsp;СІ. Константи</span></a>
+</p>
+
+
+
+<p>
+<a href="appendices.html#autosec-733" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Шпаргалка: ключові масштаби</span></a>
+</p>
+
+
+
+<p>
+<a href="glossary.html#autosec-738" class="tocpart" >
+Словник термінів</a>
+</p>
+
+
+
+<p>
+<a href="bibliography.html#autosec-742" class="tocchapter" >
+Література</a>
+</p>
+
+
+
+<p>
+<a href="bibliography.html#autosec-743" class="tocsection" >
+Підручники та посібники</a>
+</p>
+
+
+
+<p>
+<a href="bibliography.html#autosec-744" class="tocsection" >
+Джерела фактів і результатів</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Плазма довкола нас">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Елементи фізики плазми</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\newcommand {\vect }[1]{\mathbf {#1}}\)
+
+\(\newcommand {\Efield }{\vect {E}}\)
+
+\(\newcommand {\Dfield }{\vect {D}}\)
+
+\(\newcommand {\Bfield }{\vect {B}}\)
+
+\(\newcommand {\Hfield }{\vect {H}}\)
+
+\(\newcommand {\rot }{\mathbf {\nabla }\times }\)
+
+\(\newcommand {\divg }{\mathbf {\nabla }\cdot }\)
+
+\(\newcommand {\grad }{\vect {\nabla }}\)
+
+\(\newcommand {\diff }[2]{\frac {\partial #1}{\partial #2}}\)
+
+\(\newcommand {\ddiff }[2]{\frac {\partial ^2 #1}{\partial #2^2}}\)
+
+\(\newcommand {\parttime }[1]{\frac {\partial {#1}}{\partial t}}\)
+
+\(\newcommand {\pparttime }[1]{\frac {\partial ^2{#1}}{\partial t^2}}\)
+
+\(\renewcommand {\phi }{\varphi }\)
+
+\(\renewcommand {\epsilon }{\varepsilon }\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\Div }{div}\)
+
+\(\DeclareMathOperator {\Rot }{rot}\)
+
+\(\DeclareMathOperator {\Grad }{grad}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\renewcommand {\iiint }{\int }\)
+
+\(\renewcommand {\iint }{\int }\)
+
+\(\newcommand {\oiint }{\oint }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Плазма довкола нас ......
+-->
+<h3 id="autosec-26"><span class="sectionnumber">0&#x2003;</span>Плазма довкола нас</h3>
+<a id="main-html-autopage-26"></a>
+<a id="main-html-autofile-2"></a>
+
+<a id="sec:plasma-nature"></a>
+
+<p>
+<a id="LWR-ht-plasma-nature"></a>
+</p>
+
+<p>
+Перш ніж міряти плазму числами, подивімося на неї. За оцінками, понад 99&#x202f;&percnt; видимої речовини у&nbsp;Всесвіті перебуває в&nbsp;стані плазми, тож екскурсію почнемо з&nbsp;космосу, а&nbsp;закінчимо лабораторією
+й&nbsp;технікою. У&nbsp;цьому розділі нічого не виводимо: лише розглядаємо знімки й&nbsp;вчимося бачити на них фізику, яку з’ясуємо в&nbsp;наступних розділах. Частину об’єктів (іоносферу, корону, сонячний вітер, газовий розряд, токамак)
+знайдемо в&nbsp;табл.&nbsp;<a href="basics.html#tab:plasma-types">1.1</a> і&nbsp;на діаграмі рис.&nbsp;<a href="basics.html#fig:plasma-types">1.1</a> розд.&nbsp;<a href="basics.html#sec:plasma-basics">1</a>. Якщо якесь слово чи
+число здається незрозумілим, не зупиняйтеся: посилання вказує розділ, де це пояснено.
+</p>
+<!--
+...... section Природна плазма ......
+-->
+<h4 id="autosec-27"><span class="sectionnumber">&#xA7;&#x202F;0.1&#x2003;</span>Природна плазма</h4>
+<a id="main-html-autopage-27"></a>
+
+
+<a id="sec:nature-natural"></a>
+<!--
+...... subsection Всесвіт як плазма ......
+-->
+<h5 id="autosec-28">Всесвіт як плазма</h5>
+<a id="main-html-autopage-28"></a>
+
+
+<p>
+Почнімо з&nbsp;самого початку. Плазма&nbsp;— не екзотика, а&nbsp;первинний стан видимої речовини. Приблизно перші 380&nbsp;тисяч років після Великого вибуху Всесвіт був заповнений гарячою <em>воднево-гелієвою плазмою</em>:
+протони (разом із&nbsp;ядрами гелію це приблизно вся звичайна речовина), електрони й&nbsp;фотони. Фотони безперервно розсіювалися на вільних електронах, тож Всесвіт був непрозорий, як сяюча куля. Розширення охолоджувало плазму,
+і&nbsp;коли її температура впала до \(\sim 3\times 10^{3}\)&nbsp;К (близько \(0{,}3\)&nbsp;еВ, у&nbsp;\(\sim 50\) разів нижче за потенціал іонізації водню \(13{,}6\)&nbsp;еВ), електрони об’єдналися з&nbsp;ядрами в&nbsp;нейтральні
+атоми: настала <em><span
+    class="textcolor"
+    style="color:#990000"
+>рекомбінація</span></em>. Відтоді світло летить вільно й&nbsp;дійшло до нас як <em><span
+    class="textcolor"
+    style="color:#990000"
+>реліктове випромінювання</span></em>, охолоджене розширенням до \(2{,}725\)&nbsp;К (рис.&nbsp;<a href="nature.html#fig:nature-cmb">1</a>).
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Коли Всесвіт рекомбінував.</b> Сьогодні концентрація атомів водню у&nbsp;Всесвіті&nbsp;— \(n_{H}\approx 2\times 10^{-7}~\mathrm {см}^{-3}\). Під час рекомбінації Всесвіт був менший у&nbsp;\(1+z\approx 1100\) разів за
+кожним виміром (\(z\)&nbsp;— червоне зміщення), тож \(n\approx 2\times 10^{-7}\cdot 1100^{3}\approx 2{,}7\times 10^{2}~\mathrm {см}^{-3}\). За формулою Саха (§&#x202f;<a href="basics.html#sec:saha">1.2</a>) для такої
+концентрації ступінь іонізації \(\alpha \) (§&#x202f;<a href="basics.html#sec:what-is-plasma">1.1</a>) досягає \(1/2\) за \(T\approx 3{,}7\times 10^{3}\)&nbsp;К (\(0{,}32\)&nbsp;еВ), а&nbsp;за \(T=3\times 10^{3}\)&nbsp;К вона вже
+лише \(\alpha \sim 5\times 10^{-3}\). Температура реліктового випромінювання тоді була \(2{,}725\cdot 1101\approx 3\times 10^{3}\)&nbsp;К, тобто збігається з&nbsp;оцінкою за порядком.
+</p>
+</div>
+
+<p>
+Рівноважна формула Саха дає дещо вищу температуру, ніж справжня: у&nbsp;Всесвіті, що розширюється, рекомбінація не встигає за рівновагою. Важливо, що водень рекомбінує за \(T\approx 0{,}3\)&nbsp;еВ, а&nbsp;не за
+\(13{,}6\)&nbsp;еВ: на один атом припадає близько \(10^{9}\) фотонів, і&nbsp;навіть рідкісні фотони з&nbsp;«хвоста» планківського розподілу з&nbsp;енергією понад \(13{,}6\)&nbsp;еВ встигають іонізувати атоми; це той самий виграш
+ентропії вільних електронів, що й&nbsp;у&nbsp;§&#x202f;<a href="basics.html#sec:saha">1.2</a>.
+</p>
+
+<figure id="autoid-1" class="figure ">
+<div class="center">
+
+<p>
+
+<a href="Nature/Pictures/cmb-wmap.jpg" target="_blank" ><img
+   src="Nature/Pictures/cmb-wmap.jpg"
+   style="
+   width:369pt;
+   "
+   class="inlineimage"
+   alt="Рис. 1. Реліктове випромінювання: карта всього неба за даними WMAP (дев’ятирічні спостереження; NASA/WMAP Science Team, суспільне надбання). Кольори показують відхилення температури від середньої 2,725 К в межах 210^-4 К (синій — холодніше,…"
+></a>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;1. Реліктове випромінювання: карта всього неба за даними WMAP (дев’ятирічні спостереження; NASA/WMAP Science Team, суспільне надбання). Кольори показують відхилення температури від середньої \(2{,}725\)&nbsp;К в&nbsp;межах
+\(\pm 2\times 10^{-4}\)&nbsp;К (синій&nbsp;— холодніше, червоний&nbsp;— тепліше)
+
+</div>
+
+<a id="fig:nature-cmb"></a>
+
+</div>
+
+</figure>
+
+<p>
+Неоднорідності на цій карті малі, порядку \(10^{-5}\) від середньої температури, але саме вони важливі: це відбитки <em>звукових хвиль у&nbsp;первинній плазмі</em>. Гравітація (передусім темної матерії) стискала плазму, тиск
+випромінювання розпирав її, і&nbsp;так вона коливалася, як струна (про коливання й&nbsp;хвилі в&nbsp;плазмі йтиметься в&nbsp;розд.&nbsp;<a href="waves.html#sec:plasma-waves">2</a>). Зі&nbsp;зменшенням температури коливання
+«заморозилися», а&nbsp;потім з&nbsp;цих згущень виросли галактики. Пізніше випромінювання перших зір знову іонізувало газ (протягом першого мільярда років), і&nbsp;міжгалактичний газ, у&nbsp;якому зосереджена значна частина
+звичайної речовини, відтоді лишається плазмою&nbsp;— вкрай розрідженою (\(n\lesssim 10^{-5}~\mathrm {см}^{-3}\)), з&nbsp;температурою від \(10^{4}\) до \(10^{7}\)&nbsp;К.
+</p>
+<!--
+...... subsection Масштаби й-структури ......
+-->
+<h5 id="autosec-30">Масштаби й&nbsp;структури</h5>
+<a id="main-html-autopage-30"></a>
+
+
+<p>
+Природна плазма охоплює розміри від сантиметрів (канал блискавки) до світлових років (туманності) і&nbsp;концентрації від \(\sim 10^{-5}~\mathrm {см}^{-3}\) до \(10^{26}~\mathrm {см}^{-3}\). У&nbsp;розрідженій космічній плазмі
+зіткнень мало, а&nbsp;магнітне поле істотне. Тому на рис.&nbsp;<a href="nature.html#fig:nature-natural">2</a>&#x202f;а,&#x202f;б,&#x202f;в ми бачимо переважно не «газ», а&nbsp;<em>структури, задані полем</em>. Об’єкти нижче
+впорядковано за масштабом: від центрів галактик через міжзоряне середовище й&nbsp;Сонячну систему до навколоземного космосу й&nbsp;атмосфери.
+</p>
+
+<figure id="autoid-2" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-32"></a>
+
+<p>
+
+<a href="Nature/Pictures/crab-nebula.jpg" target="_blank" ><img
+   src="Nature/Pictures/crab-nebula.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(а) Крабоподібна туманність (Hubble; NASA, ESA, J. Hester, A. Loll)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(а) Крабоподібна туманність (Hubble; NASA, ESA, J.&nbsp;Hester, A.&nbsp;Loll)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-33"></a>
+
+<p>
+
+<a href="Nature/Pictures/sun-corona.jpg" target="_blank" ><img
+   src="Nature/Pictures/sun-corona.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(б) Корона Сонця, 171 Å (SDO/AIA; NASA/SDO)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(б) Корона Сонця, 171&nbsp;Å (SDO/AIA; NASA/SDO)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-34"></a>
+
+<p>
+
+<a href="Nature/Pictures/aurora.jpg" target="_blank" ><img
+   src="Nature/Pictures/aurora.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(в) Полярне сяйво з борту МКС (NASA)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(в) Полярне сяйво з&nbsp;борту МКС (NASA)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-35"></a>
+
+<p>
+
+<a href="Nature/Pictures/lightning.jpg" target="_blank" ><img
+   src="Nature/Pictures/lightning.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(г) Блискавка, Техас (NOAA)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(г) Блискавка, Техас (NOAA)
+
+</div>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;2. Природна плазма від далекого космосу до Землі: залишок наднової&nbsp;(а), корона Сонця&nbsp;(б), полярне сяйво&nbsp;(в), блискавка&nbsp;(г). Знімки є суспільним надбанням
+
+</div>
+
+<a id="fig:nature-natural"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Дальній космос: чорні діри та джети ......
+-->
+<h5 id="autosec-36">Дальній космос: чорні діри та джети</h5>
+<a id="main-html-autopage-36"></a>
+
+
+<p>
+Сама чорна діра не є плазмою, але плазма довкола неї&nbsp;— одна з&nbsp;найекстремальніших у&nbsp;природі. Речовина, що падає в&nbsp;діру, не потрапляє в&nbsp;неї одразу: вона закручується в&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>акреційний диск</span></em> з&nbsp;іонізованого газу, який нагрівається тертям до температур від мільйонів до мільярдів кельвінів. Цей газ намагнічений: магнітне поле «вморожене» в&nbsp;плазму (розд.&nbsp;<a
+href="fluid.html#sec:mhd">5</a>), а&nbsp;нестійкості плазми (розд.&nbsp;<a href="instability.html#sec:instability">8</a>) переносять момент імпульсу назовні й&nbsp;дають речовині змогу падати. Саме таку картину фіксує Event Horizon
+Telescope&nbsp;— мережа радіотелескопів, що працює як єдиний телескоп розміром із&nbsp;Землю. Кільце на знімку 2019&nbsp;р. (рис.&nbsp;<a href="nature.html#fig:nature-bh">3</a>&#x202f;а)&nbsp;— випромінювання гарячої плазми біля
+центральної діри галактики M87, а&nbsp;темна пляма всередині&nbsp;— <em>тінь</em> діри: світло, що летить до неї, не повертається. Маса цієї діри близько \(6{,}5\times 10^{9}\) мас Сонця, тому її радіус Шварцшильда \(2GM/c^{2}\approx
+2\times 10^{13}\)&nbsp;м, тобто близько 130 астрономічних одиниць. Знімок у&nbsp;поляризованому світлі (рис.&nbsp;<a href="nature.html#fig:nature-bh">3</a>&#x202f;б) показує, як у&nbsp;цій плазмі орієнтоване магнітне поле. Діра
+в&nbsp;центрі нашої Галактики Sgr&nbsp;A\(^{*}\) (рис.&nbsp;<a href="nature.html#fig:nature-bh">3</a>&#x202f;в)&nbsp;— у&nbsp;півтори тисячі разів легша, близько 4&nbsp;млн мас Сонця.
+</p>
+
+<figure id="autoid-3" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-38"></a>
+
+<p>
+
+<a href="Nature/Pictures/bh-m87.jpg" target="_blank" ><img
+   src="Nature/Pictures/bh-m87.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(а) M87^* (EHT Collaboration, CC BY 4.0)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(а) M87\(^{*}\) (EHT Collaboration, CC BY 4.0)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-39"></a>
+
+<p>
+
+<a href="Nature/Pictures/bh-m87-pol.jpg" target="_blank" ><img
+   src="Nature/Pictures/bh-m87-pol.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(б) M87^* у поляризованому світлі (EHT Collaboration, CC BY 4.0)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(б) M87\(^{*}\) у&nbsp;поляризованому світлі (EHT Collaboration, CC BY 4.0)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-40"></a>
+
+<p>
+
+<a href="Nature/Pictures/bh-sgra.jpg" target="_blank" ><img
+   src="Nature/Pictures/bh-sgra.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(в) Sgr A^* (EHT Collaboration, CC BY 4.0)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(в) Sgr&nbsp;A\(^{*}\) (EHT Collaboration, CC BY 4.0)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-41"></a>
+
+<p>
+
+<a href="Nature/Pictures/bh-jet.jpg" target="_blank" ><img
+   src="Nature/Pictures/bh-jet.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(г) Джет галактики M87 (Hubble; NASA/ESA, F. D. Macchetto)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(г) Джет галактики M87 (Hubble; NASA/ESA, F.&nbsp;D.&nbsp;Macchetto)
+
+</div>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3. Плазма навколо чорних дір: диск і&nbsp;тінь M87\(^{*}\)&nbsp;(а), магнітне поле в&nbsp;ній&nbsp;(б), Sgr&nbsp;A\(^{*}\)&nbsp;(в), джет&nbsp;(г). Знімок (г)&nbsp;— суспільне надбання
+
+</div>
+
+<a id="fig:nature-bh"></a>
+
+</div>
+
+</figure>
+
+<p>
+З&nbsp;околиць діри вилітають <em><span
+    class="textcolor"
+    style="color:#990000"
+>джети</span></em>&nbsp;— вузькі потоки плазми зі&nbsp;швидкостями, близькими до швидкості світла, що тягнуться вздовж осі обертання на тисячі світлових років (рис.&nbsp;<a href="nature.html#fig:nature-bh">3</a>&#x202f;г: джет
+M87 завдовжки близько 4&nbsp;тисяч світлових років). Їх колімує й, імовірно, живить магнітне поле, закручене разом із&nbsp;диском. Зображення діри з&nbsp;фільму «Інтерстеллар» теж обчислене за рівняннями теорії відносності, але
+зі&nbsp;спрощеннями заради ефектності; реальні знімки менш яскраві, зате це справжня плазма.
+</p>
+<!--
+...... subsection Галактика: міжзоряний газ ......
+-->
+<h5 id="autosec-42">Галактика: міжзоряний газ</h5>
+<a id="main-html-autopage-42"></a>
+
+
+<p>
+Ближче до нас&nbsp;— <em><span
+    class="textcolor"
+    style="color:#990000"
+>міжзоряний газ</span></em>. Його концентрація мізерна (від \(\sim 10^{-3}\) до \(10^{3}\) частинок в&nbsp;одному кубічному сантиметрі), температура змінюється від \(\sim 10\)&nbsp;К у&nbsp;холодних хмарах до \(\sim
+10^{6}\)&nbsp;К у&nbsp;гарячих бульбашках, а&nbsp;зіткнень настільки мало, що газ не врівноважений із&nbsp;випромінюванням, а&nbsp;за фронтами ударних хвиль наднових іони й&nbsp;електрони довго мають різні температури. Іонізують
+газ ультрафіолетом зірок, ударними хвилями наднових і&nbsp;космічними променями. Поруч із&nbsp;ним&nbsp;— залишки наднових, як-от Крабоподібна туманність (рис.&nbsp;<a href="nature.html#fig:nature-natural">2</a>&#x202f;а):
+наднова 1054&nbsp;р., розліт газу на кілька світлових років. Її волокна тримає магнітне поле, «вморожене» в&nbsp;газ, а&nbsp;блакитне світіння в&nbsp;центрі&nbsp;— синхротронне випромінювання, тобто випромінювання релятивістських
+електронів, що крутяться в&nbsp;магнітному полі туманності, яке живить пульсар (швидко обертова нейтронна зірка; розд.&nbsp;<a href="motion.html#sec:particle-motion">3</a>).
+</p>
+<!--
+...... subsection Сонячна система: Сонце й-сонячний вітер ......
+-->
+<h5 id="autosec-43">Сонячна система: Сонце й&nbsp;сонячний вітер</h5>
+<a id="main-html-autopage-43"></a>
+
+
+<p>
+Сонце (рис.&nbsp;<a href="nature.html#fig:nature-natural">2</a>&#x202f;б)&nbsp;— найближча до нас зірка й&nbsp;найдоступніша для спостережень лабораторія плазми. У&nbsp;його ядрі, де \(T\sim 1{,}5\times 10^{7}\)&nbsp;К, ідуть
+термоядерні реакції (розд.&nbsp;<a href="fusion.html#sec:fusion">10</a>); енергія повільно виходить назовні променистим перенесенням, а&nbsp;в&nbsp;зовнішніх шарах&nbsp;— конвекцією. Рухи провідної плазми в&nbsp;конвективній зоні
+підтримують магнітне поле Сонця: у&nbsp;сонячних плямах воно досягає \(\sim 0{,}4\)&nbsp;Тл, а&nbsp;приблизно кожні 11&nbsp;років змінює напрям. Поверхня (фотосфера) має \(T\approx 5800\)&nbsp;К, а&nbsp;от розріджена <em><span
+    class="textcolor"
+    style="color:#990000"
+>корона</span></em> над нею гарячіша на два порядки, \(T\sim 10^6\)&nbsp;К. Цей парадокс (звідки корона бере енергію?) остаточно не розв’язано&nbsp;[<a href="bibliography.html#LWR-ht-cite.0@klimchuk2015key">21</a>]; один із
+претендентів&nbsp;— хвилі в&nbsp;плазмі (розд.&nbsp;<a href="linearwaves.html#sec:mhd-waves">6</a>). Яскраві петлі на знімку&nbsp;— це плазма, утримана в&nbsp;магнітних трубках&nbsp;— пучках силових ліній&nbsp;\(\vect {B}\): заряджені
+частинки легко рухаються вздовж поля й&nbsp;майже не рухаються впоперек (розд.&nbsp;<a href="motion.html#sec:particle-motion">3</a>).
+</p>
+
+<p>
+Корона не утримується: вона безперервно розширюється, і&nbsp;потік заряджених частинок, що тече з&nbsp;неї, називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>сонячним вітром</span></em>. Біля орбіти Землі його швидкість становить \(300\)–\(800\)&nbsp;км/с, концентрація&nbsp;— кілька частинок в&nbsp;одному кубічному сантиметрі, а&nbsp;температура&nbsp;— порядку \(10^{5}\)&nbsp;К
+(близько 10&nbsp;еВ). Вітер захоплює з&nbsp;собою магнітне поле Сонця (воно «вморожене» в&nbsp;плазму, розд.&nbsp;<a href="fluid.html#sec:mhd">5</a>), і&nbsp;через обертання Сонця силові лінії закручуються в&nbsp;спіраль. Область,
+у&nbsp;якій панує сонячний вітер, називають геліосферою.
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Скільки маси Сонце втрачає на вітер.</b> Потік маси крізь сферу радіуса \(r=1\)&nbsp;а.о. \(=1{,}5\times 10^{13}\)&nbsp;см при \(n\approx 9~\mathrm {см}^{-3}\) і&nbsp;\(v\approx 470\)&nbsp;км/с (протони, \(m_p=1{,}67\times
+10^{-24}\)&nbsp;г): \(\dot M=4\pi r^2 n m_p v\approx 2\times 10^{12}\)&nbsp;г/с&nbsp;\(=2\times 10^{9}\)&nbsp;кг/с. За рік це \(6\times 10^{16}\)&nbsp;кг, тобто \(\sim 3\times 10^{-14}\) маси Сонця. Вітер зі&nbsp;швидкістю
+\(400\)&nbsp;км/с долітає до Землі за \(r/v\approx 4\)&nbsp;доби, а&nbsp;корональний викид маси, що летить зі&nbsp;швидкістю близько \(10^3\)&nbsp;км/с, за&nbsp;\(\sim 1{,}7\)&nbsp;доби.
+</p>
+</div>
+
+<p>
+Це мізерна втрата: вона порівнянна з&nbsp;масою, яку Сонце щосекунди перетворює на випромінювання, але за мільярди років не змінює його масу помітно. Зате вітер визначає все, що відбувається в&nbsp;міжпланетному просторі.
+</p>
+<!--
+...... subsection Навколоземний космос: магнітосфера й-іоносфера ......
+-->
+<h5 id="autosec-44">Навколоземний космос: магнітосфера й&nbsp;іоносфера</h5>
+<a id="main-html-autopage-44"></a>
+
+
+<p>
+Зустрівши магнітне поле Землі (\(B\sim 0{,}5\)&nbsp;Гс на поверхні), сонячний вітер не проходить крізь нього, а&nbsp;обтікає, стискаючи його з&nbsp;боку Сонця й&nbsp;витягуючи у&nbsp;довгий хвіст з&nbsp;нічного боку. Область,
+у&nbsp;якій поле Землі керує рухом плазми, називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>магнітосферою</span></em>. Перед нею утворюється стрибок густини й&nbsp;поля&nbsp;— <em><span
+    class="textcolor"
+    style="color:#990000"
+>ударна хвиля</span></em>: вітер надзвуковий (його швидкість \(\sim 400\)&nbsp;км/с набагато більша за швидкість магнітного звуку \(\sim 50\)–\(70\)&nbsp;км/с), причому хвиля така, що частинки майже не стикаються: енергію розсіюють
+колективні поля, а&nbsp;не зіткнення (розд.&nbsp;<a href="collisions.html#sec:plasma-collisions">4</a>). Заряджені частинки, що потрапили в&nbsp;дипольне поле Землі, відбиваються від його згущень біля полюсів і&nbsp;накопичуються
+в&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>радіаційних поясах</span></em> (§&#x202f;<a href="motion.html#sec:magnetic-mirror">3.5</a>); під час магнітних бур електрони з&nbsp;хвоста магнітосфери, прискорені до кількох кеВ, висипаються вздовж силових ліній в&nbsp;атмосферу
+на висоти \(80\)–\(150\)&nbsp;км, і&nbsp;виникає полярне сяйво (рис.&nbsp;<a href="nature.html#fig:nature-natural">2</a>&#x202f;в). Спричинені вітром магнітні бурі можуть наводити в&nbsp;довгих лініях електропередач струми, що
+виводять з&nbsp;ладу обладнання (так, у&nbsp;березні 1989&nbsp;р. магнітна буря призвела до багатогодинного вимкнення електроенергії у&nbsp;канадській провінції Квебек), а&nbsp;також порушують зв’язок і&nbsp;роботу супутників.
+Прогнозування таких подій називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>космічною погодою</span></em>.
+</p>
+
+<p>
+Нижче, на висотах від \(\sim 60\)&nbsp;км, лежить <em><span
+    class="textcolor"
+    style="color:#990000"
+>іоносфера</span></em>&nbsp;— верхня атмосфера, іонізована випромінюванням Сонця. Її поділяють на шари D, E і&nbsp;F; найбільша концентрація електронів (\(10^{5}\)–\(10^{6}~\mathrm {см}^{-3}\)) припадає на висоти
+\(250\)–\(400\)&nbsp;км. Вночі, коли Сонце не іонізує газ, нижні шари майже зникають. Для практики важливо, що така плазма відбиває радіохвилі, частота яких нижча за <em>плазмову</em> \(f_p\)&nbsp;— власну частоту коливань електронів
+(§&#x202f;<a href="basics.html#sec:plasma-oscillations">1.4</a>): \(f_p\approx 9\sqrt {n}\)&nbsp;кГц, де \(n\) у&nbsp;\(\mathrm {см}^{-3}\), тобто \(\sim 9\)&nbsp;МГц за \(n=10^{6}~\mathrm {см}^{-3}\). Такі хвилі не проходять,
+і&nbsp;завдяки відбиттю від іоносфери можна приймати короткохвильові станції за тисячі кілометрів (§&#x202f;<a href="waves.html#sec:ionosphere">2.6</a>).
+</p>
+<!--
+...... subsection Атмосфера Землі: блискавка ......
+-->
+<h5 id="autosec-45">Атмосфера Землі: блискавка</h5>
+<a id="main-html-autopage-45"></a>
+
+
+<p>
+<em><span
+    class="textcolor"
+    style="color:#990000"
+>Блискавка</span></em> (рис.&nbsp;<a href="nature.html#fig:nature-natural">2</a>&#x202f;г)&nbsp;— гігантська іскра. У&nbsp;грозовій хмарі більші й&nbsp;важчі краплі й&nbsp;льодинки заряджаються переважно негативно
+й&nbsp;падають швидше за дрібні позитивні, тож хмара стає електричним диполем. Коли поле десь (імовірно, біля крапель і&nbsp;льодинок) стає достатнім для пробою, починається електронна лавина; з&nbsp;лавин зливаються провідні
+канали&nbsp;— <em>лідери</em>, що ступінчасто, стрибками в&nbsp;десятки метрів, тягнуться до землі. Коли лідер наближається до поверхні, назустріч йому виростає короткий канал, і&nbsp;вздовж прокладеного лідером шляху проскакує
+зворотний (головний) розряд зі&nbsp;струмом \(10^{4}\)–\(10^{5}\)&nbsp;А. Канал діаметром кілька сантиметрів розігрівається до \(\sim 3\times 10^{4}\)&nbsp;К; стрімке розширення нагрітого газу й&nbsp;дає грім. Плазма каналу живе
+лише соті–десяті частки секунди: потім вона охолоджується й&nbsp;іони рекомбінують.
+</p>
+
+<p>
+Усі ці об’єкти різняться на десятки порядків за концентрацією, але до всіх застосовні однакові поняття: дебаївське екранування (§&#x202f;<a href="basics.html#sec:debye-screening">1.5</a>), квазінейтральність (§&#x202f;<a
+href="basics.html#sec:quasineutrality">1.4</a>), рух у&nbsp;магнітному полі (розд.&nbsp;<a href="motion.html#sec:particle-motion">3</a>). Докладніше про космічну плазму див.&nbsp;[<a
+href="bibliography.html#LWR-ht-cite.0@gurnett2017introduction">8</a>].
+</p>
+<!--
+...... section Лабораторна й-технічна плазма ......
+-->
+<h4 id="autosec-46"><span class="sectionnumber">&#xA7;&#x202F;0.2&#x2003;</span>Лабораторна й&nbsp;технічна плазма</h4>
+<a id="main-html-autopage-46"></a>
+
+
+<a id="sec:nature-lab"></a>
+
+<p>
+Лабораторну плазму отримують штучною іонізацією газу (способи перелічено в&nbsp;розд.&nbsp;<a href="basics.html#sec:plasma-basics">1</a>), найчастіше електричним розрядом. Вона, як правило, холодніша й&nbsp;густіша за космічну
+(виняток&nbsp;— гаряча плазма для синтезу), зате її можна вимірювати й&nbsp;керувати нею (рис.&nbsp;<a href="nature.html#fig:nature-lab">4</a>).
+</p>
+
+<figure id="autoid-4" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-48"></a>
+
+<p>
+
+<a href="Nature/Pictures/discharge-tubes.jpg" target="_blank" ><img
+   src="Nature/Pictures/discharge-tubes.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(а) Розрядні трубки з He, Ne, Ar, Kr, Xe (Alchemist-hp, CC BY-SA 2.0 DE)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(а) Розрядні трубки з&nbsp;He, Ne, Ar, Kr, Xe (Alchemist-hp, CC BY-SA 2.0 DE)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-49"></a>
+
+<p>
+
+<a href="Nature/Pictures/plasma-globe.jpg" target="_blank" ><img
+   src="Nature/Pictures/plasma-globe.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(б) Плазмова куля (Supportstorm)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(б) Плазмова куля (Supportstorm)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-50"></a>
+
+<p>
+
+<a href="Nature/Pictures/welding-arc.jpg" target="_blank" ><img
+   src="Nature/Pictures/welding-arc.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(в) Дугове зварювання (W. M. Plate Jr.)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(в) Дугове зварювання (W.&nbsp;M.&nbsp;Plate&nbsp;Jr.)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-51"></a>
+
+<p>
+
+<a href="Nature/Pictures/tokamak-mast.jpg" target="_blank" ><img
+   src="Nature/Pictures/tokamak-mast.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(г) Токамак MAST, Culham (Eye Steel Film, CC BY 2.0)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(г) Токамак MAST, Culham (Eye Steel Film, CC BY 2.0)
+
+</div>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4. Лабораторна й&nbsp;технічна плазма: газовий розряд&nbsp;(а), плазмова куля&nbsp;(б), електрична дуга&nbsp;(в), токамак&nbsp;(г). Знімки (б) і&nbsp;(в)&nbsp;— суспільне надбання
+
+</div>
+
+<a id="fig:nature-lab"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Газові розряди ......
+-->
+<h5 id="autosec-52">Газові розряди</h5>
+<a id="main-html-autopage-52"></a>
+
+
+<p>
+У&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>розрядній трубці</span></em> (рис.&nbsp;<a href="nature.html#fig:nature-lab">4</a>&#x202f;а) світиться слабоіонізований газ низького тиску: електричне поле розганяє вільні електрони, ті іонізують і&nbsp;збуджують атоми, а&nbsp;колір
+дає лінійчатий спектр збуджених атомів (неон світить червоним, аргон&nbsp;— фіолетовим). Електрони набирають від поля енергію, а&nbsp;іони, нерухливі й&nbsp;важкі, її майже не отримують: тому \(T_e\sim 1\)&nbsp;еВ,
+а&nbsp;\(T_i\)&nbsp;— близько кімнатної, а&nbsp;концентрація електронів у&nbsp;тліючому розряді лише \(\sim 10^{10}~\mathrm {см}^{-3}\) (§&#x202f;<a href="basics.html#sec:two-temperatures">1.3</a>). У&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>плазмовій кулі</span></em> (рис.&nbsp;<a href="nature.html#fig:nature-lab">4</a>&#x202f;б) високочастотна напруга на центральному електроді запалює розряд у&nbsp;розрідженому газі, а&nbsp;тонкі світні канали&nbsp;— це
+<em>стримери</em>. <em><span
+    class="textcolor"
+    style="color:#990000"
+>Зварювальна дуга</span></em> (рис.&nbsp;<a href="nature.html#fig:nature-lab">4</a>&#x202f;в) навпаки, горить за високого тиску. Тут частих зіткнень вистачає, щоб вирівняти \(T_e\) й&nbsp;\(T_i\) (порядку 1&nbsp;еВ), тож плазма
+<em>ізотермічна</em>, а&nbsp;її концентрація на кілька порядків вища, ніж у&nbsp;трубці. Теорія розрядів викладена в&nbsp;розд.&nbsp;<a href="discharge.html#sec:discharge">11</a>.
+</p>
+
+<p>
+Якщо потрібна чиста плазма без забруднення матеріалом електродів, користуються <em>безелектродними</em> розрядами: високочастотним чи надвисокочастотним. Продуваючи газ крізь розряд, отримують струмінь плазми; такий пристрій
+називають <em><span
+    class="textcolor"
+    style="color:#990000"
+>плазмотроном</span></em>. Температура струменя сягає \((1\)–\(3)\times 10^4\)&nbsp;К, а&nbsp;потужність пристрою&nbsp;— від десятків ватів до десятків мегаватів. Для досліджень, де хвилі в&nbsp;плазмі мають бути слабкими, будують
+спокійну плазму в&nbsp;<em>Q-машині</em> (від англ. <em>quiescent</em>&nbsp;— спокійний): атоми цезію, потрапляючи на розжарену вольфрамову пластину, втрачають електрон і&nbsp;стають іонами, а&nbsp;сама пластина випромінює
+електрони. Виходить майже повністю іонізована плазма з&nbsp;температурою \(\sim 0{,}2\)&nbsp;еВ.
+</p>
+<!--
+...... subsection Плазма в-технологіях ......
+-->
+<h5 id="autosec-53">Плазма в&nbsp;технологіях</h5>
+<a id="main-html-autopage-53"></a>
+
+
+<p>
+Плазма давно вийшла з&nbsp;лабораторії (рис.&nbsp;<a href="nature.html#fig:nature-tech">5</a>). Почнімо з&nbsp;теплових застосувань. У&nbsp;<em><span
+    class="textcolor"
+    style="color:#990000"
+>плазмовому різаку</span></em> (різновиді плазмотрона; рис.&nbsp;<a href="nature.html#fig:nature-tech">5</a>&#x202f;а) електрична дуга стискається вузьким соплом і&nbsp;потоком газу перетворюється на струмінь із&nbsp;температурою
+\(\sim 2\times 10^{4}\)&nbsp;К, що розплавляє метал і&nbsp;здуває розплав; так розрізають сталеві листи завтовшки до кількох сантиметрів. Той самий принцип, але зі&nbsp;струменем, у&nbsp;який вдувають порошок, використовують для
+<em>плазмового напилення</em> (рис.&nbsp;<a href="nature.html#fig:nature-tech">5</a>&#x202f;б): частинки металу чи кераміки розплавляються в&nbsp;плазмі, вдаряються об&nbsp;деталь і&nbsp;утворюють покриття, скажімо теплозахисне
+для двигунів.
+</p>
+
+<p>
+Інший напрям&nbsp;— <em>хімічний</em>, а&nbsp;не тепловий. У&nbsp;газі низького тиску (\(\sim 1\)–\(100\)&nbsp;мТор) високочастотний розряд має \(T_e\) кілька електронвольтів і&nbsp;\(n_e\sim 10^{9}\)–\(10^{11}~\mathrm
+{см}^{-3}\)&nbsp;[<a href="bibliography.html#LWR-ht-cite.0@lieberman2005principles">12</a>], тоді як сам газ лишається майже холодним. Електрони розкладають молекули робочого газу (фтор- чи хлоровмісні) на хімічно активні радикали,
+а&nbsp;електричне поле біля поверхні розганяє іони перпендикулярно до пластини. Радикали реагують із&nbsp;матеріалом, іони допомагають реакції й&nbsp;задають їй напрям, тож у&nbsp;кремнії виходять вузькі глибокі канавки
+з&nbsp;вертикальними стінками&nbsp;— так виготовляють мікросхеми. Таким <em><span
+    class="textcolor"
+    style="color:#990000"
+>травленням</span></em> обробляють і&nbsp;метали (алюміній травлять хлоровмісною плазмою), і&nbsp;скло; плазмою також очищають поверхні й&nbsp;наносять тонкі плівки. Рис.&nbsp;<a
+href="nature.html#fig:nature-tech">5</a>&#x202f;в показує поверхню кремнію після плазмового травлення.
+</p>
+
+<figure id="autoid-5" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-55"></a>
+
+<p>
+
+<a href="Nature/Pictures/plasma-cutting.jpg" target="_blank" ><img
+   src="Nature/Pictures/plasma-cutting.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(а) Плазмове різання металу (D. Baron Carral, CC0)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(а) Плазмове різання металу (D.&nbsp;Baron Carral, CC0)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-56"></a>
+
+<p>
+
+<a href="Nature/Pictures/plasma-spray.jpg" target="_blank" ><img
+   src="Nature/Pictures/plasma-spray.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(б) Плазмове напилення покриття на деталь двигуна (Optimi3e, CC BY-SA 4.0)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(б) Плазмове напилення покриття на деталь двигуна (Optimi3e, CC BY-SA 4.0)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-57"></a>
+
+<p>
+
+<a href="Nature/Pictures/plasma-etching.jpg" target="_blank" ><img
+   src="Nature/Pictures/plasma-etching.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(в) Поверхня кремнію після плазмового травлення, електронний мікроскоп (PolinLinB, CC BY 4.0)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(в) Поверхня кремнію після плазмового травлення, електронний мікроскоп (PolinLinB, CC BY 4.0)
+
+</div>
+
+</div>
+
+&#x2003;
+
+&#x2003;
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-58"></a>
+
+<p>
+
+<a href="Nature/Pictures/hall-thruster.jpg" target="_blank" ><img
+   src="Nature/Pictures/hall-thruster.jpg"
+   style="
+   width:195pt;
+   "
+   class="inlineimage"
+   alt="(г) Лабораторний двигун Холла на ксеноні, 6 кВт (NASA/JPL)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+(г) Лабораторний двигун Холла на ксеноні, 6&nbsp;кВт (NASA/JPL)
+
+</div>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5. Плазма в&nbsp;технологіях: різання&nbsp;(а), напилення&nbsp;(б), травлення&nbsp;(в), космічний двигун&nbsp;(г). Знімок (г)&nbsp;— суспільне надбання
+
+</div>
+
+<a id="fig:nature-tech"></a>
+
+</div>
+
+</figure>
+
+<p>
+Нарешті, <em>космічні двигуни</em>. У&nbsp;двигуні Холла (рис.&nbsp;<a href="nature.html#fig:nature-tech">5</a>&#x202f;г) іони ксенону розганяються електричним полем у&nbsp;кільцевому каналі, де радіальне магнітне поле утримує
+електрони, і&nbsp;вони дрейфують у&nbsp;схрещених полях \(\vect {E}\times \vect {B}\) (розд.&nbsp;<a href="motion.html#sec:particle-motion">3</a>). Швидкість витікання сягає \(10\)–\(30\)&nbsp;км/с&nbsp;— у&nbsp;кілька разів
+більше, ніж у&nbsp;хімічних ракетних двигунів, тож витрата палива для тієї самої зміни швидкості мала. Це далеко не весь перелік: газорозрядні лампи й&nbsp;вивіски, дисплеї, плазма олова, розігріта лазером, як джерело ультрафіолетового
+випромінювання для літографії, холодна плазма атмосферного тиску, яку досліджують для знезараження поверхонь і&nbsp;води, в&nbsp;медицині та сільському господарстві. Спільне для всіх цих технологій: плазма дає змогу створити хімічно
+активні частинки без високої температури всього газу або, навпаки, досягти температур, недосяжних для полум’я.
+</p>
+<!--
+...... subsection Гаряча плазма для термоядерного синтезу ......
+-->
+<h5 id="autosec-59">Гаряча плазма для термоядерного синтезу</h5>
+<a id="main-html-autopage-59"></a>
+
+
+<p>
+Окремий клас&nbsp;— гаряча плазма з&nbsp;температурою порядку \(10^{8}\)&nbsp;К, потрібна для реакцій термоядерного синтезу (розд.&nbsp;<a href="fusion.html#sec:fusion">10</a>). Контакт зі&nbsp;стінкою миттєво охолодив би плазму
+(і&nbsp;зруйнував би стінку), тому її <em>утримують</em> магнітним полем (розд.&nbsp;<a href="confinement.html#sec:magnetic-confinement">9</a>): у&nbsp;токамаку (рис.&nbsp;<a href="nature.html#fig:nature-lab">4</a>&#x202f;г),
+стелараторі чи пастці з&nbsp;дзеркалами. У&nbsp;видимому світлі світиться насамперед холодніша периферія плазми, а&nbsp;гаряче ядро (\(T\sim 10^{4}\)&nbsp;еВ) майже не світить: воно випромінює переважно в&nbsp;інших діапазонах.
+Інший підхід&nbsp;— <em>інерційний</em>: мішень стискають лазерними імпульсами так швидко, що вона не встигає розлетітися. У&nbsp;грудні 2022&nbsp;р. в&nbsp;Національному комплексі запалювання (NIF, США) вихід енергії синтезу
+вперше перевищив енергію лазерних імпульсів, що надійшли на мішень&nbsp;[<a href="bibliography.html#LWR-ht-cite.0@llnl2025ignition">22</a>], а&nbsp;у&nbsp;токамаку JET 2023&nbsp;р. у&nbsp;D–T-розряді отримали рекордні
+69&nbsp;МДж за \(\sim 5\)&nbsp;с&nbsp;[<a href="bibliography.html#LWR-ht-cite.0@eurofusion2024jet">23</a>]. Будують і&nbsp;міжнародний реактор ITER&nbsp;[<a href="bibliography.html#LWR-ht-cite.0@iter2024baseline">24</a>].
+</p>
+<!--
+...... section Схожі на вигляд, різні за природою ......
+-->
+<h4 id="autosec-60"><span class="sectionnumber">&#xA7;&#x202F;0.3&#x2003;</span>Схожі на вигляд, різні за природою</h4>
+<a id="main-html-autopage-60"></a>
+
+
+<a id="sec:nature-pairs"></a>
+
+<p>
+Інтуїція про плазму легко підводить: схожі на вигляд об’єкти бувають фізично різними. Розгляньмо три пари, на яких видно, що саме треба вимірювати, щоб відрізнити одне від іншого.
+</p>
+<!--
+...... subsection Вогонь і-плазма ......
+-->
+<h5 id="autosec-61">Вогонь і&nbsp;плазма</h5>
+<a id="main-html-autopage-61"></a>
+
+
+<p>
+Полум’я (рис.&nbsp;<a href="nature.html#fig:nature-flame">6</a>) гаряче, світиться й&nbsp;містить заряджені частинки, тож його нерідко називають плазмою. Перевіримо за критеріями розд.&nbsp;<a
+href="basics.html#sec:plasma-basics">1</a>.
+</p>
+
+<figure id="autoid-6" class="figure ">
+<div class="center">
+
+<p>
+
+<a href="Nature/Pictures/campfire.jpg" target="_blank" ><img
+   src="Nature/Pictures/campfire.jpg"
+   style="
+   width:260pt;
+   "
+   class="inlineimage"
+   alt="Рис. 6. Полум’я багаття (T. Tscharntke, суспільне надбання)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6. Полум’я багаття (T.&nbsp;Tscharntke, суспільне надбання)
+
+</div>
+
+<a id="fig:nature-flame"></a>
+
+</div>
+
+</figure>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Чи є полум’я плазмою.</b> Візьмемо \(T\approx 2000\)&nbsp;К (\(0{,}17\approx 0{,}2\)&nbsp;еВ) і&nbsp;концентрацію електронів у&nbsp;вуглеводневому полум’ї \(n_e\sim 10^{10}~\mathrm {см}^{-3}\) (значення залежить від
+палива). Атомів і&nbsp;молекул за тиску 1&nbsp;атм та \(T=2000\)&nbsp;К маємо \(n=p/(k_{\mathrm B}T)\approx 3{,}6\times 10^{18}~\mathrm {см}^{-3}\), тож ступінь іонізації \(\alpha =n_e/n\sim 3\times 10^{-9}\). Дебаївська
+довжина \(\lambda _{De}\approx 743\sqrt {T/n_e}\approx 3\times 10^{-3}\)&nbsp;см (тут \(T\) в&nbsp;еВ, \(n_e\) в&nbsp;\(\mathrm {см}^{-3}\)), число частинок у&nbsp;дебаївській сфері \(N_D\sim 1{,}5\times 10^{3}\) (§&#x202f;<a
+href="basics.html#sec:debye-sphere">1.6</a>), а&nbsp;розмір полум’я \(\ell \sim 10\)&nbsp;см, тобто \(\lambda _{De}\ll \ell \). Плазмова частота (власна частота коливань електронів) \(\omega _p\approx 5{,}6\times 10^{4}\sqrt
+{n_e}\approx 6\times 10^{9}~\mathrm {с}^{-1}\), а&nbsp;частота зіткнень електрона з&nbsp;нейтралами \(\nu \sim n\sigma v\sim 10^{11}~\mathrm {с}^{-1}\) (для перерізу \(\sigma \sim 10^{-15}~\mathrm {см}^2\) і&nbsp;швидкості
+\(v\sim 3\times 10^{7}\)&nbsp;см/с).
+</p>
+</div>
+
+<p>
+Критерії колективності виконано (\(\lambda _{De}\ll \ell \), \(N_D\gg 1\)), тож полум’я справді трохи проводить струм і&nbsp;реагує на електричне поле. Але \(\nu \gg \omega _p\): електрон стикається з&nbsp;нейтралом набагато частіше,
+ніж встигає здійснити плазмове коливання, тому колективні процеси тут придушені. Тому полум’я&nbsp;— гранична, дуже слабоіонізована плазма: його світіння й&nbsp;енергетику визначає хімія горіння, а&nbsp;не заряджені частинки.
+</p>
+<!--
+...... subsection Розрядна трубка й-дуга ......
+-->
+<h5 id="autosec-63">Розрядна трубка й&nbsp;дуга</h5>
+<a id="main-html-autopage-63"></a>
+
+
+<p>
+Неонова лампа й&nbsp;зварювальна дуга обидві світяться й&nbsp;обидві є газовим розрядом (рис.&nbsp;<a href="nature.html#fig:nature-lab">4</a>&#x202f;а,&#x202f;в), але фізично це різні плазми. Різницю підсумовує табл.&nbsp;<a
+href="nature.html#tab:nature-tube-arc">1</a>: у&nbsp;трубці низького тиску електрони рідко стикаються з&nbsp;важкими частинками й&nbsp;не віддають їм енергію, тому \(T_e\gg T_i\); у&nbsp;дузі високого тиску зіткнень вистачає, щоб
+вирівняти температури.
+</p>
+
+<figure id="autoid-7" class="table ">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;1. Розряд низького тиску й&nbsp;дуга: орієнтовні параметри
+
+</div>
+
+<a id="tab:nature-tube-arc"></a>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr class="hline">
+<td colspan="1" class="tdc" style="background:#B8D4E7"></td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>Розрядна трубка</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#B8D4E7">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#002E64"
+><b>Дуга</b></span>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Тиск
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\sim 0{,}1\)–\(10\)&nbsp;Тор
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\gtrsim 1\)&nbsp;атм
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(T_e\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\sim 1\)&nbsp;еВ
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\sim 1\)&nbsp;еВ
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(T_i\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\sim 300\)&nbsp;К
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\sim 1\)&nbsp;еВ
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+\(n_e\), \(\mathrm {см}^{-3}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\sim 10^{10}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(10^{15}\)–\(10^{17}\)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Ступінь іонізації
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(\lesssim 10^{-6}\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+відсотки й&nbsp;більше
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tdleft">
+
+<p>
+Рівновага
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+\(T_e\gg T_i\)
+</p>
+</td>
+<td class="tdp tdcenter">
+
+<p>
+ізотермічна
+</p>
+</td>
+</tr>
+
+<tr class="hline" aria-hidden="true">
+<td class="tdp tdleft">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+</tr>
+</table>
+
+</figure>
+<!--
+...... subsection Сонце й-токамак ......
+-->
+<h5 id="autosec-65">Сонце й&nbsp;токамак</h5>
+<a id="main-html-autopage-65"></a>
+
+
+<p>
+І&nbsp;те, й&nbsp;те&nbsp;— гаряча плазма, у&nbsp;якій відбувається (чи має відбуватися) термоядерний синтез, але плазму утримують принципово по-різному. Сонце тримає власна гравітація, а&nbsp;в&nbsp;токамаку&nbsp;— магнітне поле
+(розд.&nbsp;<a href="confinement.html#sec:magnetic-confinement">9</a>). Це визначає й&nbsp;те, наскільки «щільно» виділяється енергія.
+</p>
+
+
+<div class="cb-estimate">
+
+<p>
+<b>Скільки потужності дає кубометр Сонця.</b> Світність Сонця \(L\approx 3{,}8\times 10^{26}\)&nbsp;Вт виділяється майже вся в&nbsp;ядрі радіусом \(0{,}2R_\odot \approx 1{,}4\times 10^{8}\)&nbsp;м, тобто в&nbsp;об’ємі
+\(V\approx 1{,}1\times 10^{25}~\mathrm {м}^3\). Середня питома потужність \(L/V\approx 30\)&nbsp;Вт/м\(^3\), як у&nbsp;купі компосту. Для термоядерного реактора потрібно близько мегавата на кубометр плазми, тобто в&nbsp;десятки
+тисяч разів більше.
+</p>
+</div>
+
+<p>
+Сонце виграє розмірами й&nbsp;часом: його ядро велике, а&nbsp;тримається гравітацією мільярди років, до того ж протон-протонна реакція в&nbsp;ньому дуже повільна. Реактору ж потрібна швидка реакція, а&nbsp;суміш дейтерію
+з&nbsp;тритієм реагує значно швидше, проте лише за вищої температури. Тому на Землі плазма мусить бути значно гарячішою (близько \(10^{8}\)&nbsp;К проти \(1{,}5\times 10^{7}\)&nbsp;К у&nbsp;ядрі Сонця) і&nbsp;горіти на іншому
+паливі (розд.&nbsp;<a href="fusion.html#sec:fusion">10</a>).
+</p>
+<!--
+...... section Що об'єднує всі ці об'єкти ......
+-->
+<h4 id="autosec-66"><span class="sectionnumber">&#xA7;&#x202F;0.4&#x2003;</span>Що об’єднує всі ці об’єкти</h4>
+<a id="main-html-autopage-66"></a>
+
+
+<a id="sec:nature-common"></a>
+
+<p>
+Ми бачили плазму в&nbsp;усіх масштабах: від каналу іскри завтовшки кілька сантиметрів до світлових років, від кімнатної температури іонів до сотень мільйонів кельвінів. Три властивості, що повторюються в&nbsp;більшості прикладів, і&nbsp;є
+змістом нашого курсу.
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> <em>Колективність і&nbsp;квазінейтральність.</em> Плазма квазінейтральна на масштабах, більших за&nbsp;\(\lambda _D\), але заряди в&nbsp;ній взаємодіють усереднено, на великих відстанях. Звідси
+екранування й&nbsp;власні коливання (розд.&nbsp;<a href="basics.html#sec:plasma-basics">1</a>, <a href="waves.html#sec:plasma-waves">2</a>).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> <em>Магнітне поле.</em> Воно вказує частинкам траєкторію: звідси дрейфи, магнітні пастки й&nbsp;вморожене поле (розд.&nbsp;<a href="motion.html#sec:particle-motion">3</a>, <a
+href="fluid.html#sec:mhd">5</a>, <a href="confinement.html#sec:magnetic-confinement">9</a>).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> <em>Роль зіткнень.</em> У&nbsp;розрідженій плазмі (космос, розряд низького тиску) зіткнення рідкісні, тож потрібні кінетичний опис і&nbsp;теорія хвиль та нестійкостей; у&nbsp;щільній (дуга, полум’я)
+зіткнення часті й&nbsp;визначають перенос (розд.&nbsp;<a href="collisions.html#sec:plasma-collisions">4</a>, <a href="kinetics.html#sec:plasma-kinetic">7</a>, <a href="instability.html#sec:instability">8</a>).
+</p>
+</li>
+</ul>
+
+<p>
+Решта книги&nbsp;— про те, як ці властивості виражаються формулами. Спершу, у&nbsp;розд.&nbsp;<a href="basics.html#sec:plasma-basics">1</a>, з’ясуємо, що саме відрізняє плазму від газу; далі&nbsp;— хвилі в&nbsp;холодній плазмі
+(розд.&nbsp;<a href="waves.html#sec:plasma-waves">2</a>), рух частинок (розд.&nbsp;<a href="motion.html#sec:particle-motion">3</a>), зіткнення (розд.&nbsp;<a href="collisions.html#sec:plasma-collisions">4</a>), гідродинамічний опис
+(розд.&nbsp;<a href="fluid.html#sec:mhd">5</a>), хвилі в&nbsp;замагніченій плазмі (розд.&nbsp;<a href="linearwaves.html#sec:mhd-waves">6</a>), кінетика (розд.&nbsp;<a href="kinetics.html#sec:plasma-kinetic">7</a>), нестійкості (розд.&nbsp;<a
+href="instability.html#sec:instability">8</a>), утримання плазми й&nbsp;синтез (розд.&nbsp;<a href="confinement.html#sec:magnetic-confinement">9</a>, <a href="fusion.html#sec:fusion">10</a>), газовий розряд (розд.&nbsp;<a
+href="discharge.html#sec:discharge">11</a>) і&nbsp;підсумкова карта масштабів (розд.&nbsp;<a href="scales.html#sec:plasma-scales">12</a>).
+</p>
+
+
+<div class="cb-simulation">
+
+<p>
+<b>Інтерактивна симуляція.</b> Побачити всі розглянуті об’єкти на одній діаграмі \(\lg n\)–\(\lg T\), подивитися їхні параметри (\(\lambda _{De}\), \(N_D\), \(\Gamma \), \(\omega _{pe}\)) і&nbsp;задати власну пару \(n\), \(T\), щоб
+дізнатися, чи це ще колективна плазма, можна в&nbsp;<a href="https://sergiokapone.github.io/plasma-physics/PlasmaBook/sims/nature_plasma_map.html" target="_blank" >інтерактивній мапі плазм</a>. Клацніть по
+знімку-об’єкту&nbsp;— побачите його фото, параметри й&nbsp;режим; перетягніть «мій об’єкт» під лінію \(N_D=1\)&nbsp;— колективна поведінка зникне.
+</p>
+</div>
+
+
+<div class="cb-summary">
+
+<p>
+<b>Головне в розділі</b>
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> Понад 99&#x202f;&percnt; видимої речовини у&nbsp;Всесвіті&nbsp;— плазма: від первинної воднево-гелієвої плазми раннього Всесвіту (рекомбінація за \(T\approx 0{,}3\)&nbsp;еВ) до зір, туманностей,
+міжгалактичного газу й&nbsp;акреційних дисків чорних дір.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Природна плазма охоплює концентрації від \(\sim 10^{-5}\) до \(10^{26}~\mathrm {см}^{-3}\) й&nbsp;розміри від сантиметрів до світлових років; у&nbsp;розрідженій космічній плазмі зіткнень мало,
+а&nbsp;структури задає магнітне поле (петлі корони, сяйво, вморожені волокна туманностей).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Лабораторна плазма: розряд низького тиску нерівноважний (\(T_e\gg T_i\)), дуга ізотермічна; плазмотрони, різання, напилення, травлення, двигуни Холла; гаряча плазма для синтезу, яку утримує магнітне
+поле.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Полум’я&nbsp;— гранична слабоіонізована плазма (\(\alpha \sim 10^{-9}\)): \(\lambda _{De}\ll \ell \) і&nbsp;\(N_D\gg 1\), але зіткнення з&nbsp;нейтралами домінують над плазмовими процесами.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> Об’єкти розрізняють за \(n\), \(T_e\) і&nbsp;\(T_i\), ступенем іонізації та способом утримання (гравітація, магнітне поле, інерція, стінки).
+</p>
+</li>
+</ul>
+
+</div>
+
+
+<div class="cb-questions">
+
+<p>
+<b>Контрольні питання</b>
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Чому Всесвіт був непрозорим до рекомбінації і&nbsp;став прозорим після неї?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Чому водень рекомбінує за \(T\sim 0{,}3\)&nbsp;еВ, хоча потенціал іонізації становить \(13{,}6\)&nbsp;еВ?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> Чому петлі в&nbsp;короні Сонця повторюють силові лінії магнітного поля?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">4.</span> Чим плазма розрядної трубки відрізняється від плазми дуги за \(T_e\), \(T_i\) і&nbsp;ступенем іонізації? Чому так?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">5.</span> Чому полум’я&nbsp;— слабкоіонізована плазма? Яка величина показує, що колективні процеси в&nbsp;ньому придушені?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">6.</span> Чому на Землі для термоядерного реактора потрібна вища температура плазми, ніж у&nbsp;ядрі Сонця?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">7.</span> Чому іоносфера відбиває короткі радіохвилі, а&nbsp;ультракороткі проходять крізь неї?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">8.</span> Чому в&nbsp;міжзоряному газі температури електронів та іонів можуть помітно відрізнятися?
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">9.</span> Чому світло, яке бачить Event Horizon Telescope, випромінює не сама чорна діра, а&nbsp;плазма довкола неї?
+</p>
+</li>
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>
