@@ -31,7 +31,8 @@
 
 ## Мапа скілів і агентів
 - Загальні (глобальні): `textbook-review-chapter` (протокол огляду розділу), `textbook-physics-review`, `textbook-logic-reread` («перечитай розділ» = застосуй його), `ukrainian-science-language`, `textbook-problem-author`, `textbook-tikz-figures`, `textbook-bib-entry`, `latex-build-check`, `latex-layout-fix`, `latex-toc-style`, `kpi-syllabus`.
-- Лише для цієї книги (`.claude/skills`): `html-build`, `html-check`, `html-class`, `book-markup` (макроси `ConspectBook.cls`), `lecture-slides`, `sim-check`, `numeric-check`, `literature-lookup`, `chapter-update`, а також старі копії загальних (`physics-review`, `logic-reread`, `ukrainian-language`, `build-check`, `orphan-hunt`, `tikz-figures`, `bib-entry`, `problem-author`, `toc-style`, `syllabus-*`): вони залишено, актуальні загальні версії в глобальних.
+- Лише для цієї книги (`.claude/skills`): `html-build`, `html-check`, `html-class`, `book-markup` (макроси `ConspectBook.cls`), `lecture-slides`, `sim-check`, `numeric-check`, `literature-lookup`, `chapter-update`.
+- **Старі локальні копії загальних скілів** (`physics-review`, `logic-reread`, `ukrainian-language`, `build-check`, `orphan-hunt`, `tikz-figures`, `bib-entry`, `problem-author`, `toc-style`, `syllabus-*`) тимчасово лишаються. Правило вибору: **спершу загальний скіл** (протокол і правила), а локальний підключай лише за **плазмовою специфікою**, якої немає в загальному: словник термінів (`ukrainian-language` §7), плазмові перевірки режимів (`physics-review`), параметри `build.ps1` (`build-check`), приклади й числа (`problem-author`). Не запускай обидва повністю: це дублює роботу й контекст.
 - Агенти проєкту: `layout-checker`, `typesetter`, `html-typesetter`, `literature-finder`, `physics-reviewer`, `student-reader`, `language-checker`, `sim-tester`, `tikz-figurer`, `git-committer`. Дешеві глобальні: `latex-build-verdict`, `latex-refs-check`, `latex-layout-fixer`.
 
 ## Процес огляду розділу
