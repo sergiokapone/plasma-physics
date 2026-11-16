@@ -4,8 +4,8 @@ description: Верстальник PlasmaBook — виправляє пробл
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, PowerShell
 skills:
-  - orphan-hunt
-  - toc-style
+  - latex-layout-fix
+  - latex-toc-style
   - build-check
 ---
 

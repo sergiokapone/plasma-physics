@@ -9,7 +9,7 @@ description: Як оформлювати літературу силабуса �
 
 - Брати записи з `D:\Projects\LaTeX\plasma-physics\PlasmaBook\bibliography\bibliography.bib`. **Не** використовувати `D:\Projects\LaTeX\MyPackages\bib\MyBase.bib` для курсу фізики плазми і нічого туди не дописувати (там чужі незакомічені правки).
 - У преамбулі силабуса: `\addbibresource{../PlasmaBook/bibliography/bibliography.bib}` (шлях відносно папки `Syllabus`).
-- Новий запис додавати в цей `bib` (за скілом `bib-entry`), а не в силабус.
+- Новий запис додавати в цей `bib` (за скілом `textbook-bib-entry`), а не в силабус.
 
 ## Нормалізація
 

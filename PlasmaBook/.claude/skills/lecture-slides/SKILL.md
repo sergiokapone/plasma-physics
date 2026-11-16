@@ -34,7 +34,7 @@ description: Як робити презентацію лекції (beamer) за
 - Береш `tikz/*.tikz` із розділу. Чисті tikz (`debye_sphere`, `sheath`, `debye-layer`, `probe-circuit`, `plasma_ions`, `condensator`, `debye_overlap`) — `\resizebox{\linewidth}{!}{\input{…}}` у колонці, при потреби з висотою `{!}{3cm}`.
 - **Пастка pgfplots** (`axis`, ширина `0.95\linewidth`): під `resizebox` ширина стає кругом, графік обрізається, а шрифти виходять завеликими. Рецепт: вкласти в `\begin{minipage}{11cm}…\end{minipage}` і вже її `resizebox{\linewidth}{!}`; для невеликих рисунків (з `scale=0.6`, напр. `potential.tikz`) — `minipage{5.5cm}`. `plasma_types.tikz` працює вставкою напряму (`\footnotesize\input`) на всю ширину слайда.
 - Рисунок, що не вміщується по висоті, дає `Overfull \vbox` у журналі — зменшувати висоту, а не текст.
-- Нові рисунки малювати за `tikz-figures`; для слайдів кольори й підписи крупніші, ніж у книзі.
+- Нові рисунки малювати за `textbook-tikz-figures`; для слайдів кольори й підписи крупніші, ніж у книзі.
 
 ## Типографіка слайдів
 

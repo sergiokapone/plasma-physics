@@ -20,6 +20,7 @@
 
 ## Збірка (завжди через `build.ps1`, ніколи `pdflatex` / `latexmk -pdf` / `latexmk` напряму)
 - Один розділ: `powershell -NoProfile -File build.ps1 -Chapter <Розділ>` → `_chapters/<Розділ>.pdf` (+ `-sieve.txt`). `??` для посилань на інші розділи — норма. **Перевірка й правка розділу — лише так**, не всю книгу.
+- Журнал: у книзі стабільно ~100–104 Overfull (фон); дефект лише > 10 пт або в новому місці, дрібні 1–5 пт не лікувати. Попередження `Font shape … undefined` StixTwoMath ігнорувати. `sieve.txt` (texlogsieve) може бути в UTF-16. Помилка `main.toc:NN` — збій змісту (порожній аргумент `	oc@sign`).
 - Вся книга: `build.ps1` (`-Clean` спершу чистить допоміжні). Лише наприкінці серії правок або на прохання; після неї завжди дивитись `main.log`/`sieve.txt` на undefined/multiply defined (їх має бути 0). Таймаут ≥ 600000 мс.
 - **Не запускати дві збірки одночасно** і не правити джерела під час повної збірки (код 12, «undefined references»).
 - Покажчик: після зміни лише `index-uk.ist` видалити `main.ind` і зібрати.
@@ -32,7 +33,7 @@
 ## Мапа скілів і агентів
 - Загальні (глобальні): `textbook-review-chapter` (протокол огляду розділу), `textbook-physics-review`, `textbook-logic-reread` («перечитай розділ» = застосуй його), `ukrainian-science-language`, `textbook-problem-author`, `textbook-tikz-figures`, `textbook-bib-entry`, `latex-build-check`, `latex-layout-fix`, `latex-toc-style`, `kpi-syllabus`.
 - Лише для цієї книги (`.claude/skills`): `html-build`, `html-check`, `html-class`, `book-markup` (макроси `ConspectBook.cls`), `lecture-slides`, `sim-check`, `numeric-check`, `literature-lookup`, `chapter-update`.
-- **Старі локальні копії загальних скілів** (`physics-review`, `logic-reread`, `ukrainian-language`, `build-check`, `orphan-hunt`, `tikz-figures`, `bib-entry`, `problem-author`, `toc-style`, `syllabus-*`) тимчасово лишаються. Правило вибору: **спершу загальний скіл** (протокол і правила), а локальний підключай лише за **плазмовою специфікою**, якої немає в загальному: словник термінів (`ukrainian-language` §7), плазмові перевірки режимів (`physics-review`), параметри `build.ps1` (`build-check`), приклади й числа (`problem-author`). Не запускай обидва повністю: це дублює роботу й контекст.
+- **Старі локальні копії загальних скілів**, що ще лишаються: `physics-review`, `ukrainian-language`, `build-check`, `problem-author`, `syllabus-write`, `syllabus-literature`. Правило вибору: **спершу загальний скіл** (протокол і правила), а локальний підключай лише за **плазмовою специфікою**, якої немає в загальному (більшу частину вже перенесено в `rules/conventions.md`, `pitfalls.md` і сюди). Не запускай обидва повністю: це дублює роботу й контекст. Видалені дублі (є в git): `logic-reread`, `orphan-hunt`, `tikz-figures`, `bib-entry`, `toc-style`, `syllabus-requisites`; їхні заміни: `textbook-logic-reread`, `latex-layout-fix`, `textbook-tikz-figures`, `textbook-bib-entry`, `latex-toc-style`, `kpi-syllabus`.
 - Агенти проєкту: `layout-checker`, `typesetter`, `html-typesetter`, `literature-finder`, `physics-reviewer`, `student-reader`, `language-checker`, `sim-tester`, `tikz-figurer`, `git-committer`. Дешеві глобальні: `latex-build-verdict`, `latex-refs-check`, `latex-layout-fixer`.
 
 ## Процес огляду розділу
