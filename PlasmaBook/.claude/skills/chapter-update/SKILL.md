@@ -26,7 +26,7 @@ description: Порядок дій, коли правиш розділ PlasmaBoo
 
 ## 2. Збірка
 
-`powershell -File build.ps1` (lualatex + biber; ніколи не `pdflatex` і не `latexmk -pdf`). Аналіз журналу — скіл `build-check`.
+`pwsh -File build.ps1` (lualatex + biber; ніколи не `pdflatex` і не `latexmk -pdf`). Аналіз журналу — скіл `build-check`.
 
 ## 3. Верстка
 

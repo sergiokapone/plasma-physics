@@ -73,6 +73,6 @@ description: Шпаргалка з розмітки .tex для PlasmaBook — �
 
 - **Bash/heredoc/sed ламають зворотні скісні й кирилицю**: правити через `Edit`/`Write`; багаторядкові заміни — скриптом Python, створеним через `Write` (`D:\Programs\Programming\WPy64\python\python.exe -I`).
 - Багаторядкові `Edit` іноді не збігаються через `~`; тоді заміна за номерами рядків у скрипті.
-- Збірка: `powershell -File build.ps1` (скіл `build-check`); **не запускати дві збірки одночасно** (код 12, «undefined references»). Не `pdflatex` і не `latexmk -pdf`.
+- Збірка: `pwsh -File build.ps1` (скіл `build-check`); **не запускати дві збірки одночасно** (код 12, «undefined references»). Не `pdflatex` і не `latexmk -pdf`.
 - Не комітити без прохання (агент `git-committer`).
 - Після правки — `layout-checker`: таблиці, підписи, мітки, `~`, `\enquote`, відсутність `$$` і рядків-сиріт.
