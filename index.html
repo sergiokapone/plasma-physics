@@ -24,7 +24,22 @@
     <link rel="stylesheet" href="assets/styles.css">
     <link rel="stylesheet" href="assets/designs.css">
     <style>
-        .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;position:relative;z-index:1}
+        .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6rem .5rem;position:relative;z-index:1}
+        .hero-actions .pdf-button.pdf-sm{background:transparent;color:inherit;border:1px solid currentColor;border-radius:999px;padding:.28rem .8rem;font-size:.78rem;gap:.4rem;opacity:.78;filter:none}
+        .hero-actions .pdf-button.pdf-sm:hover{opacity:1;background:transparent;filter:none}
+        .hero-actions .pdf-button.pdf-sm .btn-icon{font-size:.78rem}
+        .hero-toggle{display:none}
+        @media (max-width:560px){
+            .hero-actions{flex-direction:column;align-items:center;gap:0;width:100%;max-width:260px;margin:0 auto}
+            .hero-toggle{display:flex;width:100%;align-items:center;justify-content:space-between;background:var(--paper,#080b1c);color:inherit;border:1px solid currentColor;border-radius:10px;padding:.55rem .9rem;font:500 .88rem var(--font-ui,inherit);cursor:pointer}
+            .hero-toggle::after{content:'▾';opacity:.7;transition:transform .2s}
+            .hero-actions.open .hero-toggle{border-radius:10px 10px 0 0}
+            .hero-actions.open .hero-toggle::after{transform:rotate(180deg)}
+            .hero-actions .pdf-button.pdf-sm{display:none;width:100%;box-sizing:border-box;justify-content:flex-start;background:var(--paper,#080b1c);border:1px solid currentColor;border-top:0;border-radius:0;padding:.6rem .9rem;font-size:.85rem;opacity:1}
+            .hero-actions.open .pdf-button.pdf-sm{display:flex}
+            .hero-actions.open .pdf-button.pdf-sm:last-child{border-radius:0 0 10px 10px}
+            .hero-actions .pdf-button.pdf-sm:hover{background:rgba(127,127,127,.18)}
+        }
         .pdf-button-primary{background:var(--gold);border-color:var(--gold);color:#1b0e0c}
         .pdf-button-primary .btn-icon{color:inherit}
         .pdf-button-primary:hover{background:var(--gold-bright);border-color:var(--gold-bright);color:#1b0e0c}
@@ -45,17 +60,18 @@
         <h1>Фізика плазми</h1>
         <div class="subtitle">Навчальний посібник</div>
         <div class="hero-rule"></div>
-        <div class="hero-actions">
-            <a href="PlasmaBook/main.pdf" class="pdf-button pdf-button-primary">
+        <div class="hero-actions" id="hero-links">
+            <button type="button" class="hero-toggle" aria-expanded="false" aria-controls="hero-links" onclick="var b=this.parentNode;var o=b.classList.toggle('open');this.setAttribute('aria-expanded',o);">&#9776; Матеріали</button>
+            <a href="PlasmaBook/main.pdf" class="pdf-button pdf-sm">
                 <span class="btn-icon">&#8595;</span> Завантажити посібник (PDF)
             </a>
-            <a href="online/" class="pdf-button">
-                <span class="btn-icon">&#9776;</span> Читати онлайн
+            <a href="online/" class="pdf-button pdf-sm">
+                <span class="btn-icon">&#128214;</span> Читати онлайн
             </a>
-            <a href="simulations.html" class="pdf-button">
+            <a href="simulations.html" class="pdf-button pdf-sm">
                 <span class="btn-icon">&#9657;</span> Інтерактивні симуляції
             </a>
-            <a href="Syllabus/Syllabus_plasma_E6.pdf" class="pdf-button">
+            <a href="Syllabus/Syllabus_plasma_E6.pdf" class="pdf-button pdf-sm">
                 <span class="btn-icon">&#9998;</span> Силабус дисципліни (PDF)
             </a>
         </div>
