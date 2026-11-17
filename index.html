@@ -40,6 +40,14 @@
             .hero-actions.open .pdf-button.pdf-sm:last-child{border-radius:0 0 10px 10px}
             .hero-actions .pdf-button.pdf-sm:hover{background:rgba(127,127,127,.18)}
         }
+        .about .about-lead{font-size:1.12rem;line-height:1.6;color:var(--text);text-align:left;font-family:var(--font-display)}
+        .about .about-lead strong{color:var(--gold)}
+        .about .about-sub{font-size:1rem;text-align:left}
+        .about-grid{list-style:none;margin:1.3rem 0 1.1rem;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.8rem}
+        .about-grid li{background:var(--page);border:1px solid var(--border);border-top:2px solid var(--gold);padding:.9rem 1rem 1rem;position:relative}
+        .about-grid h3{font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--heading);margin:0 0 .35rem;padding-right:1.8rem}
+        .about .about-grid p{font-size:.88rem;line-height:1.5;text-align:left;margin:0}
+        .about-ico{position:absolute;top:.7rem;right:.85rem;font-size:1.25rem;color:var(--gold);opacity:.85}
         .pdf-button-primary{background:var(--gold);border-color:var(--gold);color:#1b0e0c}
         .pdf-button-primary .btn-icon{color:inherit}
         .pdf-button-primary:hover{background:var(--gold-bright);border-color:var(--gold-bright);color:#1b0e0c}
@@ -100,10 +108,43 @@
         </div>
 
         <!-- Про посібник -->
-        <div class="preface">
+        <div class="preface about">
             <h2>Про посібник</h2>
-            <p>Навчальний посібник з курсу <strong>«Фізика плазми»</strong> розрахований на студентів-прикладних фізиків, які вже знають загальну й теоретичну фізику. Він веде від умов, за яких іонізований газ стає плазмою (іонізація, дебаївське екранування, колективність), через хвилі, рух частинок, зіткнення, рідинний і кінетичний опис до нестійкостей, магнітного утримання, термоядерного синтезу й газового розряду.</p>
-            <p>Викладення спирається на оцінки величин: у розділах є рамки <em>Estimate</em> з числовими прикладами, блоки «Як це вимірюють» про діагностику плазми, задачі з розв'язками й контрольні питання, а також посилання на інтерактивні симуляції. Використано гауссову систему одиниць, температуру подано в енергетичних одиницях (<i>k</i><sub>B</sub> = 1); у додатку є перехід до СІ.</p>
+            <p class="about-lead">Плазма — це полярне сяйво й блискавка, сонячний вітер і зірки, неонова реклама і плазмове травлення мікросхем. Це переважна частина видимої речовини Всесвіту — і, цілком можливо, <strong>джерело енергії майбутнього</strong>. Цей посібник пояснює, <strong>як вона влаштована і чому поводиться саме так</strong>.</p>
+            <p class="about-sub">Для студентів-прикладних фізиків: від першого питання «що таке плазма?» до токамака, критерію Лоусона та газового розряду — без стрибків і «неважко показати».</p>
+
+            <ul class="about-grid">
+                <li>
+                    <span class="about-ico" aria-hidden="true">≈</span>
+                    <h3>Спершу оцінка, потім формула</h3>
+                    <p>Рамки <em>Estimate</em> з реальними числами: скільки це в тесла, електрон-вольтах і метрах — і чи взагалі розумно.</p>
+                </li>
+                <li>
+                    <span class="about-ico" aria-hidden="true">◎</span>
+                    <h3>«Як це вимірюють»</h3>
+                    <p>Теорія не висить у повітрі: зонд Ленгмюра, томсонівське розсіяння, котушки Мірнова, нейтронна діагностика — що саме бачить прилад.</p>
+                </li>
+                <li>
+                    <span class="about-ico" aria-hidden="true">∿</span>
+                    <h3>Симуляції, які можна крутити</h3>
+                    <p>Дрейфи, дзеркала, хвилі, нестійкості — змініть параметр і подивіться, що станеться.</p>
+                </li>
+                <li>
+                    <span class="about-ico" aria-hidden="true">✓</span>
+                    <h3>Задачі з розв'язками</h3>
+                    <p>Задачі різної складності, контрольні питання, а в кінці — відповіді, щоб перевірити себе.</p>
+                </li>
+                <li>
+                    <span class="about-ico" aria-hidden="true">⌖</span>
+                    <h3>Карта масштабів і моделей</h3>
+                    <p>Окремий розділ про те, коли яку модель брати: кінетику, МГД чи дворідинний опис. А ще шпаргалка, словник і покажчик.</p>
+                </li>
+                <li>
+                    <span class="about-ico" aria-hidden="true">⇄</span>
+                    <h3>Читайте як зручно</h3>
+                    <p>PDF для друку, онлайн-версія з навігацією для екрана й телефона, світла й темна теми.</p>
+                </li>
+            </ul>
         </div>
 
         <!-- ── Зміст ─────────────────────────────────────────────────── -->
