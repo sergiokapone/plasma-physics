@@ -972,13 +972,23 @@ fyz/.style={fill=cyan},yz face/.code={\tikzset{parallelepiped/fyz/.style={#1}}}
 	% @online). Розділяє biber за типом запису: статті й онлайн-джерела дістають userf=facts.
 	\DeclareSourcemap{\maps[datatype=bibtex]{\map{\pertype{article}\pertype{online}%
 		\step[fieldset=userf, fieldvalue=facts]}}}
-	\defbibcheck{textbooks}{\iffieldequalstr{userf}{facts}{\skipentry}{}}
+	% Сама книга (ponomarenko2026plasma) потрібна лише силабусам: у власному списку її немає.
+	% Підручники: спершу україномовні (основні), потім решта (допоміжні, англомовні).
+	\defbibcheck{textbooks-uk}{%
+		\iffieldequalstr{userf}{facts}{\skipentry}{}%
+		\iffieldequalstr{entrykey}{ponomarenko2026plasma}{\skipentry}{}%
+		\iffieldequalstr{langid}{ukrainian}{}{\skipentry}}
+	\defbibcheck{textbooks-en}{%
+		\iffieldequalstr{userf}{facts}{\skipentry}{}%
+		\iffieldequalstr{entrykey}{ponomarenko2026plasma}{\skipentry}{}%
+		\iffieldequalstr{langid}{ukrainian}{\skipentry}{}}
 	\defbibcheck{facts}{\iffieldequalstr{userf}{facts}{}{\skipentry}}
 	% Заголовок підрозділу списку: запис у змісті на рівні section
 	\defbibheading{bibsub}[\bibname]{\section*{#1}\addcontentsline{toc}{section}{#1}}
 	\newcommand{\printbibliographies}{%
 		\printbibheading[heading=bibintoc]%
-		\printbibliography[check=textbooks, heading=bibsub, title={Підручники та посібники}]%
+		\printbibliography[check=textbooks-uk, heading=bibsub, title={Основні підручники та посібники}]%
+		\printbibliography[check=textbooks-en, heading=bibsub, title={Допоміжні підручники та посібники}]%
 		% Джерела фактів --- у порядку появи в тексті (sorting=none)
 		\begin{refcontext}[sorting=none]
 		\printbibliography[check=facts, heading=bibsub, title={Джерела фактів і результатів}]

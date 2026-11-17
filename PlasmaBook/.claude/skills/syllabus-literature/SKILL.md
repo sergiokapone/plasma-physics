@@ -18,7 +18,7 @@ description: Як оформлювати літературу силабуса �
 
 ## Розподіл
 
-- **Main** («Підручники та посібники»): наша книга + україномовні підручники (`anisimov2008`, `sitenko1996`, `zagorodny2006kinetic`).
+- **Main** («Підручники та посібники»): наша книга + україномовні підручники (`anisimov2018`, `sitenko1996`, `zagorodny2006kinetic`).
 - **Additional** («Додаткова»): усі англомовні `@book` з цього bib (Chen, Gurnett, Bellan, Freidberg, Stix, Krall, Kulsrud, Hazeltine, Priest, Goldston, Boyd, Bittencourt, Nicholson, Lieberman, Raizer, Chen–Chang).
 - Статті (`@article`) у силабус не входять.
 - Не додавати російськомовних книг (використовувати англомовні аналоги).
